@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -16,10 +15,6 @@ public class LineStations {
     private List<LineStation> lineStations = new ArrayList<>();
 
     public LineStations() {
-    }
-
-    public LineStations(final List<LineStation> lineStations) {
-        this.lineStations = lineStations;
     }
 
     public void addFinalStations(final Line line,
@@ -53,25 +48,12 @@ public class LineStations {
         upStationRelation.updateNext(downStation, distance);
     }
 
-    // TODO : 리팩토링 후 미사용 시 제거
-    public void add(final LineStation lineStation) {
-        lineStations.add(lineStation);
-    }
-
     public List<StationResponse> stations() {
         return lineStations
                 .stream()
                 .map(LineStation::getStation)
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
-    }
-
-    // TODO : 리팩토링 후 미사용 시 제거
-    Optional<LineStation> getByStation(final Station station) {
-        return lineStations
-                .stream()
-                .filter(lineStation -> lineStation.getStation().equals(station))
-                .findFirst();
     }
 
     boolean hasRelationTo(final Station station) {

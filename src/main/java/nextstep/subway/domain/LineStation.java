@@ -25,15 +25,6 @@ public class LineStation extends BaseEntity {
     @JoinColumn(name = "station_id")
     private Station station;
 
-    // TODO : 래팩토링 후 미사용 시 제거
-    @ManyToOne
-    @JoinColumn(name = "previous_station_id")
-    private Station previous;
-
-    // TODO : 래팩토링 후 미사용 시 제거
-    @Column(name = "distance_to_previous_station")
-    private Long distanceToPrevious;
-
     @ManyToOne
     @JoinColumn(name = "next_station_id")
     private Station next;
@@ -47,31 +38,12 @@ public class LineStation extends BaseEntity {
 
     public LineStation(final Line line,
                        final Station station,
-                       final Station previous,
-                       final Long distanceToPrevious,
-                       final Station next,
-                       final Long distanceToNext) {
-        this.line = line;
-        this.station = station;
-        this.previous = previous;
-        this.distanceToPrevious = distanceToPrevious;
-        this.next = next;
-        this.distanceToNext = distanceToNext;
-    }
-
-    public LineStation(final Line line,
-                       final Station station,
                        final Station next,
                        final Long distanceToNext) {
         this.line = line;
         this.station = station;
         this.next = next;
         this.distanceToNext = distanceToNext;
-    }
-
-    public void updatePrevious(final Station previous, final Long distance) {
-        this.previous = previous;
-        distanceToPrevious = distance;
     }
 
     public boolean hasNext() {
@@ -93,14 +65,6 @@ public class LineStation extends BaseEntity {
 
     public Station getStation() {
         return station;
-    }
-
-    public Station getPrevious() {
-        return previous;
-    }
-
-    public Long getDistanceToPrevious() {
-        return distanceToPrevious;
     }
 
     public Station getNext() {

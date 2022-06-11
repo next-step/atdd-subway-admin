@@ -16,7 +16,7 @@ public class LineTest {
 
     @BeforeEach
     void setUp() {
-        line = new Line("신분당선", "bg-red-600");
+        line = new Line("신분당선", "red");
         finalUpStation = new Station("강남역");
         finalDownStation = new Station("정자역");
         lineDistance = 30L;
@@ -40,8 +40,6 @@ public class LineTest {
         // then
         assertThat(line.getLineStations().stations())
                 .containsExactly(StationResponse.of(finalUpStation), StationResponse.of(finalDownStation));
-        assertThat(line.getLineStations().getByStation(finalUpStation).get().getPrevious()).isNull();
-        assertThat(line.getLineStations().getByStation(finalDownStation).get().getNext()).isNull();
     }
 
     @Test
