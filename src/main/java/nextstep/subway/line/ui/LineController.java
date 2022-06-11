@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 public class LineController {
@@ -70,6 +71,13 @@ public class LineController {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity handleNoElementException(NoSuchElementException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("해당 Element를 조회 할 수 없습니다.");
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

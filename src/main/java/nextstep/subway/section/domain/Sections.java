@@ -181,14 +181,14 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.getEqualsUpStation(station))
                 .findFirst()
-                .get();
+                .orElseThrow(NoSuchElementException::new);
     }
 
     private Section findSectionByDownStation(Station station) {
         return sections.stream()
                 .filter(section -> section.getEqualsDownStation(station))
                 .findFirst()
-                .get();
+                .orElseThrow(NoSuchElementException::new);
     }
 
     public List<Section> getSections() {
