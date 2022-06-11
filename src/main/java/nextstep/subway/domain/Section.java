@@ -55,6 +55,21 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, distance);
     }
 
+    public static Section addDistance(Section upSection, Section downSection) {
+        int newDistance = upSection.distance
+            .add(downSection.distance)
+            .value();
+        return Section.of(upSection.getUpStation(), downSection.getDownStation(), newDistance);
+    }
+
+    public static Section combine(Section upSection, Section downSection) {
+        return Section.of(upSection.getUpStation(), downSection.getDownStation(),
+            upSection.distance
+                .add(downSection.distance)
+                .value()
+        );
+    }
+
     private void validate(Station upStation, Station downStation) {
         validateUpStation(upStation);
         validateDownStation(downStation);
@@ -84,21 +99,16 @@ public class Section extends BaseEntity {
     public void update(Section target) {
         if (this.upStation.equals(target.upStation)) {
             this.upStation = target.downStation;
-            changeDistance(target);
+            subtractDistance(target);
         }
         if (this.downStation.equals(target.downStation)) {
             this.downStation = target.upStation;
-            changeDistance(target);
+            subtractDistance(target);
         }
     }
 
-    private void changeDistance(Section target) {
+    private void subtractDistance(Section target) {
         this.distance = this.distance.subtract(target.distance);
-    }
-
-    public void setLine(Line line) {
-        validateLineNotNull(line);
-        this.line = line;
     }
 
     private void validateLineNotNull(Line line) {
@@ -107,12 +117,33 @@ public class Section extends BaseEntity {
         }
     }
 
+    public boolean containsUpStation(Station target) {
+        return this.upStation.equals(target);
+    }
+
+    public boolean containsDownStation(Station target) {
+        return this.downStation.equals(target);
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public void setLine(Line line) {
+        validateLineNotNull(line);
+        this.line = line;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
 }

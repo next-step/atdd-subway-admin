@@ -22,6 +22,10 @@ public class Distance {
         this.distance = distance;
     }
 
+    public static Distance from(int distance) {
+        return new Distance(distance);
+    }
+
     private void validate(int distance) {
         if (distance <= MIN_DISTANCE) {
             throw new InvalidDistanceException(MIN_DISTANCE_MESSAGE);
@@ -32,8 +36,12 @@ public class Distance {
         return new Distance(this.distance - distance.distance);
     }
 
-    public static Distance from(int distance) {
-        return new Distance(distance);
+    public Distance add(Distance distance) {
+        return new Distance(this.distance + distance.distance);
+    }
+
+    public int value() {
+        return distance;
     }
 
     @Override

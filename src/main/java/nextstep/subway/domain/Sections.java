@@ -10,13 +10,16 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.exception.InvalidSectionException;
+import nextstep.subway.exception.SectionDeleteException;
 
 @Embeddable
 public class Sections {
 
+    private static final int MIN_SIZE = 1;
     private static final String STATION_PAIR_BOTH_EXISTS = "상행역(%s)과 하행역(%s)이 모두 노선에 등록되어 있으면 구간을 추가할 수 없습니다.";
     private static final String STATION_PAIR_NONE_EXISTS = "상행역(%s), 하행역(%s) 중 최소한 하나의 역이 등록되어 있어야 합니다.";
-
+    private static final String STATION_NOT_EXISTS = "존재하지 않는 지하철 역 입니다.";
+    private static final String LAST_SECTION = "구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.";
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -76,6 +79,63 @@ public class Sections {
             .flatMap(Collection::stream)
             .distinct()
             .collect(Collectors.toList());
+    }
+
+    public void deleteSection(Station station) {
+        Optional<Section> optionalDownSection = findSectionByUpStation(station);
+        Optional<Section> optionalUpSection = findSectionByDownStation(station);
+
+        boolean isUpSectionPresent = optionalUpSection.isPresent();
+        boolean isDownSectionPresent = optionalDownSection.isPresent();
+
+        validateSectionNull(isUpSectionPresent, isDownSectionPresent);
+        validatesSectionsSize();
+
+        deleteOptionalSection(optionalUpSection);
+        deleteOptionalSection(optionalDownSection);
+
+        if(isUpSectionPresent && isDownSectionPresent){
+            combineSection(optionalUpSection.get(), optionalDownSection.get());
+        }
+    }
+
+    private Optional<Section> findSectionByUpStation(Station upStation) {
+        return this.sections
+            .stream()
+            .filter(section -> section.containsUpStation(upStation))
+            .findFirst();
+    }
+
+    private Optional<Section> findSectionByDownStation(Station downStation) {
+        return this.sections
+            .stream()
+            .filter(section -> section.containsDownStation(downStation))
+            .findFirst();
+    }
+
+    private void validateSectionNull(boolean containsUpStation, boolean containsDownStation){
+        if (!containsUpStation && !containsDownStation) {
+            throw new SectionDeleteException(STATION_NOT_EXISTS);
+        }
+    }
+
+    private void validatesSectionsSize(){
+        if (sections.size() <= MIN_SIZE) {
+            throw new SectionDeleteException(LAST_SECTION);
+        }
+    }
+
+    private void deleteOptionalSection(Optional<Section> optionalSection) {
+        if (optionalSection.isPresent()) {
+            Section section = optionalSection.get();
+            sections.remove(section);
+        }
+    }
+
+    private void combineSection(Section upSection, Section downSection) {
+        Section newSection = Section.combine(upSection, downSection);
+        newSection.setLine(upSection.getLine());
+        addSection(newSection);
     }
 
 }
