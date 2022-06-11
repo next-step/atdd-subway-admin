@@ -6,8 +6,8 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.util.LineTestUtil;
-import nextstep.subway.util.StationTestUtil;
+import nextstep.subway.util.LineAcceptanceMethods;
+import nextstep.subway.util.StationAcceptanceMethods;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -22,9 +22,9 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     @BeforeEach
     @Order(1)
     public void setUp() {
-        Long upStationId = StationTestUtil.createStation("강남역").jsonPath().getLong("id");
-        Long downStationId = StationTestUtil.createStation("광교중앙역").jsonPath().getLong("id");
-        lineCreateResponse = LineTestUtil.createLine("신분당선", "red", upStationId, downStationId, 10);
+        Long upStationId = StationAcceptanceMethods.createStation("강남역").jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceMethods.createStation("광교중앙역").jsonPath().getLong("id");
+        lineCreateResponse = LineAcceptanceMethods.createLine("신분당선", "red", upStationId, downStationId, 10);
     }
 
     /**
@@ -40,7 +40,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
         assertThat(lineCreateResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        ExtractableResponse<Response> response = LineTestUtil.getAllLines();
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getAllLines();
         assertThat(response.jsonPath().getList("name", String.class)).containsAnyOf("신분당선");
     }
 
@@ -51,12 +51,12 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLines() {
         // given
-        Long upStationIdOfBundang = StationTestUtil.createStation("수원역").jsonPath().getLong("id");
-        Long downStationIdOfBundang = StationTestUtil.createStation("압구정로데오").jsonPath().getLong("id");
-        LineTestUtil.createLine("분당선", "yellow", upStationIdOfBundang, downStationIdOfBundang, 10);
+        Long upStationIdOfBundang = StationAcceptanceMethods.createStation("수원역").jsonPath().getLong("id");
+        Long downStationIdOfBundang = StationAcceptanceMethods.createStation("압구정로데오").jsonPath().getLong("id");
+        LineAcceptanceMethods.createLine("분당선", "yellow", upStationIdOfBundang, downStationIdOfBundang, 10);
 
         // when
-        ExtractableResponse<Response> response = LineTestUtil.getAllLines();
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getAllLines();
 
         // then
         assertThat(response.jsonPath().getList("$", LineResponse.class)).hasSize(2);
@@ -73,7 +73,7 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
         // BeforeEach 에서 실행
 
         // when
-        LineResponse lineResponse = LineTestUtil.getLine(lineCreateResponse.jsonPath().getLong("id")).jsonPath()
+        LineResponse lineResponse = LineAcceptanceMethods.getLine(lineCreateResponse.jsonPath().getLong("id")).jsonPath()
                 .getObject("$", LineResponse.class);
 
         // then
@@ -90,10 +90,10 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
         // BeforeEach 에서 실행
 
         // when
-        LineTestUtil.updateLine(lineCreateResponse.jsonPath().getLong("id"), "짱비싼선", "black");
+        LineAcceptanceMethods.updateLine(lineCreateResponse.jsonPath().getLong("id"), "짱비싼선", "black");
 
         // then
-        LineResponse lineResponse = LineTestUtil.getLine(lineCreateResponse.jsonPath().getLong("id")).jsonPath()
+        LineResponse lineResponse = LineAcceptanceMethods.getLine(lineCreateResponse.jsonPath().getLong("id")).jsonPath()
                 .getObject("$", LineResponse.class);
         assertThat(lineResponse.getName()).isEqualTo("짱비싼선");
         assertThat(lineResponse.getColor()).isEqualTo("black");
@@ -109,10 +109,10 @@ class LineAcceptanceTest extends BaseAcceptanceTest {
         // BeforeEach에서 실행
 
         // when
-        LineTestUtil.deleteLine(lineCreateResponse.jsonPath().getLong("id"));
+        LineAcceptanceMethods.deleteLine(lineCreateResponse.jsonPath().getLong("id"));
 
         // then
-        ExtractableResponse<Response> response = LineTestUtil.getAllLines();
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getAllLines();
         assertThat(response.jsonPath().getList("name", String.class)).doesNotContain("신분당선");
     }
 }

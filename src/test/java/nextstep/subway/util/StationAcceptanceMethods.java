@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.dto.StationRequest;
 import org.springframework.http.MediaType;
 
-public class StationTestUtil {
+public class StationAcceptanceMethods {
     public static ExtractableResponse<Response> createStation(String stationName) {
         StationRequest request = new StationRequest(stationName);
 
