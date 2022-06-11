@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.domain.Station;
 
@@ -7,43 +8,52 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-public class Line {
+public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station downStation;
     @Embedded
-    private Distance distance;
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(final Long id, final String name, final String color,
-                final Station upStation, final Station downStation, final long distance) {
-        this.id = id;
+    public Line(final String name, final String color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = new Distance(distance);
     }
 
-    private Line(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
-        this(null, name, color, upStation, downStation, distance);
+    public static Line of(final String name, final String color, final long distance, final Station upStation, final Station downStation) {
+        Line line = new Line(name, color);
+        initSection(distance, upStation, downStation, line);
+        return line;
     }
 
-    public static Line of(final String name, final String color, final Station upStation, final Station downStation, final long distance) {
-        return new Line(null, name, color, upStation, downStation, distance);
+    private static void initSection(final long distance, final Station upStation, final Station downStation, final Line line) {
+        Section section = Section.of(upStation, downStation, distance);
+        section.updateFinalUpStation(true);
+        section.updateFinalDownStation(true);
+        line.addSection(section);
     }
 
     public void updateNameAndColor(final LineUpdateRequest lineUpdateRequest) {
         this.color = lineUpdateRequest.getColor();
         this.name = lineUpdateRequest.getName();
+    }
+
+    public void addSection(final Section section) {
+        section.updateLine(this);
+        sections.add(section);
+    }
+
+    public Station getFinalUpStation() {
+        return sections.finalUpStation();
+    }
+
+    public Station getFinalDownStation() {
+        return sections.finalDownStation();
     }
 
     public Long getId() {
@@ -58,27 +68,13 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public long getDistance() {
-        return distance.getValue();
-    }
-
     @Override
     public String toString() {
         return "Line{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", color=" + color +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance.getValue() +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
                 '}';
     }
 
@@ -87,11 +83,11 @@ public class Line {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(upStation, line.upStation) && Objects.equals(downStation, line.downStation) && Objects.equals(distance, line.distance);
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(sections, line.sections);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, upStation, downStation);
+        return Objects.hash(id, name, color, sections);
     }
 }

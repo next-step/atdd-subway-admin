@@ -27,17 +27,18 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse addLine(final LineAddRequest lineAddRequest) {
+    public LineResponse createLine(final LineAddRequest lineAddRequest) {
         final Station upStation = stationService.findById(lineAddRequest.getUpStationId());
         final Station downStation = stationService.findById(lineAddRequest.getDownStationId());
-        Line line = lineAddRequest.toEntity(upStation, downStation);
-        lineRepository.save(line);
 
-        return LineResponse.from(line);
+        return LineResponse.from(lineRepository.save(
+                lineAddRequest.toEntity(upStation, downStation)
+        ));
     }
 
     public List<LineResponse> fetchLines() {
-        return lineRepository.findAll().stream()
+        return lineRepository.findAll()
+                .stream()
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
     }

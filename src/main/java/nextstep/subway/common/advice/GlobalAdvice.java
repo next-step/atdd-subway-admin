@@ -21,7 +21,7 @@ public class GlobalAdvice {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> exception(Exception e) {
-        return ResponseEntity.ok(new ErrorResponse("Error", "서버 오류로 이용이 불가능 합니다."));
+        return ResponseEntity.ok(new ErrorResponse("Error", e.getMessage()));
     }
 
 }

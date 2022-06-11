@@ -1,11 +1,13 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.line.dto.LineAddRequest;
 import nextstep.subway.station.domain.StationTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-@DataJpaTest
 public class LineTest {
-    public static final Line 이호선 = new Line(1L, "2호선", "bg-green-600", StationTest.사당역, StationTest.강남역, 10L);
-    public static final Line 사호선 = new Line(2L, "4호선", "bg-blue-600", StationTest.사당역, StationTest.이수역, 10L);
+    public static final LineAddRequest 이호선_추가 =
+            new LineAddRequest("2호선", "bg-green-600", StationTest.사당역.getId(), StationTest.강남역.getId(), 10L);
+    public static final LineAddRequest 사호선_추가 =
+            new LineAddRequest("4호선", "bg-blue-600", StationTest.사당역.getId(), StationTest.이수역.getId(), 10L);
 
+    public static final Line 이호선 = 이호선_추가.toEntity(StationTest.사당역,  StationTest.강남역);
 }

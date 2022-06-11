@@ -52,8 +52,8 @@ npm run dev
   - [x] 지하철 노선 삭제
   - [x] Controller Advice를 통한 오류 처리
   - [ ] 구간 등록 인수 테스트 작성
-      - [ ] Section Entity 추가
-      - [ ] Section Line 연관 관계 맵핑
+      - [x] Section Entity 추가
+      - [x] Section Line 연관 관계 맵핑
       - [ ] 새로운 역을 역 사이에 새로운 역 등록
           - [ ] 기존 역 사이 길이 보다 크거나 같으면 오류 발생
       - [ ] 새로운 역을 상행 종점 으로 등록

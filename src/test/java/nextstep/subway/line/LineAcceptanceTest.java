@@ -4,8 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.common.util.DatabaseCleanup;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineTest;
+import nextstep.subway.line.dto.LineAddRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.domain.StationRepository;
@@ -20,9 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -55,9 +53,10 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_추가() {
         // when
-        LineResponse lineResponse = 노선_추가(LineTest.이호선);
+        ExtractableResponse<Response> expected = 노선_추가(LineTest.이호선_추가);
         // then
-        assertThat(lineResponse.getId()).isEqualTo(LineTest.이호선.getId());
+        assertThat(expected.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(expected.jsonPath().getString("name")).isEqualTo("2호선");
     }
 
     /**
@@ -68,8 +67,8 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_목록_조회() {
         // given
-        노선_추가(LineTest.이호선);
-        노선_추가(LineTest.사호선);
+        노선_추가(LineTest.사호선_추가);
+        노선_추가(LineTest.이호선_추가);
         // when
         // then
         assertThat(노선_전체_조회()).hasSize(2);
@@ -83,11 +82,11 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_조회() {
         // given
-        final Long id = 노선_추가(LineTest.이호선).getId();
+        final Long id = 노선_추가(LineTest.이호선_추가).jsonPath().getLong("id");
         // when
         LineResponse expected = 노선_ID_조회(id);
         // then
-        assertThat(expected.getId()).isEqualTo(LineTest.이호선.getId());
+        assertThat(expected.getId()).isEqualTo(id);
         assertThat(expected.getName()).isEqualTo(LineTest.이호선.getName());
         assertThat(expected.getColor()).isEqualTo(LineTest.이호선.getColor());
     }
@@ -100,7 +99,7 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_수정() {
         // given
-        final Long id = 노선_추가(LineTest.이호선).getId();
+        final Long id = 노선_추가(LineTest.이호선_추가).jsonPath().getLong("id");
         final LineUpdateRequest lineUpdateRequest = new LineUpdateRequest("1호선", "bg-red-600");
         // when
         ExtractableResponse<Response> response = 노선_수정(id, lineUpdateRequest);
@@ -116,20 +115,20 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_삭제() {
         // given
-        final Long id = 노선_추가(LineTest.이호선).getId();
+        final Long id = 노선_추가(LineTest.이호선_추가).jsonPath().getLong("id");
         // when
         ExtractableResponse<Response> expected = 노선_삭제(id);
         // then
         assertThat(expected.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private LineResponse 노선_추가(final Line line) {
+    private ExtractableResponse<Response> 노선_추가(final LineAddRequest lineAddRequest) {
         return RestAssured.given().log().all()
-                .body(lineAddRequest(line))
+                .body(lineAddRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all()
-                .extract().jsonPath().getObject(".", LineResponse.class);
+                .extract();
     }
 
     private LineResponse 노선_ID_조회(final long id) {
@@ -164,18 +163,6 @@ public class LineAcceptanceTest {
                 .when().delete("/lines/{id}")
                 .then().log().all()
                 .extract();
-    }
-
-    private Map<String, Object> lineAddRequest(final Line line) {
-        Map<String, Object> map = new HashMap<>();
-        map.put("id", line.getId());
-        map.put("name", line.getName());
-        map.put("color", line.getColor());
-        map.put("upStationId", line.getUpStation().getId());
-        map.put("downStationId", line.getDownStation().getId());
-        map.put("distance", line.getDistance());
-
-        return map;
     }
 
     private void 지하철역_추가() {
