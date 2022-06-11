@@ -69,30 +69,36 @@ public class Sections {
 
     public void addSectionBetweenTwoStation(Section newSection) {
         Optional<Section> sameUpSection = findSectionByUpStation(newSection.getUpStation());
-
         if (sameUpSection.isPresent()) {
             Section existingSection = sameUpSection.get();
-            validateNewSectionDistance(newSection.getDistance(), existingSection.getDistance());
-
-            Section nextSection = new Section(newSection.getDownStation(), existingSection.getDownStation()
-                    , existingSection.getDistance() - newSection.getDistance());
-            sectionList.add(nextSection);
-            existingSection.setDownStation(newSection.getDownStation());
-            existingSection.setDistance(newSection.getDistance());
+            changeSectionFromUpStation(newSection, existingSection);
             return ;
         }
 
         Optional<Section> sameDownSection = findSectionByDownStation(newSection.getDownStation());
-
         if (sameDownSection.isPresent()) {
             Section existingSection = sameDownSection.get();
-            validateNewSectionDistance(newSection.getDistance(), existingSection.getDistance());
-            Section nextSection = new Section(newSection.getUpStation(), existingSection.getDownStation()
-                    , newSection.getDistance());
-            sectionList.add(nextSection);
-            existingSection.setDownStation(newSection.getUpStation());
-            existingSection.setDistance(existingSection.getDistance() - newSection.getDistance());
+            changeSectionFromDownStation(newSection, existingSection);
         }
+    }
+
+    private void changeSectionFromDownStation(Section newSection, Section existingSection) {
+        validateNewSectionDistance(newSection.getDistance(), existingSection.getDistance());
+        Section nextSection = new Section(newSection.getUpStation(), existingSection.getDownStation()
+                , newSection.getDistance());
+        sectionList.add(nextSection);
+        existingSection.setDownStation(newSection.getUpStation());
+        existingSection.setDistance(existingSection.getDistance() - newSection.getDistance());
+    }
+
+    private void changeSectionFromUpStation(Section newSection, Section existingSection) {
+        validateNewSectionDistance(newSection.getDistance(), existingSection.getDistance());
+
+        Section nextSection = new Section(newSection.getDownStation(), existingSection.getDownStation()
+                , existingSection.getDistance() - newSection.getDistance());
+        sectionList.add(nextSection);
+        existingSection.setDownStation(newSection.getDownStation());
+        existingSection.setDistance(newSection.getDistance());
     }
 
     public Station getUpStation() {
