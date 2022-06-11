@@ -133,7 +133,8 @@ public class Sections {
     }
 
     private void combineSection(Section upSection, Section downSection) {
-        Section newSection = Section.combine(upSection, downSection);
+        Distance newDistance = Section.newDistance(upSection, downSection);
+        Section newSection = Section.of(upSection.getUpStation(), downSection.getDownStation(), newDistance);
         newSection.setLine(upSection.getLine());
         addSection(newSection);
     }
