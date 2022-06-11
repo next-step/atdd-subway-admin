@@ -9,10 +9,10 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     private Station downStation;
 
     private long distance;
@@ -22,9 +22,23 @@ public class Section extends BaseEntity {
     }
 
     public Section(Station upStation, Station downStation, long distance) {
+        validateDistance(distance);
+        validateNotSameStation(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateDistance(long distance) {
+        if (distance < 1) {
+            throw new IllegalArgumentException("거리는 1 이상의 숫자만 입력이 가능합니다.");
+        }
+    }
+
+    private void validateNotSameStation(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException("상행역과 하행역은 동일한 역으로 지정될 수 없습니다.");
+        }
     }
 
     public Long getId() {

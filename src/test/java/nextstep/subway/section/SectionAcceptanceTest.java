@@ -13,12 +13,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
+import java.util.List;
+
+import static nextstep.subway.line.LineAcceptanceTest.노선_조회;
 import static nextstep.subway.line.LineAcceptanceTest.신분당선_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
 @Sql("classpath:/createlinestation.sql")
-public class SectionAcceptanceTest extends BaseAcceptanceTest {
+class SectionAcceptanceTest extends BaseAcceptanceTest {
+
+
+    private static final long 강남역_ID = 1L;
+    private static final long 양재역_ID = 2L;
+    private static final long 양재시민의숲역_ID = 5L;
+
+    private static final long 신분당선_ID = 1L;
 
     @BeforeEach
     void createLine() {
@@ -28,97 +38,78 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     /**
      * Given 지하철 노선이 생성된 상태에서
      * When 두 역 사이에 상행역에서 출발하는 새로운 역을 등록하면
-     * Then 새로운 역이 등록되고 구간이 조정된다.
+     * Then 두 역 사이에 새로운 역이 등록된다.
      */
     @DisplayName("역 사이에 상행역에서 출발하는 새로운 구간을 등록한다.")
     @Test
     void addSection() {
         // When
         SectionRequest sectionRequest = new SectionRequest(1L, 5L, 4);
-        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
+        구간_추가(1L, sectionRequest);
 
         // Then
-        final Integer 강남역_신규구간_거리 = 4;
-        final Integer 신규구간_양재역_거리 = 6;
-
-        Integer 강남역_신규구간_거리_리턴값 = 구간_추가_결과_응답.jsonPath()
-                .get("sections.find { section -> (section.upStation != null && section.upStation.id == 1L) }.distance");
-        assertThat(강남역_신규구간_거리_리턴값).isEqualTo(강남역_신규구간_거리);
-
-        Integer 신규구간_양재역_거리_리턴값 = 구간_추가_결과_응답.jsonPath()
-                .get("sections.find { section -> (section.downStation != null && section.downStation.id == 2L) }.distance");
-        assertThat(신규구간_양재역_거리_리턴값).isEqualTo(신규구간_양재역_거리);
+        ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
+        List<String> 신분당선_역명_리턴값 = 노선_조회_결과_응답.jsonPath().getList("stations.name");
+        assertThat(신분당선_역명_리턴값).containsExactly("강남역", "양재시민의숲역", "양재역");
     }
 
     /**
      * Given 지하철 노선이 생성된 상태에서
      * When 두 역 사이에 하행역에서 출발하는 새로운 역을 등록하면
-     * Then 새로운 역이 등록되고 구간이 조정된다.
+     * Then 새로운 역이 등록된다.
      */
     @DisplayName("역 사이에 하행역에서 출발하는 새로운 구간을 등록한다.")
     @Test
     void addSectionFromDownStation() {
         // When
         SectionRequest sectionRequest = new SectionRequest(5L, 2L, 4);
-        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
+        구간_추가(1L, sectionRequest);
 
         // Then
-        final Integer 신규역에서_양재역_거리 = 4;
-        final Integer 강남역에서_신규역_거리 = 6;
-
-        Integer 강남역_신규구간_거리_리턴값 = 구간_추가_결과_응답.jsonPath()
-                .get("sections.find { section -> (section.upStation.id == 1L) }.distance");
-        assertThat(강남역_신규구간_거리_리턴값).isEqualTo(강남역에서_신규역_거리);
-
-        Integer 신규구간_양재역_거리_리턴값 = 구간_추가_결과_응답.jsonPath()
-                .get("sections.find { section -> (section.downStation.id == 2L) }.distance");
-        assertThat(신규구간_양재역_거리_리턴값).isEqualTo(신규역에서_양재역_거리);
+        ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
+        List<String> 신분당선_역명_리턴값 = 노선_조회_결과_응답.jsonPath().getList("stations.name");
+        assertThat(신분당선_역명_리턴값).containsExactly("강남역", "양재시민의숲역", "양재역");
     }
 
     /**
      * Given 지하철 노선이 생성된 상태에서
      * When 새로운 역을 상행 종점으로 등록하면
-     * Then 새로운 역이 등록되고 구간이 조정된다.
+     * Then 새로운 역이 등록된다.
      */
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
     void addStationAsUpStation() {
         // When
         SectionRequest sectionRequest = new SectionRequest(6L, 1L, 4);
-        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
+        구간_추가(1L, sectionRequest);
 
         // Then
-        final Integer 구간_추가후_신분당선_총_거리 = 14;
+        ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
+
         final String 구간_추가후_신분당선_상행역명 = "신논현역";
 
-        Integer 신분당선_총_거리_리턴값 = 구간_추가_결과_응답.jsonPath().get("distance");
-        assertThat(신분당선_총_거리_리턴값).isEqualTo(구간_추가후_신분당선_총_거리);
-
-        String 신분당선_상행역명_리턴값 = 구간_추가_결과_응답.jsonPath().get("upStation.name");
+        String 신분당선_상행역명_리턴값 = 노선_조회_결과_응답.jsonPath().get("stations[0].name");
         assertThat(신분당선_상행역명_리턴값).isEqualTo(구간_추가후_신분당선_상행역명);
     }
 
     /**
      * Given 지하철 노선이 생성된 상태에서
      * When 새로운 역을 하행 종점으로 등록하면
-     * Then 새로운 역이 등록되고 구간이 조정된다.
+     * Then 새로운 역이 하행 종점역으로 등록된다.
      */
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
     void addStationAsDownStation() {
         // When
         SectionRequest sectionRequest = new SectionRequest(2L, 5L, 7);
-        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
+        구간_추가(1L, sectionRequest);
 
         // Then
-        final Integer 구간_추가후_신분당선_총_거리 = 17;
-        final String 구간_추가후_신분당선_하행역명 = "양재시민의숲역";
+        final long 신분당선_ID = 1L;
+        ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
 
-        Integer 신분당선_총_거리_리턴값 = 구간_추가_결과_응답.jsonPath().get("distance");
-        assertThat(신분당선_총_거리_리턴값).isEqualTo(구간_추가후_신분당선_총_거리);
-
-        String 신분당선_상행역명_리턴값 = 구간_추가_결과_응답.jsonPath().get("downStation.name");
-        assertThat(신분당선_상행역명_리턴값).isEqualTo(구간_추가후_신분당선_하행역명);
+        List<String> 신분당선_역명_리턴값 = 노선_조회_결과_응답.jsonPath().getList("stations.name");
+        assertThat(신분당선_역명_리턴값).containsExactly("강남역", "양재역", "양재시민의숲역");
     }
 
     /**

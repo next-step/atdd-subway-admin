@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -16,34 +17,107 @@ public class Sections {
 
     }
 
+    public long getDistance() {
+        return sectionList.stream().mapToLong(Section::getDistance).sum();
+    }
+
     public List<Section> getSectionList() {
-        return new ArrayList<>(sectionList);
+        List<Section> sortedList = new ArrayList<>();
+        Station upStation = getUpStation();
+
+        Optional<Section> firstSection = findSectionByUpStation(upStation);
+        if (!firstSection.isPresent()) {
+            return sortedList;
+        }
+
+        sortedList.add(firstSection.get());
+        Station nextStation = firstSection.get().getDownStation();
+        while (nextStation != null) {
+            Optional<Section> section = findSectionByUpStation(nextStation);
+            if (!section.isPresent()) {
+                break;
+            }
+
+            sortedList.add(section.get());
+            nextStation = section.get().getDownStation();
+        }
+
+        return sortedList;
     }
 
-    public void add(Section section) {
-        validateStations(section.getUpStation(), section.getDownStation());
-        sectionList.add(section);
-    }
-
-    public void addSectionBetweenTwoStation(Station newUpStation, Station newDownStation, long sectionDistance) {
-        Optional<Section> existingUpSection = getSectionList().stream()
-                .filter(section -> section.getUpStation().equals(newUpStation))
-                .findFirst();
-
-        if (existingUpSection.isPresent()) {
-            validateNewSectionDistance(sectionDistance, existingUpSection.get().getDistance());
-            addSectionFromUpStation(existingUpSection.get(), newDownStation, sectionDistance);
+    public void add(Section newSection) {
+        validateStations(newSection.getUpStation(), newSection.getDownStation());
+        if (hasSameUpStation(newSection.getDownStation()) && !hasSameDownStation(newSection.getUpStation())) {
+            sectionList.add(newSection);
             return ;
         }
 
-        Optional<Section> existingDownSection = getSectionList().stream()
-                .filter(section -> section.getDownStation().equals(newDownStation))
+        if (hasSameDownStation(newSection.getUpStation()) && !hasSameUpStation(newSection.getDownStation())) {
+            sectionList.add(newSection);
+            return ;
+        }
+
+        addSectionBetweenTwoStation(newSection);
+    }
+
+    public void addFirstSection(Section section) {
+        if (!sectionList.isEmpty()) {
+            throw new IllegalStateException("이미 구간이 등록된 경우 추가할 수 없습니다.");
+        }
+        sectionList.add(section);
+    }
+
+    public void addSectionBetweenTwoStation(Section newSection) {
+        Optional<Section> sameUpSection = findSectionByUpStation(newSection.getUpStation());
+
+        if (sameUpSection.isPresent()) {
+            Section existingSection = sameUpSection.get();
+            validateNewSectionDistance(newSection.getDistance(), existingSection.getDistance());
+
+            Section nextSection = new Section(newSection.getDownStation(), existingSection.getDownStation()
+                    , existingSection.getDistance() - newSection.getDistance());
+            sectionList.add(nextSection);
+            existingSection.setDownStation(newSection.getDownStation());
+            existingSection.setDistance(newSection.getDistance());
+            return ;
+        }
+
+        Optional<Section> sameDownSection = findSectionByDownStation(newSection.getDownStation());
+
+        if (sameDownSection.isPresent()) {
+            Section existingSection = sameDownSection.get();
+            validateNewSectionDistance(newSection.getDistance(), existingSection.getDistance());
+            Section nextSection = new Section(newSection.getUpStation(), existingSection.getDownStation()
+                    , newSection.getDistance());
+            sectionList.add(nextSection);
+            existingSection.setDownStation(newSection.getUpStation());
+            existingSection.setDistance(existingSection.getDistance() - newSection.getDistance());
+        }
+    }
+
+    public Station getUpStation() {
+        List<Station> downStations = sectionList.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
+
+        Optional<Section> upStationSection = sectionList.stream()
+                .filter(section -> !downStations.contains(section.getUpStation()))
                 .findFirst();
 
-        if (existingDownSection.isPresent()) {
-            validateNewSectionDistance(sectionDistance, existingDownSection.get().getDistance());
-            addSectionFromDownSection(existingDownSection.get(), newUpStation, sectionDistance);
-        }
+        return upStationSection.map(Section::getUpStation).orElse(null);
+
+    }
+
+    public Station getDownStation() {
+        List<Station> upStaions = sectionList.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+
+        Optional<Section> downStationSection = sectionList.stream()
+                .filter(section -> !upStaions.contains(section.getDownStation()))
+                .findFirst();
+
+        return downStationSection.map(Section::getUpStation).orElse(null);
     }
 
     public Optional<Section> findSectionByUpStation(Station upStation) {
@@ -58,19 +132,12 @@ public class Sections {
                 .findFirst();
     }
 
-    private void addSectionFromUpStation(Section existingSection, Station newDownStation, long newSectionDistance) {
-        Section newDownSection = new Section(newDownStation, existingSection.getDownStation()
-                , existingSection.getDistance() - newSectionDistance);
-        sectionList.add(newDownSection);
-        existingSection.setDownStation(newDownStation);
-        existingSection.setDistance(newSectionDistance);
+    public boolean hasSameUpStation(Station upStation) {
+        return findSectionByUpStation(upStation).isPresent();
     }
 
-    private void addSectionFromDownSection(Section existingSection, Station newUpStation, long newSectionDistance) {
-        Section newDownSection = new Section(newUpStation, existingSection.getDownStation(), newSectionDistance);
-        sectionList.add(newDownSection);
-        existingSection.setDownStation(newUpStation);
-        existingSection.setDistance(existingSection.getDistance() - newSectionDistance);
+    public boolean hasSameDownStation(Station downStation) {
+        return findSectionByDownStation(downStation).isPresent();
     }
 
     private void validateNewSectionDistance(long newSectionDistance, long existingSectionDistance) {
