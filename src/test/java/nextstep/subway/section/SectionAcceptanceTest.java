@@ -237,6 +237,23 @@ public class SectionAcceptanceTest {
                 .collect(Collectors.toList())).containsExactlyInAnyOrder(청담역.getId(), 뚝섬유원지역.getId());
     }
 
+    /**
+     * When 노선에 하나의 구간만 존재한다면
+     * Then 해당 노선에서 역을 제거할 수 없다.
+     */
+    @Test
+    public void 해당역이_노선에_구간이_하나_뿐일_때_구간제거_불가() {
+        //when
+        LineResponse 칠호선 = 노선을_생성한다("7호선", "#EEEEEE", 청담역.getId(), 건대역.getId(), 10).as(LineResponse.class);
+
+        //given
+        ExtractableResponse<Response> response = 구간을_제거한다(칠호선.getId(), 건대역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).contains(Sections.SECTION_IN_LINE_MINIMUN_SIZE_MSG);
+    }
+
     public static ExtractableResponse<Response> 구간을_생성한다(Long id, Long upStationId, Long downStationId, Integer distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
         return RestAssured.given().log().all()

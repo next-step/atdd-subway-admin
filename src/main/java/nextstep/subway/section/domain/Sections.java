@@ -11,8 +11,11 @@ import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
+    private static final int SECTION_IN_LINE_MINIMUN_SIZE = 1;
     public static final String HAS_UP_AND_DOWN_STATION_MSG = "상행역과 하행역이 이미 다른 구간에 동시에 등록되어 있습니다.";
     public static final String HAS_NOT_UP_AND_DOWN_STATION_MSG = "새로운 구간에 상행역과 하행역 중 하나는 포함되어야 합니다.";
+    public static final String SECTION_IN_LINE_MINIMUN_SIZE_MSG = "노선에는 구간이 최소 1개 이상은 있어야하므로, 제거할 수 없습니다.";
+    public static final String NO_SEARCH_STATION_IN_LINE_MSG = "노선에서 해당하는 역을 조회할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -142,11 +145,11 @@ public class Sections {
 
     public void removeSection(Station station) {
         if(!includeStations().contains(station)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(NO_SEARCH_STATION_IN_LINE_MSG);
         }
 
-        if (sections.size() == 1) {
-            throw new IllegalArgumentException();
+        if (sections.size() == SECTION_IN_LINE_MINIMUN_SIZE) {
+            throw new IllegalArgumentException(SECTION_IN_LINE_MINIMUN_SIZE_MSG);
         }
 
         if (station == getRootStation()) {
