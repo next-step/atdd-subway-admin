@@ -171,20 +171,20 @@ public class Sections {
         validateRemoveStatus();
         validateRemoveStation(station);
 
-        Optional<Section> fromStation = findSectionByUpStation(station);
-        Optional<Section> toStation = findSectionByDownStation(station);
+        Optional<Section> fromDeleteStation = findSectionByUpStation(station);
+        Optional<Section> toDeleteStation = findSectionByDownStation(station);
 
-        if (fromStation.isPresent() && toStation.isPresent()) {
-            removeStationInMiddle(fromStation.get(), toStation.get());
+        if (fromDeleteStation.isPresent() && toDeleteStation.isPresent()) {
+            removeStationInMiddle(fromDeleteStation.get(), toDeleteStation.get());
             return ;
         }
 
-        if (!fromStation.isPresent() && toStation.isPresent()) {
-            sectionList.remove(toStation.get());
+        if (!fromDeleteStation.isPresent() && toDeleteStation.isPresent()) {
+            sectionList.remove(toDeleteStation.get());
             return ;
         }
 
-        fromStation.ifPresent(section -> sectionList.remove(section));
+        fromDeleteStation.ifPresent(section -> sectionList.remove(section));
     }
 
     private void removeStationInMiddle(Section fromStation, Section toStation) {
