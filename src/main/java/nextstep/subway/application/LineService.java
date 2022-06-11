@@ -68,4 +68,12 @@ public class LineService {
             .orElseThrow(() -> new InvalidLineException(String.format(INVALID_LINE, id)));
     }
 
+    @Transactional
+    public void deleteSection(long lineId, long stationId){
+        Line findLine = lineRepository.findById(lineId)
+            .orElseThrow(() -> new InvalidLineException(String.format(INVALID_LINE, lineId)));
+        findLine.deleteSection(stationService.findStationById(stationId));
+        lineRepository.save(findLine);
+    }
+
 }
