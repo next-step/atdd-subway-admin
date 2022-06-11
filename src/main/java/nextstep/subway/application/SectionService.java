@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
@@ -25,12 +26,12 @@ public class SectionService {
         Line findLine = lineService.findById(lineId);
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
-        Section section = Section.of(upStation, downStation, sectionRequest.getDistance());
+        Section section = Section.of(upStation, downStation, new Distance(sectionRequest.getDistance()));
         Sections sections = findLine.getSections();
 
         validate(sections, section);
 
-        findLine.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
+        findLine.addSection(Section.of(upStation, downStation, new Distance(sectionRequest.getDistance())));
 
         return LineResponse.of(findLine);
     }

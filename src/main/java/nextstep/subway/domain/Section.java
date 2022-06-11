@@ -44,30 +44,27 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, Distance distance) {
         validate(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = Distance.from(distance);
+        this.distance = distance;
     }
 
-    public static Section of(Station upStation, Station downStation, int distance) {
+    public static Section of(Station upStation, Station downStation, Distance distance) {
         return new Section(upStation, downStation, distance);
     }
 
     public static Section addDistance(Section upSection, Section downSection) {
-        int newDistance = upSection.distance
-            .add(downSection.distance)
-            .value();
+        Distance newDistance = upSection.distance
+            .add(downSection.distance);
         return Section.of(upSection.getUpStation(), downSection.getDownStation(), newDistance);
     }
 
     public static Section combine(Section upSection, Section downSection) {
         return Section.of(upSection.getUpStation(), downSection.getDownStation(),
             upSection.distance
-                .add(downSection.distance)
-                .value()
-        );
+                .add(downSection.distance));
     }
 
     private void validate(Station upStation, Station downStation) {
