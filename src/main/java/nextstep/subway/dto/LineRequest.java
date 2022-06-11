@@ -46,11 +46,11 @@ public class LineRequest {
         return downStationId;
     }
 
-    public long getDistance() {
+    public int getDistance() {
         return distance;
     }
 
     public Line toLine() {
-        return new Line(name, color, distance);
+        return new Line(name, color);
     }
 }

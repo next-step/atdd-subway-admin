@@ -22,7 +22,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(final Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.stations().stream()
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations().stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList())
         );

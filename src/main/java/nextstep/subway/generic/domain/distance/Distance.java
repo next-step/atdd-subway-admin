@@ -2,19 +2,19 @@ package nextstep.subway.generic.domain.distance;
 
 import java.util.Objects;
 
-public class Distance {
-    private final long value;
+public class Distance implements Comparable<Distance> {
+    private final int value;
 
-    protected Distance(final long value) {
+    protected Distance(final int value) {
         validateDistance(value);
         this.value = value;
     }
 
-    public static Distance valueOf(final long value) {
+    public static Distance valueOf(final int value) {
         return new Distance(value);
     }
 
-    public long getValue() {
+    public int getValue() {
         return value;
     }
 
@@ -22,6 +22,19 @@ public class Distance {
         if (value < 0) {
             throw new IllegalArgumentException("거리값은 음수가 될수 없습니다.");
         }
+    }
+
+    @Override
+    public int compareTo(final Distance o) {
+        return Integer.compare(value, o.value);
+    }
+
+    public Distance minus(final Distance distance) {
+        return valueOf(value - distance.value);
+    }
+
+    public boolean isGreaterThanOrEqualTo(final Distance distance) {
+        return this.value >= distance.value;
     }
 
     @Override

@@ -5,10 +5,12 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.UpdateLineRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +30,8 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
         Line line = lineRequest.toLine();
-        line.bindStations(upStation(lineRequest), downStation(lineRequest));
+        final Section section = new Section(upStation(lineRequest), downStation(lineRequest), lineRequest.getDistance());
+        line.addSection(section);
         lineRepository.save(line);
         return LineResponse.of(line);
     }
@@ -60,12 +63,27 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
+    public void addSections(final Long id, final SectionRequest sectionRequest) {
+        final Line line = findLineById(id);
+        final Section section = new Section(upStation(sectionRequest), downStation(sectionRequest), sectionRequest.getDistance());
+        line.addSection(section);
+    }
+
     private Station upStation(final LineRequest lineRequest) {
         return findStationById(lineRequest.getUpStationId());
     }
 
+    private Station upStation(final SectionRequest sectionRequest) {
+        return findStationById(sectionRequest.getUpStationId());
+    }
+
     private Station downStation(final LineRequest lineRequest) {
         return findStationById(lineRequest.getDownStationId());
+    }
+
+    private Station downStation(final SectionRequest sectionRequest) {
+        return findStationById(sectionRequest.getDownStationId());
     }
 
     private Station findStationById(final long id) {
