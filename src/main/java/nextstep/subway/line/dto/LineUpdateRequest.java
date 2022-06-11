@@ -1,15 +1,10 @@
 package nextstep.subway.line.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 public class LineUpdateRequest {
     private final String name;
     private final String color;
 
-    @JsonCreator
-    public LineUpdateRequest(@JsonProperty("name") final String name,
-                             @JsonProperty("color") final String color) {
+    public LineUpdateRequest(final String name, final String color) {
         this.name = name;
         this.color = color;
     }
