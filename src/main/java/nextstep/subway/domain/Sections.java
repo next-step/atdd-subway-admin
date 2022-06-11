@@ -102,14 +102,14 @@ public class Sections {
     private Optional<Section> findSectionByUpStation(Station upStation) {
         return this.sections
             .stream()
-            .filter(section -> section.containsUpStation(upStation))
+            .filter(section -> section.equalsUpStation(upStation))
             .findFirst();
     }
 
     private Optional<Section> findSectionByDownStation(Station downStation) {
         return this.sections
             .stream()
-            .filter(section -> section.containsDownStation(downStation))
+            .filter(section -> section.equalsDownStation(downStation))
             .findFirst();
     }
 
