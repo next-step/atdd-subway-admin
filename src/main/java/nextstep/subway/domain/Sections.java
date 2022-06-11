@@ -167,4 +167,18 @@ public class Sections {
                 .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
     }
 
+    public void removeSectionByStation(Station station) {
+        Optional<Section> fromStation = findSectionByUpStation(station);
+        Optional<Section> toStation = findSectionByDownStation(station);
+
+        if (fromStation.isPresent() && toStation.isPresent()) {
+            Station newUpStation = toStation.get().getUpStation();
+            Station newDownStation = fromStation.get().getDownStation();
+            long newDistance = fromStation.get().getDistance() + toStation.get().getDistance();
+            sectionList.remove(fromStation.get());
+            sectionList.remove(toStation.get());
+            sectionList.add(new Section(newUpStation, newDownStation, newDistance));
+        }
+
+    }
 }

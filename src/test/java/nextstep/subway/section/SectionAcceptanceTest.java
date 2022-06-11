@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
-import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -163,6 +162,33 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // Then
         assertThat(구간_추가_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선이 생성된 상태에서
+     * When 노선의 종착역과 연결되는 신규 노선을 추가한 후 기존 종착역을 제거하면
+     * Then 기존 종착역은 조회되지 않는다.
+     */
+    @DisplayName("역 사이에 상행역에서 출발하는 새로운 구간을 등록한다.")
+    @Test
+    void removeSection() {
+        // When
+        SectionRequest sectionRequest = new SectionRequest(양재역_ID, 양재시민의숲역_ID, 4);
+        구간_추가(신분당선_ID, sectionRequest);
+        구간_제거(신분당선_ID, 양재역_ID);
+
+        // Then
+        ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
+        List<String> 신분당선_역명_리턴값 = 노선_조회_결과_응답.jsonPath().getList("stations.name");
+        assertThat(신분당선_역명_리턴값).containsExactly("강남역", "양재시민의숲역");
+    }
+
+    private ExtractableResponse<Response> 구간_제거(long lineId, long stationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", stationId)
+                .when().delete("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> 구간_추가(long lineId, SectionRequest sectionRequest) {
