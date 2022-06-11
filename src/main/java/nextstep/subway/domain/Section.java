@@ -89,16 +89,16 @@ public class Section extends BaseEntity {
     public void update(Section target) {
         if (this.upStation.equals(target.upStation)) {
             this.upStation = target.downStation;
-            subtractDistance(target);
         }
         if (this.downStation.equals(target.downStation)) {
             this.downStation = target.upStation;
-            subtractDistance(target);
         }
+        this.distance = subtractDistance(target);
+
     }
 
-    private void subtractDistance(Section target) {
-        this.distance = this.distance.subtract(target.distance);
+    private Distance subtractDistance(Section target) {
+        return this.distance.subtract(target.distance);
     }
 
     private void validateLineNotNull(Line line) {
