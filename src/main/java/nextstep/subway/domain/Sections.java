@@ -169,6 +169,7 @@ public class Sections {
 
     public void removeSectionByStation(Station station) {
         validateRemoveStatus();
+        validateRemoveStation(station);
         Optional<Section> fromStation = findSectionByUpStation(station);
         Optional<Section> toStation = findSectionByDownStation(station);
 
@@ -180,7 +181,12 @@ public class Sections {
             sectionList.remove(toStation.get());
             sectionList.add(new Section(newUpStation, newDownStation, newDistance));
         }
+    }
 
+    private void validateRemoveStation(Station station) {
+        if (!hasStation(station)) {
+            throw new IllegalArgumentException("등록되지 않은 역은 삭제할 수 없습니다.");
+        }
     }
 
     private void validateRemoveStatus() {

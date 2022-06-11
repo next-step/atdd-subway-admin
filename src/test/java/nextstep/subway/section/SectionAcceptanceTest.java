@@ -198,6 +198,21 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(구간_제거_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 노선이 최초 생성된 상태에서
+     * When 등록되지 않은 역을 제거하면
+     * Then 에러가 발생한다.
+     */
+    @DisplayName("등록되지 않은 구간을 제거한다.")
+    @Test
+    void removeNotPresentSection() {
+        // When
+        ExtractableResponse<Response> 구간_제거_결과_응답 = 구간_제거(신분당선_ID, 신림역_ID);
+
+        // Then
+        assertThat(구간_제거_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 구간_제거(long lineId, long stationId) {
         return RestAssured.given().log().all()
                 .queryParam("stationId", stationId)
