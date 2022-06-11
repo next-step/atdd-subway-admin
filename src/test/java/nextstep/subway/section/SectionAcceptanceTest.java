@@ -100,7 +100,7 @@ public class SectionAcceptanceTest {
      * GIVEN 지하철 역과
      * GIVEN 1개의 노선과
      * GIVEN 1개의 구간이 존재 할 때
-     * WEHN 역 사이에 새로운 역을 등록하면
+     * WHEN 역 사이에 새로운 역을 등록하면
      * THEN 생성된 지하철 구간을 확인할 수 있다
      */
     @DisplayName("역 사이에 새로운 역 생성한다")
@@ -120,7 +120,7 @@ public class SectionAcceptanceTest {
      * GIVEN 지하철 역과
      * GIVEN 1개의 노선과
      * GIVEN 1개의 구간이 존재 할 때
-     * WEHN 새로운 구간의 길이가 기존 구간의 길이보다 크거나 같으면
+     * WHEN 새로운 구간의 길이가 기존 구간의 길이보다 크거나 같으면
      * THEN 예외를 던진다
      */
     @DisplayName("역 사이에 새로운 역 생성한다")
@@ -140,7 +140,7 @@ public class SectionAcceptanceTest {
      * GIVEN 지하철 역과
      * GIVEN 1개의 노선과
      * GIVEN 1개의 구간이 존재 할 때
-     * WEHN 새로운 역을 상행 종점으로 생성하면
+     * WHEN 새로운 역을 상행 종점으로 생성하면
      * THEN 생성된 지하철 구간을 확인할 수 있다
      */
     @DisplayName("새로운 역을 상행 종점으로 생성한다")
@@ -160,7 +160,7 @@ public class SectionAcceptanceTest {
      * GIVEN 지하철 역과
      * GIVEN 1개의 노선과
      * GIVEN 1개의 구간이 존재 할 때
-     * WEHN 새로운 역을 하행 종점으로 생성하면
+     * WHEN 새로운 역을 하행 종점으로 생성하면
      * THEN 생성된 지하철 구간을 확인할 수 있다
      */
     @DisplayName("새로운 역을 하행 종점으로 생성한다")
@@ -180,7 +180,7 @@ public class SectionAcceptanceTest {
      * GIVEN 지하철 역과
      * GIVEN 1개의 노선과
      * GIVEN 1개의 구간이 존재 할 때
-     * WEHN 구간을 삭제하면
+     * WHEN 구간을 삭제하면
      * THEN 존재하는 구간이 삭제된다
      */
     @DisplayName("구간을 삭제한다")
