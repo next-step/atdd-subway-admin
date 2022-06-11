@@ -144,27 +144,38 @@ public class LineAcceptanceTest extends BaseUnitTest {
     }
 
     public ExtractableResponse<Response> 지하철_노선_생성_신분당선() {
-        return createLine("신분당선", "bg-red-600", "광교역", "신사역", 10L);
+        return 지하철_노선_생성_신분당선("신분당선", "bg-red-600", "강남역", "광교역", 10L);
     }
 
     public ExtractableResponse<Response> 지하철_노선_생성_2호선() {
-        return createLine("2호선", "bg-green-600", "까치산", "신도림", 20L);
+        return 지하철_노선_생성_신분당선("2호선", "bg-green-600", "까치산", "신도림", 20L);
     }
 
-    public ExtractableResponse<Response> createLine(String name, String color, String upStation, String downStation, Long distance) {
+    public ExtractableResponse<Response> 지하철_노선_생성_신분당선(String name, String color, String upStation, String downStation, Long distance) {
         Map<String, String> params = createParams(name, color, upStation, downStation, distance);
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/lines")
-                        .then().log().all()
-                        .extract();
-
-        return response;
+        return createLine(params);
     }
 
-    public Map<String, String> createParams(String name, String color, String upStation, String downStation, Long distance) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_신분당선(StationResponse upStation, StationResponse downStation, Long distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", String.valueOf(upStation.getId()));
+        params.put("downStationId", String.valueOf(downStation.getId()));
+        params.put("distance", String.valueOf(distance));
+        return createLine(params);
+    }
+
+    public static ExtractableResponse<Response> createLine(Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    public static Map<String, String> createParams(String name, String color, String upStation, String downStation, Long distance) {
         Long upStationId = StationAcceptanceTest.createStation(upStation)
                 .as(StationResponse.class)
                 .getId();
