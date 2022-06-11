@@ -81,7 +81,7 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    public void deleteSection(Station station) {
+    public void deleteStation(Station station) {
         Optional<Section> optionalDownSection = findSectionByUpStation(station);
         Optional<Section> optionalUpSection = findSectionByDownStation(station);
 
