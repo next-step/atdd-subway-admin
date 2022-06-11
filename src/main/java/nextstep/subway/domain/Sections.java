@@ -3,10 +3,10 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import javassist.NotFoundException;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.StationNotFoundException;
 
 @Embeddable
 public class Sections {
@@ -32,7 +32,7 @@ public class Sections {
         sections.add(requestSection);
     }
 
-    public void delete(Station station) throws NotFoundException {
+    public void delete(Station station) {
         validateDelete(station);
         if (firstStation().equals(station)) {
             deleteFirstStation(station);
@@ -74,10 +74,10 @@ public class Sections {
         sections.remove(downSection);
     }
 
-    private void validateDelete(Station station) throws NotFoundException {
+    private void validateDelete(Station station) {
         if (!sections.stream().filter(section -> section.existStation(station))
             .findFirst().isPresent()) {
-            throw new NotFoundException("연결할 수 있는 역이 없습니다.");
+            throw new StationNotFoundException("지하철역이 노선 내 존재하지 않습니다");
         }
         if (sections.size() == ONLY_ONE_SIZE) {
             throw new IllegalArgumentException("구간이 하나 뿐일 경우 삭제할 수 없습니다.");

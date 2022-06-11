@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import java.util.List;
-import javassist.NotFoundException;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -52,7 +51,7 @@ public class Line extends BaseEntity {
         sections.update(section);
     }
 
-    public void removeSectionByStation(Station station) throws NotFoundException {
+    public void removeSectionByStation(Station station) {
         sections.delete(station);
     }
 
