@@ -57,6 +57,16 @@ public class LineStation extends BaseEntity {
         this.distanceToNext = distanceToNext;
     }
 
+    public LineStation(final Line line,
+                       final Station station,
+                       final Station next,
+                       final Long distanceToNext) {
+        this.line = line;
+        this.station = station;
+        this.next = next;
+        this.distanceToNext = distanceToNext;
+    }
+
     public void updatePrevious(final Station previous, final Long distance) {
         this.previous = previous;
         distanceToPrevious = distance;
