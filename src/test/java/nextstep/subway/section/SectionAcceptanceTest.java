@@ -188,14 +188,13 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
      * When 구간을 제거하면
      * Then 에러가 발생한다.
      */
-    @DisplayName("역 사이에 상행역에서 출발하는 새로운 구간을 등록한다.")
+    @DisplayName("구간이 하나만 등록된 노선의 구간을 제거한다.")
     @Test
     void removeLastSection() {
         // When
-        SectionRequest sectionRequest = new SectionRequest(양재역_ID, 양재시민의숲역_ID, 4);
+        ExtractableResponse<Response> 구간_제거_결과_응답 = 구간_제거(신분당선_ID, 양재역_ID);
 
         // Then
-        ExtractableResponse<Response> 구간_제거_결과_응답 = 구간_제거(신분당선_ID, 양재시민의숲역_ID);
         assertThat(구간_제거_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
