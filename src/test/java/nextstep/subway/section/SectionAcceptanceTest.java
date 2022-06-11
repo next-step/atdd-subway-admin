@@ -231,7 +231,7 @@ public class SectionAcceptanceTest {
     //* Given : 지하철 노선 생성하고, 구간을 추가한다.
     //* When : 노선의 마지막 역을 삭제한다.
     //* Then : 삭제되지 않고 에러 발생
-    @DisplayName("노선에 등록되지 않은 역을 삭제한다.")
+    @DisplayName("구간이 하나인 노선에서 마지막 역을 삭제한다.")
     @Test
     void deleteOnlySection() {
         //Given : 지하철 노선 생성하고, 구간을 추가한다.
