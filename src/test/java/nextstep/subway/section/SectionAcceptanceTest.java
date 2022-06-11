@@ -254,6 +254,23 @@ public class SectionAcceptanceTest {
         assertThat(response.asString()).contains(Sections.SECTION_IN_LINE_MINIMUN_SIZE_MSG);
     }
 
+    /**
+     * When 노선에 제거하려는 대상의 역이 존재하지 않다면
+     * Then 해당 노선에서 역을 제거할 수 없다.
+     */
+    @Test
+    public void 해당역이_노선에_없을_때_구간제거() {
+        //when
+        LineResponse 칠호선 = 노선을_생성한다("7호선", "#EEEEEE", 청담역.getId(), 건대역.getId(), 10).as(LineResponse.class);
+
+        //given
+        ExtractableResponse<Response> response = 구간을_제거한다(칠호선.getId(), 뚝섬유원지역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).contains(Sections.NO_SEARCH_STATION_IN_LINE_MSG);
+    }
+
     public static ExtractableResponse<Response> 구간을_생성한다(Long id, Long upStationId, Long downStationId, Integer distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
         return RestAssured.given().log().all()
