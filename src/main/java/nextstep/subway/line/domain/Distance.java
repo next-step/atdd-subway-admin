@@ -12,7 +12,7 @@ public class Distance {
     public static final int MIN = 1;
 
     @Column(name = "distance")
-    public final long value;
+    public long value;
 
     protected Distance() {
         value = 0;
@@ -26,6 +26,17 @@ public class Distance {
     private void validate(final long value) {
         if (value < MIN) {
             throw new LineException(LineExceptionType.INVALID_DISTANCE);
+        }
+    }
+
+    public void updateDistance(final long value) {
+        updateValidate(value);
+        this.value = this.value - value;
+    }
+
+    private void updateValidate(final long value) {
+        if (this.value - value < MIN) {
+            throw new LineException(LineExceptionType.INVALID_UPDATE_DISTANCE);
         }
     }
 
