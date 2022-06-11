@@ -2,6 +2,8 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.exception.StationException;
+import nextstep.subway.station.exception.StationExceptionType;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -19,34 +21,48 @@ public class Section extends BaseEntity {
     private Station downStation;
     @Embedded
     private Distance distance;
-    @Column(name = "final_up_station")
-    private boolean finalUpStation;
-    @Column(name = "final_down_station")
-    private boolean finalDownStation;
 
     protected Section() {
     }
 
     public Section(final Station upStation, final Station downStation, final long distance) {
+        validate(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
+    }
+
+    public static void validate(final Station upStation, final Station downStation) {
+        if (upStation == null || downStation == null) {
+            throw new StationException(StationExceptionType.NOT_FOUND_STATION);
+        }
     }
 
     public static Section of(final Station upStation, final Station downStation, final long distance) {
         return new Section(upStation, downStation, distance);
     }
 
+    public boolean isEqualsUpStation(final Section section) {
+        return this.upStation.equals(section.upStation);
+    }
+
+    public void updateUpStation(final Section section) {
+        this.upStation = section.downStation;
+        this.distance.updateDistance(section.getDistance());
+    }
+
+    public boolean isEqualsDownStation(final Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
+    public void updateDownStation(final Section section) {
+        this.downStation = section.upStation;
+        this.distance = section.distance;
+    }
+
+
     public void updateLine(final Line line) {
         this.line = line;
-    }
-
-    public void updateFinalUpStation(final boolean isFinalUpStation) {
-        this.finalUpStation = isFinalUpStation;
-    }
-
-    public void updateFinalDownStation(final boolean isFinalDownStation) {
-        this.finalDownStation = isFinalDownStation;
     }
 
     public Long getId() {
@@ -65,14 +81,6 @@ public class Section extends BaseEntity {
         return distance.getValue();
     }
 
-    public boolean isFinalUpStation() {
-        return finalUpStation;
-    }
-
-    public boolean isFinalDownStation() {
-        return finalDownStation;
-    }
-
     public Line getLine() {
         return line;
     }
@@ -81,12 +89,9 @@ public class Section extends BaseEntity {
     public String toString() {
         return "Section{" +
                 "id=" + id +
-                ", line=" + line.getId() +
                 ", upStation=" + upStation +
                 ", downStation=" + downStation +
                 ", distance=" + distance +
-                ", finalUpStation=" + finalUpStation +
-                ", finalDownStation=" + finalDownStation +
                 '}';
     }
 
@@ -95,12 +100,12 @@ public class Section extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         final Section section = (Section) o;
-        return finalUpStation == section.finalUpStation && finalDownStation == section.finalDownStation && Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance);
+        return Objects.equals(id, section.id) && Objects.equals(line, section.line) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, line, upStation, downStation, distance, finalUpStation, finalDownStation);
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }
 

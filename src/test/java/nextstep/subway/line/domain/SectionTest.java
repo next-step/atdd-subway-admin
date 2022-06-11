@@ -1,10 +1,11 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.StationTest;
+import nextstep.subway.station.exception.StationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class SectionTest {
     private Section section;
@@ -15,18 +16,11 @@ class SectionTest {
     }
 
     @Test
-    void 최종_상행라인_수정() {
+    void 지하철역_미존재() {
+        // given
         // when
-        section.updateFinalUpStation(true);
         // then
-        assertThat(section.isFinalUpStation()).isTrue();
-    }
-
-    @Test
-    void 최종_하행라인_수정() {
-        // when
-        section.updateFinalDownStation(true);
-        // then
-        assertThat(section.isFinalDownStation()).isTrue();
+        assertThatThrownBy(() -> new Section(null, StationTest.사당역, 10L))
+                .isInstanceOf(StationException.class);
     }
 }
