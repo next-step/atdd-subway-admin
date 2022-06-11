@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.BaseAcceptanceTest;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -38,8 +41,6 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
         List<String> lineNames = getLineList().jsonPath().getList("name", String.class);
         assertThat(lineNames).containsExactly("신분당선");
     }
@@ -52,11 +53,11 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선을 생성한다.")
     @Test
     void createLineWithDuplicate() {
-        // when
+        // given
         createStationWithStationName("강남역");
         createStationWithStationName("양재역");
 
-        // given
+        // when
         createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10);
         ExtractableResponse<Response> response = createLineWithLineName("신분당선", "bg-red-600", 1L, 2L, 10);
 
@@ -139,7 +140,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> createLineWithLineName(String name, String color, Long upStationId, Long downStationId, int distance){
+    private ExtractableResponse<Response> createLineWithLineName(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = createLineMap(name, color, upStationId, downStationId, distance);
 
         return RestAssured
@@ -167,7 +168,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> updateLineWithLindId(Long id, LineRequest lineRequest){
+    private ExtractableResponse<Response> updateLineWithLindId(Long id, LineRequest lineRequest) {
         Map<String, String> params = new HashMap<>();
         params.put("name", lineRequest.getName());
         params.put("color", lineRequest.getColor());
@@ -181,7 +182,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .extract();
     }
 
-    private Map<String, String> createLineMap(String name, String color, Long upStationId, Long downStationId, int distance){
+    private Map<String, String> createLineMap(String name, String color, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -192,10 +193,11 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             params.put("downStationId", String.valueOf(downStationId));
         }
         params.put("distance", String.valueOf(distance));
+
         return params;
     }
 
-    private ExtractableResponse<Response> findLineById(Long id) {
+    public ExtractableResponse<Response> findLineById(Long id) {
         return RestAssured.given().log().all()
             .when().get("/lines/{id}", id)
             .then().log().all()
