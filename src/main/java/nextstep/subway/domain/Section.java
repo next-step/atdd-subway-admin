@@ -101,4 +101,8 @@ public class Section {
     public boolean hasDownStation(Station station) {
         return downStation.equals(station);
     }
+
+    public boolean existStation(Station station) {
+        return hasUpStation(station) || hasDownStation(station);
+    }
 }

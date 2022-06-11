@@ -228,6 +228,24 @@ public class SectionAcceptanceTest {
 
     }
 
+    //* Given : 지하철 노선 생성하고, 구간을 추가한다.
+    //* When : 노선의 마지막 역을 삭제한다.
+    //* Then : 삭제되지 않고 에러 발생
+    @DisplayName("노선에 등록되지 않은 역을 삭제한다.")
+    @Test
+    void deleteOnlySection() {
+        //Given : 지하철 노선 생성하고, 구간을 추가한다.
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        지하철구간_추가_요청(1L, 3L, 5L, 신분당선.jsonPath().getLong("id"));
+        // when
+        // 노선의 마지막 역을 삭제한다.
+        ExtractableResponse<Response> 지하철구간_삭제_요청 = 지하철구간_삭제_요청(1L, 신분당선.jsonPath().getLong("id"));
+        // then
+        // 삭제되지 않고 에러 발생
+        응답코드_확인(지하철구간_삭제_요청, HttpStatus.BAD_REQUEST);
+
+    }
+
 
     private void 지하철역_순서_확인(ExtractableResponse<Response> getResponse, List<String> stationNames) {
         assertThat(getResponse.jsonPath().getList("stations.name")).hasSameElementsAs(stationNames);

@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javassist.NotFoundException;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -30,7 +31,16 @@ public class Sections {
         sections.add(requestSection);
     }
 
-    public void delete(Station station) {
+    public void delete(Station station) throws NotFoundException {
+        if (!sections.stream().filter(section -> section.existStation(station))
+            .findFirst().isPresent()) {
+            throw new NotFoundException("연결할 수 있는 역이 없습니다.");
+        }
+
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나 뿐일 경우 삭제할 수 없습니다.");
+        }
+
         if (firstStation().equals(station)) {
             Section firstSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(station)).findFirst().get();
