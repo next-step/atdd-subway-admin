@@ -105,4 +105,19 @@ public class SectionUnitTest {
         assertThat(구간.isUpAndDownStationNotContains(new HashSet<>(Arrays.asList(강남구청, 청담)))).isTrue();
         assertThat(구간.isUpAndDownStationNotContains(new HashSet<>(Arrays.asList(건대, 청담)))).isFalse();
     }
+
+    @Test
+    @DisplayName("상행과 하행이 모두 미포함")
+    void removeUpdateSection() {
+        //given
+        final int 기존구간길이 = 구간.getDistance();
+        Section new구간 = new Section(건대, 청담, 10);
+
+        //when
+        구간.removeUpdateSection(new구간);
+
+        //then
+        assertThat(구간.getDistance()).isEqualTo(기존구간길이 + new구간.getDistance());
+        assertThat(구간.getDownStation()).isEqualTo(청담);
+    }
 }

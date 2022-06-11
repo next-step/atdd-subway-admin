@@ -33,4 +33,10 @@ public class DistanceUnitTest {
             distance_10.minus(20);
         });
     }
+
+    @Test
+    void 거리_10에서_거리_20을_더한다() {
+        distance_10.plus(20);
+        assertThat(distance_10.getDistance()).isEqualTo(30);
+    }
 }
