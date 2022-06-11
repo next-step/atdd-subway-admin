@@ -62,4 +62,10 @@ public class LineService {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new LineException(LineExceptionType.NOT_FOUND_LINE));
     }
+
+    public void existsByName(final String name) {
+        if (lineRepository.existsByName(name)) {
+            throw new LineException(LineExceptionType.EXIST_LINE_NAME);
+        }
+    }
 }

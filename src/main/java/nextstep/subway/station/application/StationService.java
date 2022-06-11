@@ -23,6 +23,8 @@ public class StationService {
 
     @Transactional
     public StationResponse saveStation(final StationRequest stationRequest) {
+        existsByName(stationRequest.getName());
+
         final Station persistStation = stationRepository.save(stationRequest.toStation());
         return StationResponse.of(persistStation);
     }
@@ -43,5 +45,11 @@ public class StationService {
     public Station findById(final long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new StationException(StationExceptionType.NOT_FOUND_STATION));
+    }
+
+    public void existsByName(final String name) {
+        if (stationRepository.existsByName(name)) {
+            throw new StationException(StationExceptionType.EXIST_STATION_NAME);
+        }
     }
 }

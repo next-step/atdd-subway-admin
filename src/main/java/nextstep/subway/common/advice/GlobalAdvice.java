@@ -11,17 +11,17 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalAdvice {
     @ExceptionHandler(LineException.class)
     public ResponseEntity<ErrorResponse> lineException(LineException ex) {
-        return ResponseEntity.ok(new ErrorResponse(ex.getCode(), ex.getMessage()));
+        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getCode(), ex.getMessage()));
     }
 
     @ExceptionHandler(StationException.class)
     public ResponseEntity<ErrorResponse> stationException(StationException ex) {
-        return ResponseEntity.ok(new ErrorResponse(ex.getCode(), ex.getMessage()));
+        return ResponseEntity.badRequest().body(new ErrorResponse(ex.getCode(), ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> exception(Exception e) {
-        return ResponseEntity.ok(new ErrorResponse("Error", e.getMessage()));
+        return ResponseEntity.badRequest().body(new ErrorResponse("Error", e.getMessage()));
     }
 
 }
