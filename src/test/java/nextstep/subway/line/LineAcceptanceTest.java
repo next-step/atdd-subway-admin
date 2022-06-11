@@ -26,7 +26,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 
 @DisplayName("지하철 노선 관련 기능")
-class LineAcceptanceTest extends BaseSubwayTest {
+public class LineAcceptanceTest extends BaseSubwayTest {
 
     private static final String LINES_PATH = "/lines";
 
@@ -51,7 +51,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
     @DisplayName("지하철노선_생성")
     void createLine() {
         // when
-        지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1, 2, 10));
+        지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10));
 
         // then
         final ExtractableResponse<Response> actual = 지하철노선_목록조회();
@@ -70,8 +70,8 @@ class LineAcceptanceTest extends BaseSubwayTest {
     @DisplayName("지하철노선 목록 조회")
     void getLines() {
         // given
-        지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1, 2, 10));
-        지하철노선_생성(LineRequest.of("분당선", "bg-green-600", 1, 3, 10));
+        지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10));
+        지하철노선_생성(LineRequest.of("분당선", "bg-green-600", 1L, 3L, 10));
 
         // when
         final ExtractableResponse<Response> actual = 지하철노선_목록조회();
@@ -95,7 +95,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
     @DisplayName("지하철노선 조회")
     void getLine() {
         // given
-        final ExtractableResponse<Response> line = 지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1, 2, 10));
+        final ExtractableResponse<Response> line = 지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10));
 
         // when
         final ExtractableResponse<Response> actual = 지하철노선_조회(아이디찾기(line));
@@ -116,7 +116,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
     @DisplayName("지하철노선 수정")
     void updateLine() {
         // given
-        final ExtractableResponse<Response> line = 지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1, 2, 10));
+        final ExtractableResponse<Response> line = 지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10));
         final long id = 아이디찾기(line);
 
         // when
@@ -142,7 +142,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
     @DisplayName("지하철노선 삭제")
     void deleteLine() {
         // given
-        final ExtractableResponse<Response> line = 지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1, 2, 10));
+        final ExtractableResponse<Response> line = 지하철노선_생성(LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10));
 
         // when
         final ExtractableResponse<Response> deleteResponse = 지하철노선_삭제(아이디찾기(line));
@@ -154,7 +154,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
         );
     }
 
-    private ExtractableResponse<Response> 지하철노선_생성(final LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철노선_생성(final LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
@@ -173,7 +173,7 @@ class LineAcceptanceTest extends BaseSubwayTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철노선_조회(final long id) {
+    public static ExtractableResponse<Response> 지하철노선_조회(final long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
