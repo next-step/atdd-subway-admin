@@ -112,6 +112,22 @@ public class Sections {
                 .orElseThrow(NoSuchElementException::new);
     }
 
+    private Section getRootSection() {
+        final Station rootStation = getRootStation();
+        return sections.stream()
+                        .filter(section -> section.getUpStation() == rootStation)
+                        .findFirst()
+                        .orElseThrow(NoSuchElementException::new);
+    }
+
+    private Section getLastSection() {
+        final Station lastStation = getLastStation();
+        return sections.stream()
+                .filter(section -> section.getDownStation() == lastStation)
+                .findFirst()
+                .orElseThrow(NoSuchElementException::new);
+    }
+
     private Set<Station> getUpStations() {
         return sections.stream()
                 .flatMap(section -> Stream.of(section.getUpStation()))
@@ -151,11 +167,11 @@ public class Sections {
     }
 
     private void removeRootSection() {
-        sections.remove(getStationsSorted().get(0));
+        sections.remove(getRootSection());
     }
 
     private void removeLastSection() {
-        sections.remove(getStationsSorted().get(sections.size()));
+        sections.remove(getLastSection());
     }
 
     private Section findSectionByUpStation(Station station) {

@@ -5,7 +5,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.domain.Sections;
@@ -155,7 +154,7 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * When 노선에 포함된 특정 역을 제거하면
+     * When 노선에 포함된 특정 역을 제거하면 (해당역이 노선의 중간일 때)
      * Then 해당 역을 상행으로 포함한 구역이 제거되고 기존 구간이 변경된다. (HappyPath)
      */
     @Test
@@ -180,6 +179,62 @@ public class SectionAcceptanceTest {
                                 .stream()
                                 .map(StationResponse::getId)
                                 .collect(Collectors.toList())).containsExactlyInAnyOrder(청담역.getId(), 건대역.getId());
+    }
+
+    /**
+     * When 노선에 포함된 특정 역을 제거하면 (해당역이 노선의 가장 상행역일 때)
+     * Then 해당 역을 상행으로 포함한 구역이 제거되고 기존 구간이 변경된다. (HappyPath)
+     */
+    @Test
+    public void 해당역이_노선의_가장_상행일_때_구간제거() {
+        //when
+        LineResponse 칠호선 = 노선을_생성한다("7호선", "#EEEEEE", 청담역.getId(), 건대역.getId(), 10).as(LineResponse.class);
+        구간을_생성한다(칠호선.getId(), 뚝섬유원지역.getId(), 건대역.getId(), 5);
+
+        //given
+        ExtractableResponse<Response> response = 구간을_제거한다(칠호선.getId(), 청담역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        //when
+        ExtractableResponse<Response> response_line = 특정_노선목록을_조회한다(칠호선.getId());
+        LineResponse lineResponse = response_line.as(LineResponse.class);
+
+        //then
+        assertThat(lineResponse.getStations()).doesNotContain(뚝섬유원지역);
+        assertThat(lineResponse.getStations()
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList())).containsExactlyInAnyOrder(뚝섬유원지역.getId(), 건대역.getId());
+    }
+
+    /**
+     * When 노선에 포함된 특정 역을 제거하면 (해당역이 노선의 가장 하행역일 때)
+     * Then 해당 역을 상행으로 포함한 구역이 제거되고 기존 구간이 변경된다. (HappyPath)
+     */
+    @Test
+    public void 해당역이_노선의_가장_하행일_때_구간제거() {
+        //when
+        LineResponse 칠호선 = 노선을_생성한다("7호선", "#EEEEEE", 청담역.getId(), 건대역.getId(), 10).as(LineResponse.class);
+        구간을_생성한다(칠호선.getId(), 뚝섬유원지역.getId(), 건대역.getId(), 5);
+
+        //given
+        ExtractableResponse<Response> response = 구간을_제거한다(칠호선.getId(), 건대역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        //when
+        ExtractableResponse<Response> response_line = 특정_노선목록을_조회한다(칠호선.getId());
+        LineResponse lineResponse = response_line.as(LineResponse.class);
+
+        //then
+        assertThat(lineResponse.getStations()).doesNotContain(건대역);
+        assertThat(lineResponse.getStations()
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList())).containsExactlyInAnyOrder(청담역.getId(), 뚝섬유원지역.getId());
     }
 
     public static ExtractableResponse<Response> 구간을_생성한다(Long id, Long upStationId, Long downStationId, Integer distance) {
