@@ -61,14 +61,29 @@ class LineStationTest {
     @Test
     void 노선_지하철역_다음역_다음역과의_거리로_LineStation_객체가_생성되어야_한다() {
         // when
-        final LineStation lineStation = new LineStation(line, station1, station2, from1To2);
+        final LineStation lineStation = newGivenLineStation();
 
         // then
         assertThat(lineStation).isNotNull();
         assertThat(lineStation).isInstanceOf(LineStation.class);
     }
 
+    @Test
+    void 다음역이_있는지를_확인할_수_있어야_한다() {
+        // given
+        final LineStation lineStation1 = newGivenLineStation();
+        final LineStation lineStation2 = new LineStation(line, station2, null, 0L);
+
+        // when
+        assertThat(lineStation1.hasNext()).isTrue();
+        assertThat(lineStation2.hasNext()).isFalse();
+    }
+
     private LineStation givenLineStation() {
         return new LineStation(line, station2, station1, from1To2, station3, from2To3);
+    }
+
+    private LineStation newGivenLineStation() {
+        return new LineStation(line, station1, station2, from1To2);
     }
 }
