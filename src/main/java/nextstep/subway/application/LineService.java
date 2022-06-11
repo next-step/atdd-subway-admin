@@ -1,13 +1,7 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
-import org.springframework.http.ResponseEntity;
+import nextstep.subway.domain.*;
+import nextstep.subway.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,9 +13,9 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
+    private final LineRepository lineRepository;
 
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -30,10 +24,10 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line persistLine = lineRepository.save(lineRequest.toLine(
-                findStationById(lineRequest.getUpStationId()),
-                findStationById(lineRequest.getDownStationId())
-        ));
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
+
+        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
 
@@ -52,7 +46,7 @@ public class LineService {
     }
 
     @Transactional
-    public ResponseEntity updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Optional<Line> line = lineRepository.findById(id);
         if (!line.isPresent()) {
             throw new NoSuchElementException("수정하고자 하는 지하철역을 찾을 수 없습니다.");
@@ -60,7 +54,6 @@ public class LineService {
 
         Line persistLine = line.get();
         persistLine.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
-        return ResponseEntity.ok().build();
     }
 
     @Transactional
@@ -72,4 +65,22 @@ public class LineService {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("지하철역이 존재하지 않습니다."));
     }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("라인이 존재하지 않습니다."));
+    }
+
+    @Transactional
+    public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLineById(lineId);
+
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Section newSection = sectionRequest.toSection(upStation, downStation, sectionRequest.getDistance());
+
+        line.addSection(newSection);
+        return SectionResponse.of(newSection);
+    }
+
 }

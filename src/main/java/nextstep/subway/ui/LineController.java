@@ -1,9 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,19 +36,26 @@ public class LineController {
     }
 
     @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateLine(@PathVariable Long id
+    public ResponseEntity<Void> updateLine(@PathVariable Long id
             , @RequestBody LineUpdateRequest lineUpdateRequest) {
-        return lineService.updateLine(id, lineUpdateRequest);
+        lineService.updateLine(id, lineUpdateRequest);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(value = {NoSuchElementException.class, IllegalArgumentException.class})
-    public ResponseEntity handle() {
+    @PostMapping("/lines/{lineId}/sections")
+    public ResponseEntity<SectionResponse> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        SectionResponse sectionResponse = lineService.addSection(lineId, sectionRequest);
+        return ResponseEntity.created(URI.create("lines" + lineId + "/sections")).body(sectionResponse);
+    }
+
+    @ExceptionHandler(value = {NoSuchElementException.class, IllegalArgumentException.class, IllegalStateException.class})
+    public ResponseEntity<Void> handle() {
         return ResponseEntity.badRequest().build();
     }
 

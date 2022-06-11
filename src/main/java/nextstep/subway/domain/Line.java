@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -16,35 +18,42 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_up_station"))
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(foreignKey = @ForeignKey(name = "fk_line_to_down_station"))
-    private Station downStation;
-
-    private Long distance = 0L;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
 
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, long distance) {
-        validateDistance(distance);
-        validateStation(upStation, downStation);
+    public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        sections.addFirstSection(section);
     }
+
 
     public void update(String name, String color) {
         validateName(name);
         this.name = name;
         this.color = color;
     }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public Station getUpStation() {
+        return sections.getUpStation();
+    }
+
+    public Station getDownStation() {
+        return sections.getDownStation();
+    }
+
+    public long getDistance() {
+        return sections.getDistance();
+    }
+
 
     public Long getId() {
         return id;
@@ -58,18 +67,6 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Long getDistance() {
-        return distance;
-    }
-
     public void setName(String name) {
         this.name = name;
     }
@@ -78,16 +75,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    private void validateDistance(long distance) {
-        if (distance <= 0) {
-            throw new IllegalArgumentException("거리는 0보다 큰 숫자만 입력이 가능합니다.");
-        }
-    }
-
-    private void validateStation(Station upStation, Station downStation) {
-        if (upStation.getId().longValue() == downStation.getId().longValue()) {
-            throw new IllegalArgumentException("상행역과 하행역은 동일한 역으로 지정될 수 없습니다.");
-        }
+    public List<Section> getSections() {
+        return new ArrayList<>(sections.getSectionList());
     }
 
     private void validateName(String name) {
