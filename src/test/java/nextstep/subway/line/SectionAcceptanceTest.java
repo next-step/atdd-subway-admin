@@ -47,6 +47,102 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
+     * Given 지하철 노선에 지하철역 등록 요청
+     * When 지하철_노선에_지하철역_삭제_요청
+     * Then  지하철_노선에_지하철역_삭제됨
+     */
+    @DisplayName("노선에 구간을 삭제한다.")
+    @Test
+    void deleteSection() {
+        //given
+        addSection();
+
+        //when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), newStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> stationNames = getOne(line.getId()).jsonPath().getList("stations.name");
+        assertThat(stationNames).containsExactlyInAnyOrder("강남", "광교중앙");
+    }
+
+    /**
+     * Given 지하철 노선에 지하철역 등록 요청
+     * When 지하철_노선에_지하철역_삭제_요청
+     * Then  지하철_노선에_지하철역_삭제됨
+     */
+    @DisplayName("노선에 상행 종점 구간을 삭제한다.")
+    @Test
+    void deleteSection_ascend() {
+        //given
+        addSection();
+
+        //when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), upStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> stationNames = getOne(line.getId()).jsonPath().getList("stations.name");
+        assertThat(stationNames).containsExactlyInAnyOrder("양재", "광교중앙");
+    }
+
+    /**
+     * Given 지하철 노선에 지하철역 등록 요청
+     * When 지하철_노선에_지하철역_삭제_요청
+     * Then  지하철_노선에_지하철역_삭제됨
+     */
+    @DisplayName("노선에 하행 종점 구간을 삭제한다.")
+    @Test
+    void deleteSection_descend() {
+        //given
+        addSection();
+
+        //when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), downStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        List<String> stationNames = getOne(line.getId()).jsonPath().getList("stations.name");
+        assertThat(stationNames).containsExactlyInAnyOrder("강남", "양재");
+    }
+
+    /**
+     * When 지하철_노선에_지하철역_삭제_요청
+     * Then  지하철_노선에_지하철역_삭제_실패함
+     */
+    @DisplayName("노선의 마지막 구간을 삭제하면 실패한다")
+    @Test
+    void deleteSection_last() {
+        // when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), upStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 지하철_노선에_지하철역_삭제_요청
+     * Then  지하철_노선에_지하철역_삭제_실패함
+     */
+    @DisplayName("노선 구간에 포함되어 있지 않은 역을 삭제하면 실패한다.")
+    @Test
+    void deleteSection_not_included() {
+        // when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), newStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> deleteSection(long id, long stationId) {
+        return RestAssured
+                .given().log().all()
+                .when()
+                .delete("/lines/{lineId}/sections?stationId={stationId}", id, stationId)
+                .then().log().all().extract();
+    }
+
+    /**
      * When 지하철_노선에_지하철역_등록_요청
      * Then  지하철_노선에_지하철역_등록됨
      */
@@ -55,7 +151,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection() {
         // when
         ExtractableResponse<Response> response = addSection(line.getId(),
-                new SectionRequest(upStation.getId(), downStation.getId(), newStation.getId(), 1));
+                new SectionRequest(downStation.getId(), newStation.getId(), 1));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -74,7 +170,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_exceed() {
         // when
         ExtractableResponse<Response> response = addSection(line.getId(),
-                new SectionRequest(upStation.getId(), downStation.getId(), newStation.getId(), 2));
+                new SectionRequest(newStation.getId(), downStation.getId(), 2));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -89,7 +185,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_already_added() {
         // when
         ExtractableResponse<Response> response = addSection(line.getId(),
-                new SectionRequest(null, downStation.getId(), upStation.getId(), 1));
+                new SectionRequest(upStation.getId(), downStation.getId(), 1));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -104,7 +200,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_empty() {
         // when
         ExtractableResponse<Response> response = addSection(line.getId(),
-                new SectionRequest(null, null, newStation.getId(), 1));
+                new SectionRequest(newUpStation.getId(), newDownStation.getId(), 1));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -119,7 +215,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_same_station() {
         // when
         ExtractableResponse<Response> response = addSection(line.getId(),
-                new SectionRequest(downStation.getId(), downStation.getId(), newStation.getId(), 1));
+                new SectionRequest(downStation.getId(), downStation.getId(), 1));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -134,7 +230,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addAscendEndpointSection() {
         // when
         ExtractableResponse<Response> response =
-                addSection(line.getId(), new SectionRequest(null, upStation.getId(), newUpStation.getId(), 5));
+                addSection(line.getId(), new SectionRequest(newUpStation.getId(), upStation.getId(), 5));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -153,7 +249,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addDescendEndpointSection() {
         // when
         ExtractableResponse<Response> response =
-                addSection(line.getId(), new SectionRequest(downStation.getId(), null, newDownStation.getId(), 5));
+                addSection(line.getId(), new SectionRequest(downStation.getId(),newDownStation.getId(), 5));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -164,12 +260,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private ExtractableResponse<Response> addSection(long lineId, SectionRequest sectionRequest) {
-        return RestAssured.given().log().all().body(sectionRequest).contentType(MediaType.APPLICATION_JSON_VALUE).when()
-                .post("/lines/{lineId}/sections", lineId).then().log().all().extract();
+        return RestAssured
+                .given().log().all()
+                .body(sectionRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .post("/lines/{lineId}/sections", lineId)
+                .then().log().all().extract();
     }
 
     private ExtractableResponse<Response> getOne(Long lineId) {
-        return RestAssured.given().log().all().when().get("/lines/{lineId}", lineId).then().log().all().extract();
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines/{lineId}", lineId)
+                .then().log().all().extract();
     }
 
 }

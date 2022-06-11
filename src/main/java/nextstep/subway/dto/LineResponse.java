@@ -23,7 +23,7 @@ public class LineResponse {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                line.getAllSectionsSorted().stream().map(StationResponse::from).collect(Collectors.toList())
+                line.getAllDistinctStationsOrderByAscending().stream().map(StationResponse::from).collect(Collectors.toList())
         );
     }
 

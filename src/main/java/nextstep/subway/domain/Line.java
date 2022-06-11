@@ -23,7 +23,7 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color, Integer distance, Station upStation, Station downStation) {
+    public Line(String name, String color, int distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
         this.sections = new Sections(this, distance, upStation, downStation);
@@ -41,8 +41,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getAllSectionsSorted() {
-        return this.sections.getAllSorted();
+    public List<Station> getAllDistinctStationsOrderByAscending() {
+        return this.sections.getAllDistinctStationsOrderByAscending();
     }
 
     public void update(String name, String color) {
@@ -50,8 +50,12 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addSection(Station station, Integer distance, Station previousStation, Station nextStation) {
-        this.sections.addSection(this, station, distance, previousStation, nextStation);
+    public void addSection(int distance, Station upStation, Station downStation) {
+        this.sections.add(this, distance, upStation, downStation);
+    }
+
+    public void deleteSection(Station station) {
+        this.sections.delete(station);
     }
 
     @Override

@@ -1,84 +1,104 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
 @Table(name = "line_station")
 public class Section {
+    @Transient
+    private final static int DISTANCE_LOWER_BOUND = 1;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Line line;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
-    private Station station;
-    private Integer distance;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-    @JoinColumn
-    private Section previous;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
-    @JoinColumn
-    private Section next;
+    private Station upStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private Station downStation;
+    private int distance;
 
-    public Section(Line line, Station station, Integer distance, Section previous, Section next) {
+    public Section(Line line, int distance, Station upStation, Station downStation) {
+        checkDistance(distance);
         this.line = line;
-        this.station = station;
         this.distance = distance;
-        this.previous = previous;
-        this.next = next;
+        this.upStation = upStation;
+        this.downStation = downStation;
     }
 
     protected Section() {
     }
 
-    public Long getId() {
-        return id;
+    public int getDistance() {
+        return this.distance;
     }
 
-    public void updateNext(Section section) {
-        this.next = section;
+    public Station getUpStation() {
+        return this.upStation;
     }
 
-    public void updatePrevious(Section section) {
-        this.previous = section;
+    public Station getDownStation() {
+        return this.downStation;
     }
 
-    public void updateDistance(Integer distance) {
+    public void updateDownStation(Station station) {
+        this.downStation = station;
+    }
+
+    public void updateUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void updateDistance(int distance) {
+        checkDistance(distance);
         this.distance = distance;
     }
 
-    public Long getStationId() {
-        return this.station.getId();
+    public boolean isUpStationEquals(Station station) {
+        return Objects.equals(this.upStation, station);
     }
 
-    public String getName() {
-        return this.station.getName();
+    public boolean isDownStationEquals(Station station) {
+        return Objects.equals(this.downStation, station);
     }
 
-    public LocalDateTime getCreatedDate() {
-        return this.station.getCreatedDate();
+    private void checkDistance(int distance) {
+        if (distance < DISTANCE_LOWER_BOUND) {
+            throw new IllegalArgumentException("거리값은 1 이상 되어야 합니다.");
+        }
     }
 
-    public LocalDateTime getModifiedDate() {
-        return this.station.getModifiedDate();
+    public void connect(Section section) {
+        if (Objects.equals(this.downStation, section.getDownStation())) {
+            updateDownStation(section.getUpStation());
+        }
+
+        if (Objects.equals(this.upStation, section.getUpStation())) {
+            updateUpStation(section.getDownStation());
+        }
+
+        updateDistance(getDistance() - section.getDistance());
     }
 
-    public Station getStation() {
-        return this.station;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(line, section.line) && Objects.equals(getUpStation(), section.getUpStation())
+                && Objects.equals(getDownStation(), section.getDownStation());
     }
 
-    public Section getPrevious() {
-        return previous;
-    }
-
-    public Section getNext() {
-        return next;
-    }
-
-    public Integer getDistance() {
-        return this.distance;
+    @Override
+    public int hashCode() {
+        return Objects.hash(line, getUpStation(), getDownStation());
     }
 }

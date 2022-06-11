@@ -1,61 +1,74 @@
 package nextstep.subway.domain;
 
-import javax.persistence.CascadeType;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Objects;
+import javax.persistence.*;
+import java.util.*;
+import java.util.stream.Collectors;
 
+@Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private final static int LAST_SIZE = 1;
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Station ascend;
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private Station descend;
 
     protected Sections() {
     }
 
-    public Sections(Line line, Integer distance, Station ascendEndpoint, Station descendEndPoint) {
-        checkSame(ascendEndpoint, descendEndPoint);
-        checkDistance(distance);
+    public Sections(Line line, int distance, Station upStation, Station downStation) {
+        checkSame(upStation, downStation);
 
-        add(line, ascendEndpoint, 0, null, null);
-        add(line, descendEndPoint, distance, ascendEndpoint, null);
+        Section section = new Section(line, distance, upStation, downStation);
+        this.ascend = upStation;
+        this.descend = downStation;
+        this.sections.add(section);
     }
 
-    public List<Section> getAllSorted() {
-        List<Section> sorted = new ArrayList<>();
-        Section section =
-                this.sections.stream().filter(sectionIterator -> Objects.isNull(sectionIterator.getPrevious()))
-                        .findFirst().orElseThrow(NoSuchElementException::new);
-        while (section != null) {
-            sorted.add(section);
-            section = section.getNext();
+    public List<Station> getAllDistinctStationsOrderByAscending() {
+        List<Station> sections = new ArrayList<>();
+        Optional<Section> optionalSection = findByUpStation(ascend);
+        while (optionalSection.isPresent()) {
+            Section section = optionalSection.get();
+            sections.add(section.getUpStation());
+            sections.add(section.getDownStation());
+            optionalSection = findByUpStation(section.getDownStation());
         }
-        return sorted;
+        return sections.stream().distinct().collect(Collectors.toList());
     }
 
-    public void addSection(Line line, Station station, Integer distance, Station previousStation, Station nextStation) {
-        checkSame(previousStation, nextStation);
-        checkDistance(distance);
-        checkAlreadyAdded(station);
-
-        add(line, station, distance, previousStation, nextStation);
+    private Optional<Section> findByUpStation(Station station) {
+        return this.sections.stream().filter(section -> section.isUpStationEquals(station)).findFirst();
     }
 
-    private Section findByOrElseNull(Station station) {
-        if (station == null) {
-            return null;
+    public void add(Line line, int distance, Station upStation, Station downStation) {
+        checkSame(upStation, downStation);
+        checkStationIncluded(upStation, downStation);
+
+        updateEndStation(upStation, downStation);
+        Section section = new Section(line, distance, upStation, downStation);
+        checkAlreadyAdded(section);
+        findIncludingSectionBy(upStation, downStation).ifPresent(value -> value.connect(section));
+        this.sections.add(section);
+    }
+
+    private void updateEndStation(Station upStation, Station downStation) {
+        if (Objects.equals(downStation, ascend)) {
+            this.ascend = upStation;
         }
 
-        return this.sections.stream().filter(section -> Objects.equals(station, section.getStation())).findFirst()
-                .orElseThrow(NoSuchElementException::new);
+        if (Objects.equals(upStation, descend)) {
+            this.descend = downStation;
+        }
     }
 
-    private void checkDistance(Integer distance) {
-        if (distance < 1) {
-            throw new IllegalArgumentException("거리값은 1 이상 되어야 합니다.");
-        }
+    private Optional<Section> findIncludingSectionBy(Station upStation, Station downStation) {
+        return this.sections.stream()
+                .filter(section -> section.isUpStationEquals(upStation) || section.isDownStationEquals(downStation))
+                .findAny();
     }
 
     private void checkSame(Station previousStation, Station nextStation) {
@@ -64,44 +77,64 @@ public class Sections {
         }
     }
 
-    private void checkAlreadyAdded(Station station) {
-        if (this.sections.stream().anyMatch(section -> Objects.equals(section.getStation(), station))) {
+    private void checkStationIncluded(Station upStation, Station downStation) {
+        if (getAllDistinctStationsOrderByAscending().stream().noneMatch(station ->
+                Objects.equals(station, upStation) || Objects.equals(station, downStation))) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나는 기존 구간 내 반드시 존재해야 합니다.");
+        }
+    }
+
+    private void checkAlreadyAdded(Section section) {
+        if (this.sections.contains(section)) {
             throw new IllegalArgumentException("이미 존재하는 구간입니다.");
         }
     }
 
-    private void calculateDistance(Section previousSection, Section nextSection, Integer distance) {
-        if (previousSection == null || nextSection == null) {
+    private void checkStationIncluded(Station station) {
+        if (getAllDistinctStationsOrderByAscending().stream().noneMatch(distinctStation -> Objects.equals(distinctStation, station))) {
+            throw new IllegalArgumentException("구간 내 존재하지 않는 역입니다.");
+        }
+    }
+
+    private void checkLastSection() {
+        if (Objects.equals(this.sections.size(), LAST_SIZE)) {
+            throw new IllegalArgumentException("마지막 구간은 제거할 수 없습니다.");
+        }
+    }
+
+    private Section findIncludingUpStationSectionBy(Station upStation) {
+        return this.sections.stream()
+                .filter(section -> section.isUpStationEquals(upStation))
+                .findAny().orElse(null);
+    }
+
+    private Section findIncludingDownStationSectionBy(Station downStation) {
+        return this.sections.stream()
+                .filter(section -> section.isDownStationEquals(downStation))
+                .findAny().orElse(null);
+    }
+
+    public void delete(Station station) {
+        checkStationIncluded(station);
+        checkLastSection();
+
+        Section upSection = findIncludingUpStationSectionBy(station);
+        Section downSection = findIncludingDownStationSectionBy(station);
+
+        if (Objects.isNull(upSection)) {
+            this.sections.remove(downSection);
+            this.descend = downSection.getUpStation();
             return;
         }
 
-        int surplusDistance = previousSection.getDistance() + nextSection.getDistance();
-        if (surplusDistance <= distance) {
-            throw new IllegalArgumentException("distance 는 구간 내에 속할 수 있는 값이어야 합니다.");
-        }
-        int half = Math.floorDiv(surplusDistance, 2);
-
-        previousSection.updateDistance(surplusDistance - half);
-        nextSection.updateDistance(half);
-    }
-
-    private void add(Line line, Station station, Integer distance, Station previousStation, Station nextStation) {
-        Section previousSection = findByOrElseNull(previousStation);
-        Section nextSection = findByOrElseNull(nextStation);
-
-        calculateDistance(previousSection, nextSection, distance);
-
-        Section section = new Section(line, station, distance, previousSection, nextSection);
-        this.sections.add(section);
-
-        if (previousSection != null) {
-            previousSection.updateNext(section);
+        if (Objects.isNull(downSection)) {
+            this.sections.remove(upSection);
+            this.ascend = upSection.getDownStation();
+            return;
         }
 
-        if (nextSection != null) {
-            nextSection.updatePrevious(section);
-        }
-
-        this.sections.add(section);
+        downSection.updateDownStation(upSection.getDownStation());
+        downSection.updateDistance(downSection.getDistance() + upSection.getDistance());
+        this.sections.remove(upSection);
     }
 }

@@ -55,14 +55,14 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 <br>
 
-## 3단계 - 구간 추가 기능
+## 4단계 - 구간 제거 기능
 
 ### 요구사항
-- [X] 지하철 구간 추가 기능을 구현한다.
-    - [X] Line 과 Station 사이에 구간을 표현할 수 있는 Section을 추가한다.
-    - [X] Line 이 Section 을 여러개 포함 할 수 있는 구조로 바꾼다.
-    - [X] 도메인 로직에 구간 추가 에 대한 validation 조건을 추가한다. (상행, 하행, 거리)
-
+- [X] 지하철 구간 제거 기능을 구현한다.
+    - [X] 실패하는 happy path 인수 테스트를 만든다.
+    - [X] 위 인수테스트를 성공시키게끔 로직을 만든다.
+    - [X] 예외케이스를 확인하는 인수테스트를 추가한다.
+    - [X] 위 인수테스트를 성공시키게끔 로직을 변경한다. 
 
 ### 프로그래밍 요구사항
 아래의 순서로 기능을 구현하세요.
@@ -73,38 +73,26 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - 인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링 하세요.
 
 ### 요구사항 설명
-- 요구사항 설명에서 제공되는 요구사항을 기반으로 지하철 구간 추가 기능을 구현하세요.
-- 요구사항을 정의한 인수 조건을 조출하세요.
+- 요구사항 설명에서 제공되는 요구사항을 기반으로 지하철 구간 제거 기능을 구현하세요.
+- 요구사항을 정의한 인수 조건을 도출하세요.
 - 인수 조건을 검증하는 인수 테스트를 작성하세요.
 - 예외 케이스에 대한 검증도 포함하세요.
 
 인수 조건
 
-구간 추가 API 명세
+구간 삭제 API 명세
 
 ```
-POST /lines/1/sections HTTP/1.1
+DELETE /lines/1/sections?stationId=2 HTTP/1.1
 accept: */*
-content-type: application/json; charset=UTF-8
 host: localhost:52165
-
-{
-    "downStationId": "4",
-    "upStationId": "2",
-    "distance": 10
-}
 ```
 
-구간 등록 인수 테스트 예시 
-
+구간 제거 요청 처리
 ```
-@DisplayName("노선에 구간을 등록한다.")
-@Test
-void addSection() {
-    // when
-    // 지하철_노선에_지하철역_등록_요청
-
-    // then
-    // 지하철_노선에_지하철역_등록됨
+@DeleteMapping("/{lineId}/sections")
+public ResponseEntity removeLineStation(@PathVariable Long lineId, @RequestParam Long stationId) {
+    lineService.removeSectionByStationId(lineId, stationId);
+    return ResponseEntity.ok().build();
 }
 ```
