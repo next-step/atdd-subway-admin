@@ -168,6 +168,7 @@ public class Sections {
     }
 
     public void removeSectionByStation(Station station) {
+        validateRemoveStatus();
         Optional<Section> fromStation = findSectionByUpStation(station);
         Optional<Section> toStation = findSectionByDownStation(station);
 
@@ -180,5 +181,11 @@ public class Sections {
             sectionList.add(new Section(newUpStation, newDownStation, newDistance));
         }
 
+    }
+
+    private void validateRemoveStatus() {
+        if (sectionList.size() <= 1) {
+            throw new IllegalStateException("마지막 구간은 제거할 수 없습니다.");
+        }
     }
 }
