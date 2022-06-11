@@ -232,6 +232,25 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(신분당선_역명_리턴값).containsExactly("강남역", "양재역");
     }
 
+    /**
+     * Given 지하철 노선이 최초 생성된 상태에서
+     * When 출발점과 이어지는 구간을 추가하여 출발점을 변경한 후 출발점을 제거하면
+     * Then 추가된 출발점은 제거되고 최초 생성 상태 노선이 조회된다.
+     */
+    @DisplayName("출발점을 변경한 후 출발점을 제거한다.")
+    @Test
+    void removeFirstStation() {
+        // When
+        SectionRequest sectionRequest = new SectionRequest(신논현역_ID, 강남역_ID, 4);
+        구간_추가(신분당선_ID, sectionRequest);
+        구간_제거(신분당선_ID, 신논현역_ID);
+
+        // Then
+        ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
+        List<String> 신분당선_역명_리턴값 = 노선_조회_결과_응답.jsonPath().getList("stations.name");
+        assertThat(신분당선_역명_리턴값).containsExactly("강남역", "양재역");
+    }
+
     private ExtractableResponse<Response> 구간_제거(long lineId, long stationId) {
         return RestAssured.given().log().all()
                 .queryParam("stationId", stationId)
