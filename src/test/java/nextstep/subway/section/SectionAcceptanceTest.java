@@ -15,10 +15,11 @@ import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하
 import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철구간_생성_요청;
 import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철구간_존재;
 import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철역과_노선_존재;
+import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_마지막_삭제_실패;
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_삭제_성공;
-import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_삭제_실패;
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_생성_성공;
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_생성_실패;
+import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_존재_삭제_실패;
 
 @DisplayName("지하철구간 인수테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -218,7 +219,7 @@ public class SectionAcceptanceTest {
 
         ExtractableResponse<Response> response = 지하철구간_삭제_요청(upStationId, downStationId, distance, targetStationId);
 
-        지하철구간_삭제_실패(response);
+        지하철구간_존재_삭제_실패(response);
     }
 
     /**
@@ -231,5 +232,14 @@ public class SectionAcceptanceTest {
     @DisplayName("구간이 하나인 노선에서 마지막 구간을 삭제하면 예외를 던진다")
     @Test
     void 구간_삭제_마지막_예외() {
+        지하철역과_노선_존재();
+        String upStationId = "1";
+        String downStationId = "2";
+        int distance = 5;
+        String targetStationId = "2";
+
+        ExtractableResponse<Response> response = 지하철구간_삭제_요청(upStationId, downStationId, distance, targetStationId);
+
+        지하철구간_마지막_삭제_실패(response);
     }
 }

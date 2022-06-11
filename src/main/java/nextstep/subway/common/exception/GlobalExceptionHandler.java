@@ -2,6 +2,7 @@ package nextstep.subway.common.exception;
 
 import nextstep.subway.line.exception.LineNotFoundException;
 import nextstep.subway.section.exception.DistanceNegativeException;
+import nextstep.subway.section.exception.SectionCannotDeleteException;
 import nextstep.subway.section.exception.SectionDuplicationException;
 import nextstep.subway.section.exception.SectionStationNotFoundException;
 import nextstep.subway.station.exception.StationAllNotExistedException;
@@ -47,5 +48,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(SectionStationNotFoundException.class)
     public ErrorResponse handleSectionStationNotFoundException() {
         return ErrorResponse.of(ErrorMessage.DISTANCE_NEGATIVE_EXCEPTION.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(SectionCannotDeleteException.class)
+    public ErrorResponse handleSectionCannotDeleteException() {
+        return ErrorResponse.of(ErrorMessage.SECTION_CAN_NOT_DELETE.getMessage());
     }
 }

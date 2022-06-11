@@ -19,7 +19,11 @@ public class SectionAcceptanceResponse {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    public static void 지하철구간_삭제_실패(ExtractableResponse<Response> response) {
+    public static void 지하철구간_존재_삭제_실패(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
+    public static void 지하철구간_마지막_삭제_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
