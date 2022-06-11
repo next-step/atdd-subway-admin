@@ -46,6 +46,18 @@ public class Sections {
         }
     }
 
+    public Optional<Section> findSectionByUpStation(Station upStation) {
+        return sectionList.stream()
+                .filter(section -> section.getUpStation().equals(upStation))
+                .findFirst();
+    }
+
+    public Optional<Section> findSectionByDownStation(Station downStation) {
+        return sectionList.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .findFirst();
+    }
+
     private void addSectionFromUpStation(Section existingSection, Station newDownStation, long newSectionDistance) {
         Section newDownSection = new Section(newDownStation, existingSection.getDownStation()
                 , existingSection.getDistance() - newSectionDistance);

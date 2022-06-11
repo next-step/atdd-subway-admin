@@ -69,12 +69,10 @@ public class Line extends BaseEntity {
 
 
     private void changeUpStation(Station newUpStation, long newSectionDistance) {
-        Optional<Section> upStationSection = getSections().stream()
-                .filter(section -> section.getUpStation().equals(upStation))
-                .findFirst();
+        Optional<Section> currentSection = sections.findSectionByUpStation(newUpStation);
 
-        if (upStationSection.isPresent()) {
-            Section existingSection = upStationSection.get();
+        if (currentSection.isPresent()) {
+            Section existingSection = currentSection.get();
             existingSection.setDownStation(newUpStation);
             sections.add(new Section(newUpStation, upStation, newSectionDistance));
             upStation = newUpStation;
@@ -83,12 +81,10 @@ public class Line extends BaseEntity {
     }
 
     private void changeDownStation(Station newDownStation, long newSectionDistance) {
-        Optional<Section> downStationSection = getSections().stream()
-                .filter(section -> section.getDownStation().equals(downStation))
-                .findFirst();
+        Optional<Section> currentSection = sections.findSectionByDownStation(newDownStation);
 
-        if (downStationSection.isPresent()) {
-            Section existingSection = downStationSection.get();
+        if (currentSection.isPresent()) {
+            Section existingSection = currentSection.get();
             existingSection.setDownStation(newDownStation);
             sections.add(new Section(newDownStation, downStation, newSectionDistance));
             downStation = newDownStation;
