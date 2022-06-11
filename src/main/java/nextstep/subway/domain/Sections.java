@@ -36,14 +36,29 @@ public class Sections {
                 .filter(section -> section.getUpStation().equals(station)).findFirst().get();
             firstSection.setLine(null);
             sections.remove(firstSection);
+            return;
         }
 
         if (lastStation().equals(station)) {
-            Section lastStation = sections.stream()
+            Section lastSection = sections.stream()
                 .filter(section -> section.getDownStation().equals(station)).findFirst().get();
-            lastStation.setLine(null);
-            sections.remove(lastStation);
+            lastSection.setLine(null);
+            sections.remove(lastSection);
+            return;
         }
+
+        Section upSection = sections.stream()
+            .filter(section -> section.hasDownStation(station)).findFirst().get();
+
+        Section downSection = sections.stream()
+            .filter(section -> section.hasUpStation(station)).findFirst().get();
+
+        upSection.updateDownStation(downSection.getDownStation());
+        upSection.addDistance(downSection);
+
+        downSection.setLine(null);
+        sections.remove(downSection);
+
     }
 
     private void validate(Section hasUpStationSection, Section hasDownStationSection) {

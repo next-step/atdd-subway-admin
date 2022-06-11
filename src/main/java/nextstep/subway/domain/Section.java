@@ -78,10 +78,27 @@ public class Section {
         }
     }
 
+    public void updateDownStation(Station station) {
+        downStation = station;
+    }
+
+    public void addDistance(Section section) {
+        distance = distance + section.distance;
+    }
+
+
     private void updateDistance(Section section) {
         if (distance <= section.distance) {
             throw new IllegalArgumentException("기존 구간 보다 거리가 멀 수 없습니다.");
         }
         distance = distance - section.distance;
+    }
+
+    public boolean hasUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean hasDownStation(Station station) {
+        return downStation.equals(station);
     }
 }
