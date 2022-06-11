@@ -22,6 +22,38 @@ public class LineStations {
         this.lineStations = lineStations;
     }
 
+    public void addFinalStations(final Line line,
+                                 final Station finalUpStation,
+                                 final Station finalDownStation,
+                                 final long distance) {
+        lineStations.add(new LineStation(line, finalUpStation, finalDownStation, distance));
+        lineStations.add(new LineStation(line, finalDownStation, null, 0L));
+    }
+
+    public void addUpStation(final Line line, final Station upStation, final Station downStation, final long distance) {
+        final LineStation previous = previousOf(downStation);
+        if (null != previous) {
+            validateDistance(distance, previous.getDistanceToNext());
+            previous.updateNext(upStation, previous.getDistanceToNext() - distance);
+        }
+        lineStations.add(new LineStation(line, upStation, downStation, distance));
+    }
+
+    public void addDownStation(final Line line, final Station upStation, final Station downStation,
+                               final long distance) {
+        final LineStation upStationRelation = relationOf(upStation);
+        if (upStationRelation.hasNext()) {
+            validateDistance(distance, upStationRelation.getDistanceToNext());
+        }
+        lineStations.add(new LineStation(
+                line,
+                downStation,
+                upStationRelation.getNext(),
+                Math.abs(upStationRelation.getDistanceToNext() - distance)));
+        upStationRelation.updateNext(downStation, distance);
+    }
+
+    // TODO : 리팩토링 후 미사용 시 제거
     public void add(final LineStation lineStation) {
         lineStations.add(lineStation);
     }
@@ -34,11 +66,18 @@ public class LineStations {
                 .collect(Collectors.toList());
     }
 
+    // TODO : 리팩토링 후 미사용 시 제거
     Optional<LineStation> getByStation(final Station station) {
         return lineStations
                 .stream()
                 .filter(lineStation -> lineStation.getStation().equals(station))
                 .findFirst();
+    }
+
+    boolean hasRelationTo(final Station station) {
+        return lineStations
+                .stream()
+                .anyMatch(lineStation -> lineStation.getStation().equals(station));
     }
 
     List<SectionResponse> sections() {
@@ -47,6 +86,28 @@ public class LineStations {
             lineStations.forEach(lineStation -> addSection(sections, lineStation));
         }
         return sections;
+    }
+
+    private LineStation previousOf(final Station station) {
+        return lineStations
+                .stream()
+                .filter(lineStation -> station.equals(lineStation.getNext()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private LineStation relationOf(final Station station) {
+        return lineStations
+                .stream()
+                .filter(lineStation -> station.equals(lineStation.getStation()))
+                .findFirst()
+                .orElse(null);
+    }
+
+    private void validateDistance(final long newDistance, final long oldDistance) {
+        if (newDistance >= oldDistance) {
+            throw new IllegalArgumentException("신규 구간의 길이는 기존 구간의 길이보다 짧아야 합니다.");
+        }
     }
 
     private void addSection(final List<SectionResponse> sections, final LineStation lineStation) {
