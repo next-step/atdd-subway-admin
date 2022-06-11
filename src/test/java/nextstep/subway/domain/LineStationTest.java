@@ -29,19 +29,6 @@ class LineStationTest {
     }
 
     @Test
-    void 이전_역과_다음_역을_변경할_수_있어야_한다() {
-        // given
-        final LineStation lineStation = givenLineStation();
-
-        // when
-        lineStation.update(station1, station3);
-
-        // then
-        assertThat(lineStation.getPrevious()).isEqualTo(station1);
-        assertThat(lineStation.getNext()).isEqualTo(station3);
-    }
-
-    @Test
     void 이전_역과_그_거리를_변경할_수_있어야_한다() {
         // given
         final LineStation lineStation = givenLineStation();
