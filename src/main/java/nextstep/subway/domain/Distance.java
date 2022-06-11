@@ -30,6 +30,10 @@ public class Distance {
         return value;
     }
 
+    public Distance minus(Integer value) {
+        return new Distance(this.value - value);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

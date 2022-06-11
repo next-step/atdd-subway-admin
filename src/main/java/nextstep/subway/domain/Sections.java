@@ -45,11 +45,12 @@ public class Sections {
     }
 
     public List<Station> getStationsInOrder() {
-        Map<Station, Station> map = sections.stream()
-                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
         Station station = findFirstUpStation();
 
         List<Station> stations = new ArrayList<>();
+
+        Map<Station, Station> map = sections.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
         while (map.get(station) != null) {
             stations.add(station);
             station = map.get(station);

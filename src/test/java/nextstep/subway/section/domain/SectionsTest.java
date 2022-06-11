@@ -146,6 +146,16 @@ class SectionsTest {
         );
     }
 
+    @DisplayName("연결할 수 있는 최초 상행역이 없음")
+    @Test
+    void 구간_등록_시_예외_케이스_4() {
+        // given
+        final Sections sections = new Sections();
+
+        // when & then
+        assertThatThrownBy(() -> sections.getStationsInOrder()).isInstanceOf(IllegalArgumentException.class);
+    }
+
     private List<String> toStationNames(List<Station> stations) {
         return stations
                 .stream()

@@ -45,7 +45,6 @@ public class Section {
             changeDownStation(section.getUpStation());
             changeDistance(section.getDistance());
         }
-
     }
 
     public void changeUpStation(Station upStation) {
@@ -57,7 +56,7 @@ public class Section {
     }
 
     public void changeDistance(Distance distance) {
-        this.distance = new Distance(this.distance.getValue() - distance.getValue());
+        this.distance = this.distance.minus(distance.getValue());
     }
 
     public boolean isContainAnyStation(Section section) {
