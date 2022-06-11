@@ -49,7 +49,7 @@ public class SectionAcceptanceRequest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철구간_삭제_요청(String upStationId, String downStationId, int distance) {
+    public static ExtractableResponse<Response> 지하철구간_삭제_요청(String upStationId, String downStationId, int distance, String targetStationId) {
         Map<String, Object> params = new HashMap<>();
         params.put("downStationId", downStationId);
         params.put("upStationId", upStationId);
@@ -58,7 +58,7 @@ public class SectionAcceptanceRequest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
-                .when().delete("/lines/1/sections?stationId=3")
+                .when().delete("/lines/1/sections?stationId=" + targetStationId)
                 .then().log().all()
                 .extract();
     }

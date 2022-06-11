@@ -16,6 +16,7 @@ import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하
 import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철구간_존재;
 import static nextstep.subway.section.acceptance.SectionAcceptanceRequest.지하철역과_노선_존재;
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_삭제_성공;
+import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_삭제_실패;
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_생성_성공;
 import static nextstep.subway.section.acceptance.SectionAcceptanceResponse.지하철구간_생성_실패;
 
@@ -191,8 +192,9 @@ public class SectionAcceptanceTest {
         String downStationId = "3";
         int distance = 5;
         지하철구간_존재(upStationId, downStationId, distance);
+        String targetStationId = "3";
 
-        ExtractableResponse<Response> response = 지하철구간_삭제_요청(upStationId, downStationId, distance);
+        ExtractableResponse<Response> response = 지하철구간_삭제_요청(upStationId, downStationId, distance, targetStationId);
 
         지하철구간_삭제_성공(response);
     }
@@ -207,6 +209,16 @@ public class SectionAcceptanceTest {
     @DisplayName("노선에 등록되지 않은 역을 구간에서 삭제하면 예외를 던진다")
     @Test
     void 구간_삭제_존재_예외() {
+        지하철역과_노선_존재();
+        String upStationId = "1";
+        String downStationId = "3";
+        int distance = 5;
+        지하철구간_존재(upStationId, downStationId, distance);
+        String targetStationId = "1000";
+
+        ExtractableResponse<Response> response = 지하철구간_삭제_요청(upStationId, downStationId, distance, targetStationId);
+
+        지하철구간_삭제_실패(response);
     }
 
     /**
