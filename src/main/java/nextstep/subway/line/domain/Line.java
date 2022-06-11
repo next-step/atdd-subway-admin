@@ -3,9 +3,12 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -33,8 +36,6 @@ public class Line extends BaseEntity {
 
     private static void initSection(final long distance, final Station upStation, final Station downStation, final Line line) {
         Section section = Section.of(upStation, downStation, distance);
-        section.updateFinalUpStation(true);
-        section.updateFinalDownStation(true);
         line.addSection(section);
     }
 
@@ -48,12 +49,8 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
-    public Station getFinalUpStation() {
-        return sections.finalUpStation();
-    }
-
-    public Station getFinalDownStation() {
-        return sections.finalDownStation();
+    public boolean containSection(final Section section) {
+        return sections.contains(section);
     }
 
     public Long getId() {
@@ -66,6 +63,13 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public Set<StationResponse> getAllStations() {
+        return sections.getAllStation()
+                .stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toSet());
     }
 
     @Override

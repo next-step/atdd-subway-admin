@@ -46,8 +46,8 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * When 지하철 노선을 추가 하면
-     * Then 지하철 노선이 생성 된다
+     * Given 지하철 노선을 추가 하면
+     * When 지하철 노선이 생성 된다
      * Then 지하촐 노선을 조회 하면, 추가된 노선이 조회 된다.
      */
     @Test
@@ -165,7 +165,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private void 지하철역_추가() {
+    public void 지하철역_추가() {
         stationRepository.save(StationTest.강남역);
         stationRepository.save(StationTest.사당역);
         stationRepository.save(StationTest.이수역);

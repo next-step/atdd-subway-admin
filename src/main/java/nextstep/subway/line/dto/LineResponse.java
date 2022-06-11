@@ -4,7 +4,7 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.dto.Stations;
 
-import java.util.List;
+import java.util.Set;
 
 public class LineResponse {
     private final Long id;
@@ -12,19 +12,19 @@ public class LineResponse {
     private final String color;
     private final Stations stations;
 
-    public LineResponse(final Long id, final String name, final String color, final Stations stations) {
+    public LineResponse(final Long id, final String name, final String color, final Set<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
+        this.stations = new Stations(stations);
     }
 
-    public static LineResponse from(Line line) {
+    public static LineResponse from(final Line line) {
         return new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                Stations.of(line.getFinalUpStation(), line.getFinalDownStation())
+                line.getAllStations()
         );
     }
 
@@ -40,7 +40,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
+    public Set<StationResponse> getStations() {
         return stations.getStations();
     }
 }

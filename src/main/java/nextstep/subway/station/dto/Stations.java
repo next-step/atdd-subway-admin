@@ -1,22 +1,16 @@
 package nextstep.subway.station.dto;
 
-import nextstep.subway.station.domain.Station;
-
-import java.util.*;
+import java.util.Collections;
+import java.util.Set;
 
 public class Stations {
-    private final List<StationResponse> stations;
+    private final Set<StationResponse> stations;
 
-    public Stations(final List<StationResponse> stations) {
-        this.stations = Collections.unmodifiableList(stations);
+    public Stations(final Set<StationResponse> stations) {
+        this.stations = Collections.unmodifiableSet(stations);
     }
 
-    public static Stations of(final Station upStation, final Station downStation) {
-        return new Stations(Arrays.asList(StationResponse.of(upStation),
-                StationResponse.of(downStation)));
-    }
-
-    public List<StationResponse> getStations() {
+    public Set<StationResponse> getStations() {
         return stations;
     }
 
@@ -27,16 +21,4 @@ public class Stations {
                 '}';
     }
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Stations stations1 = (Stations) o;
-        return Objects.equals(stations, stations1.stations);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(stations);
-    }
 }
