@@ -72,7 +72,8 @@ public class LineService {
     public void deleteSection(long lineId, long stationId){
         Line findLine = lineRepository.findById(lineId)
             .orElseThrow(() -> new InvalidLineException(String.format(INVALID_LINE, lineId)));
-        findLine.deleteSection(stationService.findStationById(stationId));
+        Station station = stationService.findStationById(stationId);
+        findLine.deleteSection(station);
         lineRepository.save(findLine);
     }
 
