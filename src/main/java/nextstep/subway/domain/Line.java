@@ -1,8 +1,8 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineRequest;
-
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -24,7 +24,8 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
-    private Long distance;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -34,7 +35,8 @@ public class Line extends BaseEntity {
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        Section section = Section.of(upStation, downStation, distance);
+        addSection(section);
     }
 
     private Line(String name, String color) {
@@ -53,6 +55,11 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void addSection(Section section) {
+        section.addLine(this);
+        this.sections.add(section);
     }
 
     public Long getId() {
@@ -75,7 +82,7 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-    public Long getDistance() {
-        return distance;
+    public List<Section> getSections() {
+        return sections.getSectionList();
     }
 }

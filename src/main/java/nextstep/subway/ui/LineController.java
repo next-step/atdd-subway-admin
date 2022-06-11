@@ -1,9 +1,12 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,10 +17,12 @@ import java.util.NoSuchElementException;
 
 @RestController
 public class LineController {
-    private LineService lineService;
+    private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping("/lines")
@@ -47,6 +52,13 @@ public class LineController {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/lines/{lineId}/sections")
+    public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        sectionService.addSection(lineId, sectionRequest);
+        return new ResponseEntity<>(HttpStatus.CREATED);
+    }
+
 
     @ExceptionHandler({DataIntegrityViolationException.class, NoSuchElementException.class})
     public ResponseEntity handleIllegalArgsException() {
