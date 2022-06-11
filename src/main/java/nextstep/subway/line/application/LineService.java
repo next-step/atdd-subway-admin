@@ -27,23 +27,24 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse addLine(final LineAddRequest lineAddRequest) {
+    public LineResponse createLine(final LineAddRequest lineAddRequest) {
         final Station upStation = stationService.findById(lineAddRequest.getUpStationId());
         final Station downStation = stationService.findById(lineAddRequest.getDownStationId());
-        Line line = Line.ofAddLine(lineAddRequest, upStation, downStation);
-        lineRepository.save(line);
 
-        return line.toLineResponse();
+        return LineResponse.from(lineRepository.save(
+                lineAddRequest.toEntity(upStation, downStation)
+        ));
     }
 
     public List<LineResponse> fetchLines() {
-        return lineRepository.findAll().stream()
-                .map(Line::toLineResponse)
+        return lineRepository.findAll()
+                .stream()
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse fetchLine(final Long id) {
-        return findById(id).toLineResponse();
+        return LineResponse.from(findById(id));
     }
 
     @Transactional
@@ -60,5 +61,11 @@ public class LineService {
     public Line findById(final Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new LineException(LineExceptionType.NOT_FOUND_LINE));
+    }
+
+    public void existsByName(final String name) {
+        if (lineRepository.existsByName(name)) {
+            throw new LineException(LineExceptionType.EXIST_LINE_NAME);
+        }
     }
 }

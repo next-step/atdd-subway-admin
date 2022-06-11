@@ -1,9 +1,11 @@
 package nextstep.subway.line.ui;
 
 import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.application.SectionService;
 import nextstep.subway.line.dto.LineAddRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.SectionAddRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,14 +17,16 @@ import java.util.List;
 @RestController
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(final LineService lineService) {
+    public LineController(final LineService lineService, final SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody final LineAddRequest lineAddRequest) {
-        LineResponse line = lineService.addLine(lineAddRequest);
+        final LineResponse line = lineService.createLine(lineAddRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -46,5 +50,12 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable final long id) {
         lineService.deleteLine(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PostMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> addSection(@PathVariable final long id, @RequestBody SectionAddRequest sectionAddRequest) {
+        final LineResponse line = sectionService.addSection(id, sectionAddRequest);
+
+        return ResponseEntity.created(URI.create("/lines/" + id)).body(line);
     }
 }

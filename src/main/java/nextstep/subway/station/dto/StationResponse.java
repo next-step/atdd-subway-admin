@@ -8,13 +8,13 @@ public class StationResponse {
     private final Long id;
     private final String name;
 
-    public static StationResponse of(final Station station) {
-        return new StationResponse(station.getId(), station.getName());
-    }
-
     public StationResponse(final Long id, final String name) {
         this.id = id;
         this.name = name;
+    }
+
+    public static StationResponse of(final Station station) {
+        return new StationResponse(station.getId(), station.getName());
     }
 
     public Long getId() {

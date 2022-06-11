@@ -1,13 +1,11 @@
 package nextstep.subway.line.dto;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.domain.Stations;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.dto.Stations;
 
-import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 public class LineResponse {
     private final Long id;
@@ -15,17 +13,21 @@ public class LineResponse {
     private final String color;
     private final Stations stations;
 
-    @JsonCreator
-    public LineResponse(@JsonProperty("id") final Long id,
-                        @JsonProperty("name") final String name,
-                        @JsonProperty("color") final String color,
-                        @JsonProperty("stations") final List<Station> stations) {
+    public LineResponse(final Long id, final String name, final String color, final Set<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = Stations.of(stations);
+        this.stations = new Stations(stations);
     }
 
+    public static LineResponse from(final Line line) {
+        return new LineResponse(
+                line.getId(),
+                line.getName(),
+                line.getColor(),
+                line.getAllStations()
+        );
+    }
 
     public Long getId() {
         return id;
@@ -39,7 +41,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
+    public Set<StationResponse> getStations() {
         return stations.getStations();
     }
 
@@ -48,7 +50,7 @@ public class LineResponse {
         return "LineResponse{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", color=" + color +
+                ", color='" + color + '\'' +
                 ", stations=" + stations +
                 '}';
     }
