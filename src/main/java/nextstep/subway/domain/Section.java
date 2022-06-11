@@ -55,12 +55,6 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, distance);
     }
 
-    public static Section addDistance(Section upSection, Section downSection) {
-        Distance newDistance = upSection.distance
-            .add(downSection.distance);
-        return Section.of(upSection.getUpStation(), downSection.getDownStation(), newDistance);
-    }
-
     public static Section combine(Section upSection, Section downSection) {
         return Section.of(upSection.getUpStation(), downSection.getDownStation(),
             upSection.distance
