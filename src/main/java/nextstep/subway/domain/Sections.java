@@ -168,8 +168,8 @@ public class Sections {
     }
 
     public void removeSectionByStation(Station station) {
-        validateRemoveStatus();
         validateRemoveStation(station);
+        validateRemoveStatus();
 
         Optional<Section> fromDeleteStation = findSectionByUpStation(station);
         Optional<Section> toDeleteStation = findSectionByDownStation(station);
