@@ -30,6 +30,15 @@ public class Sections {
         sections.add(requestSection);
     }
 
+    public void delete(Station station) {
+        if (firstStation().equals(station)) {
+            Section firstSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(station)).findFirst().get();
+            firstSection.setLine(null);
+            sections.remove(firstSection);
+        }
+    }
+
     private void validate(Section hasUpStationSection, Section hasDownStationSection) {
         if (hasDownStationSection != null && hasUpStationSection != null) {
             throw new IllegalArgumentException("이미 등록된 구간입니다.");

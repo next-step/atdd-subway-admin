@@ -30,4 +30,11 @@ public class SectionService {
         line.updateSection(new Section(upStation, downStation, sectionRequest.getDistance()));
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void removeSection(Long stationId, Long lineId) throws NotFoundException {
+        Line line = lineService.findLineOrThrow(lineId);
+        Station station = stationService.findStationOrThrow(stationId);
+        line.removeSectionByStation(station);
+    }
 }

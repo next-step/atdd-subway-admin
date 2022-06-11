@@ -167,7 +167,7 @@ public class SectionAcceptanceTest {
         // then
         // 다음으로 오던 역이 상행 종점역이 된 순서로 조회된다.
         ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(신분당선.jsonPath().getLong("id"));
-        지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("양재시민의숲역", "광교역"));
+        지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("양재시민의숲역", "판교역"));
     }
 
     private void 지하철역_순서_확인(ExtractableResponse<Response> getResponse, List<String> stationNames) {
