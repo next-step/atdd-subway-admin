@@ -89,12 +89,12 @@ public class Section extends BaseEntity {
     public void update(Section target) {
         if (this.upStation.equals(target.upStation)) {
             this.upStation = target.downStation;
+            this.distance = subtractDistance(target);
         }
         if (this.downStation.equals(target.downStation)) {
             this.downStation = target.upStation;
+            this.distance = subtractDistance(target);
         }
-        this.distance = subtractDistance(target);
-
     }
 
     private Distance subtractDistance(Section target) {
