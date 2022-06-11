@@ -150,6 +150,26 @@ public class SectionAcceptanceTest {
         응답코드_확인(지하철구간_추가_요청, HttpStatus.BAD_REQUEST);
     }
 
+
+    //* Given : 지하철 노선 생성하고, 구간을 추가한다.
+    //* When : 노선의 상행 종점역을 삭제한다.
+    //* Then : 다음으로 오던 역이 상행 종점역이 된 순서로 조회된다.
+    @DisplayName("지하철 노선의 상행 종점 역을 삭제한다.")
+    @Test
+    void deleteSection() {
+        //Given : 지하철 노선 생성하고, 구간을 추가한다.
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        지하철역_생성_요청("양재시민의숲역");
+        지하철구간_추가_요청(1L, 3L, 5L, 신분당선.jsonPath().getLong("id"));
+        // when
+        // 노선의 상행 종점역을 삭제한다.
+        지하철구간_삭제_요청(1L, 신분당선.jsonPath().getLong("id"));
+        // then
+        // 다음으로 오던 역이 상행 종점역이 된 순서로 조회된다.
+        ExtractableResponse<Response> 지하철노선_조회_요청 = 지하철노선_조회_요청(신분당선.jsonPath().getLong("id"));
+        지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("양재시민의숲역", "광교역"));
+    }
+
     private void 지하철역_순서_확인(ExtractableResponse<Response> getResponse, List<String> stationNames) {
         assertThat(getResponse.jsonPath().getList("stations.name")).hasSameElementsAs(stationNames);
     }
@@ -165,6 +185,17 @@ public class SectionAcceptanceTest {
             .pathParam("lineId", lineId)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/{lineId}/sections")
+            .then().log().all()
+            .extract();
+    }
+
+    private static ExtractableResponse<Response> 지하철구간_삭제_요청(Long stationId, Long lineId) {
+
+        return RestAssured.given().log().all()
+            .pathParam("lineId", lineId)
+            .param("stationId", stationId)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete("/lines/{lineId}/sections")
             .then().log().all()
             .extract();
     }
