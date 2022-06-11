@@ -26,8 +26,10 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     private static final long 강남역_ID = 1L;
     private static final long 양재역_ID = 2L;
+    private static final long 신림역_ID = 3L;
+    private static final long 서원역_ID = 4L;
     private static final long 양재시민의숲역_ID = 5L;
-
+    private static final long 신논현역_ID = 6L;
     private static final long 신분당선_ID = 1L;
 
     @BeforeEach
@@ -44,8 +46,8 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void addSection() {
         // When
-        SectionRequest sectionRequest = new SectionRequest(1L, 5L, 4);
-        구간_추가(1L, sectionRequest);
+        SectionRequest sectionRequest = new SectionRequest(강남역_ID, 양재시민의숲역_ID, 4);
+        구간_추가(신분당선_ID, sectionRequest);
 
         // Then
         ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
@@ -62,8 +64,8 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void addSectionFromDownStation() {
         // When
-        SectionRequest sectionRequest = new SectionRequest(5L, 2L, 4);
-        구간_추가(1L, sectionRequest);
+        SectionRequest sectionRequest = new SectionRequest(양재시민의숲역_ID, 양재역_ID, 4);
+        구간_추가(신분당선_ID, sectionRequest);
 
         // Then
         ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
@@ -80,8 +82,8 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void addStationAsUpStation() {
         // When
-        SectionRequest sectionRequest = new SectionRequest(6L, 1L, 4);
-        구간_추가(1L, sectionRequest);
+        SectionRequest sectionRequest = new SectionRequest(신논현역_ID, 강남역_ID, 4);
+        구간_추가(신분당선_ID, sectionRequest);
 
         // Then
         ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
@@ -101,11 +103,10 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void addStationAsDownStation() {
         // When
-        SectionRequest sectionRequest = new SectionRequest(2L, 5L, 7);
-        구간_추가(1L, sectionRequest);
+        SectionRequest sectionRequest = new SectionRequest(양재역_ID, 양재시민의숲역_ID, 7);
+        구간_추가(신분당선_ID, sectionRequest);
 
         // Then
-        final long 신분당선_ID = 1L;
         ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
 
         List<String> 신분당선_역명_리턴값 = 노선_조회_결과_응답.jsonPath().getList("stations.name");
@@ -121,8 +122,8 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void longerThanExistingSection() {
         // When
-        SectionRequest sectionRequest = new SectionRequest(1L, 5L, 20);
-        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, sectionRequest);
+        SectionRequest sectionRequest = new SectionRequest(강남역_ID, 양재시민의숲역_ID, 20);
+        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(신분당선_ID, sectionRequest);
 
         // Then
         assertThat(구간_추가_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -137,12 +138,12 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void addSectionWithExistingStation() {
         // Given
-        SectionRequest sectionRequest = new SectionRequest(2L, 5L, 10);
-        구간_추가(1L, sectionRequest);
+        SectionRequest sectionRequest = new SectionRequest(양재역_ID, 양재시민의숲역_ID, 10);
+        구간_추가(신분당선_ID, sectionRequest);
 
         // When
-        SectionRequest badSectionRequest = new SectionRequest(1L, 5L, 5);
-        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, badSectionRequest);
+        SectionRequest badSectionRequest = new SectionRequest(강남역_ID, 양재시민의숲역_ID, 5);
+        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(신분당선_ID, badSectionRequest);
 
         // Then
         assertThat(구간_추가_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -157,8 +158,8 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void addSectionWithOtherStation() {
         // When
-        SectionRequest badSectionRequest = new SectionRequest(3L, 4L, 5);
-        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(1L, badSectionRequest);
+        SectionRequest badSectionRequest = new SectionRequest(신림역_ID, 서원역_ID, 5);
+        ExtractableResponse<Response> 구간_추가_결과_응답 = 구간_추가(신분당선_ID, badSectionRequest);
 
         // Then
         assertThat(구간_추가_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
