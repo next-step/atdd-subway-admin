@@ -180,6 +180,11 @@ public class Sections {
             sectionList.remove(fromStation.get());
             sectionList.remove(toStation.get());
             sectionList.add(new Section(newUpStation, newDownStation, newDistance));
+            return ;
+        }
+
+        if (!fromStation.isPresent() && toStation.isPresent()) {
+            sectionList.remove(toStation.get());
         }
     }
 
