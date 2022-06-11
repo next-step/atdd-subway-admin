@@ -208,6 +208,27 @@ public class SectionAcceptanceTest {
         지하철역_순서_확인(지하철노선_조회_요청, Arrays.asList("강남역", "판교역"));
     }
 
+    //* Given : 지하철 노선 생성하고, 구간을 추가한다.
+    //* When : 노선에 존재하지 않는 역을 삭제한다.
+    //* Then : 삭제되지 않고 에러 발생
+    @DisplayName("노선에 등록되지 않은 역을 삭제한다.")
+    @Test
+    void deleteNotExistStationSection() {
+        //Given : 지하철 노선 생성하고, 구간을 추가한다.
+        ExtractableResponse<Response> 신분당선 = 지하철_노선_등록되어_있음(TestLine.SHINBUNDANG);
+        지하철역_생성_요청("양재시민의숲역");
+        지하철구간_추가_요청(1L, 3L, 5L, 신분당선.jsonPath().getLong("id"));
+        // when
+        // 노선에 존재하지 않는 역을 삭제한다.
+        ExtractableResponse<Response> 지하철구간_삭제_요청 = 지하철구간_삭제_요청(99999L,
+            신분당선.jsonPath().getLong("id"));
+        // then
+        // 삭제되지 않고 에러 발생
+        응답코드_확인(지하철구간_삭제_요청, HttpStatus.NOT_FOUND);
+
+    }
+
+
     private void 지하철역_순서_확인(ExtractableResponse<Response> getResponse, List<String> stationNames) {
         assertThat(getResponse.jsonPath().getList("stations.name")).hasSameElementsAs(stationNames);
     }
