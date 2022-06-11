@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import java.util.List;
-import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -37,8 +36,7 @@ public class Line extends BaseEntity {
     }
 
     public void setFinalStations(final Station finalUpStation, final Station finalDownStation, final Long distance) {
-        relateToStation(finalUpStation, null, 0L, finalDownStation, distance);
-        relateToStation(finalDownStation, finalUpStation, distance, null, 0L);
+        lineStations.addFinalStations(this, finalUpStation, finalDownStation, distance);
     }
 
     public void update(final String newName, final String newColor) {
@@ -47,14 +45,15 @@ public class Line extends BaseEntity {
     }
 
     public SectionResponse registerSection(final Station upStation, final Station downStation, final Long distance) {
-        final Optional<LineStation> upRelation = lineStations.getByStation(upStation);
-        final Optional<LineStation> downRelation = lineStations.getByStation(downStation);
-        validateStations(upRelation, downRelation);
-        if (upRelation.isPresent()) {
-            relateToStationWithPrevious(upRelation.get(), downStation, distance);
+        validateDistance(distance);
+        final boolean upStationExists = lineStations.hasRelationTo(upStation);
+        final boolean downStationExists = lineStations.hasRelationTo(downStation);
+        validateStations(upStationExists, downStationExists);
+        if (upStationExists) {
+            lineStations.addDownStation(this, upStation, downStation, distance);
         }
-        if (downRelation.isPresent()) {
-            relateToStationWithNext(downRelation.get(), upStation, distance);
+        if (downStationExists) {
+            lineStations.addUpStation(this, upStation, downStation, distance);
         }
         return new SectionResponse(name, upStation.getName(), downStation.getName(), distance);
     }
@@ -79,76 +78,18 @@ public class Line extends BaseEntity {
         return lineStations.sections();
     }
 
-    private LineStation relateToStation(final Station newStation,
-                                        final Station previous,
-                                        final Long distanceToPrevious,
-                                        final Station next,
-                                        final Long distanceToNext) {
-        final LineStation newRelation = new LineStation(
-                this,
-                newStation,
-                previous,
-                distanceToPrevious,
-                next,
-                distanceToNext);
-        lineStations.add(newRelation);
-        return newRelation;
+    private void validateDistance(final Long distance) {
+        if (distance <= 0L) {
+            throw new IllegalArgumentException("등록할 구간의 거리는 0 이하일 수 없습니다");
+        }
     }
 
-    private void validateStations(final Optional<LineStation> upRelation, final Optional<LineStation> downRelation) {
-        if (upRelation.isPresent() && downRelation.isPresent()) {
+    private void validateStations(final boolean upStationExists, final boolean downStationExists) {
+        if (upStationExists && downStationExists) {
             throw new IllegalArgumentException("이미 등록된 구간입니다");
         }
-        if (!upRelation.isPresent() && !downRelation.isPresent()) {
+        if (!upStationExists && !downStationExists) {
             throw new IllegalArgumentException("적어도 1개 지하철역은 기존에 등록된 역이어야 합니다");
         }
-    }
-
-    private void validateDistance(final Long existingDistance, final Long distance) {
-        if (existingDistance <= distance) {
-            throw new IllegalArgumentException("새로운 구간의 거리는 기존 구간의 거리보다 짧아야 합니다");
-        }
-    }
-
-    private void relateToStationWithPrevious(final LineStation previousRelation,
-                                             final Station newStation,
-                                             final Long distance) {
-        final LineStation newRelation = relateToStation(newStation, previousRelation.getStation(), distance, null, 0L);
-        setOldNextRelation(lineStations.getByStation(previousRelation.getNext()), newRelation, distance);
-        previousRelation.updateNext(newStation, distance);
-    }
-
-    private void setOldNextRelation(final Optional<LineStation> oldNextRelation,
-                                    final LineStation newRelation,
-                                    final Long distance) {
-        if (!oldNextRelation.isPresent()) {
-            return;
-        }
-        validateDistance(oldNextRelation.get().getDistanceToPrevious(), distance);
-        final Station oldNext = oldNextRelation.get().getStation();
-        final long distanceToOldNext = oldNextRelation.get().getDistanceToPrevious() - distance;
-        oldNextRelation.get().updatePrevious(newRelation.getStation(), distanceToOldNext);
-        newRelation.updateNext(oldNext, distanceToOldNext);
-    }
-
-    private void relateToStationWithNext(final LineStation nextRelation,
-                                         final Station newStation,
-                                         final Long distance) {
-        final LineStation newRelation = relateToStation(newStation, null, 0L, nextRelation.getStation(), distance);
-        setOldPreviousRelation(lineStations.getByStation(nextRelation.getPrevious()), newRelation, distance);
-        nextRelation.updatePrevious(newStation, distance);
-    }
-
-    private void setOldPreviousRelation(final Optional<LineStation> oldPreviousRelation,
-                                        final LineStation newRelation,
-                                        final Long distance) {
-        if (!oldPreviousRelation.isPresent()) {
-            return;
-        }
-        validateDistance(oldPreviousRelation.get().getDistanceToNext(), distance);
-        final Station oldPrevious = oldPreviousRelation.get().getStation();
-        final long distanceToOldPrevious = oldPreviousRelation.get().getDistanceToNext() - distance;
-        oldPreviousRelation.get().updateNext(newRelation.getStation(), distanceToOldPrevious);
-        newRelation.updatePrevious(oldPrevious, distanceToOldPrevious);
     }
 }

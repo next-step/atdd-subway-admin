@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
@@ -58,6 +59,36 @@ public class LineTest {
     }
 
     @Test
+    void 등록할_구간의_거리가_0보다_크지_않으면_IllegalStatementException이_발생해야_한다() {
+        // given
+        line.setFinalStations(finalUpStation, finalDownStation, lineDistance);
+
+        // when and then
+        assertThatThrownBy(() -> line.registerSection(finalDownStation, new Station("new"), 0L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 상행선_하행선이_이미_등록된_구간을_등록하면_IllegalStatementException이_발생해야_한다() {
+        // given
+        line.setFinalStations(finalUpStation, finalDownStation, lineDistance);
+
+        // when and then
+        assertThatThrownBy(() -> line.registerSection(finalDownStation, finalUpStation, lineDistance))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 상행선_하행선이_하나도_등록되지_않은_구간을_등록하면_IllegalStatementException이_발생해야_한다() {
+        // given
+        line.setFinalStations(finalDownStation, finalUpStation, lineDistance);
+
+        // when and then
+        assertThatThrownBy(() -> line.registerSection(new Station("new1"), new Station("new2"), lineDistance))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void 하행종점역이_아닌_기존_역을_상행역으로_새로운_구간을_등록할_수_있어야_한다() {
         // given
         line.setFinalStations(finalUpStation, finalDownStation, lineDistance);
@@ -69,9 +100,7 @@ public class LineTest {
 
         // then
         assertRegisteredSection(sectionResponse, finalUpStation, newStation, distance);
-        assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
-        assertThat(line.getLineStations().getByStation(finalDownStation).get().getDistanceToPrevious())
-                .isEqualTo(lineDistance - distance);
+        assertThat(line.getLineStations().hasRelationTo(newStation)).isTrue();
     }
 
     @Test
@@ -86,9 +115,7 @@ public class LineTest {
 
         // then
         assertRegisteredSection(sectionResponse, newStation, finalDownStation, distance);
-        assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
-        assertThat(line.getLineStations().getByStation(finalUpStation).get().getDistanceToNext())
-                .isEqualTo(lineDistance - distance);
+        assertThat(line.getLineStations().hasRelationTo(newStation)).isTrue();
     }
 
     @Test
@@ -103,7 +130,7 @@ public class LineTest {
 
         // then
         assertRegisteredSection(sectionResponse, newStation, finalUpStation, distance);
-        assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
+        assertThat(line.getLineStations().hasRelationTo(newStation)).isTrue();
     }
 
     @Test
@@ -118,7 +145,7 @@ public class LineTest {
 
         // then
         assertRegisteredSection(sectionResponse, finalDownStation, newStation, distance);
-        assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
+        assertThat(line.getLineStations().hasRelationTo(newStation)).isTrue();
     }
 
     private void assertRegisteredSection(final SectionResponse newSection,
