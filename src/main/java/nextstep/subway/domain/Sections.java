@@ -29,6 +29,10 @@ public class Sections {
         if (isUpStationContains && isDownStationContains) {
             throw new IllegalArgumentException("상행역과 하행역이 모두 등록되어 있으면 추가할 수 없습니다.");
         }
+
+        if (!isUpStationContains && !isDownStationContains) {
+            throw new IllegalArgumentException("상행역과 하행역 중 하나는 포함되어야 합니다.");
+        }
     }
 
     private boolean isContains(Station station) {
