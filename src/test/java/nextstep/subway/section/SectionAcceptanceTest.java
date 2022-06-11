@@ -26,6 +26,8 @@ public class SectionAcceptanceTest extends BaseUnitTest {
     private StationResponse 강남역;
     private StationResponse 광교역;
     private StationResponse 판교역;
+    private StationResponse 신림역;
+    private StationResponse 삼성역;
     private LineResponse 신분당선;
 
     @BeforeEach
@@ -35,6 +37,8 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         강남역 = createStation("강남역").as(StationResponse.class);
         광교역 = createStation("광교역").as(StationResponse.class);
         판교역 = createStation("판교역").as(StationResponse.class);
+        신림역 = createStation("신림역").as(StationResponse.class);
+        삼성역 = createStation("삼성역").as(StationResponse.class);
 
         //given
         //노선 등록
@@ -60,10 +64,28 @@ public class SectionAcceptanceTest extends BaseUnitTest {
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
     @Test
     void 상행역_하행역_노선_등록() {
+        // given
+        구간_등록_테스트();
+
         // when
         // 동일한 구간 등록
-        구간_등록_테스트();
         SectionRequest sectionRequest = SectionRequest.of(강남역.getId(), 판교역.getId(), 1L);
+        ExtractableResponse<Response> response = 지하철_구간_등록(신분당선.getId(), sectionRequest);
+
+        // then
+        // 에러 확인
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.")
+    @Test
+    void 상행역_하행역_미포함() {
+        // given
+        구간_등록_테스트();
+
+        // when
+        // 상행역, 하행역 포함하지 않고 구간 등록
+        SectionRequest sectionRequest = SectionRequest.of(신림역.getId(), 삼성역.getId(), 1L);
         ExtractableResponse<Response> response = 지하철_구간_등록(신분당선.getId(), sectionRequest);
 
         // then
