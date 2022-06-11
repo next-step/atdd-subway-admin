@@ -144,7 +144,7 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
-        if(!includeStations().contains(station)) {
+        if (!includeStations().contains(station)) {
             throw new IllegalArgumentException(NO_SEARCH_STATION_IN_LINE_MSG);
         }
 
