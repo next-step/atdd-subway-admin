@@ -25,12 +25,8 @@ public class LineService {
     }
 
     public LineResponse create(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(StationNotFoundException::new);
-
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-                .orElseThrow(StationNotFoundException::new);
-
+        Station upStation = findStation(lineRequest.getUpStationId());
+        Station downStation = findStation(lineRequest.getDownStationId());
         Line line = lineRepository.save(lineRequest.toLine(upStation, downStation));
 
         return LineResponse.of(line);
@@ -57,6 +53,11 @@ public class LineService {
     public void deleteLine(Long id) {
         Line line = findLineById(id);
         lineRepository.delete(line);
+    }
+
+    private Station findStation(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(StationNotFoundException::new);
     }
 
     private Line findLineById(Long id) {

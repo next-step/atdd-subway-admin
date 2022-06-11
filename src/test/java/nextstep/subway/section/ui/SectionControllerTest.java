@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import static nextstep.subway.common.exception.ErrorMessage.SECTION_DUPLICATION;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -60,5 +61,12 @@ public class SectionControllerTest {
                         .content("{\"downStationId\" : \"2\", \"upStationId\" : \"1\", \"distance\" : 10}"))
                 .andExpect(jsonPath("message").value(SECTION_DUPLICATION.getMessage()))
                 .andExpect(status().isBadRequest());
+    }
+
+    @DisplayName("구간을 삭제한다")
+    @Test
+    void deleteSection() throws Exception {
+        mockMvc.perform(delete("/lines/1/sections?stationId=3"))
+                .andExpect(status().isNoContent());
     }
 }

@@ -1,6 +1,8 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.section.exception.SectionCannotDeleteException;
 import nextstep.subway.section.exception.SectionDuplicationException;
+import nextstep.subway.section.exception.SectionStationNotFoundException;
 import nextstep.subway.station.exception.StationAllNotExistedException;
 
 import javax.persistence.CascadeType;
@@ -11,6 +13,8 @@ import java.util.List;
 
 @Embeddable
 public class Sections {
+    private static final int MIN_SIZE = 2;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
@@ -20,6 +24,13 @@ public class Sections {
         updateUpStation(section);
         updateDownStation(section);
         sections.add(section);
+    }
+
+    public void deleteSection(Long stationId) {
+        validateStationSize();
+        Section targetSection = getTargetSection(stationId);
+        cutOffSection(targetSection, stationId);
+        this.sections.remove(targetSection);
     }
 
     private void validateDuplication(Section section) {
@@ -65,5 +76,35 @@ public class Sections {
 
     private boolean isFirst() {
         return sections.size() == 0;
+    }
+
+    private void validateStationSize() {
+        if (sections.size() < MIN_SIZE) {
+            throw new SectionCannotDeleteException();
+        }
+    }
+
+    private Section getTargetSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.hasStation(stationId))
+                .findAny()
+                .orElseThrow(SectionStationNotFoundException::new);
+    }
+
+    private void cutOffSection(Section targetSection, Long stationId) {
+        cufOffByUpWard(targetSection, stationId);
+        cufOffByDownWard(targetSection, stationId);
+    }
+
+    private void cufOffByUpWard(Section targetSection, Long stationId) {
+        sections.stream().filter(section -> section.hasUpStation(stationId))
+                .findFirst()
+                .ifPresent(section -> section.changeDownStation(targetSection.getDownStation()));
+    }
+
+    private void cufOffByDownWard(Section targetSection, Long stationId) {
+        sections.stream().filter(section -> section.hasUpStation(stationId))
+                .findFirst()
+                .ifPresent(section -> section.changeUpStation(targetSection.getUpStation()));
     }
 }
