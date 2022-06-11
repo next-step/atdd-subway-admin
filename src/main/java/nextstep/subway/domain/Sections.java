@@ -37,6 +37,13 @@ public class Sections {
             firstSection.setLine(null);
             sections.remove(firstSection);
         }
+
+        if (lastStation().equals(station)) {
+            Section lastStation = sections.stream()
+                .filter(section -> section.getDownStation().equals(station)).findFirst().get();
+            lastStation.setLine(null);
+            sections.remove(lastStation);
+        }
     }
 
     private void validate(Section hasUpStationSection, Section hasDownStationSection) {
@@ -97,6 +104,19 @@ public class Sections {
 
         upStations.removeAll(downStations);
         return upStations.get(FIRST_INDEX);
+    }
+
+    private Station lastStation() {
+        List<Station> upStations = new ArrayList<>();
+        List<Station> downStations = new ArrayList<>();
+
+        sections.forEach(section -> {
+            upStations.add(section.getUpStation());
+            downStations.add(section.getDownStation());
+        });
+
+        downStations.removeAll(upStations);
+        return downStations.get(FIRST_INDEX);
     }
 
 }
