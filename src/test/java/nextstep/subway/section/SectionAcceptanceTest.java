@@ -196,4 +196,28 @@ public class SectionAcceptanceTest {
 
         지하철구간_삭제_성공(response);
     }
+
+    /**
+     * GIVEN 지하철 역과
+     * GIVEN 1개의 노선과
+     * GIVEN 1개의 구간이 존재 할 때
+     * WHEN 노선에 존재하지 않는 역이 포함된 구간을 삭제하려고 하면
+     * THEN 예외를 던진다
+     */
+    @DisplayName("노선에 등록되지 않은 역을 구간에서 삭제하면 예외를 던진다")
+    @Test
+    void 구간_삭제_존재_예외() {
+    }
+
+    /**
+     * GIVEN 지하철 역과
+     * GIVEN 1개의 노선과
+     * GIVEN 1개의 구간이 존재 할 때
+     * WHEN 마지막 구간을 삭제하려고 하면
+     * THEN 예외를 던진다
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 삭제하면 예외를 던진다")
+    @Test
+    void 구간_삭제_마지막_예외() {
+    }
 }
