@@ -12,6 +12,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.exception.SubwayException;
+import nextstep.subway.exception.SubwayExceptionMessage;
 import nextstep.subway.generic.domain.distance.Distance;
 
 @Entity
@@ -49,11 +51,11 @@ public class Section {
     }
 
     private boolean isStandardDownStation(final Section section) {
-        return this.downStation.equals(section.downStation);
+        return this.downStation.equalsId(section.downStation);
     }
 
     private boolean isStandardUpStation(final Section section) {
-        return this.upStation.equals(section.upStation);
+        return this.upStation.equalsId(section.upStation);
     }
 
     public void calculate(final Section section) {
@@ -70,7 +72,7 @@ public class Section {
 
     private void validateDistance(final Section section) {
         if (section.distance.isGreaterThanOrEqualTo(this.distance)) {
-            throw new SectionException("역과 역사이에 등록시에 거리는 기존보다 크거나 같을 수 없습니다.");
+            throw new SubwayException(SubwayExceptionMessage.INVALID_DISTANCE);
         }
     }
 

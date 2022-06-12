@@ -11,6 +11,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.SubwayException;
+import nextstep.subway.exception.SubwayExceptionMessage;
 
 @Embeddable
 public class Sections {
@@ -30,7 +32,7 @@ public class Sections {
 
     private void validateDuplicate(final Section section) {
         if (sections.stream().anyMatch(origin -> origin.equalsStations(section))) {
-            throw new SectionException("이미 등록되어 있는 구간입니다.");
+            throw new SubwayException(SubwayExceptionMessage.DUPLICATE_SECTION);
         }
     }
 

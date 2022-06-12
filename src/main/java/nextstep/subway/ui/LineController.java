@@ -63,8 +63,4 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @ExceptionHandler
-    public ResponseEntity<ErrorResponse> runtimeException(RuntimeException exception) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(String.format("%s message: %s ", exception, exception.getMessage())));
-    }
 }
