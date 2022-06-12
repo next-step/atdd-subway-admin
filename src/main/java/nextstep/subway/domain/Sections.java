@@ -14,7 +14,7 @@ import java.util.stream.Stream;
 @Embeddable
 public class Sections {
 
-    private static final int DUPLICATION_CHECK_NUMBER = 1;
+    private static final int CHECK_NUMBER = 1;
 
     @OneToMany(fetch = FetchType.LAZY,
             mappedBy = "line",
@@ -31,7 +31,7 @@ public class Sections {
     }
 
     private void validateDuplicateSection(Section section) {
-        if (getSectionStream(section).count() > DUPLICATION_CHECK_NUMBER) {
+        if (getSectionStream(section).count() > CHECK_NUMBER) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어있습니다.");
         }
     }
@@ -74,4 +74,10 @@ public class Sections {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
+    public void delete(Station station) {
+        if (sections.size() <= CHECK_NUMBER) {
+            throw new IllegalArgumentException("더 이상 구간을 제거할 수 없습니다.");
+        }
+
+    }
 }

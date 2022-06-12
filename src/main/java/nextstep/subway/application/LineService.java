@@ -44,17 +44,17 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        return LineResponse.of(findById(id));
+        return LineResponse.of(getLineById(id));
     }
 
-    public Line findById(Long id) {
+    public Line getLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(String.format("Line Not Found : %d", id)));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = findById(id);
+        Line line = getLineById(id);
 
         line.change(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
