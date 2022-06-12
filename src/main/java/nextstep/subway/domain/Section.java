@@ -48,7 +48,7 @@ public class Section {
     }
 
     public void deleteMerge(Section section) {
-        changeUpStation(section.getUpStation());
+        changeDownStation(section.getDownStation());
         changeDistance(distance.plus(section.getDistance()));
     }
 

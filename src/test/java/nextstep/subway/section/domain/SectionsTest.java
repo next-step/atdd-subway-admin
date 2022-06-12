@@ -156,6 +156,44 @@ class SectionsTest {
         assertThatThrownBy(sections::getStationsInOrder).isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    void 종점이_제거될_경우_다음으로_오던_역이_종점이_됨() {
+        // given
+        final Sections sections = new Sections();
+        Section section1 = new Section(강남역, 양재역, 7);
+        Section section2 = new Section(양재역, 광교역, 3);
+        sections.add(section1);
+        sections.add(section2);
+
+        // when
+        sections.delete(광교역);
+
+        // then
+        assertAll(
+                () -> assertThat(sections.getStationsInOrder()).containsExactly(강남역, 양재역),
+                () -> assertThat(sections.getSections()).hasSize(1)
+        );
+    }
+
+    @Test
+    void 중간역이_제거될_경우_재배치를_함() {
+        // given
+        final Sections sections = new Sections();
+        Section section1 = new Section(강남역, 양재역, 7);
+        Section section2 = new Section(양재역, 광교역, 3);
+        sections.add(section1);
+        sections.add(section2);
+
+        // when
+        sections.delete(양재역);
+
+        // then
+        assertAll(
+                () -> assertThat(sections.getStationsInOrder()).containsExactly(강남역, 광교역),
+                () -> assertThat(sections.getSections()).hasSize(1)
+        );
+    }
+
     @DisplayName("노선에 등록되어있지 않은 역을 제거")
     @Test
     void 구간_역_삭제_시_예외_케이스_1() {

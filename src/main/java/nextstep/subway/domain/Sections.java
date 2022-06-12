@@ -114,4 +114,7 @@ public class Sections {
                 .findFirst();
     }
 
+    public List<Section> getSections() {
+        return sections;
+    }
 }
