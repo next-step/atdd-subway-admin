@@ -37,7 +37,7 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLines() {
-        return lineRepository.findAll()
+        return lineRepository.findAllFetchStation()
                 .stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
@@ -54,7 +54,7 @@ public class LineService {
     }
 
     private Line findLineById(final Long id) {
-        return lineRepository.findById(id)
+        return lineRepository.findFetchStationById(id)
                 .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
     }
 
