@@ -6,7 +6,6 @@ import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineStationRequest;
 import nextstep.subway.dto.LineStationResponse;
-import nextstep.subway.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,14 +35,5 @@ public class LineStationService {
 
     private LineStation saveLineStation(LineStation lineStation) {
         return lineStationRepository.save(lineStation);
-    }
-
-    public void deleteLineStation(Long lineStationId) {
-        lineStationRepository.delete(findLineStationById(lineStationId));
-    }
-
-    private LineStation findLineStationById(Long lineStationId) {
-        return lineStationRepository.findById(lineStationId)
-                .orElseThrow(() -> new NotFoundException("지하철구간을 찾을 수 없습니다."));
     }
 }

@@ -14,15 +14,15 @@ public class LineStation {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id", nullable = false)
+    @JoinColumn(name = "line_id")
     private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
+    @JoinColumn(name = "up_station_id")
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
+    @JoinColumn(name = "down_station_id")
     private Station downStation;
 
     @Column
@@ -58,6 +58,7 @@ public class LineStation {
 
     private void validateDistance(Long newDistance) {
         if (newDistance >= this.distance) {
+            System.out.println("새로운 구간의 길이가 기존 구간의 길이보다 작아야합니다.");
             throw new BadRequestException("새로운 구간의 길이가 기존 구간의 길이보다 작아야합니다.");
         }
     }
@@ -65,6 +66,10 @@ public class LineStation {
     private void updateDistance(Long newDistance) {
         validateDistance(newDistance);
         this.distance = this.distance - newDistance;
+    }
+
+    public void deleteLine() {
+        this.line = null;
     }
 
     public Long getId() {

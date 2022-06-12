@@ -43,8 +43,11 @@ public class Line {
     }
 
     public void addLineStation(LineStation newLineStation) {
-        newLineStation.toLine(this);
-        lineStations.add(newLineStation);
+        lineStations.addLineStation(this, newLineStation);
+    }
+
+    public void deleteLineStations(Station station) {
+        lineStations.deleteLineStations(this, station);
     }
 
     public Long getId() {
@@ -59,7 +62,11 @@ public class Line {
         return color;
     }
 
-    public List<LineStation> getLineStations() {
+    public LineStations getLineStations() {
+        return lineStations;
+    }
+
+    public List<LineStation> getLineStationList() {
         return lineStations.get();
     }
 

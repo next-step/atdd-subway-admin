@@ -69,4 +69,10 @@ public class LineService {
         Line line = findLineById(lineId);
         lineRepository.delete(line);
     }
+
+    public void deleteLineStations(Long lineStationId, Long stationId) {
+        Line line = this.findLineById(lineStationId);
+        Station station = stationService.findStationById(stationId);
+        line.deleteLineStations(station);
+    }
 }

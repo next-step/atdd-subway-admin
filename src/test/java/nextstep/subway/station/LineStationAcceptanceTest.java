@@ -151,7 +151,7 @@ public class LineStationAcceptanceTest {
         LineStationApi.지하철구간_생성(line.getId(), AB_지하철구간_등록_요청);
 
         // when
-        LineStationApi.지하철구간_삭제(AC_지하철구간_등록_응답.jsonPath().getLong("id"));
+        LineStationApi.지하철구간_삭제(AC_지하철구간_등록_응답.jsonPath().getLong("id"), C역.getId());
 
         // then
         ExtractableResponse<Response> response = LineApi.지하철노선_상세_조회(line.getId());
@@ -163,19 +163,19 @@ public class LineStationAcceptanceTest {
     /**
      * given: A역-B역 구간, B역-C역 구간을 등록하고
      * when: A-B역 구간을 삭제하면
-     * then: 역이 재배치된다.
+     * then: 역이 재배치된다. (A-C 구간 생성)
      */
     @Test
     @DisplayName("중간역 삭제")
     void 지하철구간_중간역삭제() {
         // given
-        LineStationRequest AC_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), C역.getId(), 30L);
-        LineStationApi.지하철구간_생성(line.getId(), AC_지하철구간_등록_요청);
-        LineStationRequest AB_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), B역.getId(), 20L);
-        ExtractableResponse<Response> AB_지하철구간_등록_응답 = LineStationApi.지하철구간_생성(line.getId(), AB_지하철구간_등록_요청);
+        LineStationRequest AB_지하철구간_등록_요청 = new LineStationRequest(A역.getId(), B역.getId(), 10L);
+        LineStationApi.지하철구간_생성(line.getId(), AB_지하철구간_등록_요청);
+        LineStationRequest BC_지하철구간_등록_요청 = new LineStationRequest(B역.getId(), C역.getId(), 20L);
+        LineStationApi.지하철구간_생성(line.getId(), BC_지하철구간_등록_요청);
 
         // when
-        LineStationApi.지하철구간_삭제(AB_지하철구간_등록_응답.jsonPath().getLong("id"));
+        LineStationApi.지하철구간_삭제(line.getId(), B역.getId());
 
         // then
         ExtractableResponse<Response> response = LineApi.지하철노선_상세_조회(line.getId());

@@ -7,6 +7,8 @@ import nextstep.subway.dto.LineStationRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.HashMap;
+
 public class LineStationApi {
     public static ExtractableResponse<Response> 지하철구간_생성(Long lineId, LineStationRequest lineStationRequest) {
         ExtractableResponse<Response> response =
@@ -20,11 +22,15 @@ public class LineStationApi {
         return response;
     }
 
-    public static void 지하철구간_삭제(Long lineStationId) {
+    public static void 지하철구간_삭제(Long lineId, Long stationId) {
+        HashMap<String, String> request = new HashMap<>();
+        request.put("stationId", String.valueOf(stationId));
+
         ExtractableResponse<Response> 지하철구간_삭제_응답 =
                 RestAssured.given().log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().delete("/line/" + lineStationId + "/section")
+                        .params(request)
+                        .when().delete("/line/" + lineId + "/section")
                         .then().log().all()
                         .extract();
 
