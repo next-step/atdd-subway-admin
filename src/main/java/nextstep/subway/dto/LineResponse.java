@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -33,7 +32,7 @@ public class LineResponse {
 
         Set<SectionResponse> sections = new HashSet<>();
         if (line.getSections() != null) {
-            line.getSections().stream().map(section -> sections.add(SectionResponse.of(section))).collect(Collectors.toList());
+            line.getSections().forEach(section -> sections.add(SectionResponse.of(section)));
         }
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(), new ArrayList<>(stations), new ArrayList<>(sections));
