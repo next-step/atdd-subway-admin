@@ -41,14 +41,23 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private Line(String name, String color, int distance) {
-        this.name = LineName.of(name);
-        this.color = LineColor.of(color);
-        this.distance = Distance.of(distance);
+    private Line(LineName name, LineColor color, Distance distance, Station upStation, Station downStation) {
+        this.name = name;
+        this.color = color;
+        this.distance = distance;
+        this.upStation = upStation;
+        this.downStation = downStation;
+
+        Section section = Section.create(upStation, downStation, distance);
+        section.setLine(this);
+        sections.addSection(section);
+
+        lineStations.add(LineStation.create(this, upStation));
+        lineStations.add(LineStation.create(this, downStation));
     }
 
-    public static Line create(String name, String color, int distance) {
-        return new Line(name, color, distance);
+    public static Line create(LineName name, LineColor color, Distance distance, Station upStation, Station downStation) {
+        return new Line(name, color, distance, upStation, downStation);
     }
 
     public Long getId() {
@@ -72,28 +81,75 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        sections.add(section);
         section.setLine(this);
+
+        if (Objects.equals(upStation, section.getDownStation())) {
+            createUpStationSection(section);
+            return;
+        }
+
+        if (Objects.equals(downStation, section.getUpStation())) {
+            createDownStationSection(section);
+            return;
+        }
+
+        if (Objects.equals(upStation, section.getUpStation())) {
+            divideSection(section, section.getDownStation());
+            return;
+        }
+
+        if (Objects.equals(downStation, section.getDownStation())) {
+            divideSection(section, section.getUpStation());
+            return;
+        }
+
+        throw new IllegalArgumentException("상행역과 하행역 둘 중 하나라도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
     }
+
+    private void divideSection(Section section, Station section1) {
+        sections.addBetweenSection(section);
+        lineStations.add(LineStation.create(this, section1));
+    }
+
+    private void createDownStationSection(Section section) {
+        setDownStation(section.getDownStation());
+        sections.addSection(section);
+        distance = distance.add(section.getDistance().getValue());
+    }
+
+    private void createUpStationSection(Section section) {
+        setUpStation(section.getUpStation());
+        sections.addSection(section);
+        distance = distance.add(section.getDistance().getValue());
+    }
+
 
     public Sections getSections() {
         return sections;
     }
 
-    public void setTerminus(Station upStation, Station downStation) {
-        lineStations.remove(this, upStation);
-        lineStations.remove(this, downStation);
-
-        lineStations.add(LineStation.create(this, upStation));
-        lineStations.add(LineStation.create(this, downStation));
-
-        this.upStation = upStation;
-        this.downStation = downStation;
+    private void setUpStation(Station upStation) {
+        if (!Objects.equals(this.upStation, upStation)) {
+            lineStations.add(LineStation.create(this, upStation));
+            this.upStation = upStation;
+        }
     }
+
+    private void setDownStation(Station downStation) {
+        if (!Objects.equals(this.downStation, downStation)) {
+            lineStations.add(LineStation.create(this, downStation));
+            this.downStation = downStation;
+        }
+    }
+
 
     public void modify(String name, String color) {
         this.name = LineName.of(name);
         this.color = LineColor.of(color);
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     @Override
