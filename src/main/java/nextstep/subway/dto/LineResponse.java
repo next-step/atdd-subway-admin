@@ -19,7 +19,7 @@ public class LineResponse {
     }
 
     private static List<StationResponse> toStationResponse(Line line) {
-        return line.getSections().getStationsInOrder().stream()
+        return line.getStations().stream()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
     }

@@ -14,6 +14,8 @@ import java.util.stream.Stream;
 @Embeddable
 public class Sections {
 
+    private static final int DUPLICATION_CHECK_NUMBER = 1;
+
     @OneToMany(fetch = FetchType.LAZY,
             mappedBy = "line",
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
@@ -29,7 +31,7 @@ public class Sections {
     }
 
     private void validateDuplicateSection(Section section) {
-        if (getSectionStream(section).count() > 1) {
+        if (getSectionStream(section).count() > DUPLICATION_CHECK_NUMBER) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어있습니다.");
         }
     }
