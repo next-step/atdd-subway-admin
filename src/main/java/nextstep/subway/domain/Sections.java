@@ -85,16 +85,11 @@ public class Sections {
         Optional<Section> optionalDownSection = findSectionByUpStation(station);
         Optional<Section> optionalUpSection = findSectionByDownStation(station);
 
-        boolean isUpSectionPresent = optionalUpSection.isPresent();
-        boolean isDownSectionPresent = optionalDownSection.isPresent();
-
-        validateSectionNull(isUpSectionPresent, isDownSectionPresent);
         validatesSectionsSize();
+        optionalUpSection.ifPresent(sections::remove);
+        optionalDownSection.ifPresent(sections::remove);
 
-        deleteOptionalSection(optionalUpSection);
-        deleteOptionalSection(optionalDownSection);
-
-        if(isUpSectionPresent && isDownSectionPresent){
+        if (optionalUpSection.isPresent() && optionalDownSection.isPresent()) {
             combineSection(optionalUpSection.get(), optionalDownSection.get());
         }
     }
@@ -113,28 +108,16 @@ public class Sections {
             .findFirst();
     }
 
-    private void validateSectionNull(boolean containsUpStation, boolean containsDownStation){
-        if (!containsUpStation && !containsDownStation) {
-            throw new SectionDeleteException(STATION_NOT_EXISTS);
-        }
-    }
-
-    private void validatesSectionsSize(){
+    private void validatesSectionsSize() {
         if (sections.size() <= MIN_SIZE) {
             throw new SectionDeleteException(LAST_SECTION);
         }
     }
 
-    private void deleteOptionalSection(Optional<Section> optionalSection) {
-        if (optionalSection.isPresent()) {
-            Section section = optionalSection.get();
-            sections.remove(section);
-        }
-    }
-
     private void combineSection(Section upSection, Section downSection) {
         Distance newDistance = Section.newDistance(upSection, downSection);
-        Section newSection = Section.of(upSection.getUpStation(), downSection.getDownStation(), newDistance);
+        Section newSection = Section.of(upSection.getUpStation(), downSection.getDownStation(),
+            newDistance);
         newSection.setLine(upSection.getLine());
         addSection(newSection);
     }
