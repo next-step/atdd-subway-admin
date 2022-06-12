@@ -71,9 +71,13 @@ public class Section {
     }
 
     private void validateDistance(final Section section) {
-        if (section.distance.isGreaterThanOrEqualTo(this.distance)) {
+        if (section.isGreaterThanOrEqualToDistance(this)) {
             throw new SubwayException(SubwayExceptionMessage.INVALID_DISTANCE);
         }
+    }
+
+    private boolean isGreaterThanOrEqualToDistance(final Section section) {
+        return distance.isGreaterThanOrEqualTo(section.distance);
     }
 
     public boolean hasDownStation(final Station station) {
