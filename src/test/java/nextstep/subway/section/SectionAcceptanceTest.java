@@ -169,7 +169,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
      * When 노선의 종착역과 연결되는 신규 노선을 추가한 후 기존 종착역을 제거하면
      * Then 기존 종착역은 조회되지 않는다.
      */
-    @DisplayName("역 사이에 상행역에서 출발하는 새로운 구간을 등록한다.")
+    @DisplayName("종착역을 새로운 역으로 변경한 후 기존 종착역을 제거한다.")
     @Test
     void removeSection() {
         // When
