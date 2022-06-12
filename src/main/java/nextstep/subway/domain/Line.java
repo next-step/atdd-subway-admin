@@ -119,6 +119,10 @@ public class Line extends BaseEntity {
         return sections.getSectionsInOrder(upFinalStation, downFinalStation);
     }
 
+    public Sections getSections() {
+        return sections;
+    }
+
     public Section getUpFinalSection() {
         if (sections.isEmpty()) {
             throw new NoSuchElementException("지하철 구간이 존재하지 않습니다.");
