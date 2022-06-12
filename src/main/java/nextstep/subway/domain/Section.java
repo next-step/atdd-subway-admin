@@ -47,20 +47,20 @@ public class Section {
     }
 
     public boolean intersects(final Section section) {
-        return isStandardUpStation(section) || isStandardDownStation(section);
+        return isEqualsUpStation(section) || isEqualsDownStation(section);
     }
 
-    private boolean isStandardDownStation(final Section section) {
+    private boolean isEqualsDownStation(final Section section) {
         return this.downStation.equalsId(section.downStation);
     }
 
-    private boolean isStandardUpStation(final Section section) {
+    private boolean isEqualsUpStation(final Section section) {
         return this.upStation.equalsId(section.upStation);
     }
 
     public void rearrange(final Section section) {
         validateDistance(section);
-        if (isStandardUpStation(section)) {
+        if (isEqualsUpStation(section)) {
             this.upStation = section.downStation;
             this.distance = distance.minus(section.distance);
             return;
