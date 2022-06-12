@@ -12,12 +12,7 @@ public final class LineCRUD {
     private LineCRUD() {
     }
 
-    static Long 지하철역_생성(String stationName) {
-        ExtractableResponse<Response> response = StationCRUD.지하철역_추가(stationName);
-        return response.jsonPath().getLong("id");
-    }
-
-    static ExtractableResponse<Response> 지하철노선_생성(LineRequestDto request) {
+    public static ExtractableResponse<Response> 지하철노선_생성(LineRequestDto request) {
         return RestAssured.given().log().all().body(request).contentType(MediaType.APPLICATION_JSON_VALUE).when()
                 .post("/lines").then().log().all().extract();
     }

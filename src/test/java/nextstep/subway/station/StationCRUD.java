@@ -10,7 +10,12 @@ public class StationCRUD {
     private StationCRUD() {
     }
 
-    public static ExtractableResponse<Response> 지하철역_추가(String name) {
+    public static Long 지하철역_생성(String stationName) {
+        ExtractableResponse<Response> response = StationCRUD.지하철역_추가요청(stationName);
+        return response.jsonPath().getLong("id");
+    }
+
+    public static ExtractableResponse<Response> 지하철역_추가요청(String name) {
         StationRequestDto request = 지하철역_요청_생성(name);
         return 지하철역_추가(request);
     }

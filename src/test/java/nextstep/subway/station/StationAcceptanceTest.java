@@ -4,6 +4,7 @@ import static nextstep.subway.station.StationCRUD.지하철역_요청_생성;
 import static nextstep.subway.station.StationCRUD.지하철역_추가;
 import static nextstep.subway.station.StationCRUD.지하철역_아이디로_삭제;
 import static nextstep.subway.station.StationCRUD.지하철역_전체_조회;
+import static nextstep.subway.station.StationCRUD.지하철역_추가요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
@@ -26,7 +27,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철역_생성() {
         // when
-        ExtractableResponse<Response> response = 지하철역_추가("강남역");
+        ExtractableResponse<Response> response = 지하철역_추가요청("강남역");
 
         // then
         응답코드_검증(response, HttpStatus.CREATED);
@@ -65,8 +66,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철역_조회() {
         // given
-        지하철역_추가("강남역");
-        지하철역_추가("잠실역");
+        지하철역_추가요청("강남역");
+        지하철역_추가요청("잠실역");
 
         // when
         List<String> stationNames = 지하철역_전체_조회()
@@ -85,7 +86,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철역_제거() {
         // given
-        int id = 지하철역_추가("강남역").jsonPath().get("id");
+        int id = 지하철역_추가요청("강남역").jsonPath().get("id");
 
         // when
         지하철역_아이디로_삭제(id);

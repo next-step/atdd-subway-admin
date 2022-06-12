@@ -5,7 +5,7 @@ import static nextstep.subway.line.LineCRUD.지하철노선_아이디로_삭제;
 import static nextstep.subway.line.LineCRUD.지하철노선_아이디로_조회;
 import static nextstep.subway.line.LineCRUD.지하철노선_전체_목록_조회;
 import static nextstep.subway.line.LineCRUD.지하철노선_정보_수정;
-import static nextstep.subway.line.LineCRUD.지하철역_생성;
+import static nextstep.subway.station.StationCRUD.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
