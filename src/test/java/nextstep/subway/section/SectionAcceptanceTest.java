@@ -2,10 +2,12 @@ package nextstep.subway.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.google.common.collect.ImmutableMap;
 import io.restassured.RestAssured;
 import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Map;
 import nextstep.subway.BaseSubwayTest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -153,7 +155,33 @@ public class SectionAcceptanceTest extends BaseSubwayTest {
         assertThat(지하철_노선에_지하철역_등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> 지하철_노선에_지하철역_등록(final Long lineId,final SectionRequest request) {
+    /**
+     * When 상행역과 하행역에 같은 역을 추가한다.
+     * Then 지하철 노선에 역이 추가되지 않는다.
+     */
+    @DisplayName("상행역과 하행역이 같은 경우 추가 할 수 없음")
+    @Test
+    void addSection_exception_equals_stations() {
+
+        // when
+        final ExtractableResponse<Response> 지하철_노선에_지하철역_등록 = 지하철_노선에_지하철역_등록(신분당선.getId(),
+                ImmutableMap.of("upStationId", 강남역.getId().toString(), "downStationId", 강남역.getId().toString(), "distance", "10"));
+
+        // then
+        assertThat(지하철_노선에_지하철역_등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> 지하철_노선에_지하철역_등록(final Long lineId, final SectionRequest request) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .body(request, ObjectMapperType.JACKSON_2)
+                .post("/lines/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선에_지하철역_등록(final Long lineId, final Map<String, String> request) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
