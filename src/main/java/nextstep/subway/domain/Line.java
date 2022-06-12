@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Entity
@@ -114,12 +115,22 @@ public class Line extends BaseEntity {
         return distance;
     }
 
-    public Sections getSections() {
-        return sections;
+    public List<Section> getAllSections() {
+        return sections.getSectionsInOrder(upFinalStation, downFinalStation);
     }
 
-    public List<Section> getAllSections() {
-        return sections.getSections();
+    public Section getUpFinalSection() {
+        if (sections.isEmpty()) {
+            throw new NoSuchElementException("지하철 구간이 존재하지 않습니다.");
+        }
+        return sections.getSectionsInOrder(upFinalStation, downFinalStation).get(0);
+    }
+
+    public Section getDownFinalSection() {
+        if (sections.isEmpty()) {
+            throw new NoSuchElementException("지하철 구간이 존재하지 않습니다.");
+        }
+        return sections.getSectionsInOrder(upFinalStation, downFinalStation).get(sections.size()-1);
     }
 
     @Override

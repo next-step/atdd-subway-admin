@@ -3,11 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import javax.persistence.OrderBy;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.IntStream;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -32,11 +28,11 @@ public class Sections {
             addFirstSection(section);
             return;
         }
-        if (section.isBeforeUpFinalSection(sections)) {
+        if (section.isBeforeUpFinalSection()) {
             addUpFinalSection(section);
             return;
         }
-        if (section.isAfterDownFinalSection(sections)) {
+        if (section.isAfterDownFinalSection()) {
             addDownFinalSection(section);
             return;
         }
@@ -73,7 +69,7 @@ public class Sections {
     }
 
     private void addUpFinalSection(Section section) {
-        sections.add(0, section);
+        sections.add(section);
         section.addLineDistance();
         section.updateLineUpFinalStation();
     }
@@ -85,26 +81,44 @@ public class Sections {
     }
 
     private void addMiddleSection(Section section) {
-        int position = findPositionToAddSection(section);
-        addMiddleSection(position, section);
-    }
-
-    private void addMiddleSection(int position, Section section) {
-        Section oldSection = sections.get(position);
-
+        Section oldSection = findSectionToSplit(section);
         if (section.isLongerThan(oldSection)) {
             throw new IllegalArgumentException("새로운 구간의 길이는 기존 역 사이 길이보다 작아야 합니다.");
         }
+        sections.add(section);
         oldSection.updateUpStation(section);
-        sections.add(position, section);
     }
 
-    private int findPositionToAddSection(Section section) {
-        Section oldSection = sections.stream()
+    private Section findSectionToSplit(Section section) {
+        return sections.stream()
                 .filter(old -> old.hasSameUpStation(section))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("새로운 구간을 추가할 위치를 찾을 수 없습니다."));
+    }
 
-        return sections.indexOf(oldSection);
+    public List<Section> getSectionsInOrder(Station startStation, Station endStation) {
+        List<Section> allSections = new ArrayList<>();
+
+        Station nextStation = startStation;
+        while (!nextStation.equals(endStation)) {
+            Optional<Section> nextSection = getSectionByUpStation(nextStation);
+            if (!nextSection.isPresent()) {
+                break;
+            }
+
+            allSections.add(nextSection.get());
+            nextStation = nextSection.get().getDownStation();
+        }
+        return allSections;
+    }
+
+    private Optional<Section> getSectionByUpStation(Station upStation) {
+        return sections.stream()
+                .filter(section -> section.getUpStation().equals(upStation) )
+                .findFirst();
+    }
+
+    public int size() {
+        return sections.size();
     }
 }

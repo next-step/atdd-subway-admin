@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Objects;
 
 @Entity
@@ -78,15 +77,13 @@ public class Section extends BaseEntity {
         return upStation.equals(station) || downStation.equals(station);
     }
 
-    public boolean isBeforeUpFinalSection(List<Section> sections) {
-        Section upFinalSection = sections.stream().findFirst()
-                .orElseThrow(() -> new NoSuchElementException("지하철 구간이 존재하지 않습니다."));
+    public boolean isBeforeUpFinalSection() {
+        Section upFinalSection = line.getUpFinalSection();
         return downStation.equals(upFinalSection.upStation);
     }
 
-    public boolean isAfterDownFinalSection(List<Section> sections) {
-        Section downFinalSection = sections.stream().reduce((upStation, downStation) -> downStation)
-                .orElseThrow(() -> new NoSuchElementException("지하철 구간이 존재하지 않습니다."));
+    public boolean isAfterDownFinalSection() {
+        Section downFinalSection = line.getDownFinalSection();
         return upStation.equals(downFinalSection.downStation);
     }
 
