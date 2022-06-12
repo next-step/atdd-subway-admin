@@ -12,7 +12,6 @@ import java.util.stream.IntStream;
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("sequence")
     private List<Section> sections = new LinkedList<>();
 
     protected Sections() {
@@ -56,20 +55,7 @@ public class Sections {
         }
     }
 
-    public int size() {
-        return sections.size();
-    }
-
-    public void resetAllSequences() {
-        IntStream.range(0, sections.size())
-                .forEach(index -> sections.get(index).setSequence(index));
-    }
-
-    public List<Section> getSections() {
-        return sections;
-    }
-
-    private boolean isEmpty() {
+    public boolean isEmpty() {
         return sections == null || sections.isEmpty();
     }
 

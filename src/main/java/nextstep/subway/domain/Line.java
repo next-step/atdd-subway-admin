@@ -76,7 +76,6 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         section.updateLine(this);
         sections.addSection(section);
-        sections.resetAllSequences();
     }
 
     public void updateUpFinalStation(Station upStation) {

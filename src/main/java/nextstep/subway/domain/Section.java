@@ -25,8 +25,6 @@ public class Section extends BaseEntity {
 
     private Integer distance;
 
-    private Integer sequence;
-
     public static final int MIN_SECTION_DISTANCE = 0;
 
     protected Section() {
@@ -115,10 +113,6 @@ public class Section extends BaseEntity {
 
     public void updateLineDownFinalStation() {
         line.updateDownFinalStation(downStation);
-    }
-
-    public void setSequence(Integer sequence) {
-        this.sequence = sequence;
     }
 
     public Long getId() {
