@@ -133,6 +133,26 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @Test
+    void 종점이_제거될_경우_다음으로_오던_역이_종점이_됨() {
+
+    }
+
+    @Test
+    void 중간역이_제거될_경우_재배치를_함() {
+        
+    }
+
+    @Test
+    void 노선에_등록되어있지_않은_역은_제거_할_수_없음() {
+
+    }
+
+    @Test
+    void 구간이_하나인_노선에서_마지막_구간은_제거할_수_없음() {
+
+    }
+
     public static ExtractableResponse<Response> 지하철_구간_생성됨(Long lineId, Long upStationId, Long downStationId, Integer distance) {
         return RestAssuredTemplate.post("/lines/" + lineId + "/sections", new SectionRequest(upStationId, downStationId, distance));
     }
