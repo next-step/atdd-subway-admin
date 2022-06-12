@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.line.LineRequest;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.dto.line.SectionRequest;
 import nextstep.subway.dto.station.StationRequest;
 import org.springframework.http.MediaType;
 
@@ -43,10 +44,7 @@ public class SubwayApi {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성(String lineName, String color, int distance,
-                                                          String upStationName, String downStationName) {
-        Long upStationId = 지하철역_생성(upStationName).jsonPath().getLong("id");
-        Long downStationId = 지하철역_생성(downStationName).jsonPath().getLong("id");
-
+                                                          Long upStationId, Long downStationId) {
         LineRequest lineRequest = new LineRequest(lineName, color, distance, upStationId, downStationId);
 
         return RestAssured.given().log().all()
@@ -88,6 +86,15 @@ public class SubwayApi {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/lines/{lineId}", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_구간추가(Long lineId, SectionRequest request) {
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/{lineId}/sections", lineId)
                 .then().log().all()
                 .extract();
     }
