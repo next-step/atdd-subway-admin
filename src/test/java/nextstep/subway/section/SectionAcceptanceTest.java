@@ -97,9 +97,23 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         );
     }
 
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
+    @Test
+    void 예외_기존역보다_길이가_큰_경우() {
+        // when
+        // 지하철_노선에_지하철역_등록_요청
+        SectionRequest sectionRequest = SectionRequest.of(판교역.getId(), 광교역.getId(), 10L);
+        ExtractableResponse<Response> createResponse = 지하철_구간_등록(신분당선.getId(), sectionRequest);
+
+        // then
+        // 에러 확인
+        Assertions.assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
     @Test
-    void 상행역_하행역_노선_등록() {
+    void 예외_동일한_상행역_하행역_등록() {
         // given
         구간_등록_테스트_동일_상행역();
 
@@ -115,7 +129,7 @@ public class SectionAcceptanceTest extends BaseUnitTest {
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.")
     @Test
-    void 상행역_하행역_미포함() {
+    void 예외_상행역_하행역_미포함() {
         // given
         구간_등록_테스트_동일_상행역();
 
