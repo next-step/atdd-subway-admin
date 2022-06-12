@@ -60,7 +60,6 @@ class LineAcceptanceTest {
 
     @AfterEach
     void cleanUp() {
-        System.out.println("TESTTT");
         databaseCleaner.execute();
     }
 

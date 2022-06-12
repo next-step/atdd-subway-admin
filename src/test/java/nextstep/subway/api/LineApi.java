@@ -1,8 +1,12 @@
 package nextstep.subway.api;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.api.request.LineRequest;
+import nextstep.subway.api.request.SectionRequestParam;
+import nextstep.subway.dto.SectionRequest;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -43,5 +47,13 @@ public class LineApi extends BaseApi {
 
     public ExtractableResponse<Response> delete(Long id) {
         return super.delete(id);
+    }
+
+    public ExtractableResponse<Response> addSection(Long id, Long upStationId, Long downStationId, Integer distance) {
+        return RestAssured.given().log().all()
+                .body(SectionRequestParam.create(upStationId.toString(), downStationId.toString(), distance.toString()))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(super.baseUrl + "/" + id + "/sections")
+                .then().log().all().extract();
     }
 }
