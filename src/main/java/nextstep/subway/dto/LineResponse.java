@@ -37,6 +37,14 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), finalStations, sections);
     }
 
+    public static LineResponse of(Line line, List<SectionResponse> sections) {
+        List<StationResponse> finalStations = Arrays.asList(
+                StationResponse.of(line.getUpFinalStation()),
+                StationResponse.of(line.getDownFinalStation())
+        );
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), finalStations, sections);
+    }
+
     public Long getId() {
         return id;
     }

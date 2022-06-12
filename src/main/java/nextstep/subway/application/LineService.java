@@ -4,6 +4,7 @@ import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +35,11 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        return  LineResponse.of(lineRepository.getById(id));
+        Line line =  findLineById(id);
+        List<SectionResponse> sections = line.getAllSections().stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
+        return LineResponse.of(line, sections);
     }
 
     @Transactional(readOnly = true)
