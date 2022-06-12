@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 import static nextstep.subway.line.BaseLineAcceptanceTest.createLineRequest;
+import static nextstep.subway.line.BaseLineAcceptanceTest.findLineRequest;
 import static nextstep.subway.station.BaseStationAcceptanceTest.createStationRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -192,6 +193,48 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
                     .isEqualTo(양재역.getName());
             assertThat(두번째_구간_하행역.getName())
                     .isEqualTo(강남역.getName());
+        });
+    }
+
+    /**
+     * Given 새로운 구간들을 등록하고
+     * When 지하철 노선 조회 시
+     * Then 구간을 순서에 맞게 응답받을 수 있다
+     */
+    @Test
+    @DisplayName("구간 등록 후 조회 시 순서에 맞게 나열된 구간들을 확인할 수 있다.")
+    void getSectionsInOrder() {
+        // 신분당선 : [판교역 - 강남역] => [정자역 - 판교역] [판교역 - 양재역] [양재역 - 강남역]
+        // given
+        StationResponse 정자역 = createStationRequest("정자역").as(StationResponse.class);
+        SectionRequest 정자역_판교역 = SectionRequest.of(정자역.getId(), 판교역.getId(), 3000);
+        createSectionRequest(신분당선.getId(), 정자역_판교역).as(LineResponse.class);
+
+        StationResponse 양재역 = createStationRequest("양재역").as(StationResponse.class);
+        SectionRequest 판교역_양재역 = SectionRequest.of(판교역.getId(), 양재역.getId(), 4000);
+
+        LineResponse 새로운_신분당선 = createSectionRequest(신분당선.getId(), 판교역_양재역).as(LineResponse.class);
+
+        // when
+        LineResponse 신분당선 = findLineRequest(새로운_신분당선.getId().intValue()).as(LineResponse.class);
+
+        // then
+        assertThat(신분당선.getSections()).satisfies(구간 -> {
+           SectionResponse 첫번째_구간 = 구간.get(0);
+           SectionResponse 두번째_구간 = 구간.get(1);
+           SectionResponse 세번째_구간 = 구간.get(2);
+           assertThat(첫번째_구간.getStations().get(0).getName())
+                   .isEqualTo("정자역");
+            assertThat(첫번째_구간.getStations().get(1).getName())
+                    .isEqualTo("판교역");
+            assertThat(두번째_구간.getStations().get(0).getName())
+                    .isEqualTo("판교역");
+            assertThat(두번째_구간.getStations().get(1).getName())
+                    .isEqualTo("양재역");
+            assertThat(세번째_구간.getStations().get(0).getName())
+                    .isEqualTo("양재역");
+            assertThat(세번째_구간.getStations().get(1).getName())
+                    .isEqualTo("강남역");
         });
     }
 
