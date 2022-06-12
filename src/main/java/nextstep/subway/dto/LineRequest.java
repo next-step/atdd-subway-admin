@@ -45,7 +45,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line getLine() {
-        return new Line(this.name, this.color);
+    public Line createLine() {
+        return new Line(name, color);
     }
 }

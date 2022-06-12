@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.jdbc.Sql;
 
+import javax.persistence.EntityManager;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -76,7 +77,7 @@ class LineServiceTest {
         LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
 
         // when
-        LineResponse line = lines.getLineById(response.getId());
+        LineResponse line = lines.getLine(response.getId());
 
         // then
         assertThat(line.getId()).isNotNull();
@@ -89,10 +90,10 @@ class LineServiceTest {
         LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
 
         // when
-        lines.deleteLineById(response.getId());
+        lines.deleteLine(response.getId());
 
         // then
-        assertThatThrownBy(() -> lines.getLineById(response.getId())).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> lines.getLine(response.getId())).isInstanceOf(NoSuchElementException.class);
     }
 
     @DisplayName("지하철 노선을 수정한다")
@@ -102,19 +103,37 @@ class LineServiceTest {
         LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
 
         // when
-        lines.updateLineById(response.getId(), new LineRequest("다른분당선", "bg-blue-100", gangnam.getId(), gyodae.getId(), 10L));
+        lines.updateLine(response.getId(), new LineRequest("다른분당선", "bg-blue-100", gangnam.getId(), gyodae.getId(), 10L));
 
         // then
-        LineResponse line = lines.getLineById(response.getId());
+        LineResponse line = lines.getLine(response.getId());
         assertAll(
                 () -> assertEquals("다른분당선", line.getName()),
                 () -> assertEquals("bg-blue-100", line.getColor())
         );
     }
 
+    @DisplayName("노선 중간에 구간을 등록한다.")
+    @Test
+    void addSectionBetweenStations() {
+        // given
+        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
+
+        // when
+        lines.addSection(response.getId(), new SectionRequest(gangnam.getId(), sinchon.getId(), 10L));
+
+        // then
+        List<String> names = lines.getLine(response.getId())
+                                  .getStations()
+                                  .stream()
+                                  .map(LineResponse.StationDto::getName)
+                                  .collect(Collectors.toList());
+        assertThat(names).contains("강남역", "신촌역", "교대역");
+    }
+
     @DisplayName("노선 시작 구간을 추가한다.")
     @Test
-    void addHeadSection() {
+    void addSectionAtBegin() {
         // given
         LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
 
@@ -122,10 +141,29 @@ class LineServiceTest {
         lines.addSection(response.getId(), new SectionRequest(sinchon.getId(), gangnam.getId(), 10L));
 
         // then
-        List<String> names = lines.getLineById(response.getId()).getStations()
-                                   .stream()
-                                   .map(LineResponse.StationDto::getName)
-                                   .collect(Collectors.toList());
+        List<String> names = lines.getLine(response.getId())
+                                  .getStations()
+                                  .stream()
+                                  .map(LineResponse.StationDto::getName)
+                                  .collect(Collectors.toList());
         assertThat(names).contains("신촌역", "강남역", "교대역");
+    }
+
+    @DisplayName("노선 마지막에 구간을 등록한다.")
+    @Test
+    void addSectionAtEnd() {
+        // given
+        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
+
+        // when
+        lines.addSection(response.getId(), new SectionRequest(gyodae.getId(), sinchon.getId(), 10L));
+
+        // then
+        List<String> names = lines.getLine(response.getId())
+                                  .getStations()
+                                  .stream()
+                                  .map(LineResponse.StationDto::getName)
+                                  .collect(Collectors.toList());
+        assertThat(names).contains("강남역", "교대역", "신촌역");
     }
 }

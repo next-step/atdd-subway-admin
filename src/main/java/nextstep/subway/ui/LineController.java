@@ -32,25 +32,25 @@ public class LineController {
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        LineResponse response = lineService.getLineById(id);
+        LineResponse response = lineService.getLine(id);
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
-        lineService.deleteLineById(id);
+        lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
-        lineService.updateLineById(id, request);
+        lineService.updateLine(id, request);
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{lineId}/sections")
-    public ResponseEntity<Void> addSection(@PathVariable Long lineId, @RequestBody SectionRequest request) {
-        lineService.addSection(lineId, request);
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionRequest request) {
+        lineService.addSection(id, request);
         return ResponseEntity.ok().build();
     }
 }

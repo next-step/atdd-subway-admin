@@ -63,7 +63,7 @@ public class SectionAcceptanceTest {
 
     @DisplayName("노선 중간에 구간을 등록한다.")
     @Test
-    void addSectionBetweenSections() {
+    void addSectionBetweenStations() {
         // when
         StationResponse sinchon = createStation(new StationRequest("신촌역")).as(StationResponse.class);
         createSection(shinbundang.getId(), new SectionRequest(gangnam.getId(), sinchon.getId(), 1L));
@@ -74,7 +74,7 @@ public class SectionAcceptanceTest {
 
     @DisplayName("노선 시작에 구간을 등록한다.")
     @Test
-    void addHeadSection() {
+    void addSectionAtBegin() {
         // when
         StationResponse sinchon = createStation(new StationRequest("신촌역")).as(StationResponse.class);
         createSection(shinbundang.getId(), new SectionRequest(sinchon.getId(), gangnam.getId(), 1L));
@@ -85,7 +85,7 @@ public class SectionAcceptanceTest {
 
     @DisplayName("노선 마지막에 구간을 등록한다.")
     @Test
-    void addTailSection() {
+    void addSectionAtEnd() {
         // when
         StationResponse sinchon = createStation(new StationRequest("신촌역")).as(StationResponse.class);
         createSection(shinbundang.getId(), new SectionRequest(gyodae.getId(), sinchon.getId(), 1L));

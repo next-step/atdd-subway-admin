@@ -1,10 +1,11 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.SectionRequest;
 
 import javax.persistence.*;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "line")
@@ -19,7 +20,7 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY)
     private List<Station> stations = new LinkedList<>();
 
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY)
@@ -32,6 +33,7 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
     }
+
     public Long getId() {
         return id;
     }
@@ -40,31 +42,54 @@ public class Line extends BaseEntity {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
+    public void update(LineRequest request) {
+        name = request.getName();
+        color = request.getColor();
     }
 
     public List<Station> getStations() {
-        return stations;
+        Set<Station> stations = new LinkedHashSet<>();
+        Station upStation = null;
+
+        for (Section section : sections) {
+            if (section.getUpStation() == null) {
+                upStation = section.getDownStation();
+                stations.add(upStation);
+            }
+        }
+
+        List<Station> upStations = sections.stream()
+                                           .map(Section::getUpStation)
+                                           .filter(Objects::nonNull)
+                                           .collect(Collectors.toList());
+
+        while (upStations.contains(upStation)) {
+            for (Section section : sections) {
+                if (Objects.requireNonNull(upStation).equals(section.getUpStation())) {
+                    upStation = section.getDownStation();
+                    stations.add(section.getUpStation());
+                    stations.add(section.getDownStation());
+                    break;
+                }
+            }
+        }
+
+        return new LinkedList<>(stations);
     }
 
     public void setStations(List<Station> stations) {
         this.stations = stations;
-//        for (Station station : stations) {
-//            station.setLine(this);
-//        }
     }
 
     public void addStation(Station station) {
-        this.stations.add(station);
+        stations.add(station);
+        if (station.getLine() != this) {
+            station.setLine(this);
+        }
     }
 
     public List<Section> getSections() {
@@ -73,20 +98,100 @@ public class Line extends BaseEntity {
 
     public void setSections(List<Section> sections) {
         this.sections = sections;
-//        for (Section section : sections) {
-//            section.setLine(this);
-//        }
     }
 
-    public void addSection(Section section) {
-        this.sections.add(section);
+    public void addSection(Section newSection) {
+        if (isAtEnd(newSection)) {
+            sections.add(newSection);
+            if (newSection.getLine() != this) {
+                newSection.setLine(this);
+            }
+            return;
+        }
+
+        if (isAtBegin(newSection)) {
+            sections.add(newSection);
+            if (newSection.getLine() != this) {
+                newSection.setLine(this);
+            }
+            return;
+        }
+
+        if (isAtBetween(newSection)) {
+            sections.add(newSection);
+            if (newSection.getLine() != this) {
+                newSection.setLine(this);
+            }
+        }
     }
 
-    public void addSections(SectionRequest request) {
-//        for (Section section : sections) {
-//            if (section.getStation().getId().equals(request))
-//        }
-        System.out.println();
-        sections.add(new Section(this, new Station()));
+    public boolean isAtEnd(Section newSection) {
+        for (Section section : sections) {
+            if (section.getUpStation() != null) {
+                if (section.getDownStation().equals(newSection.getUpStation())) {
+                    newSection.getDownStation().setLine(this);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isAtBegin(Section newSection) {
+        for (Section section : sections) {
+            if (section.getUpStation() == null) {
+                if (section.getDownStation().equals(newSection.getDownStation())) {
+                    newSection.getUpStation().setLine(this);
+                    section.setUpStation(newSection.getUpStation());
+                    newSection.setDownStation(newSection.getUpStation());
+                    newSection.setUpStation(null);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    public boolean isAtBetween(Section newSection) {
+        for (Section section : sections) {
+            if (section.getUpStation() != null) {
+                if (section.getUpStation().equals(newSection.getUpStation())) {
+                    newSection.getDownStation().setLine(this);
+                    newSection.setUpStation(newSection.getDownStation());
+                    newSection.setDownStation(section.getDownStation());
+                    section.setDownStation(newSection.getUpStation());
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(id, line.id)
+                && Objects.equals(name, line.name)
+                && Objects.equals(color, line.color)
+                && Objects.equals(stations, line.stations)
+                && Objects.equals(sections, line.sections);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, stations, sections);
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", stations=" + stations +
+                ", sections=" + sections +
+                '}';
     }
 }
