@@ -48,16 +48,16 @@ public class LineController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<LineResponse> deleteLine(@PathVariable long id) {
+    public ResponseEntity deleteLine(@PathVariable long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable long id, @RequestBody LineRequest lineRequest)
+    public ResponseEntity updateLine(@PathVariable long id, @RequestBody LineRequest lineRequest)
             throws NotFoundException {
-        LineResponse lineResponse = lineService.updateLine(id, lineRequest);
-        return ResponseEntity.ok().body(lineResponse);
+        lineService.updateLine(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 
 }

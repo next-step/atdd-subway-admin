@@ -28,7 +28,6 @@ public class LineService {
 
     public List<LineResponse> readLines() {
         return lineRepository.findAll().stream()
-//                .map(line -> LineResponse.from(line))
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
@@ -45,9 +44,8 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse updateLine(Long id, LineRequest lineRequest) throws NotFoundException {
+    public void updateLine(Long id, LineRequest lineRequest) throws NotFoundException {
         Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
-        Line updatedLine = line.update(lineRequest);
-        return LineResponse.from(updatedLine);
+        line.update(lineRequest);
     }
 }

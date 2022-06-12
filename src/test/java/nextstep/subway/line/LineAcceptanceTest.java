@@ -88,7 +88,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(putResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(putResponse.body().jsonPath().getString("color")).isEqualTo("bg-red-500");
     }
 
     /**
