@@ -31,9 +31,13 @@ public class Sections {
     }
 
     private void validateDuplicate(final Section section) {
-        if (sections.stream().anyMatch(origin -> origin.equalsStations(section))) {
+        if (hasSection(section)) {
             throw new SubwayException(SubwayExceptionMessage.DUPLICATE_SECTION);
         }
+    }
+
+    private boolean hasSection(final Section section) {
+        return sections.stream().anyMatch(origin -> origin.equalsStations(section));
     }
 
     public Set<Station> getStationsOrderBy() {
