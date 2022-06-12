@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -19,7 +21,8 @@ public class Sections {
             return;
         }
         validContains(section);
-        sectionList.add(section);
+        updateExitSection(section);
+        addSection(section);
     }
 
     private void validContains(Section section) {
@@ -38,5 +41,29 @@ public class Sections {
     private boolean isContains(Station station) {
         return this.sectionList.stream()
                 .anyMatch(section -> section.isContains(station));
+    }
+
+    private void updateExitSection(Section newSection) {
+        Optional<Section> optionalSection = this.sectionList.stream()
+                .filter(section -> section.isContains(newSection.getUpStation()) || section.isContains(newSection.getDownStation()))
+                .findFirst();
+
+        Section exitSection = optionalSection.get();
+        validDistance(newSection.getDistance(), exitSection.getDistance());
+
+        this.sectionList = this.sectionList.stream()
+                .filter(section -> section.equals(exitSection))
+                .map(section -> {section.updateSection(newSection); return section;})
+                .collect(Collectors.toList());
+    }
+
+    private void validDistance(Long newDistance, Long exitDistance) {
+        if (exitDistance <= newDistance) {
+            throw new IllegalArgumentException("신규 구간 입력 시 기존 구간보다 길이가 작아야합니다.");
+        }
+    }
+
+    private void addSection(Section section) {
+        sectionList.add(section);
     }
 }

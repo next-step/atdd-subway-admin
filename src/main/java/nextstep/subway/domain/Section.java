@@ -42,6 +42,18 @@ public class Section extends BaseEntity {
         return upStation == station || downStation == station;
     }
 
+    public void updateSection(Section newSection) {
+        this.distance -= newSection.getDistance();
+
+        if (this.upStation.equals(newSection.getUpStation())) {
+            this.upStation = newSection.getDownStation();
+        }
+
+        if (this.getDownStation().equals(newSection.getDownStation())) {
+            this.downStation = newSection.getUpStation();
+        }
+    }
+
     public Long getId() {
         return id;
     }
