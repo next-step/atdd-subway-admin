@@ -1,7 +1,9 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.dto.*;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +54,13 @@ public class LineController {
     public ResponseEntity<SectionResponse> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
         SectionResponse sectionResponse = lineService.addSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("lines" + lineId + "/sections")).body(sectionResponse);
+    }
+
+    @DeleteMapping("/lines/{lineId}/sections")
+    public ResponseEntity<SectionResponse> removeLineStation(@PathVariable Long lineId,
+                                                             @RequestParam Long stationId) {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(value = {NoSuchElementException.class, IllegalArgumentException.class, IllegalStateException.class})

@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
-import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -163,6 +162,101 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // Then
         assertThat(구간_추가_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선이 생성된 상태에서
+     * When 노선의 종착역과 연결되는 신규 노선을 추가한 후 기존 종착역을 제거하면
+     * Then 기존 종착역은 조회되지 않는다.
+     */
+    @DisplayName("역 사이에 상행역에서 출발하는 새로운 구간을 등록한다.")
+    @Test
+    void removeSection() {
+        // When
+        SectionRequest sectionRequest = new SectionRequest(양재역_ID, 양재시민의숲역_ID, 4);
+        구간_추가(신분당선_ID, sectionRequest);
+        구간_제거(신분당선_ID, 양재역_ID);
+
+        // Then
+        ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
+        List<String> 신분당선_역명_리턴값 = 노선_조회_결과_응답.jsonPath().getList("stations.name");
+        assertThat(신분당선_역명_리턴값).containsExactly("강남역", "양재시민의숲역");
+    }
+
+    /**
+     * Given 지하철 노선이 최초 생성된 상태에서
+     * When 구간을 제거하면
+     * Then 에러가 발생한다.
+     */
+    @DisplayName("구간이 하나만 등록된 노선의 구간을 제거한다.")
+    @Test
+    void removeLastOneSection() {
+        // When
+        ExtractableResponse<Response> 구간_제거_결과_응답 = 구간_제거(신분당선_ID, 양재역_ID);
+
+        // Then
+        assertThat(구간_제거_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선이 최초 생성된 상태에서
+     * When 등록되지 않은 역을 제거하면
+     * Then 에러가 발생한다.
+     */
+    @DisplayName("등록되지 않은 구간을 제거한다.")
+    @Test
+    void removeNotPresentSection() {
+        // When
+        ExtractableResponse<Response> 구간_제거_결과_응답 = 구간_제거(신분당선_ID, 신림역_ID);
+
+        // Then
+        assertThat(구간_제거_결과_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선이 최초 생성된 상태에서
+     * When 종점과 이어지는 구간을 추가하여 종점을 변경한 후 종점을 제거하면
+     * Then 추가된 종점은 제거되고 최초 생성 상태 노선이 조회된다.
+     */
+    @DisplayName("종점을 변경한 후 종점을 제거한다.")
+    @Test
+    void removeLastStation() {
+        // When
+        SectionRequest sectionRequest = new SectionRequest(양재역_ID, 양재시민의숲역_ID, 4);
+        구간_추가(신분당선_ID, sectionRequest);
+        구간_제거(신분당선_ID, 양재시민의숲역_ID);
+
+        // Then
+        ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
+        List<String> 신분당선_역명_리턴값 = 노선_조회_결과_응답.jsonPath().getList("stations.name");
+        assertThat(신분당선_역명_리턴값).containsExactly("강남역", "양재역");
+    }
+
+    /**
+     * Given 지하철 노선이 최초 생성된 상태에서
+     * When 출발점과 이어지는 구간을 추가하여 출발점을 변경한 후 출발점을 제거하면
+     * Then 추가된 출발점은 제거되고 최초 생성 상태 노선이 조회된다.
+     */
+    @DisplayName("출발점을 변경한 후 출발점을 제거한다.")
+    @Test
+    void removeFirstStation() {
+        // When
+        SectionRequest sectionRequest = new SectionRequest(신논현역_ID, 강남역_ID, 4);
+        구간_추가(신분당선_ID, sectionRequest);
+        구간_제거(신분당선_ID, 신논현역_ID);
+
+        // Then
+        ExtractableResponse<Response> 노선_조회_결과_응답 = 노선_조회(신분당선_ID);
+        List<String> 신분당선_역명_리턴값 = 노선_조회_결과_응답.jsonPath().getList("stations.name");
+        assertThat(신분당선_역명_리턴값).containsExactly("강남역", "양재역");
+    }
+
+    private ExtractableResponse<Response> 구간_제거(long lineId, long stationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId", stationId)
+                .when().delete("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> 구간_추가(long lineId, SectionRequest sectionRequest) {

@@ -84,4 +84,8 @@ public class Line extends BaseEntity {
             throw new IllegalArgumentException("이름이 입력되지 않았습니다.");
         }
     }
+
+    public void removeSectionByStation(Station station) {
+        sections.removeSectionByStation(station);
+    }
 }

@@ -167,4 +167,42 @@ public class Sections {
                 .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
     }
 
+    public void removeSectionByStation(Station station) {
+        validateRemoveStation(station);
+        validateRemoveStatus();
+
+        Optional<Section> fromDeleteStation = findSectionByUpStation(station);
+        Optional<Section> toDeleteStation = findSectionByDownStation(station);
+
+        if (fromDeleteStation.isPresent() && toDeleteStation.isPresent()) {
+            removeStationInMiddle(fromDeleteStation.get(), toDeleteStation.get());
+            return ;
+        }
+
+        if (!fromDeleteStation.isPresent() && toDeleteStation.isPresent()) {
+            sectionList.remove(toDeleteStation.get());
+            return ;
+        }
+
+        fromDeleteStation.ifPresent(section -> sectionList.remove(section));
+    }
+
+    private void removeStationInMiddle(Section fromStation, Section toStation) {
+        long newDistance = fromStation.getDistance() + toStation.getDistance();
+        sectionList.remove(fromStation);
+        sectionList.remove(toStation);
+        sectionList.add(new Section(toStation.getUpStation(), fromStation.getDownStation(), newDistance));
+    }
+
+    private void validateRemoveStation(Station station) {
+        if (!hasStation(station)) {
+            throw new IllegalArgumentException("등록되지 않은 역은 삭제할 수 없습니다.");
+        }
+    }
+
+    private void validateRemoveStatus() {
+        if (sectionList.size() <= 1) {
+            throw new IllegalStateException("마지막 구간은 제거할 수 없습니다.");
+        }
+    }
 }
