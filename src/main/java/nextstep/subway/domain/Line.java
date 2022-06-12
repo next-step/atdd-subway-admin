@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -60,6 +59,16 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         section.addLine(this);
         this.sections.add(section);
+    }
+
+    public void updateUpStationOrDownStation(Section section) {
+        if (section.getUpStation().equals(downStation)) {
+            downStation = section.getDownStation();
+        }
+
+        if (section.getDownStation().equals(upStation)) {
+            upStation = section.getUpStation();
+        }
     }
 
     public Long getId() {

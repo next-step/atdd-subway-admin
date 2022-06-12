@@ -17,9 +17,16 @@ public class Sections {
 
     public void add(Section section) {
         if (sectionList.isEmpty()) {
-            sectionList.add(section);
+            addSection(section);
             return;
         }
+
+        if (section.isUpStationOrDownStation()) {
+            section.getLine().updateUpStationOrDownStation(section);
+            addSection(section);
+            return;
+        }
+
         validContains(section);
         updateExitSection(section);
         addSection(section);
