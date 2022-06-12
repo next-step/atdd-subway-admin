@@ -58,7 +58,7 @@ public class Section {
         return this.upStation.equalsId(section.upStation);
     }
 
-    public void calculate(final Section section) {
+    public void rearrange(final Section section) {
         validateDistance(section);
         if (isStandardUpStation(section)) {
             this.upStation = section.downStation;

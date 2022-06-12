@@ -25,7 +25,7 @@ public class Sections {
         sections.stream()
                 .filter(origin -> origin.intersects(section))
                 .findFirst()
-                .ifPresent(origin -> origin.calculate(section));
+                .ifPresent(origin -> origin.rearrange(section));
 
         sections.add(section);
     }
