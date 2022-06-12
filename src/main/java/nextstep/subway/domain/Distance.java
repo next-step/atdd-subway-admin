@@ -30,8 +30,12 @@ public class Distance {
         return value;
     }
 
-    public Distance minus(Integer value) {
-        return new Distance(this.value - value);
+    public Distance minus(Distance distance) {
+        return new Distance(this.value - distance.getValue());
+    }
+
+    public Distance plus(Distance distance) {
+        return new Distance(this.value + distance.getValue());
     }
 
     @Override

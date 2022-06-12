@@ -140,7 +140,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     @Test
     void 중간역이_제거될_경우_재배치를_함() {
-        
+
     }
 
     @Test

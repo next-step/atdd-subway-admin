@@ -60,7 +60,7 @@ public class Line {
         return sections;
     }
 
-    public List<Station> getStations() {
+    public List<Station> getLineStations() {
         return sections.getStationsInOrder();
     }
 }

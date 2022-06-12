@@ -156,9 +156,23 @@ class SectionsTest {
         assertThatThrownBy(sections::getStationsInOrder).isInstanceOf(IllegalArgumentException.class);
     }
 
-    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때")
+    @DisplayName("노선에 등록되어있지 않은 역을 제거")
     @Test
     void 구간_역_삭제_시_예외_케이스_1() {
+        // given
+        final Sections sections = new Sections();
+        Section section1 = new Section(강남역, 광교역, 7);
+        Section section2 = new Section(양재역, 광교역, 3);
+        sections.add(section1);
+        sections.add(section2);
+
+        // when & then
+        assertThatThrownBy(() -> sections.delete(판교역)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거")
+    @Test
+    void 구간_역_삭제_시_예외_케이스_2() {
         // given
         final Sections sections = new Sections();
         Section section = new Section(강남역, 광교역, 7);

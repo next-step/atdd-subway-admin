@@ -4,10 +4,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,7 +23,7 @@ public class Sections {
         if (!sections.isEmpty()) {
             validateDuplicateSection(section);
             Section connectionSection = findConnectableSection(section);
-            connectionSection.merge(section);
+            connectionSection.addMerge(section);
         }
         sections.add(section);
     }
@@ -43,7 +41,8 @@ public class Sections {
     }
 
     private Stream<Section> getSectionStream(Section section) {
-        return sections.stream().filter(s -> s.isContainAnyStation(section));
+        return sections.stream()
+                .filter(s -> s.equalAnyStation(section.getUpStation()) || s.equalAnyStation(section.getDownStation()));
     }
 
     public List<Station> getStationsInOrder() {
@@ -79,5 +78,40 @@ public class Sections {
             throw new IllegalArgumentException("더 이상 구간을 제거할 수 없습니다.");
         }
 
+        Optional<Section> sectionIncludedUpStation = getSectionByFilter(section -> section.equalUpStation(station));
+        Optional<Section> sectionIncludedDownStation = getSectionByFilter(section -> section.equalDownStation(station));
+        removeAndMerge(sectionIncludedUpStation, sectionIncludedDownStation);
     }
+
+    private void removeAndMerge(Optional<Section> sectionIncludedUpStation,
+                                Optional<Section> sectionIncludedDownStation) {
+        if (!sectionIncludedUpStation.isPresent() && !sectionIncludedDownStation.isPresent()) {
+            throw new IllegalArgumentException("해당 노선에 존재하지 않는 역입니다.");
+        }
+
+        if (sectionIncludedUpStation.isPresent() && sectionIncludedDownStation.isPresent()) {
+            removeMiddleStation(sectionIncludedUpStation.get(), sectionIncludedDownStation.get());
+            return;
+        }
+
+        removeLastStation(sectionIncludedUpStation, sectionIncludedDownStation);
+    }
+
+    private void removeMiddleStation(Section sectionIncludedUpStation, Section sectionIncludedDownStation) {
+        sectionIncludedDownStation.deleteMerge(sectionIncludedUpStation);
+        sections.remove(sectionIncludedUpStation);
+    }
+
+    private void removeLastStation(Optional<Section> sectionIncludedUpStation,
+                                   Optional<Section> sectionIncludedDownStation) {
+        sectionIncludedUpStation.ifPresent(section -> sections.remove(section));
+        sectionIncludedDownStation.ifPresent(section -> sections.remove(section));
+    }
+
+    private Optional<Section> getSectionByFilter(Predicate<Section> filter) {
+        return sections.stream()
+                .filter(filter)
+                .findFirst();
+    }
+
 }
