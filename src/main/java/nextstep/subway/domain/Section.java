@@ -75,11 +75,11 @@ public class Section {
     }
 
     public boolean hasDownStation(final Station station) {
-        return this.downStation.getId().equals(station.getId());
+        return this.downStation.equalsId(station);
     }
 
     public boolean hasUpStation(final Station station) {
-        return this.upStation.getId().equals(station.getId());
+        return this.upStation.equalsId(station);
     }
 
     public boolean equalsStations(final Section section) {
