@@ -37,17 +37,17 @@ public class Sections {
     }
 
     public Set<Station> getStationsOrderBy() {
-        final LinkedHashSet<Station> hashSet = new LinkedHashSet<>();
+        final Set<Station> stationSet = new LinkedHashSet<>();
         Station station = findFirstStation();
-        hashSet.add(station);
+        stationSet.add(station);
 
-        while (hashSet.size() <= sections.size()) {
+        while (stationSet.size() <= sections.size()) {
             final Section nowSection = findSectionByUpStation(station);
-            hashSet.add(nowSection.getDownStation());
+            stationSet.add(nowSection.getDownStation());
             station = nowSection.getDownStation();
         }
 
-        return hashSet;
+        return stationSet;
     }
 
     private Section findSectionByUpStation(final Station station) {
