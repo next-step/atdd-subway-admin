@@ -1,8 +1,10 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,20 +12,20 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<LineStation> stations;
+    private List<StationResponse> stations = new ArrayList<>();
 
-    public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations());
+    public static LineResponse of(Line line, List<StationResponse> stationResponses) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stationResponses);
     }
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<Station> stations) {
+    public LineResponse(Long id, String name, String color, List<StationResponse> stationResponses) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = LineStation.toList(stations);
+        this.stations = stationResponses;
     }
 
     public Long getId() {
@@ -38,33 +40,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<LineStation> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
-    }
-
-    private static class LineStation {
-        private final Long id;
-        private final String name;
-
-        public static LineStation to(Station station) {
-            return new LineStation(station);
-        }
-
-        public static List<LineStation> toList(List<Station> stations) {
-            return stations.stream().map(LineStation::to).collect(Collectors.toList());
-        }
-
-        public LineStation(Station station) {
-            this.id = station.getId();
-            this.name = station.getName();
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
     }
 }

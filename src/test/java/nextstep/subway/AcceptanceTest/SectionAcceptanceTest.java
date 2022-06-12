@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -41,7 +42,6 @@ class SectionAcceptanceTest {
             RestAssured.port = port;
         }
 
-        // given
         광교역 = stationApi.createId("광교역");
         강남역 = stationApi.createId("강남역");
         신분당선 = lineApi.create("신분당선", "bg-red-600", 강남역, 광교역).jsonPath().getLong("id");
@@ -64,7 +64,10 @@ class SectionAcceptanceTest {
         ExtractableResponse<Response> response = lineApi.addSection(신분당선, 강남역, 양재역, 5);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(lineApi.findById(신분당선).jsonPath().getList("stations.name")).contains("양재역")
+        );
     }
 
     /**
