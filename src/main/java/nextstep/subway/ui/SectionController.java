@@ -25,7 +25,7 @@ public class SectionController {
     public ResponseEntity<Void> removeSection(@PathVariable Long lineId,
                                               @RequestParam Long stationId) {
         sectionService.removeSectionByStationId(lineId, stationId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

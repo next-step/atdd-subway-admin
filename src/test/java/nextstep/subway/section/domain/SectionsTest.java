@@ -160,17 +160,17 @@ class SectionsTest {
     void 종점이_제거될_경우_다음으로_오던_역이_종점이_됨() {
         // given
         final Sections sections = new Sections();
-        Section section1 = new Section(강남역, 양재역, 7);
-        Section section2 = new Section(양재역, 광교역, 3);
+        Section section1 = new Section(강남역, 광교역, 7);
+        Section section2 = new Section(광교역, 양재역, 3);
         sections.add(section1);
         sections.add(section2);
 
         // when
-        sections.delete(광교역);
+        sections.delete(양재역);
 
         // then
         assertAll(
-                () -> assertThat(sections.getStationsInOrder()).containsExactly(강남역, 양재역),
+                () -> assertThat(sections.getStationsInOrder()).containsExactly(강남역, 광교역),
                 () -> assertThat(sections.getSections()).hasSize(1)
         );
     }

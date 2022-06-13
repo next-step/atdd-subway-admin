@@ -133,14 +133,40 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * When 종점이 제거될 경우
+     * Then 다음으로 오던 역이 종점이 됨
+     */
     @Test
     void 종점이_제거될_경우_다음으로_오던_역이_종점이_됨() {
+        // given
+        지하철_구간_생성됨(신분당선.getId(), 광교역_ID, 양재역_ID, 4);
 
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(신분당선.getId(), 양재역_ID);
+        List<String> stationNames = 지하철_노선_역_이름_리스트_조회(신분당선.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stationNames).containsExactly("강남역", "광교역");
     }
 
+    /**
+     * When 중간역이 제거될 경우
+     * Then 재배치를 함
+     */
     @Test
     void 중간역이_제거될_경우_재배치를_함() {
+        // given
+        지하철_구간_생성됨(신분당선.getId(), 광교역_ID, 양재역_ID, 4);
 
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(신분당선.getId(), 광교역_ID);
+        List<String> stationNames = 지하철_노선_역_이름_리스트_조회(신분당선.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stationNames).containsExactly("강남역", "양재역");
     }
 
     @Test
@@ -155,6 +181,10 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
     public static ExtractableResponse<Response> 지하철_구간_생성됨(Long lineId, Long upStationId, Long downStationId, Integer distance) {
         return RestAssuredTemplate.post("/lines/" + lineId + "/sections", new SectionRequest(upStationId, downStationId, distance));
+    }
+
+    public static ExtractableResponse<Response> 지하철_구간_삭제(Long lineId, Long stationId) {
+        return RestAssuredTemplate.delete("/lines/" + lineId + "/sections?stationId=" + stationId);
     }
 
 }
