@@ -16,6 +16,7 @@ public class Sections {
 
     @OneToMany(fetch = FetchType.LAZY,
             mappedBy = "line",
+            orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     List<Section> sections = new ArrayList<>();
 
