@@ -111,11 +111,21 @@ public class LineStations {
                                     final long distance) {
         final boolean upStationExists = hasRelationTo(upStation);
         final boolean downStationExists = hasRelationTo(downStation);
+        validateStations(upStationExists, downStationExists);
         if (upStationExists) {
             addDownStation(line, upStation, downStation, distance);
         }
         if (downStationExists) {
             addUpStation(line, upStation, downStation, distance);
+        }
+    }
+
+    private void validateStations(final boolean upStationExists, final boolean downStationExists) {
+        if (upStationExists && downStationExists) {
+            throw new IllegalArgumentException("이미 등록된 구간입니다");
+        }
+        if (!upStationExists && !downStationExists) {
+            throw new IllegalArgumentException("적어도 1개 지하철역은 기존에 등록된 역이어야 합니다");
         }
     }
 }

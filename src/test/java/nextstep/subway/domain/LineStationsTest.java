@@ -43,7 +43,17 @@ class LineStationsTest {
         final LineStations lineStations = givenLineStations();
 
         // when and then
-        assertThatThrownBy(() -> lineStations.addStationBySection(line, station1, station2, from1To2))
+        assertThatThrownBy(() -> lineStations.addStationBySection(line, station1, station2, 10L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 신규역_추가_시_상행선_하행선이_하나도_등록되지_않은_구간이면_IllegalStatementException이_발생해야_한다() {
+        // given
+        final LineStations lineStations = givenLineStations();
+
+        // when and then
+        assertThatThrownBy(() -> lineStations.addStationBySection(line, new Station("new1"), new Station("new2"), 10L))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
