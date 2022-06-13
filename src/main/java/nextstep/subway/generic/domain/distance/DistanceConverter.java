@@ -4,15 +4,15 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 @Converter(autoApply = true)
-public class DistanceConverter implements AttributeConverter<Distance, Long> {
+public class DistanceConverter implements AttributeConverter<Distance, Integer> {
 
     @Override
-    public Long convertToDatabaseColumn(final Distance attribute) {
+    public Integer convertToDatabaseColumn(final Distance attribute) {
         return attribute.getValue();
     }
 
     @Override
-    public Distance convertToEntityAttribute(final Long dbData) {
+    public Distance convertToEntityAttribute(final Integer dbData) {
         return Distance.valueOf(dbData);
     }
 }

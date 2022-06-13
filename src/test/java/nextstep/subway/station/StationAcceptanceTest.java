@@ -103,7 +103,7 @@ public class StationAcceptanceTest extends BaseSubwayTest {
         assertThat(getStationsResponse.body().jsonPath().getList("$")).hasSize(0);
     }
 
-    private ExtractableResponse<Response> 지하철_생성(final String name) {
+    public static ExtractableResponse<Response> 지하철_생성(final String name) {
         return RestAssured.given().log().all()
                 .body(Collections.singletonMap("name", name))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -5,10 +5,12 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.UpdateLineRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +29,17 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(final LineRequest lineRequest) {
-        return LineResponse.of(lineRepository.save(lineRequest.toLine(findStationById(lineRequest.getUpStationId()),
-                findStationById(lineRequest.getDownStationId()))));
+        Line line = lineRequest.toLine();
+        final Section section = new Section(findStationById(lineRequest.getUpStationId()),
+                findStationById(lineRequest.getDownStationId()), lineRequest.getDistance());
+        line.addSection(section);
+        lineRepository.save(line);
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> findAllLines() {
-        return lineRepository.findAll().stream()
+        return lineRepository.findAllFetchStation()
+                .stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
@@ -48,13 +55,21 @@ public class LineService {
     }
 
     private Line findLineById(final Long id) {
-        return lineRepository.findById(id)
+        return lineRepository.findFetchStationById(id)
                 .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
     }
 
     @Transactional
     public void deleteLine(final Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void addSections(final Long id, final SectionRequest sectionRequest) {
+        final Line line = findLineById(id);
+        final Section section = new Section(findStationById(sectionRequest.getUpStationId()),
+                findStationById(sectionRequest.getDownStationId()), sectionRequest.getDistance());
+        line.addSection(section);
     }
 
     private Station findStationById(final long id) {
