@@ -163,7 +163,7 @@ public class Sections {
     }
 
     private boolean hasStation(Station station) {
-        return getSectionList().stream()
+        return sectionList.stream()
                 .anyMatch(section -> section.hasStation(station));
     }
 
