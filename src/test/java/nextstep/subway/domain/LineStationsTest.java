@@ -181,17 +181,6 @@ class LineStationsTest {
                 new SectionResponse(line.getName(), station1.getName(), station2.getName(), 30L));
     }
 
-    @Test
-    void 지하철역이_노선에_등록되어_있는지_확인할_수_있어야_한다() {
-        // given
-        final LineStations lineStations = givenLineStations();
-        final Station newStation = new Station("양재역");
-
-        // when and then
-        assertThat(lineStations.hasRelationTo(station1)).isTrue();
-        assertThat(lineStations.hasRelationTo(newStation)).isFalse();
-    }
-
     private LineStations givenLineStations() {
         final LineStations lineStations = new LineStations();
         lineStations.addFinalStations(line, station1, station2, from1To2);

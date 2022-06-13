@@ -98,7 +98,7 @@ public class LineTest {
 
         // then
         assertRegisteredSection(sectionResponse, finalUpStation, newStation, distance);
-        assertThat(line.getLineStations().hasRelationTo(newStation)).isTrue();
+        assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
     }
 
     @Test
@@ -113,7 +113,7 @@ public class LineTest {
 
         // then
         assertRegisteredSection(sectionResponse, newStation, finalDownStation, distance);
-        assertThat(line.getLineStations().hasRelationTo(newStation)).isTrue();
+        assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
     }
 
     @Test
@@ -128,7 +128,7 @@ public class LineTest {
 
         // then
         assertRegisteredSection(sectionResponse, newStation, finalUpStation, distance);
-        assertThat(line.getLineStations().hasRelationTo(newStation)).isTrue();
+        assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
     }
 
     @Test
@@ -143,7 +143,7 @@ public class LineTest {
 
         // then
         assertRegisteredSection(sectionResponse, finalDownStation, newStation, distance);
-        assertThat(line.getLineStations().hasRelationTo(newStation)).isTrue();
+        assertThat(line.getLineStations().stations()).contains(StationResponse.of(newStation));
     }
 
     private void assertRegisteredSection(final SectionResponse newSection,
