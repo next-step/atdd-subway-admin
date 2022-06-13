@@ -171,27 +171,25 @@ public class Sections {
         validateRemoveStation(station);
         validateRemoveStatus();
 
-        Optional<Section> sectionByUpStation = findSectionByUpStation(station);
-        Optional<Section> sectionByDownStation = findSectionByDownStation(station);
+        Optional<Section> firstSection = findSectionByDownStation(station);
+        Optional<Section> secondSection = findSectionByUpStation(station);
 
-        if (sectionByUpStation.isPresent() && sectionByDownStation.isPresent()) {
-            removeStationInMiddle(sectionByUpStation.get(), sectionByDownStation.get());
+        if (firstSection.isPresent() && secondSection.isPresent()) {
+            removeStationInMiddle(firstSection.get(), secondSection.get());
             return ;
         }
 
-        if (!sectionByUpStation.isPresent() && sectionByDownStation.isPresent()) {
-            sectionList.remove(sectionByDownStation.get());
+        if (firstSection.isPresent()) {
+            sectionList.remove(firstSection.get());
             return ;
         }
 
-        sectionByUpStation.ifPresent(section -> sectionList.remove(section));
+        secondSection.ifPresent(section -> sectionList.remove(section));
     }
 
-    private void removeStationInMiddle(Section fromStation, Section toStation) {
-        long newDistance = fromStation.getDistance() + toStation.getDistance();
-        sectionList.remove(fromStation);
-        sectionList.remove(toStation);
-        sectionList.add(new Section(toStation.getUpStation(), fromStation.getDownStation(), newDistance));
+    private void removeStationInMiddle(Section firstSection, Section secondSection) {
+        firstSection.mergeWith(secondSection);
+        sectionList.remove(secondSection);
     }
 
     private void validateRemoveStation(Station station) {

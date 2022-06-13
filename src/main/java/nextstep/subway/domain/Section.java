@@ -33,6 +33,11 @@ public class Section extends BaseEntity {
         return upStation.equals(station) || downStation.equals(station);
     }
 
+    public void mergeWith(Section nextSection) {
+        distance += nextSection.getDistance();
+        downStation = nextSection.getDownStation();
+    }
+
     private void validateDistance(long distance) {
         if (distance < 1) {
             throw new IllegalArgumentException("거리는 1 이상의 숫자만 입력이 가능합니다.");
