@@ -123,7 +123,7 @@ public class Sections {
                 .filter(section -> !upStaions.contains(section.getDownStation()))
                 .findFirst();
 
-        return downStationSection.map(Section::getUpStation).orElse(null);
+        return downStationSection.map(Section::getDownStation).orElse(null);
     }
 
     public Optional<Section> findSectionByUpStation(Station upStation) {
