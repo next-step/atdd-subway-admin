@@ -79,7 +79,7 @@ class SectionsTest {
         Station jamsilStation = new Station(200L, "잠실역");
         Section notConnectedSection = new Section(414L, 1L, sadangStation, jamsilStation, 300);
         assertThatThrownBy(() -> sections.addSection(notConnectedSection)).isInstanceOf(
-                DataIntegrityViolationException.class);
+                IllegalArgumentException.class);
     }
 
     private Sections makeSectionsForTest() {
