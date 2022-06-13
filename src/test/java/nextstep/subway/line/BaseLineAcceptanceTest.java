@@ -1,17 +1,16 @@
-package nextstep.subway.station;
+package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.BaseAcceptacneTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
-@Sql("/truncate.sql")
-public abstract class BaseLineAcceptanceTest {
+public abstract class BaseLineAcceptanceTest extends BaseAcceptacneTest {
     private static final String LINES_URI = "/lines";
 
-    protected ExtractableResponse<Response> createLineRequest(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> createLineRequest(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -20,7 +19,7 @@ public abstract class BaseLineAcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> findLineRequest(int lineId) {
+    public static ExtractableResponse<Response> findLineRequest(int lineId) {
         return RestAssured.given().log().all()
                 .pathParam("id", lineId)
                 .when().get(LINES_URI + "/{id}")
@@ -28,14 +27,14 @@ public abstract class BaseLineAcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> findAllLinesRequest() {
+    public static ExtractableResponse<Response> findAllLinesRequest() {
         return RestAssured.given().log().all()
                 .when().get(LINES_URI)
                 .then().log().all()
                 .extract();
     }
 
-    protected ExtractableResponse<Response> updateLineRequest(int lineId, LineRequest lineRequest) {
+    public static ExtractableResponse<Response> updateLineRequest(int lineId, LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -45,7 +44,7 @@ public abstract class BaseLineAcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> deleteLineRequest(int lineId) {
+    public static ExtractableResponse<Response> deleteLineRequest(int lineId) {
         return RestAssured.given().log().all()
                 .pathParam("id", lineId)
                 .when().delete(LINES_URI + "/{id}")

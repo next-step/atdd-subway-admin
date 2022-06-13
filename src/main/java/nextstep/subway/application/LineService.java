@@ -1,11 +1,10 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +26,20 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
+        Integer distance = lineRequest.getDistance();
 
-        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation))
+                .withSection(Section.of(upStation, downStation, distance));
+        return LineResponse.of(line);
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        return  LineResponse.of(lineRepository.getById(id));
+        Line line =  findLineById(id);
+        List<SectionResponse> sections = line.getAllSections().stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
+        return LineResponse.of(line, sections);
     }
 
     @Transactional(readOnly = true)
@@ -47,12 +52,22 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line persistLine = findLineById(id);
-        persistLine.update(lineRequest.getName(), lineRequest.getColor());
+        Line line = findLineById(id);
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     public void deleteLine(Long id) {
         lineRepository.delete(findLineById(id));
+    }
+
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Line line = findLineById(id);
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+        Integer distance = sectionRequest.getDistance();
+
+        line.addSection(Section.of(upStation, downStation, distance));
+        return LineResponse.of(line);
     }
 
     private Line findLineById(Long id) {

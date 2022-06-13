@@ -3,15 +3,14 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.BaseAcceptacneTest;
 import nextstep.subway.dto.StationRequest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
-@Sql("/truncate.sql")
-public abstract class BaseStationAcceptanceTest {
+public abstract class BaseStationAcceptanceTest extends BaseAcceptacneTest {
     private static final String STATIONS_URI = "/stations";
 
-    protected ExtractableResponse<Response> createStationRequest(String stationName) {
+    public static ExtractableResponse<Response> createStationRequest(String stationName) {
         return RestAssured.given().log().all()
                 .body(StationRequest.from(stationName))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -20,14 +19,14 @@ public abstract class BaseStationAcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> findStationsRequest() {
+    public static ExtractableResponse<Response> findStationsRequest() {
         return RestAssured.given().log().all()
                 .when().get(STATIONS_URI)
                 .then().log().all()
                 .extract();
     }
 
-    protected ExtractableResponse<Response> deleteStationRequest(int stationId) {
+    public static ExtractableResponse<Response> deleteStationRequest(int stationId) {
         return RestAssured.given().log().all()
                 .pathParam("id", stationId)
                 .when().delete(STATIONS_URI + "/{id}")
