@@ -170,8 +170,8 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         //when
-        ExtractableResponse<Response> response_line = 특정_노선목록을_조회한다(칠호선.getId());
-        LineResponse lineResponse = response_line.as(LineResponse.class);
+        ExtractableResponse<Response> responseLine = 특정_노선목록을_조회한다(칠호선.getId());
+        LineResponse lineResponse = responseLine.as(LineResponse.class);
 
         //then
         assertThat(lineResponse.getStations()).doesNotContain(뚝섬유원지역);
@@ -198,8 +198,8 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         //when
-        ExtractableResponse<Response> response_line = 특정_노선목록을_조회한다(칠호선.getId());
-        LineResponse lineResponse = response_line.as(LineResponse.class);
+        ExtractableResponse<Response> responseLine = 특정_노선목록을_조회한다(칠호선.getId());
+        LineResponse lineResponse = responseLine.as(LineResponse.class);
 
         //then
         assertThat(lineResponse.getStations()).doesNotContain(뚝섬유원지역);
@@ -226,8 +226,8 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         //when
-        ExtractableResponse<Response> response_line = 특정_노선목록을_조회한다(칠호선.getId());
-        LineResponse lineResponse = response_line.as(LineResponse.class);
+        ExtractableResponse<Response> responseLine = 특정_노선목록을_조회한다(칠호선.getId());
+        LineResponse lineResponse = responseLine.as(LineResponse.class);
 
         //then
         assertThat(lineResponse.getStations()).doesNotContain(건대역);
@@ -282,8 +282,8 @@ public class SectionAcceptanceTest {
     }
     
     private List<Long> 노선에_포함된_역_아이디 (LineResponse line) {
-        ExtractableResponse<Response> response_line = 특정_노선목록을_조회한다(line.getId());
-        LineResponse lineResponse = response_line.as(LineResponse.class);
+        ExtractableResponse<Response> responseLine = 특정_노선목록을_조회한다(line.getId());
+        LineResponse lineResponse = responseLine.as(LineResponse.class);
 
         return lineResponse.getStations()
                                     .stream()
@@ -295,7 +295,7 @@ public class SectionAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(stationId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/" + lineId + "/sections")
+                .when().delete("/lines/{lineId}/sections", lineId)
                 .then().log().all()
                 .extract();
     }

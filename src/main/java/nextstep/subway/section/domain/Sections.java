@@ -152,12 +152,12 @@ public class Sections {
             throw new IllegalArgumentException(SECTION_IN_LINE_MINIMUN_SIZE_MSG);
         }
 
-        if (station == getRootStation()) {
+        if (station.equals(getRootStation())) {
             removeRootSection();
             return;
         }
 
-        if (station == getLastStation()) {
+        if (station.equals(getLastStation())) {
             removeLastSection();
             return;
         }
