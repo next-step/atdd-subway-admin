@@ -51,6 +51,14 @@ public class LineAcceptanceMethods {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> removeSection(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> getLine(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
