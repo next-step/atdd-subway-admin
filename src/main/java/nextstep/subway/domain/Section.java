@@ -37,19 +37,19 @@ public class Section {
     }
 
     public void addMerge(Section section) {
-        if (upStation.equals(section.getUpStation())) {
+        if (section.isSameUpStation(upStation)) {
             changeUpStation(section.getDownStation());
-            changeDistance(distance.minus(section.getDistance()));
+            distance.minus(section.getDistance());
         }
-        if (downStation.equals(section.getDownStation())) {
+        if (section.isSameDownStation(downStation)) {
             changeDownStation(section.getUpStation());
-            changeDistance(distance.minus(section.getDistance()));
+            distance.minus(section.getDistance());
         }
     }
 
     public void deleteMerge(Section section) {
         changeDownStation(section.getDownStation());
-        changeDistance(distance.plus(section.getDistance()));
+        distance.plus(section.getDistance());
     }
 
     public void changeUpStation(Station upStation) {
@@ -60,23 +60,19 @@ public class Section {
         this.downStation = downStation;
     }
 
-    public void changeDistance(Distance distance) {
-        this.distance = distance;
-    }
-
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
     }
 
-    public boolean equalAnyStation(Station station) {
+    public boolean isSameAnyStation(Station station) {
         return getStations().contains(station);
     }
 
-    public boolean equalUpStation(Station station) {
+    public boolean isSameUpStation(Station station) {
         return upStation.equals(station);
     }
 
-    public boolean equalDownStation(Station station) {
+    public boolean isSameDownStation(Station station) {
         return downStation.equals(station);
     }
 

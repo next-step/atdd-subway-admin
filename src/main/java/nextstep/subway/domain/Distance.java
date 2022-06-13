@@ -16,26 +16,24 @@ public class Distance {
     }
 
     public Distance(Integer value) {
-        validateValue(value);
         this.value = value;
-    }
-
-    private void validateValue(Integer value) {
-        if (value < MIN_VALUE) {
-            throw new IllegalArgumentException(String.format("최소 %d 이상의 값이여야합니다.", MIN_VALUE));
-        }
     }
 
     public Integer getValue() {
         return value;
     }
 
-    public Distance minus(Distance distance) {
-        return new Distance(this.value - distance.getValue());
+    public void minus(Distance distance) {
+        int result = this.value - distance.getValue();
+        if (result < MIN_VALUE) {
+            throw new IllegalArgumentException("두 노선간의 거리의 차가 음수가 될 수 없습니다.");
+        }
+
+        this.value = result;
     }
 
-    public Distance plus(Distance distance) {
-        return new Distance(this.value + distance.getValue());
+    public void plus(Distance distance) {
+        this.value += distance.getValue();
     }
 
     @Override

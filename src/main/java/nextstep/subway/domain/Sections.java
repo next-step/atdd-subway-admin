@@ -12,7 +12,8 @@ import java.util.stream.Stream;
 @Embeddable
 public class Sections {
 
-    private static final int CHECK_NUMBER = 1;
+    private static final int DUPLICATION_CHECK_NUMBER = 1;
+    private static final int MIN_SECTION_NUMBER = 1;
 
     @OneToMany(fetch = FetchType.LAZY,
             mappedBy = "line",
@@ -30,7 +31,7 @@ public class Sections {
     }
 
     private void validateDuplicateSection(Section section) {
-        if (getSectionStream(section).count() > CHECK_NUMBER) {
+        if (getSectionStream(section).count() > DUPLICATION_CHECK_NUMBER) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어있습니다.");
         }
     }
@@ -43,7 +44,7 @@ public class Sections {
 
     private Stream<Section> getSectionStream(Section section) {
         return sections.stream()
-                .filter(s -> s.equalAnyStation(section.getUpStation()) || s.equalAnyStation(section.getDownStation()));
+                .filter(s -> s.isSameAnyStation(section.getUpStation()) || s.isSameAnyStation(section.getDownStation()));
     }
 
     public List<Station> getStationsInOrder() {
@@ -75,12 +76,12 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        if (sections.size() <= CHECK_NUMBER) {
+        if (sections.size() <= MIN_SECTION_NUMBER) {
             throw new IllegalArgumentException("더 이상 구간을 제거할 수 없습니다.");
         }
 
-        Optional<Section> sectionIncludedUpStation = getSectionByFilter(section -> section.equalUpStation(station));
-        Optional<Section> sectionIncludedDownStation = getSectionByFilter(section -> section.equalDownStation(station));
+        Optional<Section> sectionIncludedUpStation = getSectionByFilter(section -> section.isSameUpStation(station));
+        Optional<Section> sectionIncludedDownStation = getSectionByFilter(section -> section.isSameDownStation(station));
         removeAndMerge(sectionIncludedUpStation, sectionIncludedDownStation);
     }
 
