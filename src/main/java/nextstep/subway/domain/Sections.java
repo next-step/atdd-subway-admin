@@ -2,17 +2,19 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import org.springframework.dao.DataIntegrityViolationException;
 
 @Embeddable
 public class Sections {
     public static final String ERROR_EXISTS_SECTION = "이미 존재하는 구간입니다.";
     public static final String ERROR_CAN_NOT_CONNECT_SECTION = "연결되는 구간을 찾을 수 없습니다.";
     public static final String ERROR_NOT_FOUND_FIRST_STATION = "첫번째 역을 찾을 수 없습니다.";
+    public static final String ERROR_REMOVE_ONLY_ONE_SECTION = "단일 구간만이 존재할 경우 구간 제거가 불가합니다.";
+    public static final String ERROR_STATION_NOT_EXISTS_ON_LINE = "노선 상에 존재하지 않는 역입니다.";
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
@@ -28,7 +30,7 @@ public class Sections {
         stations.add(firstStation);
 
         Station nextStation = getNextStation(firstStation);
-        while(nextStation != null) {
+        while (nextStation != null) {
             stations.add(nextStation);
             nextStation = getNextStation(nextStation);
         }
@@ -39,7 +41,7 @@ public class Sections {
     private Station getFirstStation() {
         return sections.stream().map(Section::getUpStation)
                 .filter(upStation -> !isExistsDownStationOfSections(upStation)).findFirst()
-                .orElseThrow(() -> new DataIntegrityViolationException(ERROR_NOT_FOUND_FIRST_STATION));
+                .orElseThrow(() -> new NoSuchElementException(ERROR_NOT_FOUND_FIRST_STATION));
     }
 
     private boolean isExistsDownStationOfSections(Station station) {
@@ -88,17 +90,44 @@ public class Sections {
 
     private void validateExists(Section section) {
         if (checkExistsStation(section.getUpStation()) && checkExistsStation(section.getDownStation())) {
-            throw new DataIntegrityViolationException(ERROR_EXISTS_SECTION);
+            throw new IllegalArgumentException(ERROR_EXISTS_SECTION);
         }
     }
 
     private void validateConnected(Section section) {
         if (!checkExistsStation(section.getUpStation()) && !checkExistsStation(section.getDownStation())) {
-            throw new DataIntegrityViolationException(ERROR_CAN_NOT_CONNECT_SECTION);
+            throw new IllegalArgumentException(ERROR_CAN_NOT_CONNECT_SECTION);
         }
     }
 
     private boolean checkExistsStation(Station station) {
         return sections.stream().anyMatch(section -> section.hasStation(station));
+    }
+
+    public void removeSection(Station station) {
+        validateForRemoveSection(station);
+        removeSectionInternal(station);
+    }
+
+    private void removeSectionInternal(Station station) {
+
+    }
+
+    private void validateForRemoveSection(Station station) {
+        validateSectionsSize();
+        validateExistsStation(station);
+
+    }
+
+    private void validateSectionsSize() {
+        if (sections.size() <= 1) {
+            throw new NoSuchElementException(ERROR_REMOVE_ONLY_ONE_SECTION);
+        }
+    }
+
+    private void validateExistsStation(Station station) {
+        if (!checkExistsStation(station)) {
+            throw new IllegalArgumentException(ERROR_STATION_NOT_EXISTS_ON_LINE);
+        }
     }
 }
