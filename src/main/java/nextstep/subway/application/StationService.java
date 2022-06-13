@@ -2,11 +2,11 @@ package nextstep.subway.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import javassist.NotFoundException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,9 +20,9 @@ public class StationService {
         this.stationRepository = stationRepository;
     }
 
-    public Station findStationOrThrow(Long stationId) throws NotFoundException {
+    public Station findStationOrThrow(Long stationId) {
         return stationRepository.findById(stationId)
-            .orElseThrow(() -> new NotFoundException("지하철 노선이 존재하지 않습니다."));
+            .orElseThrow(() -> new StationNotFoundException("지하철 역이 존재하지 않습니다."));
     }
 
     @Transactional

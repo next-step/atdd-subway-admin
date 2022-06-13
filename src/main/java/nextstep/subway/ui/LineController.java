@@ -2,7 +2,6 @@ package nextstep.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import javassist.NotFoundException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -43,28 +43,35 @@ public class LineController {
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
     @PutMapping(value = "/lines/{id}")
     public ResponseEntity updateLine(@PathVariable Long id,
-        @Validated @RequestBody LineRequest lineRequest) throws NotFoundException {
+        @Validated @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(value = "/lines/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) throws NotFoundException {
+    public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping(value = "/lines/{lineId}/sections")
     public ResponseEntity addSection(@PathVariable Long lineId,
-        @Validated @RequestBody SectionRequest sectionRequest) throws NotFoundException {
+        @Validated @RequestBody SectionRequest sectionRequest) {
         LineResponse lineResponse = sectionService.addSection(sectionRequest, lineId);
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections"))
             .body(lineResponse);
+    }
+
+    @DeleteMapping(value = "/lines/{lineId}/sections")
+    public ResponseEntity removeLineStation(@PathVariable Long lineId,
+        @RequestParam Long stationId) {
+        sectionService.removeSection(stationId, lineId);
+        return ResponseEntity.ok().build();
     }
 }

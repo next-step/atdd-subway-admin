@@ -1,6 +1,5 @@
 package nextstep.subway.application;
 
-import javassist.NotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -21,13 +20,19 @@ public class SectionService {
     }
 
     @Transactional
-    public LineResponse addSection(SectionRequest sectionRequest, Long lineId)
-        throws NotFoundException {
+    public LineResponse addSection(SectionRequest sectionRequest, Long lineId) {
         Line line = lineService.findLineOrThrow(lineId);
         Station upStation = stationService.findStationOrThrow(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationOrThrow(sectionRequest.getDownStationId());
 
         line.updateSection(new Section(upStation, downStation, sectionRequest.getDistance()));
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void removeSection(Long stationId, Long lineId) {
+        Line line = lineService.findLineOrThrow(lineId);
+        Station station = stationService.findStationOrThrow(stationId);
+        line.removeSectionByStation(station);
     }
 }

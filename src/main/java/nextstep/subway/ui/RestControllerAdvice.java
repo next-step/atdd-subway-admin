@@ -1,8 +1,7 @@
 package nextstep.subway.ui;
 
 import javassist.NotFoundException;
-import nextstep.subway.exception.DownStationNotFoundException;
-import nextstep.subway.exception.UpStationNotFoundException;
+import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,14 +19,9 @@ public class RestControllerAdvice {
         return ResponseEntity.badRequest().build();
     }
 
-    @ExceptionHandler(UpStationNotFoundException.class)
-    public ResponseEntity handleUpStationNotFoundException() {
-        return ResponseEntity.badRequest().build();
-    }
-    
-    @ExceptionHandler(DownStationNotFoundException.class)
-    public ResponseEntity handleDownStationNotFoundException() {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(StationNotFoundException.class)
+    public ResponseEntity handleStationNotFoundException() {
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

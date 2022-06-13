@@ -2,7 +2,6 @@ package nextstep.subway.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import javassist.NotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -10,8 +9,8 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.exception.DownStationNotFoundException;
-import nextstep.subway.exception.UpStationNotFoundException;
+import nextstep.subway.exception.LineNotFoundException;
+import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,9 +30,9 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         validateExistOrThrow(lineRequest);
         Station upStation = findStation(lineRequest.getUpStationId(),
-            new UpStationNotFoundException());
+            new StationNotFoundException("상행 역이 존재하지 않습니다."));
         Station downStation = findStation(lineRequest.getDownStationId(),
-            new DownStationNotFoundException());
+            new StationNotFoundException("하행 역이 존재하지 않습니다."));
         Line line = new Line(lineRequest.getName(), lineRequest.getColor(),
             new Section(upStation, downStation,
                 lineRequest.getDistance()));
@@ -51,19 +50,19 @@ public class LineService {
         return lines.stream().map(line -> LineResponse.of(line)).collect(Collectors.toList());
     }
 
-    public LineResponse findLine(Long id) throws NotFoundException {
+    public LineResponse findLine(Long id) {
         Line line = findLineOrThrow(id);
         return LineResponse.of(line);
     }
 
     @Transactional
-    public void updateLine(Long id, LineRequest lineRequest) throws NotFoundException {
+    public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findLineOrThrow(id);
         line.update(lineRequest);
     }
 
     @Transactional
-    public void deleteLine(Long id) throws NotFoundException {
+    public void deleteLine(Long id) {
         findLineOrThrow(id);
         lineRepository.deleteById(id);
     }
@@ -75,8 +74,8 @@ public class LineService {
         }
     }
 
-    public Line findLineOrThrow(Long id) throws NotFoundException {
+    public Line findLineOrThrow(Long id) throws LineNotFoundException {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new NotFoundException("지하철 노선이 존재하지 않습니다."));
+            .orElseThrow(() -> new LineNotFoundException());
     }
 }
