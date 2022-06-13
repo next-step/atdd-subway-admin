@@ -169,14 +169,33 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(stationNames).containsExactly("강남역", "양재역");
     }
 
+    /**
+     * When 노선에 등록되어있지 않은 역을 제거
+     * Then 삭제 실패 응답을 반환
+     */
     @Test
     void 노선에_등록되어있지_않은_역은_제거_할_수_없음() {
+        // given
+        지하철_구간_생성됨(신분당선.getId(), 광교역_ID, 양재역_ID, 4);
 
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(신분당선.getId(), 판교역_ID);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * When 구간이 하나인 노선에서 마지막 구간을 제거할 때
+     * Then 삭제 실패 응답을 반환
+     */
     @Test
     void 구간이_하나인_노선에서_마지막_구간은_제거할_수_없음() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(신분당선.getId(), 광교역_ID);
 
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static ExtractableResponse<Response> 지하철_구간_생성됨(Long lineId, Long upStationId, Long downStationId, Integer distance) {
