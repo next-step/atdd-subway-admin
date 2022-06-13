@@ -34,8 +34,15 @@ public class Section extends BaseEntity {
     }
 
     public void mergeWith(Section nextSection) {
+        validateCorrectNextSection(nextSection);
         distance += nextSection.getDistance();
         downStation = nextSection.getDownStation();
+    }
+
+    private void validateCorrectNextSection(Section nextSection) {
+        if (!downStation.equals(nextSection.getUpStation())) {
+            throw new IllegalArgumentException("구간을 합칠 수 없습니다.");
+        }
     }
 
     private void validateDistance(long distance) {
