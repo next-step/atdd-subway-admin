@@ -2,6 +2,7 @@ package nextstep.subway.ui;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -61,8 +62,10 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + lineId)).build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException() {
+    @ExceptionHandler({DataIntegrityViolationException.class,
+            NoSuchElementException.class,
+            IllegalArgumentException.class})
+    public ResponseEntity handleExceptions() {
         return ResponseEntity.badRequest().build();
     }
 }
