@@ -3,40 +3,37 @@ package nextstep.subway.dto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 
 public class LineResponse {
     private Long id;
-
     private String name;
-
     private String color;
-
     private List<StationResponse> stations = new ArrayList<>();
+    private List<SectionResponse> sections = new ArrayList<>();
 
     public static LineResponse of(final Line line) {
-        return new LineResponse(line.getId(),
+        return new LineResponse(
+                line.getId(),
                 line.getName(),
                 line.getColor(),
-                stationResponses(line));
-    }
-
-    private static List<StationResponse> stationResponses(final Line line) {
-        return line.getLineStations().getStations()
-                .stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
+                line.getLineStations().stations(),
+                line.getSections());
     }
 
     public LineResponse() {
     }
 
-    public LineResponse(final Long id, final String name, final String color, final List<StationResponse> stations) {
+    public LineResponse(final Long id,
+                        final String name,
+                        final String color,
+                        final List<StationResponse> stations,
+                        final List<SectionResponse> sections) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
+        this.sections = sections;
     }
 
     public Long getId() {
@@ -55,6 +52,10 @@ public class LineResponse {
         return stations;
     }
 
+    public List<SectionResponse> getSections() {
+        return sections;
+    }
+
     @Override
     public String toString() {
         return "LineResponse{" +
@@ -62,6 +63,7 @@ public class LineResponse {
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
                 ", stations=" + stations +
+                ", sections=" + sections +
                 '}';
     }
 
@@ -77,11 +79,12 @@ public class LineResponse {
         return Objects.equals(id, that.id)
                 && Objects.equals(name, that.name)
                 && Objects.equals(color, that.color)
-                && Objects.equals(stations, that.stations);
+                && Objects.equals(stations, that.stations)
+                && Objects.equals(sections, that.sections);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, stations);
+        return Objects.hash(id, name, color, stations, sections);
     }
 }

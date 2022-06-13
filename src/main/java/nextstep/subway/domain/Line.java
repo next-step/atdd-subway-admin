@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -7,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import nextstep.subway.dto.SectionResponse;
 
 @Entity
 @Table(name = "line")
@@ -33,16 +35,18 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void relateToStation(final LineStation lineStation) {
-        if (this != lineStation.getLine()) {
-            throw new IllegalArgumentException("다른 노선의 연관관계는 추가할 수 없습니다.");
-        }
-        lineStations.add(lineStation);
+    public void setFinalStations(final Station finalUpStation, final Station finalDownStation, final Long distance) {
+        lineStations.addFinalStations(this, finalUpStation, finalDownStation, distance);
     }
 
     public void update(final String newName, final String newColor) {
         name = newName;
         color = newColor;
+    }
+
+    public SectionResponse registerSection(final Station upStation, final Station downStation, final Long distance) {
+        lineStations.addStationBySection(this, upStation, downStation, distance);
+        return new SectionResponse(name, upStation.getName(), downStation.getName(), distance);
     }
 
     public Long getId() {
@@ -59,5 +63,9 @@ public class Line extends BaseEntity {
 
     public LineStations getLineStations() {
         return lineStations;
+    }
+
+    public List<SectionResponse> getSections() {
+        return lineStations.sections();
     }
 }

@@ -17,8 +17,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 @DisplayName("노선 관련 기능")
-@Sql({"classpath:stations.sql"})
+@Sql({"classpath:line_acceptance_test.sql"})
 public class LineAcceptanceTest extends BaseAcceptanceTest {
+    private final long GANGNAM = 1L;
+    private final long YANGJAE = 2L;
+
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
@@ -129,8 +132,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         final Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", "bg-red-600");
-        params.put("upStationId", 1L);
-        params.put("downStationId", 2L);
+        params.put("upStationId", GANGNAM);
+        params.put("downStationId", YANGJAE);
         params.put("distance", 10);
 
         // when

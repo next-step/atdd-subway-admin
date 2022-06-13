@@ -3,16 +3,16 @@ package nextstep.subway.application;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,21 +23,26 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 class LineServiceTest {
     @Autowired
     private StationRepository stationRepository;
-
     @Autowired
     private LineRepository lineRepository;
 
+    private StationService stationService;
     private LineService lineService;
 
     private Station gangnam = new Station("강남역");
     private Station yangjae = new Station("양재역");
+    private Station jungja = new Station("정자역");
+
+    private Long lineDistance = 30L;
 
     @BeforeEach
     void setUp() {
-        lineService = new LineService(lineRepository, stationRepository);
+        stationService = new StationService(stationRepository);
+        lineService = new LineService(lineRepository, stationService);
 
         stationRepository.save(gangnam);
         stationRepository.save(yangjae);
+        stationRepository.save(jungja);
     }
 
     @Test
@@ -45,7 +50,7 @@ class LineServiceTest {
         // given
         final String lineName = "신분당선";
         final String color = "bg-red-600";
-        final LineRequest lineRequest = new LineRequest(lineName, color, gangnam.getId(), yangjae.getId());
+        final LineRequest lineRequest = new LineRequest(lineName, color, gangnam.getId(), jungja.getId(), lineDistance);
 
         // when
         final LineResponse lineResponse = lineService.saveLine(lineRequest);
@@ -54,30 +59,19 @@ class LineServiceTest {
         assertThat(lineResponse).isNotNull();
         assertThat(lineResponse.getId()).isGreaterThan(0L);
         assertThat(lineResponse.getName()).isEqualTo(lineName);
-        assertThat(lineResponse.getStations())
-                .containsExactly(StationResponse.of(gangnam), StationResponse.of(yangjae));
 
         final Line createdLine = lineRepository.findById(lineResponse.getId()).get();
-        assertThat(createdLine.getLineStations().getPreviousOf(gangnam)).isNull();
-        assertThat(createdLine.getLineStations().getPreviousOf(yangjae)).isEqualTo(gangnam);
-    }
+        assertThat(createdLine.getLineStations().stations())
+                .containsExactly(StationResponse.of(gangnam), StationResponse.of(jungja));
 
-    @Test
-    void LineRequest_객체의_상행종점역이나_하행종점역이_조회되지_않으면_노선_생성_시_IllegalArgumentException이_발생해야_한다() {
-        // given
-        final String lineName = "신분당선";
-        final String color = "bg-red-600";
-        final List<LineRequest> invalidRequests = Arrays.asList(
-                new LineRequest(lineName, color, 0L, 0L),
-                new LineRequest(lineName, color, gangnam.getId(), 0L),
-                new LineRequest(lineName, color, 0L, yangjae.getId())
-        );
+        final List<StationResponse> stationResponses = lineResponse.getStations();
+        assertThat(stationResponses).containsExactly(StationResponse.of(gangnam), StationResponse.of(jungja));
 
-        // when and then
-        for (final LineRequest request : invalidRequests) {
-            assertThatThrownBy(() -> lineService.saveLine(request))
-                    .isInstanceOf(IllegalArgumentException.class);
-        }
+        final List<SectionResponse> sectionResponses = lineResponse.getSections();
+        assertThat(sectionResponses.size()).isEqualTo(1);
+        assertThat(sectionResponses.get(0).getUpStationName()).isEqualTo(gangnam.getName());
+        assertThat(sectionResponses.get(0).getDownStationName()).isEqualTo(jungja.getName());
+        assertThat(sectionResponses.get(0).getDistance()).isEqualTo(lineDistance);
     }
 
     @Test
@@ -86,11 +80,9 @@ class LineServiceTest {
         final Line line1 = givenLine();
 
         final Line line2 = new Line("2호선", "bg-green-600");
-        line2.relateToStation(new LineStation(line2, gangnam));
         lineRepository.save(line2);
 
         final Line line3 = new Line("3호선", "bg-orange-600");
-        line3.relateToStation(new LineStation(line3, yangjae));
         lineRepository.save(line3);
 
         // when
@@ -121,7 +113,7 @@ class LineServiceTest {
     }
 
     @Test
-    void 아이디와_LineRequest_객체를_파라미터로_노선을_수정할_수_있어야_한다() {
+    void 아이디와_LineRequest_객체로_노선을_수정할_수_있어야_한다() {
         // given
         final Line givenLine = givenLine();
 
@@ -138,18 +130,6 @@ class LineServiceTest {
     }
 
     @Test
-    void 없는_아이디로_노선_수정_시_IllegalArgumentException이_발생해야_한다() {
-        // given
-        final String newName = "수정된이름";
-        final String newColor = "bg-modified-600";
-        final LineRequest lineRequest = new LineRequest(newName, newColor);
-
-        // when and then
-        assertThatThrownBy(() -> lineService.modifyLine(1L, lineRequest))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
     void 아이디로_노선을_삭제할_수_있어야_한다() {
         // given
         final Line givenLine = givenLine();
@@ -163,16 +143,23 @@ class LineServiceTest {
     }
 
     @Test
-    void 없는_아이디로_노선_삭제_시_IllegalArgumentException이_발생해야_한다() {
-        // when and then
-        assertThatThrownBy(() -> lineService.deleteLineById(1L))
-                .isInstanceOf(IllegalArgumentException.class);
+    void 노선_아이디와_SectionRequest_객체로_구간을_등록할_수_있어야_한다() {
+        // given
+        final Line line = givenLine();
+        final Long distance = 10L;
+        final SectionRequest sectionRequest = new SectionRequest(gangnam.getId(), yangjae.getId(), distance);
+
+        // when
+        final SectionResponse sectionResponse = lineService.registerSection(line.getId(), sectionRequest);
+
+        // then
+        assertThat(sectionResponse)
+                .isEqualTo(new SectionResponse(line.getName(), gangnam.getName(), yangjae.getName(), distance));
     }
 
     private Line givenLine() {
         final Line givenLine = new Line("신분당선", "bg-red-600");
-        givenLine.relateToStation(new LineStation(givenLine, gangnam));
-        givenLine.relateToStation(new LineStation(givenLine, yangjae, gangnam));
+        givenLine.setFinalStations(gangnam, jungja, lineDistance);
         return lineRepository.save(givenLine);
     }
 }
