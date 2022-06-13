@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    private static final int MIN = 0;
+    private static final int EMPTY = 0;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> list = new ArrayList<>();
@@ -41,7 +41,7 @@ public class Sections {
     }
 
     private void notExistedEachStation(final Section section) {
-        if (list.size() > MIN && notExistStation(section)) {
+        if (list.size() > EMPTY && notExistStation(section)) {
             throw new LineException(LineExceptionType.STATION_ALL_NOT_USED);
         }
     }
