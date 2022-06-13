@@ -47,6 +47,10 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
+    public void deleteSection(final Station station) {
+        sections.delete(station);
+    }
+
     public boolean containSection(final Section section) {
         return sections.contains(section);
     }

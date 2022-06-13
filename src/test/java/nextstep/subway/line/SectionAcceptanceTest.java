@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.common.util.DatabaseCleanup;
-import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
@@ -30,13 +29,13 @@ public class SectionAcceptanceTest {
     int port;
 
     @Autowired
-    DatabaseCleanup databaseCleanup;
+    private DatabaseCleanup databaseCleanup;
     @Autowired
-    StationRepository stationRepository;
+    private StationRepository stationRepository;
     @Autowired
-    LineRepository lineRepository;
-    @Autowired
-    LineService lineService;
+    private LineRepository lineRepository;
+
+    private Line line;
 
     @BeforeEach
     void setUp() {
@@ -45,6 +44,7 @@ public class SectionAcceptanceTest {
         }
         databaseCleanup.execute();
         지하철역_추가();
+        line = lineRepository.save(Line.of("2호선", "bg-blue-600", 10L, StationTest.강남역, StationTest.사당역));
     }
 
     /**
@@ -55,7 +55,6 @@ public class SectionAcceptanceTest {
     @Test
     void 섹션_추가() {
         // given
-        final Line line = lineRepository.save(Line.of("2호선", "bg-blue-600", 10L, StationTest.강남역, StationTest.사당역));
         SectionAddRequest sectionAddRequest = new SectionAddRequest(StationTest.강남역.getId(), StationTest.이수역.getId(), 5L);
         // when
         ExtractableResponse<Response> expected = 섹션_추가(line, sectionAddRequest);
@@ -65,15 +64,40 @@ public class SectionAcceptanceTest {
 
     }
 
+    /**
+     * Given 지하철 노선에 섹션을 추가 하고,
+     * When 삭제할 섹션을 삭제 한다.
+     * Then 지하촐 노선을 조회 하면, 삭제된 섹션은 조회가 되지 않는다.
+     */
+    @Test
+    void 섹션_삭제(){
+        // given
+        final SectionAddRequest sectionAddRequest = new SectionAddRequest(StationTest.강남역.getId(), StationTest.이수역.getId(), 5L);
+        섹션_추가(line, sectionAddRequest);
+        // when
+        final ExtractableResponse<Response> expected = 섹션_삭제(line.getId(), StationTest.이수역.getId());
+        // then
+        assertThat(expected.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
     private ExtractableResponse<Response> 섹션_추가(final Line line, final SectionAddRequest sectionAddRequest) {
-        ExtractableResponse<Response> expected = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(sectionAddRequest)
                 .pathParam("id", line.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/{id}/sections")
                 .then().log().all()
                 .extract();
-        return expected;
+    }
+
+    private ExtractableResponse<Response> 섹션_삭제(final Long id, final Long stationId) {
+        return RestAssured.given().log().all()
+                .pathParam("id", id)
+                .param("stationId", stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
     }
 
     public void 지하철역_추가() {

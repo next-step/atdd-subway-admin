@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
     private static final int EMPTY = 0;
+    private static final int MIN_SECTION = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> list = new ArrayList<>();
@@ -50,23 +51,68 @@ public class Sections {
         return !containStation(section.getUpStation()) && !containStation(section.getDownStation());
     }
 
-
     private boolean containStation(final Station station) {
         return getAllStation().contains(station);
     }
 
     private void updateUpStation(final Section section) {
         list.stream()
-                .filter(it -> it.isEqualsDownStation(section))
+                .filter(it -> it.isEqualsDownStation(section.getDownStation()))
                 .findFirst()
                 .ifPresent(it ->it.updateDownStation(section));
     }
 
     private void updateDownStation(final Section section) {
         list.stream()
-                .filter(it -> it.isEqualsUpStation(section))
+                .filter(it -> it.isEqualsUpStation(section.getUpStation()))
                 .findFirst()
-                .ifPresent(it ->it.updateUpStation(section));
+                .ifPresent(it -> it.updateUpStation(section));
+    }
+
+    public void delete(final Station station) {
+        deleteValid(station);
+
+        if (station.equals(finalUpStation())) {
+            list.remove(findUpSectionBy(station));
+            return;
+        }
+
+        if (station.equals(finalDownStation())) {
+            list.remove(findDownSectionBy(station));
+            return;
+        }
+
+        final Section nextSection = findDownSectionBy(station);
+        list.stream()
+                .filter(it -> it.isEqualsUpStation(station))
+                .findFirst()
+                .ifPresent(it -> it.deleteStation(nextSection));
+
+        list.remove(nextSection);
+    }
+
+    private void deleteValid(final Station station) {
+        if(!getAllStation().contains(station)) {
+            throw new LineException(LineExceptionType.NOT_FOUND_STATION);
+        }
+
+        if (list.size() <= MIN_SECTION) {
+            throw new LineException(LineExceptionType.SECTION_DELETE_MIN_SIZE);
+        }
+    }
+
+    private Section findUpSectionBy(final Station station) {
+        return list.stream()
+                .filter(it -> it.isEqualsUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> new LineException(LineExceptionType.NOT_FOUND_STATION));
+    }
+
+    private Section findDownSectionBy(final Station station) {
+        return list.stream()
+                .filter(it -> it.isEqualsDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new LineException(LineExceptionType.NOT_FOUND_STATION));
     }
 
     public boolean contains(final Section section) {

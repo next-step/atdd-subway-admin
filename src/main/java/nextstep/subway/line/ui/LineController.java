@@ -47,15 +47,22 @@ public class LineController {
     }
 
     @DeleteMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Void> deleteLine(@PathVariable final long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable final Long id) {
         lineService.deleteLine(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PostMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> addSection(@PathVariable final long id, @RequestBody SectionAddRequest sectionAddRequest) {
+    public ResponseEntity<LineResponse> addSection(@PathVariable final Long id, @RequestBody SectionAddRequest sectionAddRequest) {
         final LineResponse line = sectionService.addSection(id, sectionAddRequest);
 
         return ResponseEntity.created(URI.create("/lines/" + id)).body(line);
+    }
+
+    @DeleteMapping(value = "lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> deleteSection(@PathVariable final Long id, @RequestParam Long stationId) {
+        sectionService.deleteSection(id, stationId);
+
+        return ResponseEntity.noContent().build();
     }
 }

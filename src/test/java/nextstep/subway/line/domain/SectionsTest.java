@@ -83,6 +83,35 @@ public class SectionsTest {
     }
 
     @Test
+    void 섹션_삭제_오류() {
+        // then
+        assertThatThrownBy(() -> sections.delete(StationTest.강남역))
+                .isInstanceOf(LineException.class);
+    }
+
+    @Test
+    void 섹션_종착역_삭제() {
+        // given
+        Section newSection = Section.of(StationTest.강남역, StationTest.이수역, 4L);
+        sections.add(newSection);
+        // when
+        sections.delete(StationTest.강남역);
+        // then
+        assertThat(sections.getAllStation().contains(StationTest.강남역)).isFalse();
+    }
+
+    @Test
+    void 섹션_중간역_삭제() {
+        // given
+        Section newSection = Section.of(StationTest.강남역, StationTest.이수역, 4L);
+        sections.add(newSection);
+        // when
+        sections.delete(StationTest.이수역);
+        // then
+        assertThat(sections.getAllStation().contains(StationTest.이수역)).isFalse();
+    }
+
+    @Test
     void 상행선_종점_구하기() {
         // given
         sections.add(new Section(StationTest.사당역, StationTest.이수역, 10L));

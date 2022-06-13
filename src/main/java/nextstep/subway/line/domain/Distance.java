@@ -29,9 +29,13 @@ public class Distance {
         }
     }
 
-    public void updateDistance(final long value) {
+    public void minusDistance(final long value) {
         updateValidate(value);
         this.value = this.value - value;
+    }
+
+    public void plusDistance(final long value) {
+        this.value = this.value + value;
     }
 
     private void updateValidate(final long value) {

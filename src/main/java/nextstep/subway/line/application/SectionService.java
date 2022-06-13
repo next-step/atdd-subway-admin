@@ -28,4 +28,12 @@ public class SectionService{
         line.addSection(Section.of(upStation, downStation, sectionAddRequest.getDistance()));
         return LineResponse.from(line);
     }
+
+    @Transactional
+    public void deleteSection(final Long id, final Long stationId) {
+        final Station station = stationService.findById(stationId);
+        final Line line = lineService.findById(id);
+
+        line.deleteSection(station);
+    }
 }
