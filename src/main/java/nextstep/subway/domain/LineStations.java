@@ -87,6 +87,9 @@ public class LineStations {
     }
 
     private void validateDistance(final long newDistance, final long oldDistance) {
+        if (newDistance <= 0L) {
+            throw new IllegalArgumentException("등록할 구간의 거리는 0 이하일 수 없습니다");
+        }
         if (newDistance >= oldDistance) {
             throw new IllegalArgumentException("신규 구간의 길이는 기존 구간의 길이보다 짧아야 합니다.");
         }
@@ -99,6 +102,20 @@ public class LineStations {
                     lineStation.getStation().getName(),
                     lineStation.getNext().getName(),
                     lineStation.getDistanceToNext()));
+        }
+    }
+
+    public void addStationBySection(final Line line,
+                                    final Station upStation,
+                                    final Station downStation,
+                                    final long distance) {
+        final boolean upStationExists = hasRelationTo(upStation);
+        final boolean downStationExists = hasRelationTo(downStation);
+        if (upStationExists) {
+            addDownStation(line, upStation, downStation, distance);
+        }
+        if (downStationExists) {
+            addUpStation(line, upStation, downStation, distance);
         }
     }
 }

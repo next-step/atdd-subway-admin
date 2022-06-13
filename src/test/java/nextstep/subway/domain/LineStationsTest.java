@@ -27,13 +27,34 @@ class LineStationsTest {
     }
 
     @Test
+    void 신규역_추가_시_구간의_거리가_0보다_크지_않으면_IllegalStatementException이_발생해야_한다() {
+        // given
+        final LineStations lineStations = givenLineStations();
+        final Station upStation = new Station("양재역");
+
+        // when and then
+        assertThatThrownBy(() -> lineStations.addStationBySection(line, upStation, station2, 0L))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 신규역_추가_시_상행선_하행선이_이미_등록된_구간이면_IllegalStatementException이_발생해야_한다() {
+        // given
+        final LineStations lineStations = givenLineStations();
+
+        // when and then
+        assertThatThrownBy(() -> lineStations.addStationBySection(line, station1, station2, from1To2))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     void 상행역인_신규역_추가_시_기존_구간의_거리보다_신규_구간의_거리가_짧지_않으면_IllegalArgumentException이_발생해야_한다() {
         // given
         final LineStations lineStations = givenLineStations();
         final Station upStation = new Station("양재역");
 
         // when and then
-        assertThatThrownBy(() -> lineStations.addUpStation(line, upStation, station2, from1To2))
+        assertThatThrownBy(() -> lineStations.addStationBySection(line, upStation, station2, from1To2))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -45,14 +66,21 @@ class LineStationsTest {
         final long distance = 10L;
 
         // when
-        lineStations.addUpStation(line, upStation, station2, distance);
+        lineStations.addStationBySection(line, upStation, station2, distance);
 
         // then
         assertThat(lineStations.sections())
                 .containsOnly(
-                        new SectionResponse(line.getName(), station1.getName(), upStation.getName(),
+                        new SectionResponse(
+                                line.getName(),
+                                station1.getName(),
+                                upStation.getName(),
                                 from1To2 - distance),
-                        new SectionResponse(line.getName(), upStation.getName(), station2.getName(), distance));
+                        new SectionResponse(
+                                line.getName(),
+                                upStation.getName(),
+                                station2.getName(),
+                                distance));
     }
 
     @Test
@@ -63,7 +91,7 @@ class LineStationsTest {
         final long distance = 50L;
 
         // when
-        lineStations.addUpStation(line, upStation, station1, distance);
+        lineStations.addStationBySection(line, upStation, station1, distance);
 
         // then
         assertThat(lineStations.sections())
@@ -79,7 +107,7 @@ class LineStationsTest {
         final Station downStation = new Station("양재역");
 
         // when and then
-        assertThatThrownBy(() -> lineStations.addDownStation(line, station1, downStation, from1To2))
+        assertThatThrownBy(() -> lineStations.addStationBySection(line, station1, downStation, from1To2))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -91,7 +119,7 @@ class LineStationsTest {
         final long distance = 10L;
 
         // when
-        lineStations.addDownStation(line, station1, downStation, distance);
+        lineStations.addStationBySection(line, station1, downStation, distance);
 
         // then
         assertThat(lineStations.sections())
@@ -109,7 +137,7 @@ class LineStationsTest {
         final long distance = 50L;
 
         // when
-        lineStations.addDownStation(line, station2, downStation, distance);
+        lineStations.addStationBySection(line, station2, downStation, distance);
 
         // then
         assertThat(lineStations.sections())
