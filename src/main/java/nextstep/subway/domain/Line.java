@@ -64,7 +64,7 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void validateSection(Section section){
+    private void validateSection(Section section) {
         if (Objects.isNull(section)) {
             throw new InvalidSectionException(INVALID_SECTION);
         }
@@ -73,6 +73,10 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         sections.addSection(section);
         section.setLine(this);
+    }
+
+    public void deleteSection(Station station) {
+        sections.deleteStation(station);
     }
 
     public Long getId() {

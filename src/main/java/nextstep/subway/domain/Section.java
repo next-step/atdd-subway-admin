@@ -44,15 +44,20 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, Distance distance) {
         validate(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = Distance.from(distance);
+        this.distance = distance;
     }
 
-    public static Section of(Station upStation, Station downStation, int distance) {
+    public static Section of(Station upStation, Station downStation, Distance distance) {
         return new Section(upStation, downStation, distance);
+    }
+
+    public static Distance newDistance(Section upSection, Section downSection) {
+        return upSection.distance
+            .add(downSection.distance);
     }
 
     private void validate(Station upStation, Station downStation) {
@@ -84,21 +89,16 @@ public class Section extends BaseEntity {
     public void update(Section target) {
         if (this.upStation.equals(target.upStation)) {
             this.upStation = target.downStation;
-            changeDistance(target);
+            this.distance = subtractDistance(target);
         }
         if (this.downStation.equals(target.downStation)) {
             this.downStation = target.upStation;
-            changeDistance(target);
+            this.distance = subtractDistance(target);
         }
     }
 
-    private void changeDistance(Section target) {
-        this.distance = this.distance.subtract(target.distance);
-    }
-
-    public void setLine(Line line) {
-        validateLineNotNull(line);
-        this.line = line;
+    private Distance subtractDistance(Section target) {
+        return this.distance.subtract(target.distance);
     }
 
     private void validateLineNotNull(Line line) {
@@ -107,12 +107,33 @@ public class Section extends BaseEntity {
         }
     }
 
+    public boolean equalsUpStation(Station target) {
+        return this.upStation.equals(target);
+    }
+
+    public boolean equalsDownStation(Station target) {
+        return this.downStation.equals(target);
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public void setLine(Line line) {
+        validateLineNotNull(line);
+        this.line = line;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
 }

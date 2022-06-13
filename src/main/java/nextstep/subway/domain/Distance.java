@@ -17,9 +17,13 @@ public class Distance {
     protected Distance() {
     }
 
-    private Distance(int distance) {
+    public Distance(int distance) {
         validate(distance);
         this.distance = distance;
+    }
+
+    public static Distance from(int distance) {
+        return new Distance(distance);
     }
 
     private void validate(int distance) {
@@ -32,8 +36,12 @@ public class Distance {
         return new Distance(this.distance - distance.distance);
     }
 
-    public static Distance from(int distance) {
-        return new Distance(distance);
+    public Distance add(Distance distance) {
+        return new Distance(this.distance + distance.distance);
+    }
+
+    public int value() {
+        return distance;
     }
 
     @Override
