@@ -29,6 +29,10 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
     private void validateDistance(long distance) {
         if (distance < 1) {
             throw new IllegalArgumentException("거리는 1 이상의 숫자만 입력이 가능합니다.");

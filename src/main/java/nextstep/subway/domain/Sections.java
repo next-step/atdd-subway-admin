@@ -164,7 +164,7 @@ public class Sections {
 
     private boolean hasStation(Station station) {
         return getSectionList().stream()
-                .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
+                .anyMatch(section -> section.hasStation(station));
     }
 
     public void removeSectionByStation(Station station) {
