@@ -60,7 +60,7 @@ public class Sections {
         addSectionBetweenTwoStation(newSection);
     }
 
-    public void addFirstSection(Section section) {
+    public void addInitialSection(Section section) {
         if (!sectionList.isEmpty()) {
             throw new IllegalStateException("이미 구간이 등록된 경우 추가할 수 없습니다.");
         }
