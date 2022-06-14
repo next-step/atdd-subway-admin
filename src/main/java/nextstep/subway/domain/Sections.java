@@ -60,7 +60,7 @@ public class Sections {
         addSectionBetweenTwoStation(newSection);
     }
 
-    public void addFirstSection(Section section) {
+    public void addInitialSection(Section section) {
         if (!sectionList.isEmpty()) {
             throw new IllegalStateException("이미 구간이 등록된 경우 추가할 수 없습니다.");
         }
@@ -123,7 +123,7 @@ public class Sections {
                 .filter(section -> !upStaions.contains(section.getDownStation()))
                 .findFirst();
 
-        return downStationSection.map(Section::getUpStation).orElse(null);
+        return downStationSection.map(Section::getDownStation).orElse(null);
     }
 
     public Optional<Section> findSectionByUpStation(Station upStation) {
@@ -163,8 +163,44 @@ public class Sections {
     }
 
     private boolean hasStation(Station station) {
-        return getSectionList().stream()
-                .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
+        return sectionList.stream()
+                .anyMatch(section -> section.hasStation(station));
     }
 
+    public void removeSectionByStation(Station station) {
+        validateRemoveStation(station);
+        validateRemoveStatus();
+
+        Optional<Section> firstSection = findSectionByDownStation(station);
+        Optional<Section> secondSection = findSectionByUpStation(station);
+
+        if (firstSection.isPresent() && secondSection.isPresent()) {
+            removeStationInMiddle(firstSection.get(), secondSection.get());
+            return ;
+        }
+
+        if (firstSection.isPresent()) {
+            sectionList.remove(firstSection.get());
+            return ;
+        }
+
+        secondSection.ifPresent(section -> sectionList.remove(section));
+    }
+
+    private void removeStationInMiddle(Section firstSection, Section secondSection) {
+        firstSection.mergeWith(secondSection);
+        sectionList.remove(secondSection);
+    }
+
+    private void validateRemoveStation(Station station) {
+        if (!hasStation(station)) {
+            throw new IllegalArgumentException("등록되지 않은 역은 삭제할 수 없습니다.");
+        }
+    }
+
+    private void validateRemoveStatus() {
+        if (sectionList.size() <= 1) {
+            throw new IllegalStateException("마지막 구간은 제거할 수 없습니다.");
+        }
+    }
 }

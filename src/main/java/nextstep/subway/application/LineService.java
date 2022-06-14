@@ -83,4 +83,10 @@ public class LineService {
         return SectionResponse.of(newSection);
     }
 
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+        line.removeSectionByStation(station);
+    }
 }

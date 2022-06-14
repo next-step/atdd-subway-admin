@@ -28,7 +28,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        sections.addFirstSection(section);
+        sections.addInitialSection(section);
     }
 
 
@@ -71,10 +71,6 @@ public class Line extends BaseEntity {
         this.name = name;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
     public List<Section> getSections() {
         return new ArrayList<>(sections.getSectionList());
     }
@@ -83,5 +79,9 @@ public class Line extends BaseEntity {
         if (StringUtils.isBlank(name)) {
             throw new IllegalArgumentException("이름이 입력되지 않았습니다.");
         }
+    }
+
+    public void removeSectionByStation(Station station) {
+        sections.removeSectionByStation(station);
     }
 }

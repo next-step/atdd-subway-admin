@@ -29,6 +29,22 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+    }
+
+    public void mergeWith(Section nextSection) {
+        validateCorrectNextSection(nextSection);
+        distance += nextSection.getDistance();
+        downStation = nextSection.getDownStation();
+    }
+
+    private void validateCorrectNextSection(Section nextSection) {
+        if (!downStation.equals(nextSection.getUpStation())) {
+            throw new IllegalArgumentException("구간을 합칠 수 없습니다.");
+        }
+    }
+
     private void validateDistance(long distance) {
         if (distance < 1) {
             throw new IllegalArgumentException("거리는 1 이상의 숫자만 입력이 가능합니다.");
@@ -59,10 +75,6 @@ public class Section extends BaseEntity {
 
     public Station getUpStation() {
         return upStation;
-    }
-
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
     }
 
     public long getDistance() {

@@ -54,6 +54,13 @@ public class LineController {
         return ResponseEntity.created(URI.create("lines" + lineId + "/sections")).body(sectionResponse);
     }
 
+    @DeleteMapping("/lines/{lineId}/sections")
+    public ResponseEntity<SectionResponse> removeLineStation(@PathVariable Long lineId,
+                                                             @RequestParam Long stationId) {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(value = {NoSuchElementException.class, IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<Void> handle() {
         return ResponseEntity.badRequest().build();
