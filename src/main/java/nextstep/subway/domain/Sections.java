@@ -18,15 +18,17 @@ public class Sections {
     }
 
     public void add(Section section) {
-        this.sections.stream()
-                .filter(it -> it.upStationId().equals(section.upStationId()))
-                .findFirst()
-                .ifPresent(it ->
-                        {
-                            it.updateUpStationId(section.downStationId());
-                            it.calculateDistance(section.distance());
-                        }
-                );
+        if (hasNextStation(section.upStationId())) {
+            this.sections.stream()
+                    .filter(it -> it.upStationId().equals(section.upStationId()))
+                    .findFirst()
+                    .ifPresent(it ->
+                            {
+                                it.updateUpStationId(section.downStationId());
+                                it.calculateDistance(section.distance());
+                            }
+                    );
+        }
         this.sections.add(section);
     }
 

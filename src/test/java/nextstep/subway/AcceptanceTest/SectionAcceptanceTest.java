@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleaner;
 import nextstep.subway.api.LineApi;
 import nextstep.subway.api.StationApi;
-import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -87,7 +86,7 @@ class SectionAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(getLineStations(신분당선).get(0).getName()).isEqualTo("신논현역");
+        assertThat(getLineStationNames(신분당선).get(0)).isEqualTo("신논현역");
     }
 
     /**
@@ -107,10 +106,11 @@ class SectionAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(getLineStations(신분당선).get(lineApi.findNames().size() - 1).getName()).isEqualTo("호매실역");
+        List<String> lineStationNames = getLineStationNames(신분당선);
+        assertThat(lineStationNames.get(lineStationNames.size() - 1)).isEqualTo("호매실역");
     }
 
-    private List<Station> getLineStations(Long id) {
-        return lineApi.findById(신분당선).jsonPath().getList("stations");
+    private List<String> getLineStationNames(Long id) {
+        return lineApi.findById(id).jsonPath().getList("stations.name");
     }
 }
