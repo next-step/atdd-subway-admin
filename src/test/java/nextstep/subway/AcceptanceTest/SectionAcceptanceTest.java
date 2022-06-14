@@ -110,6 +110,57 @@ class SectionAcceptanceTest {
         assertThat(lineStationNames.get(lineStationNames.size() - 1)).isEqualTo("호매실역");
     }
 
+    /**
+     * Given 지하철 노선에 역을 등록할 경우 기존 역 사이 길이와 크거나 같게 입력한다.
+     * When 지하철 노선에 지하철역 등록을 요청한다.
+     * Then 지하철 노선등록이 실패한다.
+     * Then 지하철 노선등록 실패에러 메세지를 반환한다.
+     */
+    @DisplayName("새로운 역을 등록할 때 기존 역사이 길이와 크거나 같을 경우 실패한다.")
+    @Test
+    void createInvalidDistance() {
+        // given
+
+        // when
+
+        // then
+
+    }
+
+    /**
+     * Given 지하철 노선에 역을 등록할 경우 이미 등록 된 구간을 입력한다.
+     * When 지하철 노선에 지하철역 등록을 요청한다.
+     * Then 지하철 노선등록이 실패한다.
+     * Then 지하철 노선등록 실패에러 메세지를 반환한다.
+     */
+    @DisplayName("새로운 역을 등록할 때 이미 등록된 구간일 경우 실패한다.")
+    @Test
+    void createSameRequest() {
+        // given
+
+        // when
+
+        // then
+
+    }
+
+    /**
+     * Given 지하철 노선에 역을 등록할 경우 노선에 없는 상하행역을 입력한다.
+     * When 지하철 노선에 지하철역 등록을 요청한다.
+     * Then 지하철 노선등록이 실패한다.
+     * Then 지하철 노선등록 실패에러 메세지를 반환한다.
+     */
+    @DisplayName("기존에 등록된 상하행 역이 없을 경우 실패한다.")
+    @Test
+    void createUnknownRequest() {
+        // given
+
+        // when
+
+        // then
+
+    }
+
     private List<String> getLineStationNames(Long id) {
         return lineApi.findById(id).jsonPath().getList("stations.name");
     }
