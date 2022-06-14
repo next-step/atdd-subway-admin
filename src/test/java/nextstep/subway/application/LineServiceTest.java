@@ -157,6 +157,23 @@ class LineServiceTest {
                 .isEqualTo(new SectionResponse(line.getName(), gangnam.getName(), yangjae.getName(), distance));
     }
 
+    @Test
+    void 노선_아이디와_지하철역_아이디로_구간을_삭제할_수_있어야_한다() {
+        // given
+        final Line line = givenLine();
+        final Long distance = 10L;
+        final SectionRequest sectionRequest = new SectionRequest(gangnam.getId(), yangjae.getId(), distance);
+        lineService.registerSection(line.getId(), sectionRequest);
+
+        // when
+        lineService.deleteSection(line.getId(), yangjae.getId());
+
+        // then
+        assertThat(line.getSections())
+                .containsExactly(
+                        new SectionResponse(line.getName(), gangnam.getName(), jungja.getName(), lineDistance));
+    }
+
     private Line givenLine() {
         final Line givenLine = new Line("신분당선", "bg-red-600");
         givenLine.setFinalStations(gangnam, jungja, lineDistance);
