@@ -17,10 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 public class LineService {
-    public static final String ERROR_MESSAGE_UP_STATION_NOT_EXISTS = "상행종점 역이 존재하지 않습니다.";
-    public static final String ERROR_MESSAGE_DOWN_STATION_NOT_EXISTS = "하행종점 역이 존재하지 않습니다.";
-    public static final String ERROR_MESSAGE_DELETE_STATION_NOT_EXISTS = "삭제할 역이 존재하지 않습니다.";
+
     public static final String ERROR_MESSAGE_LINE_NOT_EXISTS = "해당 노선이 존재하지 않습니다.";
+    public static final String ERROR_MESSAGE_STATION_NOT_EXISTS = "해당 역이 존재하지 않습니다.";
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
 
@@ -39,30 +38,35 @@ public class LineService {
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NoSuchElementException(ERROR_MESSAGE_LINE_NOT_EXISTS));
+        Line line = findLine(lineId);
 
         addSection(line, sectionRequest.getUpStationId(), sectionRequest.getDownStationId(),
                 sectionRequest.getDistance());
     }
 
     private void addSection(Line line, Long upStationId, Long downStationId, Integer distance) {
-        Station upStation = stationRepository.findById(upStationId)
-                .orElseThrow(() -> new NoSuchElementException(ERROR_MESSAGE_UP_STATION_NOT_EXISTS));
-        Station downStation = stationRepository.findById(downStationId)
-                .orElseThrow(() -> new NoSuchElementException(ERROR_MESSAGE_DOWN_STATION_NOT_EXISTS));
+        Station upStation = findStation(upStationId);
+        Station downStation = findStation(downStationId);
 
         Section section = new Section(line.getId(), upStation, downStation, distance);
         line.addSection(section);
     }
 
     public void removeSection(Long lineId, Long stationId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NoSuchElementException(ERROR_MESSAGE_LINE_NOT_EXISTS));
-        Station station = stationRepository.findById(stationId)
-                .orElseThrow(() -> new NoSuchElementException(ERROR_MESSAGE_DELETE_STATION_NOT_EXISTS));
+        Line line = findLine(lineId);
+        Station station = findStation(stationId);
 
         line.removeSection(station);
+    }
+
+    private Line findLine(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new NoSuchElementException(ERROR_MESSAGE_LINE_NOT_EXISTS));
+    }
+
+    private Station findStation(Long upStationId) {
+        return stationRepository.findById(upStationId)
+                .orElseThrow(() -> new NoSuchElementException(ERROR_MESSAGE_STATION_NOT_EXISTS));
     }
 
     @Transactional(readOnly = true)
