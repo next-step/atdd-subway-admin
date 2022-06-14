@@ -81,7 +81,6 @@ class LineTest {
         //given
         Station newStation = stationRepository.save(Station.create("상록수역"));
 
-
         // when
         Section newSection = Section.create(newStation, downStation, Distance.of(distance));
 
