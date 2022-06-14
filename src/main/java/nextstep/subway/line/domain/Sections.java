@@ -125,7 +125,7 @@ public class Sections {
             set.add(section.getUpStation());
             set.add(section.getDownStation());
         }
-        return set;
+        return Collections.unmodifiableSet(set);
     }
 
     public Station finalUpStation() {
@@ -136,9 +136,9 @@ public class Sections {
     }
 
     private List<Station> getUpStations() {
-        return list.stream()
+        return Collections.unmodifiableList(list.stream()
                 .map(Section::getUpStation)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     public Station finalDownStation() {
@@ -149,9 +149,9 @@ public class Sections {
     }
 
     private List<Station> getDownStations() {
-        return list.stream()
+        return Collections.unmodifiableList(list.stream()
                 .map(Section::getDownStation)
-                .collect(Collectors.toList());
+                .collect(Collectors.toList()));
     }
 
     @Override
