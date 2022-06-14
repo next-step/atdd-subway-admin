@@ -1,7 +1,6 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 
 public class LineUpdateRequest {
     private String name;
@@ -20,7 +19,7 @@ public class LineUpdateRequest {
         return color;
     }
 
-    public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation);
+    public Line toLine() {
+        return new Line(name, color);
     }
 }
