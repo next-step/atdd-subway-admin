@@ -3,7 +3,6 @@ package nextstep.subway.ui;
 import nextstep.subway.application.StationService;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
