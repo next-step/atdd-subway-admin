@@ -73,9 +73,11 @@ public class LineService {
         return getLineOrElseThrow(id).getSections();
     }
 
+    @Transactional
     public void deleteSection(final Long lineId, final long stationId) {
         final Line line = getLineOrElseThrow(lineId);
         line.deleteSection(stationService.getStationOrElseThrow(stationId));
+        lineRepository.save(line);
     }
 
     private Line getLineOrElseThrow(final Long id) {
