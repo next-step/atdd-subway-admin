@@ -17,14 +17,18 @@ public class Distance {
         this.distance = distance;
     }
 
-    public Integer getDistance() {
-        return distance;
-    }
-
     public void minus(Integer distance) {
         if (this.distance - distance <= 0) {
             throw new IllegalArgumentException(DISTANCE_MINUS_ERROR_MSG);
         }
         this.distance -= distance;
+    }
+
+    public void plus(Integer distance) {
+        this.distance += distance;
+    }
+
+    public Integer getDistance() {
+        return distance;
     }
 }

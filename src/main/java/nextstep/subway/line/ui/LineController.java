@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @RestController
 public class LineController {
@@ -57,6 +58,14 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/lines/{lineId}/sections")
+    public ResponseEntity removeLineStation(
+            @PathVariable Long lineId,
+            @RequestBody Long stationId) {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler({EmptyResultDataAccessException.class, IllegalArgumentException.class})
     public ResponseEntity handleIllegalArgsException(RuntimeException exception) {
         return ResponseEntity
@@ -64,10 +73,17 @@ public class LineController {
                 .body(exception.getMessage());
     }
 
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity handleNoElementException(NoSuchElementException exception) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("해당 Element를 조회 할 수 없습니다.");
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleDatabaseException(DataIntegrityViolationException exception) {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .build();
+                .body("해당 Line 이미 존재합니다.");
     }
 }

@@ -40,6 +40,11 @@ public class Section {
         this.distance = new Distance(distance);
     }
 
+    public void removeUpdateSection(Section downSection) {
+        distance.plus(downSection.getDistance());
+        this.downStation = downSection.getDownStation();
+    }
+
     public void updateUpSection(Section newSection) {
         try {
             distance.minus(newSection.getDistance());
@@ -59,8 +64,12 @@ public class Section {
         this.downStation = newSection.getUpStation();
     }
 
-    public boolean getEqualsUpStation(Station downStation) {
-        return this.upStation.equals(downStation);
+    public boolean getEqualsUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean getEqualsDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 
     public boolean isUpAndDownStationContains (Set<Station> stations) {

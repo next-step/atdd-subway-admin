@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
@@ -69,5 +68,12 @@ public class LineService {
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
         line.addSection(section);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementException(NO_ELEMENT_SEARCH_BY_ID_MSG));
+        Station station = stationService.findById(stationId);
+        line.removeSectionByStation(station);
     }
 }

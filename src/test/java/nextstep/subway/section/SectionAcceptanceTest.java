@@ -5,7 +5,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
-import nextstep.subway.section.domain.Distance;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.SectionRepository;
 import nextstep.subway.section.domain.Sections;
@@ -154,6 +153,124 @@ public class SectionAcceptanceTest {
         assertThat(response.asString()).contains(Sections.HAS_NOT_UP_AND_DOWN_STATION_MSG);
     }
 
+    /**
+     * When 노선에 포함된 특정 역을 제거하면 (해당역이 노선의 중간일 때)
+     * Then 해당 역을 상행으로 포함한 구역이 제거되고 기존 구간이 변경된다. (HappyPath)
+     */
+    @Test
+    public void 특정역이_포함된_구간을_제거한다() {
+        //when
+        LineResponse 칠호선 = 노선을_생성한다("7호선", "#EEEEEE", 청담역.getId(), 건대역.getId(), 10).as(LineResponse.class);
+        구간을_생성한다(칠호선.getId(), 뚝섬유원지역.getId(), 건대역.getId(), 5);
+
+        //given
+        ExtractableResponse<Response> response = 구간을_제거한다(칠호선.getId(), 뚝섬유원지역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        //when
+        ExtractableResponse<Response> responseLine = 특정_노선목록을_조회한다(칠호선.getId());
+        LineResponse lineResponse = responseLine.as(LineResponse.class);
+
+        //then
+        assertThat(lineResponse.getStations()).doesNotContain(뚝섬유원지역);
+        assertThat(lineResponse.getStations()
+                                .stream()
+                                .map(StationResponse::getId)
+                                .collect(Collectors.toList())).containsExactlyInAnyOrder(청담역.getId(), 건대역.getId());
+    }
+
+    /**
+     * When 노선에 포함된 특정 역을 제거하면 (해당역이 노선의 가장 상행역일 때)
+     * Then 해당 역을 상행으로 포함한 구역이 제거되고 기존 구간이 변경된다. (HappyPath)
+     */
+    @Test
+    public void 해당역이_노선의_가장_상행일_때_구간제거() {
+        //when
+        LineResponse 칠호선 = 노선을_생성한다("7호선", "#EEEEEE", 청담역.getId(), 건대역.getId(), 10).as(LineResponse.class);
+        구간을_생성한다(칠호선.getId(), 뚝섬유원지역.getId(), 건대역.getId(), 5);
+
+        //given
+        ExtractableResponse<Response> response = 구간을_제거한다(칠호선.getId(), 청담역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        //when
+        ExtractableResponse<Response> responseLine = 특정_노선목록을_조회한다(칠호선.getId());
+        LineResponse lineResponse = responseLine.as(LineResponse.class);
+
+        //then
+        assertThat(lineResponse.getStations()).doesNotContain(뚝섬유원지역);
+        assertThat(lineResponse.getStations()
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList())).containsExactlyInAnyOrder(뚝섬유원지역.getId(), 건대역.getId());
+    }
+
+    /**
+     * When 노선에 포함된 특정 역을 제거하면 (해당역이 노선의 가장 하행역일 때)
+     * Then 해당 역을 상행으로 포함한 구역이 제거되고 기존 구간이 변경된다. (HappyPath)
+     */
+    @Test
+    public void 해당역이_노선의_가장_하행일_때_구간제거() {
+        //when
+        LineResponse 칠호선 = 노선을_생성한다("7호선", "#EEEEEE", 청담역.getId(), 건대역.getId(), 10).as(LineResponse.class);
+        구간을_생성한다(칠호선.getId(), 뚝섬유원지역.getId(), 건대역.getId(), 5);
+
+        //given
+        ExtractableResponse<Response> response = 구간을_제거한다(칠호선.getId(), 건대역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        //when
+        ExtractableResponse<Response> responseLine = 특정_노선목록을_조회한다(칠호선.getId());
+        LineResponse lineResponse = responseLine.as(LineResponse.class);
+
+        //then
+        assertThat(lineResponse.getStations()).doesNotContain(건대역);
+        assertThat(lineResponse.getStations()
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList())).containsExactlyInAnyOrder(청담역.getId(), 뚝섬유원지역.getId());
+    }
+
+    /**
+     * When 노선에 하나의 구간만 존재한다면
+     * Then 해당 노선에서 역을 제거할 수 없다.
+     */
+    @Test
+    public void 해당역이_노선에_구간이_하나_뿐일_때_구간제거_불가() {
+        //when
+        LineResponse 칠호선 = 노선을_생성한다("7호선", "#EEEEEE", 청담역.getId(), 건대역.getId(), 10).as(LineResponse.class);
+
+        //given
+        ExtractableResponse<Response> response = 구간을_제거한다(칠호선.getId(), 건대역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).contains(Sections.SECTION_IN_LINE_MINIMUN_SIZE_MSG);
+    }
+
+    /**
+     * When 노선에 제거하려는 대상의 역이 존재하지 않다면
+     * Then 해당 노선에서 역을 제거할 수 없다.
+     */
+    @Test
+    public void 해당역이_노선에_없을_때_구간제거() {
+        //when
+        LineResponse 칠호선 = 노선을_생성한다("7호선", "#EEEEEE", 청담역.getId(), 건대역.getId(), 10).as(LineResponse.class);
+
+        //given
+        ExtractableResponse<Response> response = 구간을_제거한다(칠호선.getId(), 뚝섬유원지역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).contains(Sections.NO_SEARCH_STATION_IN_LINE_MSG);
+    }
+
     public static ExtractableResponse<Response> 구간을_생성한다(Long id, Long upStationId, Long downStationId, Integer distance) {
         SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
         return RestAssured.given().log().all()
@@ -165,12 +282,21 @@ public class SectionAcceptanceTest {
     }
     
     private List<Long> 노선에_포함된_역_아이디 (LineResponse line) {
-        ExtractableResponse<Response> response_line = 특정_노선목록을_조회한다(line.getId());
-        LineResponse lineResponse = response_line.as(LineResponse.class);
+        ExtractableResponse<Response> responseLine = 특정_노선목록을_조회한다(line.getId());
+        LineResponse lineResponse = responseLine.as(LineResponse.class);
 
         return lineResponse.getStations()
                                     .stream()
                                     .flatMap(station -> Stream.of(station.getId()))
                                     .collect(Collectors.toList());
+    }
+
+    public static ExtractableResponse<Response> 구간을_제거한다(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .body(stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
     }
 }

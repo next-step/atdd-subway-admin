@@ -9,16 +9,18 @@ public class SectionStations {
     private Station upStation;
     private Station downStation;
 
-    public void findUpAndDownStations(List<Station> stations, Long upStationId, Long downStationId) {
-        stations.stream()
-                .forEach(station -> {
-                    if (upStationId.equals(station.getId())) {
-                        upStation = station;
-                    }
-                    if (downStationId.equals(station.getId())) {
-                        downStation = station;
-                    }
-                });
+    public SectionStations() {
+    }
+
+    public SectionStations(List<Station> stations, Long upStationId, Long downStationId) {
+        for (Station station : stations) {
+            if (upStationId.equals(station.getId())) {
+                upStation = station;
+            }
+            if (downStationId.equals(station.getId())) {
+                downStation = station;
+            }
+        }
         validLineStations();
     }
 
