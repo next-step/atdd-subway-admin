@@ -91,6 +91,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections.getSectionList();
+        return sections.getSections();
     }
 }
