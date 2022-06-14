@@ -49,6 +49,10 @@ public class Line extends BaseEntity {
         return new SectionResponse(name, upStation.getName(), downStation.getName(), distance);
     }
 
+    public void deleteSection(final Station station) {
+        lineStations.removeStation(station);
+    }
+
     public Long getId() {
         return id;
     }
