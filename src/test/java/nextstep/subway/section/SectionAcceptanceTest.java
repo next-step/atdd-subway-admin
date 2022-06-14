@@ -218,7 +218,7 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
-        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("동천역", "광교역");
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "광교역");
     }
 
     /**
