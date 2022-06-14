@@ -40,12 +40,8 @@ public class Section extends BaseEntity {
     }
 
     public boolean isUpStationOrDownStation() {
-        if (this.downStation.equals(line.getUpStation())
-                || this.upStation.equals(line.getDownStation())) {
-            return true;
-        }
-
-        return false;
+        return this.downStation.equals(line.getUpStation())
+                || this.upStation.equals(line.getDownStation());
     }
 
     public void updateSection(Section newSection) {
