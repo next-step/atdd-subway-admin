@@ -44,7 +44,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     /**
      * Given 2개의 지하철 노선을 생성하고
      * When 지하철 노선 목록을 조회하면
-     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다
      */
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
@@ -65,7 +65,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     /**
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 조회하면
-     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다
      */
     @DisplayName("지하철 노선을 조회한다.")
     @Test
