@@ -110,7 +110,33 @@ public class Sections {
     }
 
     private void removeSectionInternal(Station station) {
+        Section upsideSection = getUpsideSection(station);
+        Section downsideSection = getDownsideSection(station);
 
+        if(upsideSection == null && downsideSection != null) {
+            sections.remove(downsideSection);
+            return;
+        }
+
+        if(upsideSection != null && downsideSection == null) {
+            sections.remove(upsideSection);
+            return;
+        }
+
+        removeSectionWithCombineSection(upsideSection, downsideSection);
+    }
+
+    private void removeSectionWithCombineSection(Section upsideSection, Section downsideSection) {
+        upsideSection.updateForCombine(downsideSection);
+        sections.remove(downsideSection);
+    }
+
+    private Section getUpsideSection(Station station) {
+        return sections.stream().filter(section -> section.equalDownStation(station)).findFirst().orElse(null);
+    }
+
+    private Section getDownsideSection(Station station) {
+        return sections.stream().filter(section -> section.equalUpStation(station)).findFirst().orElse(null);
     }
 
     private void validateForRemoveSection(Station station) {
