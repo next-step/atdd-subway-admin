@@ -57,9 +57,4 @@ public class LineController {
         Line line = lineService.addSection(id, request);
         return ResponseEntity.ok(LineResponse.of(line));
     }
-
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
-    }
 }
