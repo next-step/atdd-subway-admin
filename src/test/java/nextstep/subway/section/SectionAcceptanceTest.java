@@ -61,7 +61,6 @@ public class SectionAcceptanceTest extends BaseUnitTest {
 
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(lineResponse.getSections().size()).isEqualTo(2),
                 () -> assertThat(lineResponse.getSections().stream()
                         .filter(sectionResponse -> sectionResponse.getUpStationId().equals(강남역.getId()))
@@ -112,7 +111,6 @@ public class SectionAcceptanceTest extends BaseUnitTest {
 
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(lineResponse.getStations().stream()
                         .map(StationResponse::getName)
                         .collect(Collectors.toList()).contains(강남구청역.getName())).isTrue(),
@@ -137,7 +135,6 @@ public class SectionAcceptanceTest extends BaseUnitTest {
 
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(lineResponse.getStations().stream()
                         .map(StationResponse::getName)
                         .collect(Collectors.toList()).contains(미금역.getName())).isTrue(),
