@@ -8,7 +8,6 @@ import javax.persistence.*;
 
 @Entity
 public class Section {
-    private static final int MIN_DISTANCE = 1;
     private static final String ERROR_MSG_UP_STATION_EMPTY = "상행종점역 정보가 존재하지 않습니다.";
     private static final String ERROR_MSG_DOWN_STATION_EMPTY = "하행종점역 정보가 존재하지 않습니다.";
     private static final String ERROR_MESSAGE_NOT_VALID_DISTANCE = "새로 등록할 구간의 길이는 기존 구간의 길이보다 작거나 같아야 합니다.";
@@ -26,12 +25,12 @@ public class Section {
     @JoinColumn(name = "line_id")
     private Line line;
     @Column
-    private int distance;
+    private Distance distance;
 
     public Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         validate(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
@@ -55,8 +54,8 @@ public class Section {
         }
     }
 
-    public static Section of(Station upStation, Station downStation, Integer distance) {
-        return new Section(upStation, downStation, distance);
+    public static Section of(Station upStation, Station downStation, int distance) {
+        return new Section(upStation, downStation, new Distance(distance));
     }
 
     public Long getId() {
@@ -71,7 +70,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
@@ -102,19 +101,15 @@ public class Section {
         updateDistance(section.distance);
     }
 
-    private void updateDistance(int newDistance) {
-        int distance = minusDistance(newDistance);
-        validateDistance(distance);
-        this.distance = distance;
+    private void updateDistance(Distance newDistance) {
+        this.distance = findDistanceGap(newDistance);
     }
 
-    private int minusDistance(int newDistance) {
-        return this.distance - newDistance;
-    }
-
-    private void validateDistance(int distance) {
-        if (distance < MIN_DISTANCE) {
+    public Distance findDistanceGap(Distance newDistance) {
+        int gap = this.distance.minus(newDistance);
+        if (gap < 1) {
             throw new IllegalArgumentException(ERROR_MESSAGE_NOT_VALID_DISTANCE);
         }
+        return new Distance(gap);
     }
 }
