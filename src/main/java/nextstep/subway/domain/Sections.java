@@ -16,7 +16,7 @@ public class Sections {
     public static final String ERROR_REMOVE_ONLY_ONE_SECTION = "단일 구간만이 존재할 경우 구간 제거가 불가합니다.";
     public static final String ERROR_STATION_NOT_EXISTS_ON_LINE = "노선 상에 존재하지 않는 역입니다.";
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private final List<Section> sections = new ArrayList<>();
 
@@ -39,8 +39,10 @@ public class Sections {
     }
 
     private Station getFirstStation() {
-        return sections.stream().map(Section::getUpStation)
-                .filter(upStation -> !isExistsDownStationOfSections(upStation)).findFirst()
+        return sections.stream()
+                .map(Section::getUpStation)
+                .filter(upStation -> !isExistsDownStationOfSections(upStation))
+                .findFirst()
                 .orElseThrow(() -> new NoSuchElementException(ERROR_NOT_FOUND_FIRST_STATION));
     }
 
@@ -49,8 +51,11 @@ public class Sections {
     }
 
     private Station getNextStation(Station currentStation) {
-        return sections.stream().filter(section -> section.equalUpStation(currentStation))
-                .map(Section::getDownStation).findFirst().orElse(null);
+        return sections.stream()
+                .filter(section -> section.equalUpStation(currentStation))
+                .map(Section::getDownStation)
+                .findFirst()
+                .orElse(null);
     }
 
     public void addSection(Section section) {
@@ -153,7 +158,7 @@ public class Sections {
 
     private void validateExistsStation(Station station) {
         if (!checkExistsStation(station)) {
-            throw new IllegalArgumentException(ERROR_STATION_NOT_EXISTS_ON_LINE);
+            throw new NoSuchElementException(ERROR_STATION_NOT_EXISTS_ON_LINE);
         }
     }
 }

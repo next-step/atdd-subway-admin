@@ -66,7 +66,7 @@ public class Section extends BaseEntity {
 
     private void validateDistanceZeroOrNegative(Integer distance) {
         if (distance <= 0) {
-            throw new DataIntegrityViolationException(ERROR_MESSAGE_DISTANCE_ZERO_OR_NEGATIVE);
+            throw new IllegalArgumentException(ERROR_MESSAGE_DISTANCE_ZERO_OR_NEGATIVE);
         }
     }
 
