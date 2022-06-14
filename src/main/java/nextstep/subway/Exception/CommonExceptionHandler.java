@@ -15,16 +15,19 @@ public class CommonExceptionHandler {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity handleIllegalArgumentException(IllegalArgumentException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundStationException.class)
     public ResponseEntity handleNotFoundStationException(NotFoundStationException ex) {
         return ResponseEntity.notFound().build();
     }
 
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundLineException.class)
     public ResponseEntity handleNotFoundLineException(NotFoundLineException ex) {
         return ResponseEntity.notFound().build();
