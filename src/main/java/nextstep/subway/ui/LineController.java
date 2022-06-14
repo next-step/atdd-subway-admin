@@ -3,11 +3,14 @@ package nextstep.subway.ui;
 import java.net.URI;
 import java.util.List;
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.LineStationService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LineController {
 
     LineService lineService;
+    LineStationService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, LineStationService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping
@@ -60,4 +65,20 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<LineResponse> addSection(@PathVariable Long lineId,
+                                                   @RequestBody SectionRequest sectionRequest) {
+        LineResponse lineResponse = sectionService.addSection(sectionRequest, lineId);
+        return ResponseEntity.ok().body(lineResponse);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException() {
+        return ResponseEntity.badRequest().body("존재하지 않는 노선입니다.");
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException runtimeException) {
+        return ResponseEntity.badRequest().body(runtimeException.getMessage());
+    }
 }
