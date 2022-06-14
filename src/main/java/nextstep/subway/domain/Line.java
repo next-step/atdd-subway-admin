@@ -34,8 +34,7 @@ public class Line extends BaseEntity {
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
-        Section section = Section.of(upStation, downStation, distance);
-        addSection(section);
+        addSection(upStation, downStation, distance);
     }
 
     private Line(String name, String color) {
@@ -56,8 +55,8 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
-    public void addSection(Section section) {
-        section.addLine(this);
+    public void addSection(Station upStation, Station downStation, Long distance) {
+        Section section = Section.of(upStation, downStation, distance, this);
         this.sections.add(section);
     }
 

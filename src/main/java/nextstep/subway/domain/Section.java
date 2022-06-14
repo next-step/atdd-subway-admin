@@ -24,18 +24,15 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, Long distance) {
+    private Section(Station upStation, Station downStation, Long distance, Line line) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public static Section of(Station upStation, Station downStation, Long distance) {
-        return new Section(upStation, downStation, distance);
-    }
-
-    public void addLine(Line line) {
         this.line = line;
+    }
+
+    public static Section of(Station upStation, Station downStation, Long distance, Line line) {
+        return new Section(upStation, downStation, distance, line);
     }
 
     public boolean isContains(Station station) {
