@@ -71,10 +71,6 @@ public class Line extends BaseEntity {
         this.name = name;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
     public List<Section> getSections() {
         return new ArrayList<>(sections.getSectionList());
     }

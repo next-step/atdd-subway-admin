@@ -77,10 +77,6 @@ public class Section extends BaseEntity {
         return upStation;
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
     public long getDistance() {
         return distance;
     }
