@@ -36,15 +36,20 @@ public class Section {
         this.line = line;
     }
 
-    public void merge(Section section) {
-        if (upStation.equals(section.getUpStation())) {
+    public void addMerge(Section section) {
+        if (section.isSameUpStation(upStation)) {
             changeUpStation(section.getDownStation());
-            changeDistance(section.getDistance());
+            distance.minus(section.getDistance());
         }
-        if (downStation.equals(section.getDownStation())) {
+        if (section.isSameDownStation(downStation)) {
             changeDownStation(section.getUpStation());
-            changeDistance(section.getDistance());
+            distance.minus(section.getDistance());
         }
+    }
+
+    public void deleteMerge(Section section) {
+        changeDownStation(section.getDownStation());
+        distance.plus(section.getDistance());
     }
 
     public void changeUpStation(Station upStation) {
@@ -55,16 +60,20 @@ public class Section {
         this.downStation = downStation;
     }
 
-    public void changeDistance(Distance distance) {
-        this.distance = this.distance.minus(distance.getValue());
-    }
-
-    public boolean isContainAnyStation(Section section) {
-        return section.getLineStations().contains(upStation) || section.getLineStations().contains(downStation);
-    }
-
-    private List<Station> getLineStations() {
+    public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    public boolean isSameAnyStation(Station station) {
+        return getStations().contains(station);
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public Long getId() {

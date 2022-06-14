@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 
+import java.util.List;
+
 import static java.util.Objects.requireNonNull;
 
 @Entity
@@ -33,6 +35,10 @@ public class Line {
         section.connectLine(this);
     }
 
+    public void deleteStation(Station station) {
+        sections.delete(station);
+    }
+
     public void change(String name, String color) {
         this.name = requireNonNull(name, "노선 이름을 입력해주세요.");
         this.color = requireNonNull(color, "노선색을 입력해주세요.");
@@ -54,4 +60,7 @@ public class Line {
         return sections;
     }
 
+    public List<Station> getLineStations() {
+        return sections.getStationsInOrder();
+    }
 }

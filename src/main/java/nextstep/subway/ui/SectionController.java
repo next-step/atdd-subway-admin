@@ -21,6 +21,13 @@ public class SectionController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/lines/{lineId}/sections")
+    public ResponseEntity<Void> removeSection(@PathVariable Long lineId,
+                                              @RequestParam Long stationId) {
+        sectionService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgumentException() {
         return ResponseEntity.badRequest().build();

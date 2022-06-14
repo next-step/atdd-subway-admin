@@ -24,13 +24,20 @@ public class SectionService {
 
     @Transactional
     public void saveSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineService.findById(lineId);
+        Line line = lineService.getLineById(lineId);
         Station upStation = stationService.getStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.getStationById(sectionRequest.getDownStationId());
 
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
         line.addSection(section);
         sectionRepository.save(section);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineService.getLineById(lineId);
+        Station station = stationService.getStationById(stationId);
+        line.deleteStation(station);
     }
 
 }

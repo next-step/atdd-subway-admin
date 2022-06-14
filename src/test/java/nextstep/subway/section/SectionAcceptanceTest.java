@@ -133,8 +133,77 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * When 종점이 제거될 경우
+     * Then 다음으로 오던 역이 종점이 됨
+     */
+    @Test
+    void 종점이_제거될_경우_다음으로_오던_역이_종점이_됨() {
+        // given
+        지하철_구간_생성됨(신분당선.getId(), 광교역_ID, 양재역_ID, 4);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(신분당선.getId(), 양재역_ID);
+        List<String> stationNames = 지하철_노선_역_이름_리스트_조회(신분당선.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stationNames).containsExactly("강남역", "광교역");
+    }
+
+    /**
+     * When 중간역이 제거될 경우
+     * Then 재배치를 함
+     */
+    @Test
+    void 중간역이_제거될_경우_재배치를_함() {
+        // given
+        지하철_구간_생성됨(신분당선.getId(), 광교역_ID, 양재역_ID, 4);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(신분당선.getId(), 광교역_ID);
+        List<String> stationNames = 지하철_노선_역_이름_리스트_조회(신분당선.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(stationNames).containsExactly("강남역", "양재역");
+    }
+
+    /**
+     * When 노선에 등록되어있지 않은 역을 제거
+     * Then 삭제 실패 응답을 반환
+     */
+    @Test
+    void 노선에_등록되어있지_않은_역은_제거_할_수_없음() {
+        // given
+        지하철_구간_생성됨(신분당선.getId(), 광교역_ID, 양재역_ID, 4);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(신분당선.getId(), 판교역_ID);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 구간이 하나인 노선에서 마지막 구간을 제거할 때
+     * Then 삭제 실패 응답을 반환
+     */
+    @Test
+    void 구간이_하나인_노선에서_마지막_구간은_제거할_수_없음() {
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(신분당선.getId(), 광교역_ID);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     public static ExtractableResponse<Response> 지하철_구간_생성됨(Long lineId, Long upStationId, Long downStationId, Integer distance) {
         return RestAssuredTemplate.post("/lines/" + lineId + "/sections", new SectionRequest(upStationId, downStationId, distance));
+    }
+
+    public static ExtractableResponse<Response> 지하철_구간_삭제(Long lineId, Long stationId) {
+        return RestAssuredTemplate.delete("/lines/" + lineId + "/sections?stationId=" + stationId);
     }
 
 }
