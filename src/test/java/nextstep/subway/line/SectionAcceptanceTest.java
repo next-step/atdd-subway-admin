@@ -3,7 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.common.util.DatabaseCleanup;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineResponse;
@@ -12,24 +12,16 @@ import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.domain.StationTest;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
-public class SectionAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
+@DisplayName("노선 섹션 추가/삭제 기능")
+public class SectionAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired
@@ -38,15 +30,12 @@ public class SectionAcceptanceTest {
     private Line line;
 
     @BeforeEach
-    void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleanup.execute();
-        지하철역_추가();
-        line = lineRepository.save(Line.of("2호선", "bg-blue-600", 10L, StationTest.강남역, StationTest.사당역));
-    }
+    public void setUp() {
+        super.setUp();
 
+        지하철역_추가();
+        line = 라인_추가();
+    }
     /**
      * Given 지하철 노선에 섹션을 추가 하면,
      * When 지하철 노선에 섹션이 추가 된다.
@@ -61,7 +50,6 @@ public class SectionAcceptanceTest {
         // then
         expected.as(LineResponse.class).getStations().contains(new StationResponse(3L, "이수역"));
         assertThat(expected.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
     }
 
     /**
@@ -104,6 +92,10 @@ public class SectionAcceptanceTest {
         stationRepository.save(StationTest.강남역);
         stationRepository.save(StationTest.사당역);
         stationRepository.save(StationTest.이수역);
+    }
+
+    public Line 라인_추가() {
+        return lineRepository.save(Line.of("2호선", "bg-blue-600", 10L, StationTest.강남역, StationTest.사당역));
     }
 
 }

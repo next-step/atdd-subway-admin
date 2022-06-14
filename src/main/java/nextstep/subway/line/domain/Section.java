@@ -65,7 +65,7 @@ public class Section extends BaseEntity {
     }
 
     public void deleteStation(final Section nextSection) {
-        downStation = nextSection.getDownStation();
+        upStation = nextSection.getUpStation();
         distance.plusDistance(nextSection.getDistance());
     }
 

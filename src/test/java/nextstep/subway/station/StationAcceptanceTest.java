@@ -19,23 +19,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@ActiveProfiles("test")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleanup.execute();
-    }
-
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
