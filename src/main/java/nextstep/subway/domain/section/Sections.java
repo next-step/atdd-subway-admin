@@ -65,11 +65,14 @@ public class Sections {
 
     private Section getContainsStationSection(Section section) {
         return sections.stream()
-                .filter(registeredSection ->
-                        Objects.equals(registeredSection.getUpStation(), section.getUpStation())
-                                || Objects.equals(registeredSection.getDownStation(), section.getDownStation()))
+                .filter(registeredSection -> isContainTerminusStation(registeredSection, section))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 둘 중 하나라도 포함되어있지 않으면 구간을 추가할 수 없습니다."));
+    }
+
+    private boolean isContainTerminusStation(Section registeredSection, Section section) {
+        return Objects.equals(registeredSection.getUpStation(), section.getUpStation())
+                || Objects.equals(registeredSection.getDownStation(), section.getDownStation());
     }
 
     private void validateNull(Section section) {
