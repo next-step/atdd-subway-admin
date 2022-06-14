@@ -39,7 +39,6 @@ public class Sections {
         validateDuplicatedSection(section);
 
         Section registeredSection = getContainsStationSection(section);
-        validateDistance(registeredSection.getDistance(), section.getDistance());
 
         sections.remove(registeredSection);
 
@@ -62,12 +61,6 @@ public class Sections {
             return Section.create(section.getDownStation(), registeredSection.getDownStation(), distance);
         }
         return Section.create(registeredSection.getUpStation(), section.getUpStation(), distance);
-    }
-
-    private void validateDistance(Distance distance, Distance newDistance) {
-        if (distance.getValue() <= newDistance.getValue()) {
-            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같습니다.");
-        }
     }
 
     private Section getContainsStationSection(Section section) {
