@@ -252,7 +252,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         구간을_등록한다(GANGNAM_ID, YANGJAE_ID, distance);
 
         // when
-        final ExtractableResponse<Response> deleteResponse = 구간을_삭제한다(JUNGJA_ID);
+        final ExtractableResponse<Response> deleteResponse = 구간을_삭제한다(YANGJAE_ID);
 
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
