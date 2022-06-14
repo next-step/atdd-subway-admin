@@ -12,8 +12,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
-import javax.persistence.EntityManager;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -24,8 +22,6 @@ class LineTest {
     private StationRepository stationRepository;
     @Autowired
     private LineRepository lineRepository;
-    @Autowired
-    private EntityManager em;
 
     private Station upStation;
     private Station downStation;
@@ -36,21 +32,13 @@ class LineTest {
         upStation = stationRepository.save(Station.create("당고개역"));
         downStation = stationRepository.save(Station.create("오이도역"));
 
-        em.flush();
-        em.clear();
-
-        line = Line.create(
+        line = lineRepository.save(Line.create(
                 LineName.of("4호선"),
                 LineColor.of("하늘색"),
                 Distance.of(20),
                 upStation,
                 downStation
-        );
-
-        line = lineRepository.save(line);
-
-        em.flush();
-        em.clear();
+        ));
     }
 
     @DisplayName("노선을 생성한다.")
@@ -78,9 +66,6 @@ class LineTest {
         //given
         Station newStation = stationRepository.save(Station.create("상록수역"));
 
-        em.flush();
-        em.clear();
-
         // when
         Section newSection = Section.create(newStation, downStation, Distance.of(5));
         line.addSection(newSection);
@@ -96,8 +81,6 @@ class LineTest {
         //given
         Station newStation = stationRepository.save(Station.create("상록수역"));
 
-        em.flush();
-        em.clear();
 
         // when
         Section newSection = Section.create(newStation, downStation, Distance.of(distance));
@@ -113,9 +96,6 @@ class LineTest {
         //given
         Station newUpStation = stationRepository.save(Station.create("상록수역"));
         Station newDownStation = stationRepository.save(Station.create("한양대역"));
-
-        em.flush();
-        em.clear();
 
         // when
         Section newSection = Section.create(newUpStation, newDownStation, Distance.of(5));
@@ -133,9 +113,6 @@ class LineTest {
         Section newSection = Section.create(newStation, downStation, Distance.of(5));
         line.addSection(newSection);
 
-        em.flush();
-        em.clear();
-
         // when, then
         assertThatThrownBy(() -> line.addSection(Section.create(downStation, upStation, Distance.of(20))))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -146,9 +123,6 @@ class LineTest {
     void addSection_새로운_역을_상행_종점으로() {
         //given
         Station newUpStation = stationRepository.save(Station.create("상록수역"));
-
-        em.flush();
-        em.clear();
 
         // when
         Section newSection = Section.create(newUpStation, upStation, Distance.of(5));
@@ -165,9 +139,6 @@ class LineTest {
     void addSection_새로운_역을_하행_종점으로() {
         //given
         Station newDownStation = stationRepository.save(Station.create("상록수역"));
-
-        em.flush();
-        em.clear();
 
         // when
         Section newSection = Section.create(downStation, newDownStation, Distance.of(5));
