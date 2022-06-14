@@ -13,9 +13,7 @@ import nextstep.subway.dto.line.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -120,8 +118,12 @@ public class LineService {
     public void addSection(Long id, SectionRequest sectionRequest) {
         Line line = getLineById(id);
 
-        Station upStation = stationService.getStationById(sectionRequest.getUpStationId());
-        Station downStation = stationService.getStationById(sectionRequest.getDownStationId());
+        List<Long> stationIds = Arrays.asList(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+        Map<Long, Station> stations = stationService.getStationsByIds(stationIds);
+
+        Station upStation = stations.get(sectionRequest.getUpStationId());
+        Station downStation = stations.get(sectionRequest.getDownStationId());
+
         Section section = Section.create(upStation, downStation, Distance.of(sectionRequest.getDistance()));
 
         line.addSection(section);
