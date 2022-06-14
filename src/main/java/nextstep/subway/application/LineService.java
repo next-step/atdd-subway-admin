@@ -6,6 +6,7 @@ import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +28,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) throws NotFoundStationException {
         Station upStation = stationService.findStationById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());
-        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation, lineRequest.getDistance()));
         return LineResponse.of(persistLine);
     }
 
@@ -48,11 +49,25 @@ public class LineService {
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) throws NotFoundLineException {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundLineException(id));
-        line.update(lineUpdateRequest.toLine(line.getUpStation(), line.getDownStation()));
+        line.update(lineUpdateRequest.toLine());
     }
 
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Line addSection(Long id, SectionRequest sectionRequest) throws NotFoundLineException, NotFoundStationException {
+        Line line = getLineFindById(id);
+        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+        line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
+        return line;
+    }
+
+    private Line getLineFindById(Long id) throws NotFoundLineException {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new NotFoundLineException(id));
     }
 }

@@ -3,9 +3,11 @@ package nextstep.subway.ui;
 import nextstep.subway.Exception.NotFoundLineException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.Exception.NotFoundStationException;
+import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -48,6 +50,12 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/lines/{id}/sections")
+    public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest request) throws NotFoundLineException, NotFoundStationException {
+        Line line = lineService.addSection(id, request);
+        return ResponseEntity.ok(LineResponse.of(line));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
