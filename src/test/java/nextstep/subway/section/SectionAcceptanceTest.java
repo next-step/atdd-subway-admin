@@ -268,12 +268,13 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * When 구간이 하나일 때 구간을 삭제하면
+     * Given 2개의 구간이 등록되어 있을 때
+     * When 등록되지 않은 역으로 구간을 삭제하면
      * Then 400 에러가 발생한다
      */
-    @DisplayName("구간이 하나일 때 구간을 삭제한다")
+    @DisplayName("등록되지 않은 역으로 구간을 삭제한다")
     @Test
-    void deleteSectionWhenOnlyOneSectionExists() {
+    void deleteSectionByInvalidStation() {
         // given
         final long distance = 10L;
         구간을_등록한다(GANGNAM_ID, YANGJAE_ID, distance);
@@ -286,13 +287,12 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * Given 2개의 구간이 등록되어 있을 때
-     * When 등록되지 않은 역으로 구간을 삭제하면
+     * When 구간이 하나일 때 구간을 삭제하면
      * Then 400 에러가 발생한다
      */
-    @DisplayName("등록되지 않은 역으로 구간을 삭제한다")
+    @DisplayName("구간이 하나일 때 구간을 삭제한다")
     @Test
-    void deleteSectionByInvalidStation() {
+    void deleteSectionWhenOnlyOneSectionExists() {
         // when
         final ExtractableResponse<Response> deleteResponse = 구간을_삭제한다(GANGNAM_ID);
 
