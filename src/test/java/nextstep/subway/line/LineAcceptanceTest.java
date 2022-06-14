@@ -13,6 +13,7 @@ import nextstep.subway.station.domain.StationTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -22,6 +23,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 노선 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
+    @Autowired
     StationRepository stationRepository;
 
     @BeforeEach

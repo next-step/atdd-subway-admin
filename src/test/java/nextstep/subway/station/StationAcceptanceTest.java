@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.common.util.DatabaseCleanup;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
@@ -19,7 +20,7 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-public class StationAcceptanceTest {
+public class StationAcceptanceTest extends AcceptanceTest {
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
