@@ -26,15 +26,15 @@ public class Distance {
         return new Distance(distance);
     }
 
-    public int getValue() {
-        return value;
-    }
-
     public Distance add(int value) {
         return Distance.of(this.value + value);
     }
 
     public Distance substract(Distance distance) {
         return Distance.of(value - distance.getValue());
+    }
+
+    public int getValue() {
+        return value;
     }
 }

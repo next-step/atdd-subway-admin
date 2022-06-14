@@ -60,26 +60,6 @@ public class Line extends BaseEntity {
         return new Line(name, color, distance, upStation, downStation);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name.getValue();
-    }
-
-    public String getColor() {
-        return color.getValue();
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public void addSection(Section section) {
         section.setLine(this);
 
@@ -124,10 +104,6 @@ public class Line extends BaseEntity {
     }
 
 
-    public Sections getSections() {
-        return sections;
-    }
-
     private void setUpStation(Station upStation) {
         if (!Objects.equals(this.upStation, upStation)) {
             lineStations.add(LineStation.create(this, upStation));
@@ -146,6 +122,31 @@ public class Line extends BaseEntity {
     public void modify(String name, String color) {
         this.name = LineName.of(name);
         this.color = LineColor.of(color);
+    }
+
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name.getValue();
+    }
+
+    public String getColor() {
+        return color.getValue();
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     public Distance getDistance() {

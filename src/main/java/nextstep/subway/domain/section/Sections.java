@@ -27,10 +27,6 @@ public class Sections {
         return new Sections();
     }
 
-    public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
-    }
-
     public void addSection(Section section) {
         validateNull(section);
         validateDuplicatedSection(section);
@@ -100,5 +96,9 @@ public class Sections {
         if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
             throw new IllegalArgumentException("노선에 동일한 구간이 존재합니다.");
         }
+    }
+
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
     }
 }
