@@ -11,7 +11,6 @@ import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,7 +38,7 @@ public class LineService {
         return LineResponse.from(persistLine);
     }
 
-    public void addSectionByRequest(Long lineId, SectionRequest sectionRequest) {
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new NoSuchElementException(ERROR_MESSAGE_LINE_NOT_EXISTS));
 
