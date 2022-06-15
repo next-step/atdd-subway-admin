@@ -68,6 +68,13 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    public void removeSectionByStationId(Long id, Long stationId) {
+        Line line = findLineById(id);
+        Station station = findStationById(stationId);
+
+        line.removeSectionByStation(station);
+    }
+
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("지하철 노선 정보가 존재하지 않습니다."));

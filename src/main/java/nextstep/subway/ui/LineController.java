@@ -55,7 +55,7 @@ public class LineController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity removeSection(@PathVariable Long id, @RequestParam Long stationId) {
-        lineService.removeSection(id, stationId);
+        lineService.removeSectionByStationId(id, stationId);
         return ResponseEntity.ok().build();
     }
 }
