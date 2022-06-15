@@ -54,11 +54,7 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = 모든_지하철역_이름만_조회();
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -101,6 +97,16 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        지하철역_생성됨("강남역");
+        지하철역_생성됨("잠실역");
+
+        // when
+        List<String> stationName = 모든_지하철역_이름만_조회();
+
+        // then
+        assertThat(stationName).hasSize(2)
+                .contains("강남역", "잠실역");
     }
 
     /**
@@ -111,5 +117,36 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        long stationsId = 지하철역_생성됨("신천역");
+
+        // when
+        RestAssured.given().log().all()
+                .when().delete("/stations/{id}", stationsId)
+                .then().log().all()
+                .extract();
+
+        // then
+        List<String> stationNames = 모든_지하철역_이름만_조회();
+        assertThat(stationNames).doesNotContain("신천역");
+    }
+
+    private List<String> 모든_지하철역_이름만_조회() {
+        List<String> stationName = RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+        return stationName;
+    }
+
+    private long 지하철역_생성됨(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract().jsonPath().getLong("id");
     }
 }
