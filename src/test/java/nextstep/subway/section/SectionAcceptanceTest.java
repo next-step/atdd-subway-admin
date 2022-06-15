@@ -44,7 +44,7 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
             assertThat(모든구간)
                     .hasSize(1);
 
-            List<StationResponse> stations = 모든구간.get(0).getStations();
+            List<StationResponse> stations = 모든구간.get(0).getUpDownStations();
             StationResponse 첫번째_구간_상행역 = stations.get(0);
             StationResponse 첫번째_구간_하행역 = stations.get(1);
 
@@ -71,25 +71,14 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
         LineResponse 새로운_신분당선 = createSectionRequest(신분당선.getId(), 강남역_신사역).as(LineResponse.class);
 
         // then
-        assertThat(새로운_신분당선.getDistance())
-                .isEqualTo(신분당선.getDistance() + 강남역_신사역.getDistance());
-
-        assertThat(새로운_신분당선.getFinalStations()).satisfies(상하행종점역 -> {
-            StationResponse 하행종점역 = 상하행종점역.get(1);
-            assertThat(하행종점역.getId())
-                    .isEqualTo(신사역.getId());
-            assertThat(하행종점역.getName())
-                    .isEqualTo(신사역.getName());
-        });
-
         assertThat(새로운_신분당선.getSections()).satisfies(모든구간 -> {
             assertThat(모든구간)
                     .hasSize(2);
         });
 
         assertThat(새로운_신분당선.getSections().get(0)).satisfies(첫번째_구간 -> {
-            StationResponse 첫번째_구간_상행역 = 첫번째_구간.getStations().get(0);
-            StationResponse 첫번째_구간_하행역 = 첫번째_구간.getStations().get(1);
+            StationResponse 첫번째_구간_상행역 = 첫번째_구간.getUpDownStations().get(0);
+            StationResponse 첫번째_구간_하행역 = 첫번째_구간.getUpDownStations().get(1);
             assertThat(첫번째_구간_상행역.getName())
                     .isEqualTo(판교역.getName());
             assertThat(첫번째_구간_하행역.getName())
@@ -97,8 +86,8 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
         });
 
         assertThat(새로운_신분당선.getSections().get(1)).satisfies(두번째_구간 -> {
-            StationResponse 두번째_구간_상행역 = 두번째_구간.getStations().get(0);
-            StationResponse 두번째_구간_하행역 = 두번째_구간.getStations().get(1);
+            StationResponse 두번째_구간_상행역 = 두번째_구간.getUpDownStations().get(0);
+            StationResponse 두번째_구간_하행역 = 두번째_구간.getUpDownStations().get(1);
             assertThat(두번째_구간_상행역.getName())
                     .isEqualTo(강남역.getName());
             assertThat(두번째_구간_하행역.getName())
@@ -122,23 +111,12 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
         LineResponse 새로운_신분당선 = createSectionRequest(신분당선.getId(), 정자역_판교역).as(LineResponse.class);
 
         // then
-        assertThat(새로운_신분당선.getDistance())
-                .isEqualTo(신분당선.getDistance() + 정자역_판교역.getDistance());
-
-        assertThat(새로운_신분당선.getFinalStations()).satisfies(상하행종점역 -> {
-            StationResponse 상행종점역 = 상하행종점역.get(0);
-            assertThat(상행종점역.getId())
-                    .isEqualTo(정자역.getId());
-            assertThat(상행종점역.getName())
-                    .isEqualTo(정자역.getName());
-        });
-
         assertThat(새로운_신분당선.getSections())
                 .hasSize(2);
 
         assertThat(새로운_신분당선.getSections().get(0)).satisfies(첫번째_구간 -> {
-            StationResponse 첫번째_구간_상행역 = 첫번째_구간.getStations().get(0);
-            StationResponse 첫번째_구간_하행역 = 첫번째_구간.getStations().get(1);
+            StationResponse 첫번째_구간_상행역 = 첫번째_구간.getUpDownStations().get(0);
+            StationResponse 첫번째_구간_하행역 = 첫번째_구간.getUpDownStations().get(1);
             assertThat(첫번째_구간_상행역.getName())
                     .isEqualTo(정자역.getName());
             assertThat(첫번째_구간_하행역.getName())
@@ -146,8 +124,8 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
         });
 
         assertThat(새로운_신분당선.getSections().get(1)).satisfies(두번째_구간 -> {
-            StationResponse 두번째_구간_상행역 = 두번째_구간.getStations().get(0);
-            StationResponse 두번째_구간_하행역 = 두번째_구간.getStations().get(1);
+            StationResponse 두번째_구간_상행역 = 두번째_구간.getUpDownStations().get(0);
+            StationResponse 두번째_구간_하행역 = 두번째_구간.getUpDownStations().get(1);
             assertThat(두번째_구간_상행역.getName())
                     .isEqualTo(판교역.getName());
             assertThat(두번째_구간_하행역.getName())
@@ -171,15 +149,12 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
         LineResponse 새로운_신분당선 = createSectionRequest(신분당선.getId(), 판교역_양재역).as(LineResponse.class);
 
         // then
-        assertThat(새로운_신분당선.getDistance())
-                .isEqualTo(신분당선.getDistance());
-
         assertThat(새로운_신분당선.getSections())
                 .hasSize(2);
 
         assertThat(새로운_신분당선.getSections().get(0)).satisfies(첫번째_구간 -> {
-            StationResponse 첫번째_구간_상행역 = 첫번째_구간.getStations().get(0);
-            StationResponse 첫번째_구간_하행역 = 첫번째_구간.getStations().get(1);
+            StationResponse 첫번째_구간_상행역 = 첫번째_구간.getUpDownStations().get(0);
+            StationResponse 첫번째_구간_하행역 = 첫번째_구간.getUpDownStations().get(1);
             assertThat(첫번째_구간_상행역.getName())
                     .isEqualTo(판교역.getName());
             assertThat(첫번째_구간_하행역.getName())
@@ -187,8 +162,8 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
         });
 
         assertThat(새로운_신분당선.getSections().get(1)).satisfies(두번째_구간 -> {
-            StationResponse 두번째_구간_상행역 = 두번째_구간.getStations().get(0);
-            StationResponse 두번째_구간_하행역 = 두번째_구간.getStations().get(1);
+            StationResponse 두번째_구간_상행역 = 두번째_구간.getUpDownStations().get(0);
+            StationResponse 두번째_구간_하행역 = 두번째_구간.getUpDownStations().get(1);
             assertThat(두번째_구간_상행역.getName())
                     .isEqualTo(양재역.getName());
             assertThat(두번째_구간_하행역.getName())
@@ -223,17 +198,17 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
            SectionResponse 첫번째_구간 = 구간.get(0);
            SectionResponse 두번째_구간 = 구간.get(1);
            SectionResponse 세번째_구간 = 구간.get(2);
-           assertThat(첫번째_구간.getStations().get(0).getName())
+           assertThat(첫번째_구간.getUpDownStations().get(0).getName())
                    .isEqualTo("정자역");
-            assertThat(첫번째_구간.getStations().get(1).getName())
+            assertThat(첫번째_구간.getUpDownStations().get(1).getName())
                     .isEqualTo("판교역");
-            assertThat(두번째_구간.getStations().get(0).getName())
+            assertThat(두번째_구간.getUpDownStations().get(0).getName())
                     .isEqualTo("판교역");
-            assertThat(두번째_구간.getStations().get(1).getName())
+            assertThat(두번째_구간.getUpDownStations().get(1).getName())
                     .isEqualTo("양재역");
-            assertThat(세번째_구간.getStations().get(0).getName())
+            assertThat(세번째_구간.getUpDownStations().get(0).getName())
                     .isEqualTo("양재역");
-            assertThat(세번째_구간.getStations().get(1).getName())
+            assertThat(세번째_구간.getUpDownStations().get(1).getName())
                     .isEqualTo("강남역");
         });
     }
