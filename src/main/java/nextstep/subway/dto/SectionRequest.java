@@ -1,6 +1,9 @@
 package nextstep.subway.dto;
 
 
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import nextstep.subway.exception.SubwayException;
 import nextstep.subway.exception.SubwayExceptionMessage;
 
@@ -38,5 +41,9 @@ public class SectionRequest {
 
     public int getDistance() {
         return distance;
+    }
+
+    public Section toSection(final Line line, final Station upStation, final Station downStation) {
+        return new Section(line, upStation, downStation, distance);
     }
 }
