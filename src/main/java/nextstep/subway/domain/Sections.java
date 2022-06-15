@@ -136,14 +136,17 @@ public class Sections {
         Optional<Section> sectionByDownStation = getSectionByDownStation(station);
 
         if (sectionByUpStation.isPresent() && sectionByDownStation.isPresent()) {
-            Station newUpStation = sectionByDownStation.get().getUpStation();
-            Station newDownStation = sectionByUpStation.get().getDownStation();
-            Integer newDistance = sectionByUpStation.get().getDistance() + sectionByDownStation.get().getDistance();
+            Section oldUpSection = sectionByDownStation.get();
+            Section oldDownSection = sectionByUpStation.get();
 
-            sections.remove(sectionByUpStation.get());
-            sections.remove(sectionByDownStation.get());
+            Station newUpStation = oldUpSection.getUpStation();
+            Station newDownStation = oldDownSection.getDownStation();
+            Integer newDistance = oldDownSection.getDistance() + oldUpSection.getDistance();
 
-            sections.add(Section.of(newUpStation, newDownStation, newDistance));
+            sections.remove(oldDownSection);
+            sections.remove(oldUpSection);
+
+            sections.add(Section.of(newUpStation, newDownStation, oldUpSection.getLine(), newDistance));
         }
 
         sectionByUpStation.ifPresent(section -> sections.remove(section));

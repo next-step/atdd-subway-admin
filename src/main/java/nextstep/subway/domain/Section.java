@@ -112,6 +112,10 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public Line getLine() {
+        return line;
+    }
+
     public Integer getDistance() {
         return distance;
     }
