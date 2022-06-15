@@ -99,7 +99,7 @@ public class Sections {
         upStations.removeAll(downStations);
 
         if (upStations.size() != 1) {
-            throw new RuntimeException("상행종점역을 찾을 수 없습니다.");
+            throw new NoSuchElementException("상행종점역을 찾을 수 없습니다.");
         }
         return upStations.get(0);
     }
@@ -112,7 +112,7 @@ public class Sections {
         downStations.removeAll(upStations);
 
         if (downStations.size() != 1) {
-            throw new RuntimeException("하행종점역을 찾을 수 없습니다.");
+            throw new NoSuchElementException("하행종점역을 찾을 수 없습니다.");
         }
         return downStations.get(0);
     }
@@ -136,8 +136,8 @@ public class Sections {
         Optional<Section> sectionByDownStation = getSectionByDownStation(station);
 
         if (sectionByUpStation.isPresent() && sectionByDownStation.isPresent()) {
-            Station newUpStation = sectionByUpStation.get().getUpStation();
-            Station newDownStation = sectionByDownStation.get().getDownStation();
+            Station newUpStation = sectionByDownStation.get().getUpStation();
+            Station newDownStation = sectionByUpStation.get().getDownStation();
             Integer newDistance = sectionByUpStation.get().getDistance() + sectionByDownStation.get().getDistance();
 
             sections.add(Section.of(newUpStation, newDownStation, newDistance));
@@ -152,7 +152,7 @@ public class Sections {
 
     private void validateRemoveSection(Station station) {
         if (sections.size() <= 1) {
-            throw new RuntimeException("현재 지하철 구간이 하나인 경우 삭제할 수 없습니다.");
+            throw new IllegalArgumentException("현재 지하철 구간이 하나인 경우 삭제할 수 없습니다.");
         }
         if (!hasSectionWithStation(station)) {
             throw new IllegalArgumentException("존재하지 않는 구간은 삭제할 수 없습니다.");
