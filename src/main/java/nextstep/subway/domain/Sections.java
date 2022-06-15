@@ -119,14 +119,36 @@ public class Sections {
 
     private Optional<Section> getSectionByUpStation(Station upStation) {
         return sections.stream()
-                .filter(section -> section.getUpStation().equals(upStation) )
+                .filter(section -> section.getUpStation().equals(upStation))
                 .findFirst();
     }
 
-    public int size() {
-        return sections.size();
+    private Optional<Section> getSectionByDownStation(Station downStation) {
+        return sections.stream()
+                .filter(section -> section.getDownStation().equals(downStation))
+                .findFirst();
     }
-}
+
+    public void removeSectionByStation(Station station) {
+        validateRemoveSection(station);
+
+        Optional<Section> sectionByUpStation = getSectionByUpStation(station);
+        Optional<Section> sectionByDownStation = getSectionByDownStation(station);
+
+        if (sectionByUpStation.isPresent() && sectionByDownStation.isPresent()) {
+            Station newUpStation = sectionByUpStation.get().getUpStation();
+            Station newDownStation = sectionByDownStation.get().getDownStation();
+            Integer newDistance = sectionByUpStation.get().getDistance() + sectionByDownStation.get().getDistance();
+
+            sections.add(Section.of(newUpStation, newDownStation, newDistance));
+
+            sections.remove(sectionByUpStation.get());
+            sections.remove(sectionByDownStation.get());
+        }
+
+        sectionByUpStation.ifPresent(section -> sections.remove(section));
+        sectionByDownStation.ifPresent(section -> sections.remove(section));
+    }
 
     private void validateRemoveSection(Station station) {
         if (sections.size() <= 1) {
@@ -142,3 +164,7 @@ public class Sections {
                 .anyMatch(section -> section.containsStation(station));
     }
 
+    public int size() {
+        return sections.size();
+    }
+}
