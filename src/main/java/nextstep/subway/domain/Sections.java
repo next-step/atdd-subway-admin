@@ -23,7 +23,7 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        validateSection(section);
+        validateAddSection(section);
 
         if (sections.isEmpty()
                 || section.isBeforeUpFinalSection()
@@ -34,7 +34,7 @@ public class Sections {
         addMiddleSection(section);
     }
 
-    private void validateSection(Section section) {
+    private void validateAddSection(Section section) {
         if (isEmpty()) {
             return;
         }
@@ -127,3 +127,18 @@ public class Sections {
         return sections.size();
     }
 }
+
+    private void validateRemoveSection(Station station) {
+        if (sections.size() <= 1) {
+            throw new RuntimeException("현재 지하철 구간이 하나인 경우 삭제할 수 없습니다.");
+        }
+        if (!hasSectionWithStation(station)) {
+            throw new IllegalArgumentException("존재하지 않는 구간은 삭제할 수 없습니다.");
+        }
+    }
+
+    private boolean hasSectionWithStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.containsStation(station));
+    }
+
