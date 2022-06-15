@@ -34,18 +34,37 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         ExtractableResponse<Response> getResponse = 지하철노선_목록조회_요청();
-        노선_포함_확인(getResponse, "7호선");
+        노선_포함_확인(getResponse, new String[]{"7호선"});
     }
 
-    private void 노선_포함_확인(ExtractableResponse<Response> response, String lineName) {
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철노선 목록을 조회한다.")
+    @Test
+    void getLines() {
+        // given
+        지하철노선_생성_요청("7호선", "green", "수락산역", "마들역");
+        지하철노선_생성_요청("신분당선", "red", "강남역", "논현역");
+
+        // when
+        ExtractableResponse<Response> getResponse = 지하철노선_목록조회_요청();
+
+        // then
+        노선_포함_확인(getResponse, new String[]{"7호선", "신분당선"});
+    }
+
+
+    private void 노선_포함_확인(ExtractableResponse<Response> response, String[] lineName) {
         assertAll(
             () -> ResponseAssertTest.조회_확인(response),
             () -> {
-                List<String> lineNames = response.jsonPath().getList("name");
-                assertThat(lineNames).containsAnyOf(lineName);
+                List<String> lineNamesAll = response.jsonPath().getList("name");
+                assertThat(lineNamesAll).containsExactlyInAnyOrder(lineName);
             }
         );
-
     }
 
     private ExtractableResponse<Response> 지하철노선_목록조회_요청() {
