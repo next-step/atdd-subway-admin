@@ -12,7 +12,7 @@ public class ResponseAssertTest {
     }
 
 
-    public static void 조회_확인(ExtractableResponse<Response> response) {
+    public static void 성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

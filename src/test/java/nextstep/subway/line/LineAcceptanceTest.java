@@ -56,10 +56,45 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         노선_포함_확인(getResponse, new String[]{"7호선", "신분당선"});
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역");
+
+        // when
+        Long id = createResponse.jsonPath().getLong("id");
+        ExtractableResponse<Response> getResponse = 지하철노선_단건조회_요청(id);
+
+        // then
+        노선_조회_확인(getResponse, id);
+    }
+
+    private void 노선_조회_확인(ExtractableResponse<Response> response, Long id) {
+        assertAll(
+            () -> ResponseAssertTest.성공_확인(response),
+            () -> {
+                assertThat(response.jsonPath().getLong("id")).isEqualTo(id);
+            }
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철노선_단건조회_요청(long id) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get(rootPath + "/" + id)
+            .then().log().all()
+            .extract();
+    }
 
     private void 노선_포함_확인(ExtractableResponse<Response> response, String[] lineName) {
         assertAll(
-            () -> ResponseAssertTest.조회_확인(response),
+            () -> ResponseAssertTest.성공_확인(response),
             () -> {
                 List<String> lineNamesAll = response.jsonPath().getList("name");
                 assertThat(lineNamesAll).containsExactlyInAnyOrder(lineName);
