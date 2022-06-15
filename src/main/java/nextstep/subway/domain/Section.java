@@ -10,7 +10,6 @@ import javax.persistence.*;
 public class Section {
     private static final String ERROR_MSG_UP_STATION_EMPTY = "상행종점역 정보가 존재하지 않습니다.";
     private static final String ERROR_MSG_DOWN_STATION_EMPTY = "하행종점역 정보가 존재하지 않습니다.";
-    private static final String ERROR_MESSAGE_NOT_VALID_DISTANCE = "새로 등록할 구간의 길이는 기존 구간의 길이보다 작거나 같아야 합니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,14 +101,6 @@ public class Section {
     }
 
     private void updateDistance(Distance newDistance) {
-        this.distance = findDistanceGap(newDistance);
-    }
-
-    public Distance findDistanceGap(Distance newDistance) {
-        int gap = this.distance.minus(newDistance);
-        if (gap < 1) {
-            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_VALID_DISTANCE);
-        }
-        return new Distance(gap);
+        this.distance.setDistanceGap(newDistance);
     }
 }

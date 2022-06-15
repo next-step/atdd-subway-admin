@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 public class Distance {
     private static final int MIN_DISTANCE = 1;
     private static final String ERROR_MESSAGE_MIN_DISTANCE = "구간 길이는 " + MIN_DISTANCE + "보다 커야 합니다.";
+    private static final String ERROR_MESSAGE_NOT_VALID_DISTANCE = "새로 등록할 구간의 길이는 기존 구간의 길이보다 작거나 같아야 합니다.";
 
     @Column
     private int distance;
@@ -25,7 +26,18 @@ public class Distance {
         }
     }
 
-    public int minus(Distance distance) {
+    public void setDistanceGap(Distance newDistance) {
+        if (!isLonger(newDistance)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_VALID_DISTANCE);
+        }
+        this.distance = minus(newDistance);
+    }
+
+    private boolean isLonger(Distance distance) {
+        return this.distance > distance.getDistance();
+    }
+
+    private int minus(Distance distance) {
         return this.distance - distance.getDistance();
     }
 
