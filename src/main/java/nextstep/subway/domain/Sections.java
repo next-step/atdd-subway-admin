@@ -140,10 +140,10 @@ public class Sections {
             Station newDownStation = sectionByUpStation.get().getDownStation();
             Integer newDistance = sectionByUpStation.get().getDistance() + sectionByDownStation.get().getDistance();
 
-            sections.add(Section.of(newUpStation, newDownStation, newDistance));
-
             sections.remove(sectionByUpStation.get());
             sections.remove(sectionByDownStation.get());
+
+            sections.add(Section.of(newUpStation, newDownStation, newDistance));
         }
 
         sectionByUpStation.ifPresent(section -> sections.remove(section));
