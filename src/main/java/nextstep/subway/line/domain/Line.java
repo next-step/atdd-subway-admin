@@ -1,14 +1,11 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.line.dto.LineUpdateRequest;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.dto.StationResponse;
 
 import javax.persistence.*;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -40,14 +37,18 @@ public class Line extends BaseEntity {
         line.addSection(section);
     }
 
-    public void updateNameAndColor(final LineUpdateRequest lineUpdateRequest) {
-        this.color = lineUpdateRequest.getColor();
-        this.name = lineUpdateRequest.getName();
+    public void updateNameAndColor(final String name, final String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public void addSection(final Section section) {
         section.updateLine(this);
         sections.add(section);
+    }
+
+    public void deleteSection(final Station station) {
+        sections.delete(station);
     }
 
     public boolean containSection(final Section section) {
@@ -66,11 +67,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Set<StationResponse> getAllStations() {
-        return sections.getAllStation()
-                .stream()
-                .map(StationResponse::of)
-                .collect(Collectors.toSet());
+    public Set<Station> getAllStations() {
+        return sections.getAllStation();
     }
 
     @Override
@@ -95,4 +93,5 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id, name, color, sections);
     }
+
 }

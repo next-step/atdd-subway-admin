@@ -8,7 +8,9 @@ public enum LineExceptionType {
     INVALID_UPDATE_DISTANCE("LINE_05", "기존 구간과 거리가 일치 합니다."),
     STATION_ALL_USED("LINE_06", "상행, 하행이 이미 존재 합니다"),
     STATION_ALL_NOT_USED("LINE_07", "상행, 하행이 모두 등록 되지 않았습니다."),
-    EXIST_LINE_NAME("LINE_08", "이미 존재하는 라인 입니다.");
+    EXIST_LINE_NAME("LINE_08", "이미 존재하는 라인 입니다."),
+    NOT_FOUND_STATION("LINE_09", "해당 노선에 해당 지하철역이 존재하지 않습니다."),
+    SECTION_DELETE_MIN_SIZE("LINE_10", "마지막 구간은 제거할 수 없습니다.");
 
     private final String code;
     private final String message;

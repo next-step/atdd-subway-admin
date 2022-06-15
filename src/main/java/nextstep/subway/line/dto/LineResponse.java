@@ -6,6 +6,7 @@ import nextstep.subway.station.dto.Stations;
 
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private final Long id;
@@ -25,8 +26,15 @@ public class LineResponse {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                line.getAllStations()
+                getStations(line)
         );
+    }
+
+    private static Set<StationResponse> getStations(final Line line) {
+        return line.getAllStations()
+                .stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toSet());
     }
 
     public Long getId() {

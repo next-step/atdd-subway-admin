@@ -31,9 +31,8 @@ public class LineService {
         final Station upStation = stationService.findById(lineAddRequest.getUpStationId());
         final Station downStation = stationService.findById(lineAddRequest.getDownStationId());
 
-        return LineResponse.from(lineRepository.save(
-                lineAddRequest.toEntity(upStation, downStation)
-        ));
+        final Line line = lineRepository.save(lineAddRequest.toEntity(upStation, downStation));
+        return LineResponse.from(line);
     }
 
     public List<LineResponse> fetchLines() {
@@ -50,7 +49,7 @@ public class LineService {
     @Transactional
     public void updateLine(final Long id, final LineUpdateRequest lineUpdateRequest) {
         final Line line = findById(id);
-        line.updateNameAndColor(lineUpdateRequest);
+        line.updateNameAndColor(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
     @Transactional
