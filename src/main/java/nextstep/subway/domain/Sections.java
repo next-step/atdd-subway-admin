@@ -25,16 +25,10 @@ public class Sections {
     public void addSection(Section section) {
         validateSection(section);
 
-        if (sections.isEmpty()) {
-            addFirstSection(section);
-            return;
-        }
-        if (section.isBeforeUpFinalSection()) {
-            addUpFinalSection(section);
-            return;
-        }
-        if (section.isAfterDownFinalSection()) {
-            addDownFinalSection(section);
+        if (sections.isEmpty()
+                || section.isBeforeUpFinalSection()
+                || section.isAfterDownFinalSection()) {
+            sections.add(section);
             return;
         }
         addMiddleSection(section);
@@ -64,23 +58,6 @@ public class Sections {
         return section.matchUpOrDownStation(sections);
     }
 
-    private void addFirstSection(Section section) {
-        sections.add(section);
-        section.updateLineUpFinalStation();
-    }
-
-    private void addUpFinalSection(Section section) {
-        sections.add(section);
-        section.addLineDistance();
-        section.updateLineUpFinalStation();
-    }
-
-    private void addDownFinalSection(Section section) {
-        sections.add(section);
-        section.addLineDistance();
-        section.updateLineDownFinalStation();
-    }
-
     private void addMiddleSection(Section section) {
         Section oldSection = findSectionToSplit(section);
         if (section.isLongerThan(oldSection)) {
@@ -97,11 +74,12 @@ public class Sections {
                 .orElseThrow(() -> new NoSuchElementException("새로운 구간을 추가할 위치를 찾을 수 없습니다."));
     }
 
-    public List<Section> getSectionsInOrder(Station startStation, Station endStation) {
+    public List<Section> getSectionsInOrder() {
         List<Section> allSections = new ArrayList<>();
 
-        Station nextStation = startStation;
-        while (!nextStation.equals(endStation)) {
+        Station nextStation = getUpFinalStation();
+        Station downFinalStation = getDownFinalStation();
+        while (!nextStation.equals(downFinalStation)) {
             Optional<Section> nextSection = getSectionByUpStation(nextStation);
             if (!nextSection.isPresent()) {
                 break;
