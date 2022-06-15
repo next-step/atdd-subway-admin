@@ -78,4 +78,11 @@ public class LineService {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("지하철역을 찾을 수 없습니다."));
     }
+
+    @Transactional
+    public void deleteStation(final Long id, final Long stationId) {
+        final Line line = findLineById(id);
+        final Station station = findStationById(stationId);
+        line.deleteStation(station);
+    }
 }

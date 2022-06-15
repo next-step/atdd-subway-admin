@@ -59,6 +59,10 @@ public class Line {
         return sections.getStationsOrderBy();
     }
 
+    public void deleteStation(final Station station) {
+        sections.deleteStation(station);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

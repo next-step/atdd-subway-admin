@@ -130,9 +130,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### to-do list
 
-- [ ] 지하철 구간 제거
+- [X] 지하철 구간 제거
   - [X] 지하철 구간 제거 인수테스트 작성
     - [X] 지하철역 제거 정상
     - [X] 노선에 없는 역 제거하는 경우
     - [X] 마지막 노선의 역을 제거하는 경우
-  - [ ] 지하철 구간 제거 기능 구현
+  - [X] 지하철 구간 제거 기능 구현
