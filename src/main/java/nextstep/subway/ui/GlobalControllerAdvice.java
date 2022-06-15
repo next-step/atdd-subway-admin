@@ -1,6 +1,9 @@
 package nextstep.subway.ui;
 
+import nextstep.subway.domain.common.ErrorCode;
 import nextstep.subway.dto.error.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,12 +13,15 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalControllerAdvice {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GlobalControllerAdvice.class);
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErrorResponse> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
 
-        ErrorResponse errorResponse = ErrorResponse.of(exception.getMessage(), HttpStatus.BAD_REQUEST.value());
+        LOGGER.info(exception.getMessage());
+        ErrorResponse errorResponse = ErrorResponse.of(ErrorCode.DATA_INTEGRITY_VIOLATION.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR.value());
 
-        return ResponseEntity.badRequest().body(errorResponse);
+        return ResponseEntity.internalServerError().body(errorResponse);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

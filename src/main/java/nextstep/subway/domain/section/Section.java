@@ -32,18 +32,34 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = Distance.of(distance);
+        this.distance = distance;
     }
 
-    public static Section create(Station upStation, Station downStation, int distance) {
+    public static Section create(Station upStation, Station downStation, Distance distance) {
         return new Section(upStation, downStation, distance);
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     public void setLine(Line line) {
         this.line = line;
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     @Override

@@ -9,13 +9,13 @@ public class Distance {
     private static final int MIN = 1;
 
     @Column(nullable = false)
-    private int distance;
+    private int value;
 
     protected Distance() {
     }
 
     private Distance(int distance) {
-        this.distance = distance;
+        this.value = distance;
     }
 
     public static Distance of(int distance) {
@@ -26,7 +26,15 @@ public class Distance {
         return new Distance(distance);
     }
 
-    public int getDistance() {
-        return distance;
+    public Distance add(int value) {
+        return Distance.of(this.value + value);
+    }
+
+    public Distance substract(Distance distance) {
+        return Distance.of(value - distance.getValue());
+    }
+
+    public int getValue() {
+        return value;
     }
 }

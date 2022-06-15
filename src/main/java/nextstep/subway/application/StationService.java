@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -48,5 +49,15 @@ public class StationService {
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station getStationById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역입니다. stationId : " + stationId));
+    }
+
+    public Map<Long, Station> getStationsByIds(List<Long> ids) {
+        return stationRepository.findByIdIn(ids).stream()
+                .collect(Collectors.toMap(Station::getId, station -> station));
     }
 }

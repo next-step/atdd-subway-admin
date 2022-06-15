@@ -1,20 +1,19 @@
 package nextstep.subway.application;
 
+import nextstep.subway.domain.common.Distance;
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineColor;
 import nextstep.subway.domain.line.LineName;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.station.Station;
-import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.line.LineRequest;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.dto.line.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,11 +21,11 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
@@ -41,21 +40,16 @@ public class LineService {
     }
 
     private Line createLine(LineRequest lineRequest) {
-        Line line = lineRequest.toLine();
-        Station upStation = getStationById(lineRequest.getUpStationId());
-        Station downStation = getStationById(lineRequest.getDownStationId());
+        Station upStation = stationService.getStationById(lineRequest.getUpStationId());
+        Station downStation = stationService.getStationById(lineRequest.getDownStationId());
 
-        Section section = Section.create(upStation, downStation, lineRequest.getDistance());
-
-        line.addSection(section);
-        line.setTerminus(upStation, downStation);
-
-        return line;
-    }
-
-    private Station getStationById(Long stationId) {
-        return stationRepository.findById(stationId)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역입니다. stationId : " + stationId));
+        return Line.create(
+                LineName.of(lineRequest.getName()),
+                LineColor.of(lineRequest.getColor()),
+                Distance.of(lineRequest.getDistance()),
+                upStation,
+                downStation
+        );
     }
 
     public List<LineResponse> findAllLines() {
@@ -118,5 +112,20 @@ public class LineService {
         lineByColor.ifPresent(line -> {
             throw new IllegalArgumentException("중복된 지하철 노선 이름입니다.");
         });
+    }
+
+    @Transactional
+    public void addSection(Long id, SectionRequest sectionRequest) {
+        Line line = getLineById(id);
+
+        List<Long> stationIds = Arrays.asList(sectionRequest.getUpStationId(), sectionRequest.getDownStationId());
+        Map<Long, Station> stations = stationService.getStationsByIds(stationIds);
+
+        Station upStation = stations.get(sectionRequest.getUpStationId());
+        Station downStation = stations.get(sectionRequest.getDownStationId());
+
+        Section section = Section.create(upStation, downStation, Distance.of(sectionRequest.getDistance()));
+
+        line.addSection(section);
     }
 }
