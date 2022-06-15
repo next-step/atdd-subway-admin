@@ -91,10 +91,6 @@ public class Section extends BaseEntity {
         return upStation.equals(section.upStation);
     }
 
-    public void addLineDistance() {
-        line.addDistance(distance);
-    }
-
     public boolean isLongerThan(Section section) {
         return this.distance >= section.distance;
     }
@@ -102,14 +98,6 @@ public class Section extends BaseEntity {
     public void updateUpStation(Section section) {
         this.upStation = section.downStation;
         this.distance = this.distance - section.distance;
-    }
-
-    public void updateLineUpFinalStation() {
-        line.updateUpFinalStation(upStation);
-    }
-
-    public void updateLineDownFinalStation() {
-        line.updateDownFinalStation(downStation);
     }
 
     public Long getId() {
