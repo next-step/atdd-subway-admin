@@ -60,6 +60,10 @@ public class Line extends BaseEntity {
         sections.addSection(section);
     }
 
+    public void removeSectionByStation(Station station) {
+        sections.removeSectionByStation(station);
+    }
+
     public Long getId() {
         return id;
     }
