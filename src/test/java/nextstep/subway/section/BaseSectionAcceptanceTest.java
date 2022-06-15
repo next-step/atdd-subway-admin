@@ -19,4 +19,13 @@ public abstract class BaseSectionAcceptanceTest extends BaseAcceptacneTest {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> deleteSectionRequest(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .pathParam("lineId", lineId)
+                .queryParam("stationId", stationId)
+                .when().delete(SECTION_URI + "?stationId={stationId}", lineId, stationId)
+                .then().log().all()
+                .extract();
+    }
 }
