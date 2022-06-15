@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -110,6 +111,32 @@ public class Sections {
             nextStation = nextSection.get().getDownStation();
         }
         return allSections;
+    }
+
+    private Station getUpFinalStation() {
+        List<Station> upStations = sections.stream()
+                .map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation).collect(Collectors.toList());
+        upStations.removeAll(downStations);
+
+        if (upStations.size() != 1) {
+            throw new RuntimeException("상행종점역을 찾을 수 없습니다.");
+        }
+        return upStations.get(0);
+    }
+
+    private Station getDownFinalStation() {
+        List<Station> upStations = sections.stream()
+                .map(Section::getUpStation).collect(Collectors.toList());
+        List<Station> downStations = sections.stream()
+                .map(Section::getDownStation).collect(Collectors.toList());
+        downStations.removeAll(upStations);
+
+        if (downStations.size() != 1) {
+            throw new RuntimeException("하행종점역을 찾을 수 없습니다.");
+        }
+        return downStations.get(0);
     }
 
     private Optional<Section> getSectionByUpStation(Station upStation) {
