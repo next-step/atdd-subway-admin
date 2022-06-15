@@ -100,7 +100,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
         // when
         Long stationId = createdResponse.jsonPath().getLong("id");
-        ExtractableResponse<Response> deleteResponse = requestDeleteStation(stationId);
+        ExtractableResponse<Response> deleteResponse = 지하철역_삭제_요청(stationId);
 
         // then
         ExtractableResponse<Response> getResponse = 지하철역_조회_요청();
@@ -131,7 +131,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         assertThat(response).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> requestDeleteStation(Long stationId) {
+    private ExtractableResponse<Response> 지하철역_삭제_요청(Long stationId) {
         return RestAssured.given().log().all()
             .when().delete(rootPath + "/" + stationId)
             .then().log().all()
