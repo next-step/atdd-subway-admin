@@ -21,8 +21,7 @@ class SectionsTest {
         Station 강남역 = Station.from("강남역");
 
         정자역_강남역 = Section.of(정자역, 강남역, 신분당선, 10000);
-        신분당선 = Line.of("신분당선", "bg-red-600", 정자역, 강남역, 10000)
-                .withSection(정자역_강남역);
+        신분당선 = Line.of("신분당선", "bg-red-600", 정자역, 강남역, 10000);
 
         모든구간 = 신분당선.getSections();
     }
@@ -49,8 +48,7 @@ class SectionsTest {
             assertThat(하행역.getName())
                     .isEqualTo("정자역");
         });
-        assertThat(신분당선.getUpFinalStation().getName())
-                .isEqualTo("광교역");
+
     }
 
     @Test
@@ -70,8 +68,6 @@ class SectionsTest {
             assertThat(하행역.getName())
                     .isEqualTo("논현역");
         });
-        assertThat(신분당선.getDownFinalStation().getName())
-                .isEqualTo("논현역");
     }
 
     @Test
@@ -101,10 +97,6 @@ class SectionsTest {
             assertThat(하행역.getName())
                     .isEqualTo("신사역");
         });
-        assertThat(신분당선.getUpFinalStation().getName())
-                .isEqualTo("정자역");
-        assertThat(신분당선.getDownFinalStation().getName())
-                .isEqualTo("신사역");
     }
 
     @Test
@@ -161,7 +153,7 @@ class SectionsTest {
         모든구간.addSection(강남역_신사역);
         모든구간.addSection(강남역_논현역);
 
-        List<Section> 정렬된_구간 = 모든구간.getSectionsInOrder(광교역_정자역.getUpStation(), 강남역_신사역.getDownStation());
+        List<Section> 정렬된_구간 = 모든구간.getSectionsInOrder();
 
         assertThat(정렬된_구간)
                 .hasSize(4);
