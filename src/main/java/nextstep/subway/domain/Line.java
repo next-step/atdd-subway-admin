@@ -23,7 +23,7 @@ public class Line {
     private String color;
 
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     protected Line() {
     }
