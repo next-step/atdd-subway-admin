@@ -8,23 +8,23 @@ import java.util.List;
 public class SectionResponse {
     private Long id;
     private Integer distance;
-    private List<StationResponse> stations;
+    private List<StationResponse> upDownStations;
 
-    private SectionResponse(Long id, Integer distance, List<StationResponse> stations) {
+    private SectionResponse(Long id, Integer distance, List<StationResponse> upDownStations) {
         this.id = id;
         this.distance = distance;
-        this.stations = stations;
+        this.upDownStations = upDownStations;
     }
 
     private SectionResponse(){
     }
 
     public static SectionResponse of(Section section) {
-        List<StationResponse> stations = Arrays.asList(
+        List<StationResponse> upDownStations = Arrays.asList(
                 StationResponse.of(section.getUpStation()),
                 StationResponse.of(section.getDownStation())
         );
-        return new SectionResponse(section.getId(), section.getDistance(), stations);
+        return new SectionResponse(section.getId(), section.getDistance(), upDownStations);
     }
 
     public Long getId() {
@@ -35,7 +35,7 @@ public class SectionResponse {
         return distance;
     }
 
-    public List<StationResponse> getStations() {
-        return stations;
+    public List<StationResponse> getUpDownStations() {
+        return upDownStations;
     }
 }
