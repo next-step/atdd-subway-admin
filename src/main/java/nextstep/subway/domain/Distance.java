@@ -11,7 +11,7 @@ public class Distance {
     @Column
     private int distance;
 
-    public Distance() {
+    protected Distance() {
     }
 
     public Distance(int distance) {

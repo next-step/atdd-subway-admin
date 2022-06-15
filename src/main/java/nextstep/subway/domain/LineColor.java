@@ -12,7 +12,7 @@ public class LineColor {
     @Column
     private String color;
 
-    public LineColor() {
+    protected LineColor() {
     }
 
     public LineColor(String color) {

@@ -27,7 +27,7 @@ public class Section {
     @Column
     private Distance distance;
 
-    public Section() {
+    protected Section() {
     }
 
     public Section(Station upStation, Station downStation, Distance distance) {
