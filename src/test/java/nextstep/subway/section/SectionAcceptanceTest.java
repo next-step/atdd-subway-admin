@@ -190,7 +190,30 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    public static ExtractableResponse<Response> 지하철_구간_등록(Long id, SectionRequest request) {
+    /**
+     * Given 지하철 노선 및 구간을 생성하고
+     * When 생성한 구간을 삭제하면
+     * Then 해당 지하철 구간은 삭제된다
+     */
+    @DisplayName("구간을 삭제한다.")
+    @Test
+    void removeLineStation() {
+        // given
+        // 신분당선: 강남역 - 판교역 - 광교역
+        구간_등록_테스트_동일_상행역();
+
+        // when
+        // 판교역 삭제
+        ExtractableResponse<Response> deleteResponse = 지하철_구간_제거(신분당선.getId(), 판교역.getId());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회(신분당선.getId());
+        LineResponse lineResponse = getLineResponse(response);
+        assertThat(lineResponse.getSections().get(0).getDistance()).isEqualTo(10);
+    }
+
+    public ExtractableResponse<Response> 지하철_구간_등록(Long id, SectionRequest request) {
         return RestAssured.given().log().all()
                 .body(request)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -199,10 +222,19 @@ public class SectionAcceptanceTest extends BaseUnitTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회(Long id) {
+    public ExtractableResponse<Response> 지하철_노선_조회(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    public ExtractableResponse<Response> 지하철_구간_제거(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("stationId", stationId)
+                .when().delete("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract();
     }
