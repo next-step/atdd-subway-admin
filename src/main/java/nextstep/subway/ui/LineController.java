@@ -2,16 +2,13 @@ package nextstep.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import java.util.NoSuchElementException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,15 +62,8 @@ public class LineController {
 
     @DeleteMapping("/lines/{lineId}/sections")
     public ResponseEntity removeSection(@PathVariable Long lineId,
-                                     @RequestParam Long stationId) {
+                                        @RequestParam Long stationId) {
         lineService.removeSection(lineId, stationId);
         return ResponseEntity.noContent().build();
-    }
-
-    @ExceptionHandler({DataIntegrityViolationException.class,
-            NoSuchElementException.class,
-            IllegalArgumentException.class})
-    public ResponseEntity handleExceptions() {
-        return ResponseEntity.badRequest().build();
     }
 }
