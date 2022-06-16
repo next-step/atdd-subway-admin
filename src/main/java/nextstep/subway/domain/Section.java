@@ -122,4 +122,9 @@ public class Section {
     private void updateDistance(Distance newDistance) {
         this.distance.setDistanceGap(newDistance);
     }
+
+    public void merge(Section other) {
+        this.downStation = other.getDownStation();
+        this.distance.add(other.distance);
+    }
 }
