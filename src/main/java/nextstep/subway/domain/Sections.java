@@ -73,4 +73,36 @@ public class Sections {
     private void addSection(Section section) {
         sections.add(section);
     }
+
+    public void delete(Station station) {
+        Section upSection = sections.stream()
+                .filter(section -> section.getDownStation().equals(station))
+                .findFirst()
+                .orElse(null);
+
+        Section downSection = sections.stream()
+                .filter(section -> section.getUpStation().equals(station))
+                .findFirst()
+                .orElse(null);
+
+        if (upSection != null && downSection != null) {
+            createSection(upSection, downSection);
+        }
+
+        removeSection(upSection, downSection);
+    }
+
+    private void createSection(Section upSection, Section downSection) {
+        addSection(Section.of(upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance()+downSection.getDistance(), upSection.getLine()));
+    }
+
+    private void removeSection(Section upSection, Section downSection) {
+        if (upSection != null) {
+            sections.remove(upSection);
+        }
+
+        if (downSection != null) {
+            sections.remove(downSection);
+        }
+    }
 }

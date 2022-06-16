@@ -70,6 +70,10 @@ public class Line extends BaseEntity {
         }
     }
 
+    public void deleteStation(Station station) {
+        this.sections.delete(station);
+    }
+
     public Long getId() {
         return id;
     }
