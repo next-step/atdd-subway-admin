@@ -220,13 +220,13 @@ class LineStationsTest {
     }
 
     @Test
-    void 구간이_하나만_있을_때_역을_삭제하면_IllegalArgumentException이_발생해야_한다() {
+    void 구간이_하나만_있을_때_역을_삭제하면_IllegalStateException이_발생해야_한다() {
         // given
         final LineStations lineStations = givenLineStations();
 
         // when and then
         assertThatThrownBy(() -> lineStations.removeStation(station1))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test

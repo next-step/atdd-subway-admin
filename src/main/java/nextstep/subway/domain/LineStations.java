@@ -121,7 +121,7 @@ public class LineStations {
 
     private void checkNumberOfStationsBeforeDelete() {
         if (lineStations.size() < 3) {
-            throw new IllegalArgumentException("구간이 하나일 경우 역을 삭제할 수 없습니다.");
+            throw new IllegalStateException("구간이 하나일 경우 역을 삭제할 수 없습니다.");
         }
     }
 
