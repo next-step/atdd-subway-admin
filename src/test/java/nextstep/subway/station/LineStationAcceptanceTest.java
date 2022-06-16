@@ -8,13 +8,13 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineStationRequest;
 import nextstep.subway.dto.LineStationResponse;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.service.DatabaseInitializationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
@@ -22,7 +22,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관련기능 테스트")
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineStationAcceptanceTest {
     @LocalServerPort
@@ -30,22 +29,22 @@ public class LineStationAcceptanceTest {
     @Autowired
     private LineRepository lineRepository;
 
+    @Autowired
+    private DatabaseInitializationService databaseInitializationService;
+
     private StationResponse A역;
     private StationResponse B역;
     private StationResponse C역;
-    private StationResponse D역;
-    private StationResponse E역;
     private Line line;
 
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
+        databaseInitializationService.execute();
 
         A역 = StationApi.지하철역_생성("A역").as(StationResponse.class);
         B역 = StationApi.지하철역_생성("B역").as(StationResponse.class);
         C역 = StationApi.지하철역_생성("C역").as(StationResponse.class);
-        D역 = StationApi.지하철역_생성("D역").as(StationResponse.class);
-        E역 = StationApi.지하철역_생성("E역").as(StationResponse.class);
 
         line = lineRepository.save(new Line("분당선", "yellow"));
     }
