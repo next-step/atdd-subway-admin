@@ -297,7 +297,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         final ExtractableResponse<Response> deleteResponse = 구간을_삭제한다(GANGNAM_ID);
 
         // then
-        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private ExtractableResponse<Response> 구간을_등록한다(final long upStationId,
