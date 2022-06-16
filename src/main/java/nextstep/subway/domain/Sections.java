@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
@@ -14,6 +15,7 @@ public class Sections {
     public static final String ERROR_CAN_NOT_CONNECT_SECTION = "연결되는 구간을 찾을 수 없습니다.";
     public static final String ERROR_NOT_FOUND_FIRST_STATION = "첫번째 역을 찾을 수 없습니다.";
     public static final String ERROR_REMOVE_ONLY_ONE_SECTION = "단일 구간만이 존재할 경우 구간 제거가 불가합니다.";
+    public static final String ERROR_NOT_FOUND_UP_AND_DOWNSIDE = "역의 앞쪽 구간과 뒷쪽 구간이 모두 존재하지 않습니다.";
     public static final String ERROR_STATION_NOT_EXISTS_ON_LINE = "노선 상에 존재하지 않는 역입니다.";
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -29,10 +31,10 @@ public class Sections {
         Station firstStation = getFirstStation();
         stations.add(firstStation);
 
-        Station nextStation = getNextStation(firstStation);
-        while (nextStation != null) {
-            stations.add(nextStation);
-            nextStation = getNextStation(nextStation);
+        Optional<Station> nextStation = getNextStation(firstStation);
+        while (nextStation.isPresent()) {
+            stations.add(nextStation.get());
+            nextStation = getNextStation(nextStation.get());
         }
 
         return stations;
@@ -50,12 +52,11 @@ public class Sections {
         return sections.stream().anyMatch(section -> section.equalDownStation(station));
     }
 
-    private Station getNextStation(Station currentStation) {
+    private Optional<Station> getNextStation(Station currentStation) {
         return sections.stream()
                 .filter(section -> section.equalUpStation(currentStation))
                 .map(Section::getDownStation)
-                .findFirst()
-                .orElse(null);
+                .findFirst();
     }
 
     public void addSection(Section section) {
@@ -69,17 +70,17 @@ public class Sections {
     }
 
     private void addSectionInternal(Section section) {
-        Section matchedSection = findMatchedSection(section);
-        if (matchedSection != null) {
-            addSectionWithUpdateMatchedSection(matchedSection, section);
+        Optional<Section> matchedSection = findMatchedSection(section);
+        if (matchedSection.isPresent()) {
+            addSectionWithUpdateMatchedSection(matchedSection.get(), section);
             return;
         }
 
         sections.add(section);
     }
 
-    private Section findMatchedSection(Section targetSection) {
-        return sections.stream().filter(section -> section.match(targetSection)).findFirst().orElse(null);
+    private Optional<Section> findMatchedSection(Section targetSection) {
+        return sections.stream().filter(section -> section.match(targetSection)).findFirst();
     }
 
 
@@ -115,20 +116,20 @@ public class Sections {
     }
 
     private void removeSectionInternal(Station station) {
-        Section upsideSection = getUpsideSection(station);
-        Section downsideSection = getDownsideSection(station);
-
-        if(upsideSection == null && downsideSection != null) {
-            sections.remove(downsideSection);
+        Optional<Section> upsideSection = getUpsideSection(station);
+        Optional<Section> downsideSection = getDownsideSection(station);
+        
+        if (!upsideSection.isPresent() && downsideSection.isPresent()) {
+            sections.remove(downsideSection.get());
             return;
         }
 
-        if(upsideSection != null && downsideSection == null) {
-            sections.remove(upsideSection);
+        if (upsideSection.isPresent() && !downsideSection.isPresent()) {
+            sections.remove(upsideSection.get());
             return;
         }
 
-        removeSectionWithCombineSection(upsideSection, downsideSection);
+        removeSectionWithCombineSection(upsideSection.get(), downsideSection.get());
     }
 
     private void removeSectionWithCombineSection(Section upsideSection, Section downsideSection) {
@@ -136,12 +137,12 @@ public class Sections {
         sections.remove(downsideSection);
     }
 
-    private Section getUpsideSection(Station station) {
-        return sections.stream().filter(section -> section.equalDownStation(station)).findFirst().orElse(null);
+    private Optional<Section> getUpsideSection(Station station) {
+        return sections.stream().filter(section -> section.equalDownStation(station)).findFirst();
     }
 
-    private Section getDownsideSection(Station station) {
-        return sections.stream().filter(section -> section.equalUpStation(station)).findFirst().orElse(null);
+    private Optional<Section> getDownsideSection(Station station) {
+        return sections.stream().filter(section -> section.equalUpStation(station)).findFirst();
     }
 
     private void validateForRemoveSection(Station station) {
