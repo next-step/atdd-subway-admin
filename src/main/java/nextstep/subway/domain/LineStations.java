@@ -85,28 +85,39 @@ public class LineStations {
     }
 
     public void deleteLineStations(Line line, Station station) {
-        validDeleteStation();
+        validDeleteLineStation();
 
+        Optional<LineStation> deletionTargetTopLineStation = deleteTopLineStation(station);
+        Optional<LineStation> deletionTargetDownLineStation = deleteDownLineStation(station);
+        mergeLineStation(line, deletionTargetTopLineStation, deletionTargetDownLineStation);
+    }
+
+    private Optional<LineStation> deleteTopLineStation(Station station) {
         Optional<LineStation> deletionTargetTopLineStation = findTopStationInLineStation(station);
-        Optional<LineStation> deletionTargetDownLineStation = findDownStationInLineStation(station);
-
         deletionTargetTopLineStation.ifPresent(lineStation -> {
             this.deleteLineStation(lineStation);
             lineStation.deleteLine();
         });
+        return deletionTargetTopLineStation;
+    }
 
+    private Optional<LineStation> deleteDownLineStation(Station station) {
+        Optional<LineStation> deletionTargetDownLineStation = findDownStationInLineStation(station);
         deletionTargetDownLineStation.ifPresent(lineStation -> {
             this.deleteLineStation(lineStation);
             lineStation.deleteLine();
         });
+        return deletionTargetDownLineStation;
+    }
 
+    private void mergeLineStation(Line line, Optional<LineStation> deletionTargetTopLineStation, Optional<LineStation> deletionTargetDownLineStation) {
         if (
                 deletionTargetTopLineStation.isPresent() && deletionTargetDownLineStation.isPresent()
         ) {
             LineStation lineStation = LineStation.of(
                     deletionTargetTopLineStation.get().getDownStation(),
                     deletionTargetDownLineStation.get().getUpStation(),
-                    deletionTargetTopLineStation.get().getDistance() + deletionTargetDownLineStation.get().getDistance()
+                    new Distance(deletionTargetTopLineStation.get().getDistance().getDistance() + deletionTargetDownLineStation.get().getDistance().getDistance())
             );
 
             this.addLineStation(line, lineStation);
@@ -129,7 +140,7 @@ public class LineStations {
                 .findFirst();
     }
 
-    private void validDeleteStation() {
+    private void validDeleteLineStation() {
         if (lineStations.size() == 1) {
             System.out.println("구간이 하나인 노선은 역을 삭제할 수 없습니다.");
             throw new BadRequestException("구간이 하나인 노선은 역을 삭제할 수 없습니다.");
@@ -139,11 +150,7 @@ public class LineStations {
     public List<LineStation> get() {
         return lineStations;
     }
-
-    private int lineStationCount() {
-        return lineStations.size();
-    }
-
+    
     @Override
     public String toString() {
         return "LineStations{" +

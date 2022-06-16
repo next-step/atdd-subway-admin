@@ -1,9 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.LineStation;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.NotFoundException;
@@ -25,11 +22,13 @@ public class LineService {
     }
 
     public LineResponse createLine(LineRequest lineRequest) {
+        Distance distance = new Distance(lineRequest.getDistance());
+
         Station upStation = stationService.findStationById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());
 
         Line line = Line.of(lineRequest);
-        LineStation lineStation = LineStation.of(upStation, downStation, lineRequest.getDistance());
+        LineStation lineStation = LineStation.of(upStation, downStation, distance);
         line.addLineStation(lineStation);
 
         return LineResponse.of(saveLine(line));
