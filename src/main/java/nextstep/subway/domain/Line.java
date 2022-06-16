@@ -30,6 +30,11 @@ public class Line extends BaseEntity {
         this.downStation = downStation;
     }
 
+    public void update(Line newLine) {
+        this.name = newLine.name;
+        this.color = newLine.color;
+    }
+
     public Long getId() {
         return id;
     }

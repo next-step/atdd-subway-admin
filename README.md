@@ -95,7 +95,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
             - Given 지하철 노선을 생성하고
             - When 생성한 지하철 노선을 조회하면
             - Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
-        - [ ] 지하철노선 수정
+        - [x] 지하철노선 수정
             - Given 지하철 노선을 생성하고
             - When 생성한 지하철 노선을 수정하면
             - Then 해당 지하철 노선 정보는 수정된다

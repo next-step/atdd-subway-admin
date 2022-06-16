@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.common.ResponseAssertTest;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -73,6 +74,47 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         노선_조회_확인(getResponse, id);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역");
+
+        // when
+        Long id = createResponse.jsonPath().getLong("id");
+        LineUpdateRequest lineUpdateRequest = new LineUpdateRequest("1호선", "blue");
+        ExtractableResponse<Response> updateResponse = 지하철노선_수정_요청(id, lineUpdateRequest);
+
+        // then
+        노선_수정_확인(id, updateResponse, lineUpdateRequest);
+    }
+
+    private void 노선_수정_확인(Long id, ExtractableResponse<Response> response, LineUpdateRequest lineUpdateRequest) {
+        assertAll(
+            () -> ResponseAssertTest.성공_확인(response),
+            () -> {
+                ExtractableResponse<Response> getResponse = 지하철노선_단건조회_요청(id);
+
+                assertThat(getResponse.jsonPath().getString("name")).isEqualTo(lineUpdateRequest.getName());
+                assertThat(getResponse.jsonPath().getString("color")).isEqualTo(lineUpdateRequest.getColor());
+            }
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철노선_수정_요청(Long id, LineUpdateRequest lineUpdateRequest) {
+        return RestAssured.given().log().all()
+            .body(lineUpdateRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().patch(rootPath + "/" + id)
+            .then().log().all()
+            .extract();
     }
 
     private void 노선_조회_확인(ExtractableResponse<Response> response, Long id) {
