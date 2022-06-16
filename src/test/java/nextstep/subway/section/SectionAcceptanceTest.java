@@ -7,6 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Collections;
 import java.util.Map;
 import nextstep.subway.BaseSubwayTest;
 import nextstep.subway.dto.LineRequest;
@@ -15,6 +16,7 @@ import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.station.StationAcceptanceTest;
+import org.apache.groovy.util.Maps;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -149,7 +151,7 @@ public class SectionAcceptanceTest extends BaseSubwayTest {
 
         // when
         final ExtractableResponse<Response> 지하철_노선에_지하철역_등록 = 지하철_노선에_지하철역_등록(신분당선.getId(),
-                SectionRequest.of(강남역.getId(), null, 10));
+                Maps.of("upStationId", 강남역.getId().toString(), "downStationId", null, "distance", "10"));
 
         // then
         assertThat(지하철_노선에_지하철역_등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

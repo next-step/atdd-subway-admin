@@ -45,28 +45,28 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(final Long id) {
+    public LineResponse findLine(final long id) {
         return LineResponse.of(findLineById(id));
     }
 
     @Transactional
-    public void updateLine(final Long id, final UpdateLineRequest updateLineRequest) {
+    public void updateLine(final long id, final UpdateLineRequest updateLineRequest) {
         final Line line = findLineById(id);
         line.update(updateLineRequest.toLine());
     }
 
-    private Line findLineById(final Long id) {
+    private Line findLineById(final long id) {
         return lineRepository.findFetchStationById(id)
                 .orElseThrow(() -> new NoSuchElementException("지하철 노선을 찾을 수 없습니다."));
     }
 
     @Transactional
-    public void deleteLine(final Long id) {
+    public void deleteLine(final long id) {
         lineRepository.deleteById(id);
     }
 
     @Transactional
-    public void addSections(final Long id, final SectionRequest sectionRequest) {
+    public void addSections(final long id, final SectionRequest sectionRequest) {
         final Line line = findLineById(id);
         final Station upStation = findStationById(sectionRequest.getUpStationId());
         final Station downStation = findStationById(sectionRequest.getDownStationId());
@@ -80,7 +80,7 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteStation(final Long id, final Long stationId) {
+    public void deleteStation(final long id, final long stationId) {
         final Line line = findLineById(id);
         final Station station = findStationById(stationId);
         line.deleteStation(station);
