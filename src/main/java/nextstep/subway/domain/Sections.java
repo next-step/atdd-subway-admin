@@ -108,12 +108,12 @@ public class Sections {
 
 
     private void validateDeleteStation(final Station station) {
-        if (isLastSection()) {
-            throw new SubwayException(SubwayExceptionMessage.DO_NOT_DELETE_LAST_SECTION);
-        }
-
         if (isNotContainStation(station)) {
             throw new SubwayException(SubwayExceptionMessage.NOT_FOUND_STATION);
+        }
+
+        if (isLastSection()) {
+            throw new SubwayException(SubwayExceptionMessage.DO_NOT_DELETE_LAST_SECTION);
         }
     }
 
