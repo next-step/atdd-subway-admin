@@ -12,7 +12,7 @@ public class StationName {
     @Column(unique = true)
     private String name;
 
-    public StationName() {
+    protected StationName() {
     }
 
     public StationName(String name) {

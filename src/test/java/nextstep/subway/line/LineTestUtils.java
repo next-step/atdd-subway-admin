@@ -18,11 +18,22 @@ import static nextstep.subway.station.StationTestUtils.*;
 public class LineTestUtils {
     public static final String PATH = "/lines";
 
-    public static ExtractableResponse<Response> 지하철노선_생성_요청(String lineName, String lineColor, String upStationName, String downStationName) {
+    public static ExtractableResponse<Response> 지하철노선_생성_요청(String lineName, String lineColor, String upStationName, String downStationName, int distance) {
         Long upStationId = 지하철역_생성_요청(upStationName).jsonPath().getLong("id");
         Long downStationId = 지하철역_생성_요청(downStationName).jsonPath().getLong("id");
 
-        LineRequest request = new LineRequest(lineName, lineColor, upStationId, downStationId);
+        LineRequest request = new LineRequest(lineName, lineColor, upStationId, downStationId, distance);
+
+        return RestAssured.given().log().all()
+                .body(request)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철노선_생성_요청(String lineName, String lineColor, Long upStationId, Long downStationId, int distance) {
+        LineRequest request = new LineRequest(lineName, lineColor, upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()
                 .body(request)
@@ -45,6 +56,10 @@ public class LineTestUtils {
                 .when().get(PATH + "/{id}")
                 .then().log().all()
                 .extract();
+    }
+
+    public static List<String> 지하철노선_역목록_조회(Long lineId) {
+        return 지하철노선_조회(lineId).jsonPath().getList("stations.name", String.class);
     }
 
     public static ExtractableResponse<Response> 지하철노선_수정_요청(Long lineId, String lineName, String lineColor) {
@@ -77,10 +92,6 @@ public class LineTestUtils {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    public static Long 지하철노선_ID_조회(ExtractableResponse<Response> response) {
-        return response.jsonPath().getLong("id");
-    }
-
     public static void 지하철노선_조회_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
@@ -91,6 +102,10 @@ public class LineTestUtils {
 
     public static void 지하철노선_삭제_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    public static Long 지하철노선_ID_조회(ExtractableResponse<Response> response) {
+        return response.jsonPath().getLong("id");
     }
 
     public static void 지하철노선_포함_확인(String lineName) {
@@ -111,5 +126,15 @@ public class LineTestUtils {
     public static void 지하철노선_색_확인(ExtractableResponse<Response> response, String lineColor) {
         String color = response.jsonPath().getString("color");
         assertThat(color).isEqualTo(lineColor);
+    }
+
+    public static void 지하철노선_역갯수_확인(Long lineId, int size) {
+        List<String> stationNames = 지하철노선_역목록_조회(lineId);
+        assertThat(stationNames).hasSize(size);
+    }
+
+    public static void 지하철노선_역순서_확인(Long lineId, List<String> orderedStationNames) {
+        List<String> stationNames = 지하철노선_역목록_조회(lineId);
+        assertThat(stationNames).isEqualTo(orderedStationNames);
     }
 }

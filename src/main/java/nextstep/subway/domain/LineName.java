@@ -12,7 +12,7 @@ public class LineName {
     @Column(unique = true)
     private String name;
 
-    public LineName() {
+    protected LineName() {
     }
 
     public LineName(String name) {

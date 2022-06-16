@@ -19,7 +19,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("2호선", "green", "강남역", "역삼역");
+        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("2호선", "green", "강남역", "역삼역", 10);
 
         // then
         지하철노선_생성_성공_확인(생성_응답);
@@ -37,10 +37,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createLineWithDuplicateName() {
         // given
-        지하철노선_생성_요청("2호선", "green", "강남역", "역삼역");
+        지하철노선_생성_요청("2호선", "green", "강남역", "역삼역", 5);
 
         // when
-        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("2호선", "green", "잠실역", "건대입구역");
+        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("2호선", "green", "잠실역", "건대입구역", 5);
 
         // then
         지하철노선_생성_실패_확인(생성_응답);
@@ -55,8 +55,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철노선_생성_요청("1호선", "blue", "서울역", "용산역");
-        지하철노선_생성_요청("2호선", "green", "강남역", "역삼역");
+        지하철노선_생성_요청("1호선", "blue", "서울역", "용산역", 5);
+        지하철노선_생성_요청("2호선", "green", "강남역", "역삼역", 5);
 
         // when
         ExtractableResponse<Response> 조회_응답 = 지하철노선_목록_조회();
@@ -78,7 +78,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("1호선", "blue", "서울역", "용산역");
+        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("1호선", "blue", "서울역", "용산역", 5);
         Long 노선_ID = 지하철노선_ID_조회(생성_응답);
 
         // when
@@ -101,7 +101,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void modifyLine() {
         // given
-        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("1호선", "blue", "서울역", "용산역");
+        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("1호선", "blue", "서울역", "용산역", 5);
         Long 노선_ID = 지하철노선_ID_조회(생성_응답);
 
         // when
@@ -127,7 +127,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("1호선", "blue", "서울역", "용산역");
+        ExtractableResponse<Response> 생성_응답 = 지하철노선_생성_요청("1호선", "blue", "서울역", "용산역", 5);
         Long 노선_ID = 지하철노선_ID_조회(생성_응답);
 
         // when
