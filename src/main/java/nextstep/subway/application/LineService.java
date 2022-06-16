@@ -73,6 +73,13 @@ public class LineService {
         return getLineOrElseThrow(id).getSections();
     }
 
+    @Transactional
+    public void deleteSection(final Long lineId, final long stationId) {
+        final Line line = getLineOrElseThrow(lineId);
+        line.deleteSection(stationService.getStationOrElseThrow(stationId));
+        lineRepository.save(line);
+    }
+
     private Line getLineOrElseThrow(final Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("지하철 노선 아이디가 유효하지 않습니다: %d}", id)));

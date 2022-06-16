@@ -140,7 +140,7 @@ class LineStationsTest {
     }
 
     @Test
-    void 하행역인_신규역_추가_시_상행역이_기존_하행종점역이어도_등록이되어야_한다() {
+    void 하행역인_신규역_추가_시_상행역이_기존_하행종점역이어도_등록되어야_한다() {
         // given
         final LineStations lineStations = givenLineStations();
         final Station downStation = new Station("정자역");
@@ -154,6 +154,79 @@ class LineStationsTest {
                 .containsOnly(
                         new SectionResponse(line.getName(), station1.getName(), station2.getName(), from1To2),
                         new SectionResponse(line.getName(), station2.getName(), downStation.getName(), distance));
+    }
+
+    @Test
+    void 구간이_2개_있을_때_상행종점역을_삭제할_수_있어야_한다() {
+        // given
+        final LineStations lineStations = givenLineStations();
+        final Station middleStation = new Station("양재역");
+        final long distance = 10L;
+        lineStations.addStationBySection(line, station1, middleStation, distance);
+
+        // when
+        lineStations.removeStation(station1);
+
+        // then
+        assertThat(lineStations.sections())
+                .containsOnly(
+                        new SectionResponse(line.getName(), middleStation.getName(), station2.getName(),
+                                from1To2 - distance));
+    }
+
+    @Test
+    void 구간이_2개_있을_때_하행종점역을_삭제할_수_있어야_한다() {
+        // given
+        final LineStations lineStations = givenLineStations();
+        final Station middleStation = new Station("양재역");
+        final long distance = 10L;
+        lineStations.addStationBySection(line, station1, middleStation, distance);
+
+        // when
+        lineStations.removeStation(station2);
+
+        // then
+        assertThat(lineStations.sections())
+                .containsOnly(
+                        new SectionResponse(line.getName(), station1.getName(), middleStation.getName(), distance));
+    }
+
+    @Test
+    void 구간이_2개_있을_때_두_번째_역을_삭제할_수_있어야_한다() {
+        // given
+        final LineStations lineStations = givenLineStations();
+        final Station middleStation = new Station("양재역");
+        final long distance = 10L;
+        lineStations.addStationBySection(line, station1, middleStation, distance);
+
+        // when
+        lineStations.removeStation(middleStation);
+
+        // then
+        assertThat(lineStations.sections())
+                .containsOnly(
+                        new SectionResponse(line.getName(), station1.getName(), station2.getName(), from1To2));
+    }
+
+    @Test
+    void 구간이_2개_있을_때_등록되지_않은_역을_삭제하면_IllegalArgumentException이_발생해야_한다() {
+        // given
+        final LineStations lineStations = givenLineStations();
+        lineStations.addStationBySection(line, station1, new Station("양재역"), 10L);
+
+        // when and then
+        assertThatThrownBy(() -> lineStations.removeStation(new Station("없는역")))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void 구간이_하나만_있을_때_역을_삭제하면_IllegalStateException이_발생해야_한다() {
+        // given
+        final LineStations lineStations = givenLineStations();
+
+        // when and then
+        assertThatThrownBy(() -> lineStations.removeStation(station1))
+                .isInstanceOf(IllegalStateException.class);
     }
 
     @Test

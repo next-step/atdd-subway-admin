@@ -62,7 +62,9 @@ public class LineStations {
         }
     }
 
-    private void addDownStation(final Line line, final Station upStation, final Station downStation,
+    private void addDownStation(final Line line,
+                                final Station upStation,
+                                final Station downStation,
                                 final long distance) {
         final LineStation upStationRelation = relationOf(upStation);
         if (upStationRelation.hasNext()) {
@@ -84,7 +86,9 @@ public class LineStations {
                 .orElse(null);
     }
 
-    private void addUpStation(final Line line, final Station upStation, final Station downStation,
+    private void addUpStation(final Line line,
+                              final Station upStation,
+                              final Station downStation,
                               final long distance) {
         final LineStation previous = previousOf(downStation);
         if (null != previous) {
@@ -105,6 +109,36 @@ public class LineStations {
     private void validateNewDistanceByOldDistance(final long newDistance, final long oldDistance) {
         if (newDistance >= oldDistance) {
             throw new IllegalArgumentException("신규 구간의 길이는 기존 구간의 길이보다 짧아야 합니다.");
+        }
+    }
+
+    public void removeStation(final Station station) {
+        checkNumberOfStationsBeforeDelete();
+        final LineStation target = getDeleteTargetOrElseThrow(station);
+        updatePreviousBeforeDelete(target);
+        lineStations.remove(target);
+    }
+
+    private void checkNumberOfStationsBeforeDelete() {
+        if (lineStations.size() < 3) {
+            throw new IllegalStateException("구간이 하나일 경우 역을 삭제할 수 없습니다.");
+        }
+    }
+
+    private LineStation getDeleteTargetOrElseThrow(final Station station) {
+        final LineStation target = relationOf(station);
+        if (null == target) {
+            throw new IllegalArgumentException("등록되지 않은 역은 삭제할 수 없습니다.");
+        }
+        return target;
+    }
+
+    private void updatePreviousBeforeDelete(final LineStation deleteTarget) {
+        final LineStation previous = previousOf(deleteTarget.getStation());
+        if (null != previous) {
+            previous.updateNext(
+                    deleteTarget.getNext(),
+                    previous.getDistanceToNext() + deleteTarget.getDistanceToNext());
         }
     }
 
