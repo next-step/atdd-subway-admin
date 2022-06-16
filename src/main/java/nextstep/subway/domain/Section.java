@@ -18,6 +18,7 @@ public class Section extends BaseEntity {
     public static final String ERROR_MESSAGE_DOWN_STATION_NULL = "하행역 변수 값이 null 입니다.";
     public static final String ERROR_MESSAGE_DISTANCE_NULL = "역 간 거리의 값이 null 입니다.";
     public static final String ERROR_MESSAGE_NOT_MATCHED = "업데이트 대상 구간이 겹치지 않는 구간입니다.";
+    public static final String ERROR_MESSAGE_NOT_CONNECTED = "통합될 구간이 연결되어 있지 않습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +38,7 @@ public class Section extends BaseEntity {
 
     public Section(Long lineId, Station upStation, Station downStation, Integer distance) {
         validateConstructor(upStation, downStation, distance);
-        
+
         this.lineId = lineId;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -48,7 +49,7 @@ public class Section extends BaseEntity {
         this(lineId, upStation, downStation, distance);
         this.id = id;
     }
-    
+
     private void validateConstructor(Station upStation, Station downStation, Integer distance) {
         validateNull(upStation, ERROR_MESSAGE_UP_STATION_NULL);
         validateNull(downStation, ERROR_MESSAGE_DOWN_STATION_NULL);
@@ -56,16 +57,16 @@ public class Section extends BaseEntity {
 
         validateDistanceZeroOrNegative(distance);
     }
-    
+
     private void validateNull(Object object, String errorMessage) {
-        if(object == null) {
+        if (object == null) {
             throw new DataIntegrityViolationException(errorMessage);
         }
     }
-    
+
     private void validateDistanceZeroOrNegative(Integer distance) {
-        if(distance <= 0) {
-            throw new DataIntegrityViolationException(ERROR_MESSAGE_DISTANCE_ZERO_OR_NEGATIVE);
+        if (distance <= 0) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_DISTANCE_ZERO_OR_NEGATIVE);
         }
     }
 
@@ -89,7 +90,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean equalUpStation(Station station) {
-        if(station == null) {
+        if (station == null) {
             return false;
         }
 
@@ -97,7 +98,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean equalDownStation(Station station) {
-        if(station == null) {
+        if (station == null) {
             return false;
         }
 
@@ -107,11 +108,11 @@ public class Section extends BaseEntity {
     public void updateForDivide(Section newSection) {
         validateDivide(newSection);
 
-        if(upStation.equals(newSection.getUpStation())) {
+        if (upStation.equals(newSection.getUpStation())) {
             upStation = newSection.getDownStation();
         }
 
-        if(downStation.equals(newSection.getDownStation())) {
+        if (downStation.equals(newSection.getDownStation())) {
             downStation = newSection.getUpStation();
         }
 
@@ -119,8 +120,32 @@ public class Section extends BaseEntity {
     }
 
     private void validateDivide(Section newSection) {
-        if(!match(newSection)) {
-            throw new DataIntegrityViolationException(ERROR_MESSAGE_NOT_MATCHED);
+        if (!match(newSection)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_MATCHED);
+        }
+    }
+
+    public void updateForCombine(Section section) {
+        validateCombine(section);
+
+        updateStationForCombine(section);
+        distance = distance + section.getDistance();
+    }
+
+    public void updateStationForCombine(Section section) {
+        if (equalDownStation(section.getUpStation())) {
+            downStation = section.getDownStation();
+            return;
+        }
+
+        if (equalUpStation(section.getDownStation())) {
+            upStation = section.getUpStation();
+        }
+    }
+
+    private void validateCombine(Section section) {
+        if (!equalDownStation(section.getUpStation()) && !equalUpStation(section.getDownStation())) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_CONNECTED);
         }
     }
 

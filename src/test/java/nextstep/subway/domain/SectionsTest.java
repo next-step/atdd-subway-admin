@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import java.util.NoSuchElementException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -12,6 +13,7 @@ class SectionsTest {
     private static final Line DEFAULT_LINE = new Line(1L, "1호선", "black-pink");
     private static final Station DEFAULT_FIRST_STATION = new Station(1L, "의정부");
     private static final Station DEFAULT_LAST_STATION = new Station(2L, "동탄");
+    private static final Station DEFAULT_MID_STATION = new Station(3L, "서울역");
 
     @DisplayName("정렬된 역 목록 조회 확인")
     @Test
@@ -79,7 +81,61 @@ class SectionsTest {
         Station jamsilStation = new Station(200L, "잠실역");
         Section notConnectedSection = new Section(414L, 1L, sadangStation, jamsilStation, 300);
         assertThatThrownBy(() -> sections.addSection(notConnectedSection)).isInstanceOf(
-                DataIntegrityViolationException.class);
+                IllegalArgumentException.class);
+    }
+
+    @DisplayName("노선 상행 종점역 구간 제거")
+    @Test
+    void removeFirstSection() {
+        Sections sections = makeSectionsForTest();
+        addSectionForRemoveTest(sections);
+
+        sections.removeSection(DEFAULT_FIRST_STATION);
+
+        assertThat(sections.getSortedStations()).containsExactly(DEFAULT_MID_STATION, DEFAULT_LAST_STATION);
+    }
+
+    @DisplayName("노선 하행 종점역 구간 제거")
+    @Test
+    void removeLastSection() {
+        Sections sections = makeSectionsForTest();
+        addSectionForRemoveTest(sections);
+
+        sections.removeSection(DEFAULT_LAST_STATION);
+
+        assertThat(sections.getSortedStations()).containsExactly(DEFAULT_FIRST_STATION, DEFAULT_MID_STATION);
+    }
+
+    @DisplayName("노선 중간역 구간 제거")
+    @Test
+    void removeMidSection() {
+        Sections sections = makeSectionsForTest();
+        addSectionForRemoveTest(sections);
+
+        sections.removeSection(DEFAULT_MID_STATION);
+
+        assertThat(sections.getSortedStations()).containsExactly(DEFAULT_FIRST_STATION, DEFAULT_LAST_STATION);
+    }
+
+    @DisplayName("노선에 포함되지 않은 역 제거시 Exception 발생 확인")
+    @Test
+    void removeNotExistsSection() {
+        Sections sections = makeSectionsForTest();
+        addSectionForRemoveTest(sections);
+
+        Station sadangStation = new Station(100L, "사당역");
+
+        assertThatThrownBy(() -> sections.removeSection(sadangStation)).isInstanceOf(
+                NoSuchElementException.class);
+    }
+
+    @DisplayName("노선에 구간이 1개 존재할 때 구간제거 시도 시 Exception 발생 확인")
+    @Test
+    void removeOnlyOneSection() {
+        Sections sections = makeSectionsForTest();
+
+        assertThatThrownBy(() -> sections.removeSection(DEFAULT_FIRST_STATION)).isInstanceOf(
+                NoSuchElementException.class);
     }
 
     private Sections makeSectionsForTest() {
@@ -88,5 +144,10 @@ class SectionsTest {
         sections.addSection(section);
 
         return sections;
+    }
+
+    private void addSectionForRemoveTest(Sections sections) {
+        Section section = new Section(2L, DEFAULT_LINE.getId(), DEFAULT_FIRST_STATION, DEFAULT_MID_STATION, 6);
+        sections.addSection(section);
     }
 }

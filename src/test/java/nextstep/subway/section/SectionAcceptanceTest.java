@@ -157,4 +157,108 @@ class SectionAcceptanceTest extends BaseAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Given 지하철 노선을 생성하고 중간역을 추가 한 뒤
+     * When 상행 종점을 제거하면
+     * Then 지하철 노선 조회 시 중간역이 첫번째 역으로 조회된다.
+     */
+    @DisplayName("노선 상행종점 제거")
+    @Test
+    void removeSectionUpStation() {
+        // when
+        // BeforeEach 에서 실행
+        Long midStationId = StationAcceptanceMethods.createStation("동천역").jsonPath().getLong("id");
+        LineAcceptanceMethods.addSection(defaultLineId, midStationId, defaultDownStationId, 3);
+
+        // then
+        LineAcceptanceMethods.removeSection(defaultLineId, defaultUpStationId);
+
+        // then
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("동천역", "광교중앙역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 중간역을 추가 한 뒤
+     * When 하행 종점을 제거하면
+     * Then 지하철 노선 조회 시 중간역이 마지막 역으로 조회된다.
+     */
+    @DisplayName("노선 하행종점 제거")
+    @Test
+    void removeSectionDownStation() {
+        // when
+        // BeforeEach 에서 실행
+        Long midStationId = StationAcceptanceMethods.createStation("동천역").jsonPath().getLong("id");
+        LineAcceptanceMethods.addSection(defaultLineId, midStationId, defaultDownStationId, 3);
+
+        // then
+        LineAcceptanceMethods.removeSection(defaultLineId, defaultDownStationId);
+
+        // then
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "동천역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 하행 종점을 추가 한 뒤
+     * When 중간역을 제거하면
+     * Then 지하철 노선 조회 시 중간역이 조회되지 않는다.
+     */
+    @DisplayName("노선 중간역 제거")
+    @Test
+    void removeSectionMidStation() {
+        // when
+        // BeforeEach 에서 실행
+        Long downStationId = StationAcceptanceMethods.createStation("광교역").jsonPath().getLong("id");
+        LineAcceptanceMethods.addSection(defaultLineId, defaultDownStationId, downStationId, 7);
+
+        // then
+        LineAcceptanceMethods.removeSection(defaultLineId, defaultDownStationId);
+
+        // then
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "광교역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 노선상에 상행종점과 하행종점 만이 존재하는 상태에서
+     * When 역을 하나 제거할 경우
+     * Then 지하철 노선 조회 시 역이 제거되지 않는 것을 확인.
+     */
+    @DisplayName("구간 1개 일 때 역 제거")
+    @Test
+    void removeSectionWhenOnlyOneSection() {
+        // when
+        // BeforeEach 에서 실행
+
+        // then
+        LineAcceptanceMethods.removeSection(defaultLineId, defaultDownStationId);
+
+        // then
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "광교중앙역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고 2개의 구간이 존재하는 상태에서
+     * When 구간상에 존재하지 않는 역을 제거할 경우
+     * Then 지하철 노선 조회 시 아무 역도 제거되지 않는 것을 확인
+     */
+    @DisplayName("구간 상에 존재하지 않는 역 제거")
+    @Test
+    void removeSectionWithNotExistsStation() {
+        // when
+        // BeforeEach 에서 실행
+        Long downStationId = StationAcceptanceMethods.createStation("광교역").jsonPath().getLong("id");
+        LineAcceptanceMethods.addSection(defaultLineId, defaultDownStationId, downStationId, 7);
+
+        // then
+        Long stationId = StationAcceptanceMethods.createStation("사당역").jsonPath().getLong("id");
+        LineAcceptanceMethods.removeSection(defaultLineId, stationId);
+
+        // then
+        ExtractableResponse<Response> response = LineAcceptanceMethods.getLine(defaultLineId);
+        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly("강남역", "광교중앙역", "광교역");
+    }
 }
