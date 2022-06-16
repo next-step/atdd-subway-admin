@@ -128,4 +128,9 @@ public class LineService {
 
         line.addSection(section);
     }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+
+    }
 }
