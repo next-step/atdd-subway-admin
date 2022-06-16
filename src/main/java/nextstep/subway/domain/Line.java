@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.Exception.NotFoundStationException;
+
 import javax.persistence.*;
 
 @Entity
@@ -31,6 +33,10 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         sections.add(section);
         section.setLine(this);
+    }
+
+    public void deleteSection(Station station) throws NotFoundStationException {
+        sections.delete(station);
     }
 
     public void update(Line newLine) {
