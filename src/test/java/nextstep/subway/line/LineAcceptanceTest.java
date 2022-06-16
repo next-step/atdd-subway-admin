@@ -96,6 +96,44 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         노선_수정_확인(id, updateResponse, lineUpdateRequest);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역");
+
+        // when
+        Long id = createResponse.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteResponse = 지하철노선_삭제_요청(id);
+
+        // then
+        노선_삭제_확인(id, deleteResponse);
+    }
+
+    private void 노선_삭제_확인(Long id, ExtractableResponse<Response> response) {
+        assertAll(
+            () -> ResponseAssertTest.빈응답_확인(response),
+            () -> {
+                ExtractableResponse<Response> getResponse = 지하철노선_목록조회_요청();
+
+                assertThat(getResponse.jsonPath().getList("id")).doesNotContain(id);
+            }
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철노선_삭제_요청(Long id) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete(rootPath + "/" + id)
+            .then().log().all()
+            .extract();
+    }
+
     private void 노선_수정_확인(Long id, ExtractableResponse<Response> response, LineUpdateRequest lineUpdateRequest) {
         assertAll(
             () -> ResponseAssertTest.성공_확인(response),

@@ -51,4 +51,9 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
         line.update(lineUpdateRequest.toLine(line.getUpStation(), line.getDownStation()));
     }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
