@@ -66,6 +66,13 @@ public class LineService {
         return line;
     }
 
+    @Transactional
+    public void deleteSection(final Long lineId, final Long stationId) throws NotFoundStationException, NotFoundLineException {
+        Station station = stationService.findStationById(stationId);
+        Line line = getLineFindById(lineId);
+        line.deleteSection(station);
+    }
+
     private Line getLineFindById(Long id) throws NotFoundLineException {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundLineException(id));
