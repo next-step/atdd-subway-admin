@@ -30,11 +30,11 @@ public class Distance {
         this.distance = minus(newDistance);
     }
 
-    private int minus(Distance distance) {
-        if (!isLonger(distance)) {
+    private int minus(Distance other) {
+        if (!isLonger(other)) {
             throw new IllegalArgumentException(ERROR_MESSAGE_NOT_VALID_DISTANCE);
         }
-        return this.distance - distance.getDistance();
+        return this.distance - other.distance;
     }
 
     private boolean isLonger(Distance distance) {

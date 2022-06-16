@@ -26,6 +26,22 @@ public class Section {
     @Column
     private Distance distance;
 
+    public static class Builder {
+        private final Station upStation;
+        private final Station downStation;
+        private final int distance;
+
+        public Builder(Station upStation, Station downStation, int distance) {
+            this.upStation = upStation;
+            this.downStation = downStation;
+            this.distance = distance;
+        }
+
+        public Section build() {
+            return new Section(this);
+        }
+    }
+
     protected Section() {
     }
 
@@ -34,6 +50,13 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Section(Builder builder) {
+        validate(builder.upStation, builder.downStation);
+        this.upStation = builder.upStation;
+        this.downStation = builder.downStation;
+        this.distance = new Distance(builder.distance);
     }
 
     private void validate(Station upStation, Station downStation) {

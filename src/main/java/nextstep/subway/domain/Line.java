@@ -25,7 +25,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = new LineName(name);
         this.color = new LineColor(color);
-        addSection(Section.of(upStation, downStation, distance));
+        addSection(new Section.Builder(upStation, downStation, distance).build());
     }
 
     public void addSection(Section section) {
