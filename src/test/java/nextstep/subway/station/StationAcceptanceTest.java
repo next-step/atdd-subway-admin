@@ -46,7 +46,7 @@ public class StationAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        tearDownUtils.clearUpDatabase();
+        tearDownUtils.tableClear();
     }
 
     public static final String STATION_BASE_URL = "/stations";

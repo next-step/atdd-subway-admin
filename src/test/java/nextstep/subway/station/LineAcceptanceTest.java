@@ -47,7 +47,7 @@ public class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        tearDownUtils.clearUpDatabase();
+        tearDownUtils.tableClear();
     }
 
     public static final String LINE_BASE_URL = "/lines";
