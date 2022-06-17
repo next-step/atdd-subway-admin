@@ -78,8 +78,9 @@ public class Sections {
     private void validateStationsToAdd(Section newSection) {
         List<Station> existingStations = getAllStation();
         List<Station> stationsToAdd = newSection.getStations();
-        boolean notFound = Stream.concat(existingStations.stream(), stationsToAdd.stream()).distinct().count()
-                == existingStations.size() + stationsToAdd.size();
+        boolean notFound = Stream.concat(existingStations.stream(), stationsToAdd.stream())
+                .distinct()
+                .count() == existingStations.size() + stationsToAdd.size();
 
         if (notFound) {
             throw new IllegalArgumentException("기존 구간에 존재하지 않는 상하행역을 가진 구간을 추가할 수 없습니다.");
