@@ -114,8 +114,8 @@ public class Section extends BaseEntity {
         distance = distance.minus(section.distance);
     }
 
-    public boolean isLongerThan(Section section) {
-        return distance.isGreaterThan(section.distance);
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
     }
 
     public void toLine(Line line) {
@@ -124,10 +124,6 @@ public class Section extends BaseEntity {
 
     public Long getId() {
         return id;
-    }
-
-    public List<Station> getStations() {
-        return Arrays.asList(upStation, downStation);
     }
 
     public Distance getDistance() {
