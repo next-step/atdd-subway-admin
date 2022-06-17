@@ -82,13 +82,24 @@ public class Section extends BaseEntity {
     }
 
     private void updateUpStation(Section section) {
+        validateDistance(section);
+
         upStation = section.downStation;
         updateDistance(section);
     }
 
     private void updateDownStation(Section section) {
+        validateDistance(section);
+
         downStation = section.upStation;
         updateDistance(section);
+    }
+
+    private void validateDistance(Section section) {
+        if (!distance.isGreaterThan(section.distance)) {
+            throw new IllegalArgumentException(
+                    String.format("새로운 구간의 거리(%s)가 현재 구간의 거리(%s)보다 클 수 없습니다.", section.distance, distance));
+        }
     }
 
     private void updateDistance(Section section) {

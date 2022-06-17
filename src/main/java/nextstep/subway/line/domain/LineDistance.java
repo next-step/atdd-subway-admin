@@ -36,13 +36,13 @@ public class LineDistance {
         return new LineDistance(value - lineDistance.value);
     }
 
-    public Boolean isGreaterThan(LineDistance lineDistance) {
+    public boolean isGreaterThan(LineDistance lineDistance) {
         return value > lineDistance.value;
     }
 
     @Override
     public String toString() {
-        return "LineDistance{" + "value=" + value + '}';
+        return String.valueOf(value);
     }
 
     @Override

@@ -85,8 +85,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("노선에 기존 하행 종점역을 상행역으로 새로운 역을 하행행으로 가지는 구간을 추가하면 새로운 역이 하행 종점이 된다.")
     void 새로운_하행_종점역_추가() {
-        Long 삼성역 = 지하철역_생성("삼성역");
-        SectionRequestDto sectionRequestDto = new SectionRequestDto(선릉역, 삼성역, 5);
+        Long 역삼역 = 지하철역_생성("역삼역");
+        SectionRequestDto sectionRequestDto = new SectionRequestDto(강남역, 역삼역, 4);
 
         // When
         ExtractableResponse<Response> response = 구간_추가(sectionRequestDto, 노선);
@@ -94,7 +94,26 @@ class SectionAcceptanceTest extends AcceptanceTest {
         응답코드_검증(response, HttpStatus.OK);
 
         // Then
-        노선의_지하철역_검증("삼성역");
+        노선의_지하철역_검증("역삼역");
+    }
+
+    /**
+     * Scenario: 역 사이에 새로운 역을 등록한다.
+     *   Given 주어진 노선에
+     *   When 기존 역 사이 거리보다 크거나 같은 거리의 구간을 추가하면
+     *   Then 400 Bad Request를 반환한다.
+     */
+    @Test
+    @DisplayName("역 사이에 새로운 역을 추가할 때 기존 구간의 거리보다 크거나 같은 거리의 구간을 추가할 수 없다.")
+    void 역_사이_새로운_역_추가시_거리_검증() {
+        Long 역삼역 = 지하철역_생성("역삼역");
+        SectionRequestDto sectionRequestDto = new SectionRequestDto(역삼역, 선릉역, 노선_거리);
+
+        // When
+        ExtractableResponse<Response> response = 구간_추가(sectionRequestDto, 노선);
+
+        // Then
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
     }
 
     private ExtractableResponse<Response> 구간_추가(SectionRequestDto sectionRequestDto, Long lineId) {

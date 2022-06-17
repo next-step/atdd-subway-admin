@@ -1,9 +1,7 @@
 package nextstep.subway.line.domain;
 
-import static nextstep.subway.line.domain.SectionPosition.BACK;
-import static nextstep.subway.line.domain.SectionPosition.FRONT;
-import static nextstep.subway.line.domain.SectionPosition.NONE;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import nextstep.subway.station.domain.Station;
@@ -63,5 +61,14 @@ class SectionTest {
     void 하행역이_같은_구간_업데이트() {
         강남_선릉_구간.update(역삼_선릉_구간);
         assertThat(강남_선릉_구간).isEqualTo(강남_역삼_구간);
+    }
+
+    @Test
+    @DisplayName("상행역 또는 하행역은 같지만 새 구간의 거리가 기존 구간의 거리보다 크거나 같으면 예외를 발생시킨다.")
+    void 상행역_또는_하행역이_같은_구간_업데이트시_거리_검증() {
+        Station 삼성역 = new Station("삼성역");
+        Section 강남_삼성_구간 = Section.of(강남역, 삼성역, 15);
+
+        assertThatThrownBy(() -> 강남_선릉_구간.update(강남_삼성_구간)).isInstanceOf(IllegalArgumentException.class);
     }
 }
