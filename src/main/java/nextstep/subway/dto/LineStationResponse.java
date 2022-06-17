@@ -23,7 +23,7 @@ public class LineStationResponse {
     }
 
     public static LineStationResponse of(LineStation lineStation) {
-        return new LineStationResponse(lineStation.getId(), StationResponse.of(lineStation.getUpStation()), StationResponse.of(lineStation.getDownStation()), lineStation.getDistance());
+        return new LineStationResponse(lineStation.getId(), StationResponse.of(lineStation.getUpStation()), StationResponse.of(lineStation.getDownStation()), lineStation.getDistance().getDistance());
     }
 
     public Long getId() {

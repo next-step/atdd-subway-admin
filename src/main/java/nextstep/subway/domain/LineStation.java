@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.BadRequestException;
-
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
@@ -14,31 +12,31 @@ public class LineStation {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id", nullable = false)
+    @JoinColumn(name = "line_id")
     private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
+    @JoinColumn(name = "up_station_id")
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
+    @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @Column
-    private Long distance;
+    @Embedded
+    private Distance distance;
 
     protected LineStation() {
     }
 
-    private LineStation(Long id, Station upStation, Station downStation, Long distance) {
+    private LineStation(Long id, Station upStation, Station downStation, Distance distance) {
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public static LineStation of(Station upStation, Station downStation, Long distance) {
+    public static LineStation of(Station upStation, Station downStation, Distance distance) {
         return new LineStation(null, upStation, downStation, distance);
     }
 
@@ -47,24 +45,17 @@ public class LineStation {
     }
 
     public void updateUpStation(LineStation lineStation) {
-        updateDistance(lineStation.getDistance());
+        distance.updateDistance(lineStation.getDistance());
         upStation = lineStation.getDownStation();
     }
 
     public void downUpStation(LineStation lineStation) {
-        updateDistance(lineStation.getDistance());
+        distance.updateDistance(lineStation.getDistance());
         downStation = lineStation.getUpStation();
     }
 
-    private void validateDistance(Long newDistance) {
-        if (newDistance >= this.distance) {
-            throw new BadRequestException("새로운 구간의 길이가 기존 구간의 길이보다 작아야합니다.");
-        }
-    }
-
-    private void updateDistance(Long newDistance) {
-        validateDistance(newDistance);
-        this.distance = this.distance - newDistance;
+    public void deleteLine() {
+        this.line = null;
     }
 
     public Long getId() {
@@ -83,7 +74,7 @@ public class LineStation {
         return downStation;
     }
 
-    public Long getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
