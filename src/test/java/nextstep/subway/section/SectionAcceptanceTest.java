@@ -151,7 +151,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void deleteSection_center() {
         // given
-        구간_추가_요청(노선_ID, 강남역_ID, 잠실역_ID, 6);
         구간_추가_요청(노선_ID, 종합운동장역_ID, 잠실역_ID, 2);
 
         // when
@@ -171,7 +170,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void deleteSection_up() {
         // given
-        구간_추가_요청(노선_ID, 강남역_ID, 잠실역_ID, 6);
         구간_추가_요청(노선_ID, 종합운동장역_ID, 잠실역_ID, 2);
 
         // when
@@ -191,7 +189,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     public void deleteSection_down() {
         // given
-        구간_추가_요청(노선_ID, 강남역_ID, 잠실역_ID, 6);
         구간_추가_요청(노선_ID, 종합운동장역_ID, 잠실역_ID, 2);
 
         // when
@@ -210,9 +207,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철 노선의 구간 제거 실패 - 등록되지 않은 역 제거")
     @Test
     public void deleteSection_fail_not_registered() {
-        // given
-        구간_추가_요청(노선_ID, 강남역_ID, 잠실역_ID, 6);
-
         // when
         ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(노선_ID, 삼성역_ID);
 
@@ -228,9 +222,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철 노선의 구간 제거 실패 - 마지막구간 제거")
     @Test
     public void deleteSection_fail_last_station() {
-        // given
-        구간_추가_요청(노선_ID, 강남역_ID, 잠실역_ID, 6);
-
         // when
         ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(노선_ID, 강남역_ID);
 
