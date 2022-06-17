@@ -71,4 +71,11 @@ class SectionTest {
 
         assertThatThrownBy(() -> 강남_선릉_구간.update(강남_삼성_구간)).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    @DisplayName("동일한 상하행역을 가진 구ㅜ간을 추가하면 예외를 발생시킨다.")
+    void 동일한_상하행역을_가진_구간_업데이트() {
+        Section 또다른_강남_선릉_구간 = Section.of(강남역, 선릉역, 1);
+        assertThatThrownBy(() -> 강남_선릉_구간.update(또다른_강남_선릉_구간)).isInstanceOf(IllegalArgumentException.class);
+    }
 }

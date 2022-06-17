@@ -73,11 +73,19 @@ public class Section extends BaseEntity {
     }
 
     public void update(Section section) {
+        validateStations(section);
+
         if (hasSameUpStation(section)) {
             updateUpStation(section);
         }
         if (hasSameDownStation(section)) {
             updateDownStation(section);
+        }
+    }
+
+    private void validateStations(Section section) {
+        if (hasSameUpStation(section) && hasSameDownStation(section)) {
+            throw new IllegalArgumentException("동일한 상하행역을 가진 구간을 추가할 수 없습니다.");
         }
     }
 

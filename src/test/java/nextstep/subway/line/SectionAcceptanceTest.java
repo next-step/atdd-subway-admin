@@ -116,6 +116,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
         응답코드_검증(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Scenario: 노선에 상행역과 하행역이 모두 등록된 경우
+     *   Given 주어진 노선에
+     *   When 등록된 역을 상행과 하행역으로 가지는 구간을 추가하면
+     *   Then 400 Bad Request를 반환한다.
+     */
+    @Test
+    void 상행역_하행역_모두_같은_구간_추가() {
+        SectionRequestDto sectionRequestDto = new SectionRequestDto(강남역, 선릉역, 5);
+
+        // When
+        ExtractableResponse<Response> response = 구간_추가(sectionRequestDto, 노선);
+
+        // Then
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
     private ExtractableResponse<Response> 구간_추가(SectionRequestDto sectionRequestDto, Long lineId) {
         return RestAssured.given().log().all()
                 .body(sectionRequestDto).contentType(MediaType.APPLICATION_JSON_VALUE)
