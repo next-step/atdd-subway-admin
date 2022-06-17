@@ -41,6 +41,7 @@ public class Section extends BaseEntity {
     private Section(Station upStation, Station downStation, Line line, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
+        this.line = line;
         this.distance = distance;
     }
 
