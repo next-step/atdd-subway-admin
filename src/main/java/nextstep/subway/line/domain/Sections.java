@@ -24,12 +24,10 @@ public class Sections {
         this.values = copy(values);
     }
 
-    public static Sections from(Sections sections) {
-        return new Sections(sections.values);
-    }
-
     private static List<Section> copy(List<Section> sections) {
-        return sections.stream().map(Section::from).collect(Collectors.toList());
+        return sections.stream()
+                .map(Section::from)
+                .collect(Collectors.toList());
     }
 
     public List<Section> get() {
@@ -37,11 +35,17 @@ public class Sections {
     }
 
     public List<Station> getAllStation() {
-        return values.stream().map(Section::getStations).flatMap(List::stream).distinct().collect(Collectors.toList());
+        return values.stream()
+                .map(Section::getStations)
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     public LineDistance distance() {
-        return values.stream().map(Section::getDistance).reduce(new LineDistance(), LineDistance::add);
+        return values.stream()
+                .map(Section::getDistance)
+                .reduce(new LineDistance(), LineDistance::add);
     }
 
     public int size() {

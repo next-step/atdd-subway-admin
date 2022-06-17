@@ -30,10 +30,6 @@ public class Line {
         this(null, new LineName(name), new LineColor(color), new Sections());
     }
 
-    public Line(String name, String color, Sections sections) {
-        this(null, new LineName(name), new LineColor(color), Sections.from(sections));
-    }
-
     public Line(Long id, LineName name, LineColor color, Sections sections) {
         this.id = id;
         this.name = name;

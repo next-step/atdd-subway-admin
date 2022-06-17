@@ -130,14 +130,6 @@ public class Section extends BaseEntity {
         return Arrays.asList(upStation, downStation);
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public LineDistance getDistance() {
         return distance;
     }
