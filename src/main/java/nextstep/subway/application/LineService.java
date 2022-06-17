@@ -133,7 +133,7 @@ public class LineService {
     public void removeSectionByStationId(Long lineId, Long stationId) {
         LineStations lineStations = lineStationService.getLineStationsByStationId(stationId);
 
-        if (lineStations.isContainLine(lineId)) {
+        if (!lineStations.isContainLine(lineId)) {
             throw new IllegalArgumentException("노선에 포함되지 않는 역입니다. lineId : " + lineId + ", stationId : " + stationId);
         }
 
