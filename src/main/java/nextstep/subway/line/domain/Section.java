@@ -29,7 +29,7 @@ public class Section extends BaseEntity {
     private Station downStation;
 
     @Embedded
-    private LineDistance distance;
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
@@ -38,11 +38,11 @@ public class Section extends BaseEntity {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, LineDistance distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this(null, upStation, downStation, distance);
     }
 
-    public Section(Long id, Station upStation, Station downStation, LineDistance distance) {
+    public Section(Long id, Station upStation, Station downStation, Distance distance) {
         this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -57,7 +57,7 @@ public class Section extends BaseEntity {
     }
 
     public static Section of(Station upStation, Station downStation, Integer distance) {
-        return new Section(upStation, downStation, new LineDistance(distance));
+        return new Section(upStation, downStation, new Distance(distance));
     }
 
     public boolean hasSameUpOrDownStation(Section section) {
@@ -130,7 +130,7 @@ public class Section extends BaseEntity {
         return Arrays.asList(upStation, downStation);
     }
 
-    public LineDistance getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 

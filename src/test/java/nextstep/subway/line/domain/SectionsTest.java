@@ -89,7 +89,7 @@ class SectionsTest {
     void 구간_총_거리() {
         Sections sections = 구간_리스트_생성(강남_역삼_구간, 역삼_선릉_구간);
 
-        assertThat(sections.distance()).isEqualTo(new LineDistance(15));
+        assertThat(sections.distance()).isEqualTo(new Distance(15));
     }
 
     private Sections 구간_리스트_생성(Section... sections) {

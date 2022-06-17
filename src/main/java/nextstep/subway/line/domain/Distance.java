@@ -5,15 +5,15 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class LineDistance {
+public class Distance {
     @Column(name = "distance", nullable = false)
     private int value;
 
-    protected LineDistance() {
+    protected Distance() {
         this(0);
     }
 
-    public LineDistance(int value) {
+    public Distance(int value) {
         validate(value);
         this.value = value;
     }
@@ -28,16 +28,16 @@ public class LineDistance {
         return value;
     }
 
-    public LineDistance add(LineDistance lineDistance) {
-        return new LineDistance(value + lineDistance.value);
+    public Distance add(Distance distance) {
+        return new Distance(value + distance.value);
     }
 
-    public LineDistance minus(LineDistance lineDistance) {
-        return new LineDistance(value - lineDistance.value);
+    public Distance minus(Distance distance) {
+        return new Distance(value - distance.value);
     }
 
-    public boolean isGreaterThan(LineDistance lineDistance) {
-        return value > lineDistance.value;
+    public boolean isGreaterThan(Distance distance) {
+        return value > distance.value;
     }
 
     @Override
@@ -53,7 +53,7 @@ public class LineDistance {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        LineDistance distance = (LineDistance) o;
+        Distance distance = (Distance) o;
         return value == distance.value;
     }
 

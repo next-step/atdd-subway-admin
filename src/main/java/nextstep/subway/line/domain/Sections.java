@@ -42,10 +42,10 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public LineDistance distance() {
+    public Distance distance() {
         return values.stream()
                 .map(Section::getDistance)
-                .reduce(new LineDistance(), LineDistance::add);
+                .reduce(new Distance(), Distance::add);
     }
 
     public int size() {
