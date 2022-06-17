@@ -85,14 +85,13 @@ public class Sections {
     }
 
     private boolean isEmptyDownStation(Station upStation) {
-        int eqaulCount = 0;
+        int equalCount = 0;
         for (Station downStation : getDownStations()) {
-            if (Objects.equals(downStation.getId(), upStation.getId()) && Objects.equals(downStation.getName(), upStation.getName())) {
-                eqaulCount++;
-            }
+            equalCount = matchEqaulCount(equalCount, upStation, downStation);
         }
-        return eqaulCount == 0;
+        return equalCount == 0;
     }
+
 
     private List<Station> getDownStations() {
         return Collections.unmodifiableList(sections.stream()
@@ -108,13 +107,18 @@ public class Sections {
     }
 
     private boolean isEmptyUpStation(Station downStation) {
-        int eqaulCount = 0;
+        int equalCount = 0;
         for (Station upStation : getUpStations()) {
-            if (Objects.equals(upStation.getId(), downStation.getId()) && Objects.equals(upStation.getName(), downStation.getName())) {
-                eqaulCount++;
-            }
+            equalCount = matchEqaulCount(equalCount, upStation, downStation);
         }
-        return eqaulCount == 0;
+        return equalCount == 0;
+    }
+
+    private int matchEqaulCount(int equalCount, Station upStation, Station downStation) {
+        if (Objects.equals(upStation.getId(), downStation.getId()) && Objects.equals(upStation.getName(), downStation.getName())) {
+            equalCount++;
+        }
+        return equalCount;
     }
 
     private List<Station> getUpStations() {
