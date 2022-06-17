@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Embeddable
 public class LineStations {
@@ -44,5 +45,11 @@ public class LineStations {
         return lineStations.stream()
                 .map(LineStation::getStation)
                 .anyMatch(storedStation -> storedStation.equals(station));
+    }
+
+    public boolean isContainStation(Long stationId) {
+        return lineStations.stream()
+                .map(lineStation -> lineStation.getStation().getId())
+                .anyMatch(registeredStationId -> Objects.equals(registeredStationId, stationId));
     }
 }

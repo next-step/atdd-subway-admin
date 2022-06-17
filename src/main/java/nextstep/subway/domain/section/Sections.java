@@ -97,4 +97,44 @@ public class Sections {
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
+
+    public int getSize() {
+        return sections.size();
+    }
+
+    public void removeMiddleStation(Long stationId) {
+        Section leftSection = getLeftSection(stationId);
+        Section rightSection = getRightSection(stationId);
+        Section section = Section.create(
+                leftSection.getUpStation(),
+                rightSection.getDownStation(),
+                Distance.of(leftSection.getDistance().getValue() + rightSection.getDistance().getValue()));
+
+        remove(leftSection);
+        remove(rightSection);
+        addSection(section);
+    }
+
+    public Section getLeftSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> Objects.equals(section.getDownStation().getId(), stationId))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당역이 포함된 구간을 찾을 수 없습니다."));
+
+    }
+
+    public Section getRightSection(Long stationId) {
+        return sections.stream()
+                .filter(section -> Objects.equals(section.getUpStation().getId(), stationId))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException("해당역이 포함된 구간을 찾을 수 없습니다."));
+    }
+
+    public void remove(Section section) {
+        if (Objects.isNull(section)) {
+            throw new IllegalArgumentException("제거하려는 구간이 존재하지 않습니다.");
+        }
+
+        sections.remove(section);
+    }
 }

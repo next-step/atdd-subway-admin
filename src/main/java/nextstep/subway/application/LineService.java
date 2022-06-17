@@ -131,6 +131,8 @@ public class LineService {
 
     @Transactional
     public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = getLineById(lineId);
 
+        line.removeSection(stationId);
     }
 }
