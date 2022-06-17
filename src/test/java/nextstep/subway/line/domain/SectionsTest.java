@@ -37,7 +37,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("상행역이 같은 구간을 추가하면 ")
+    @DisplayName("상행역이 같은 구간을 추가하면 기존 구간의 상행역을 새로운 구간의 하행역으로 변경되고 새로운 구간이 추가된다.")
     void 상행역이_같은_구간_추가() {
         Sections sections = new Sections();
 
@@ -49,7 +49,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("하행역이 같은 구간을 추가하면 ")
+    @DisplayName("하행역이 같은 구간을 추가하면 기존 구간의 하행역을 새로운 구간의 상행역으로 변경되고 새로운 구간이 추가된다.")
     void 하행역이_같은_구간_추가() {
         Sections sections = new Sections();
 
@@ -58,5 +58,28 @@ class SectionsTest {
         sections.add(역삼_선릉_구간);
 
         assertThat(sections.get()).containsExactlyInAnyOrder(강남_역삼_구간, 역삼_선릉_구간);
+    }
+
+    @Test
+    @DisplayName("기존 구간의 상행 또는 하행역과 같은 역을 가진 역을 추가할 수 있다.")
+    void 새로운_상행_종점_등록() {
+        Sections sections = new Sections();
+
+        sections.add(역삼_선릉_구간);
+        sections.add(강남_역삼_구간);
+
+        assertThat(sections.get()).containsExactlyInAnyOrder(강남_역삼_구간, 역삼_선릉_구간);
+    }
+
+    @Test
+    @DisplayName("모든 구간의 거리의 합을 계산한다.")
+    void 구간_총_거리() {
+        Sections sections = 구간_리스트_생성(강남_역삼_구간, 역삼_선릉_구간);
+
+        assertThat(sections.distance()).isEqualTo(new LineDistance(15));
+    }
+
+    private Sections 구간_리스트_생성(Section... sections) {
+        return new Sections(Arrays.asList(sections));
     }
 }

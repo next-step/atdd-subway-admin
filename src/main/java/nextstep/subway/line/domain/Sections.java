@@ -36,11 +36,11 @@ public class Sections {
     }
 
     public List<Station> getAllStation() {
-        return values.stream()
-                .map(Section::getStations)
-                .flatMap(List::stream)
-                .distinct()
-                .collect(Collectors.toList());
+        return values.stream().map(Section::getStations).flatMap(List::stream).distinct().collect(Collectors.toList());
+    }
+
+    public LineDistance distance() {
+        return values.stream().map(Section::getDistance).reduce(new LineDistance(), LineDistance::add);
     }
 
     public int size() {
@@ -57,15 +57,14 @@ public class Sections {
             return;
         }
 
-        Section affectedSection = findSectionToUpdate(newSection);
-        affectedSection.update(newSection);
+        updateExistingSection(newSection);
         values.add(newSection);
     }
 
-    private Section findSectionToUpdate(Section newSection) {
-        return values.stream()
+    private void updateExistingSection(Section newSection) {
+        values.stream()
                 .filter(section -> section.hasSameUpOrDownStation(newSection))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("구간에 상행역이나 하행역중 같은 역이 없습니다."));
+                .ifPresent(section -> section.update(newSection));
     }
 }
