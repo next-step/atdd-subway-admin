@@ -133,6 +133,26 @@ class SectionAcceptanceTest extends AcceptanceTest {
         응답코드_검증(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Scenario: 새로운 구간에 노선의 상행역과 하행역 둘 중 하나도 포함되지 않은 경우
+     *   Given 주어진 노선에
+     *   When 등록되지 않은 역을 상행과 하행역으로 가지는 구간을 추가하면
+     *   Then 400 Bad Request를 반환한다.
+     */
+    @Test
+    @DisplayName("추가할 구간에 기존 상행역이나 하행역과 동일하지 않으면 추가할 수 없다.")
+    void 상하행역_모두_기존_구간에_없는_구간_추가() {
+        Long 잠실역 = 지하철역_생성("잠실역");
+        Long 잠실나루역 = 지하철역_생성("잠실나루역");
+        SectionRequestDto sectionRequestDto = new SectionRequestDto(잠실역, 잠실나루역, 5);
+
+        // When
+        ExtractableResponse<Response> response = 구간_추가(sectionRequestDto, 노선);
+
+        // Then
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
     private ExtractableResponse<Response> 구간_추가(SectionRequestDto sectionRequestDto, Long lineId) {
         return RestAssured.given().log().all()
                 .body(sectionRequestDto).contentType(MediaType.APPLICATION_JSON_VALUE)

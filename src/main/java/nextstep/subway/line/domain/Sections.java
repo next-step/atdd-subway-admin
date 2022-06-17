@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -57,6 +58,8 @@ public class Sections {
             return;
         }
 
+        validateStationsToAdd(newSection);
+
         updateExistingSection(newSection);
         values.add(newSection);
     }
@@ -66,5 +69,16 @@ public class Sections {
                 .filter(section -> section.hasSameUpOrDownStation(newSection))
                 .findFirst()
                 .ifPresent(section -> section.update(newSection));
+    }
+
+    private void validateStationsToAdd(Section newSection) {
+        List<Station> existingStations = getAllStation();
+        List<Station> stationsToAdd = newSection.getStations();
+        boolean notFound = Stream.concat(existingStations.stream(), stationsToAdd.stream()).distinct().count()
+                == existingStations.size() + stationsToAdd.size();
+
+        if (notFound) {
+            throw new IllegalArgumentException("기존 구간에 존재하지 않는 상하행역을 가진 구간을 추가할 수 없습니다.");
+        }
     }
 }

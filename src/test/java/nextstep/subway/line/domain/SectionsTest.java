@@ -62,6 +62,18 @@ class SectionsTest {
     }
 
     @Test
+    @DisplayName("상하행역 모두 다른 역을 가진 구간을 추가하면 예외를 발생시킨다.")
+    void 상하행역_모두_다른_구간_추가() {
+        Station 삼성역 = new Station("삼성역");
+        Section 선릉_삼성_구간 = Section.of(선릉역, 삼성역, 7);
+
+        Sections sections = new Sections();
+        sections.add(강남_역삼_구간);
+
+        assertThatThrownBy(() -> sections.add(선릉_삼성_구간)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("기존 구간의 상행 또는 하행역과 같은 역을 가진 역을 추가할 수 있다.")
     void 새로운_상행_종점_등록() {
         Sections sections = new Sections();
