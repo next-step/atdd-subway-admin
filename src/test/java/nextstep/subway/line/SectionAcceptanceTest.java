@@ -19,7 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+class SectionAcceptanceTest extends AcceptanceTest {
     private static final int 노선_거리 = 10;
 
     private Long 노선;
@@ -40,9 +40,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 노선의 한 구간과 동일한 상행역과 새로운 역을 하행역으로 가지고
-     * Then 그 구간의 상행역과 하행역 사이에 새로운 역이 추가되고
-     * And 노선의 거리에서 추가된 구간의 거리를 뺀 나머지를 추가된 역과의 거리로 설정된다.
+     * When 노선의 구간과 동일한 상행역 또는 동일한 하행역을 가지는 구간을 추가하면
+     * Then 그 구간의 상행역과 하행역 사이에 새로운 역이 추가된다.
      */
     @Test
     @DisplayName("노선에 구간을 추가하면 조회 시 생성한 노선을 찾을 수 있다.")
@@ -80,8 +79,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     *   When 하행 종점역을 상행역으로 새로운 역을 하행역인 구간을 추가하면
-     *   Then 노선은 새로운 역을 하행 종점역으로 가진다.
+     * When 하행 종점역을 상행역으로 새로운 역을 하행역인 구간을 추가하면
+     * Then 노선은 새로운 역을 하행 종점역으로 가진다.
      */
     @Test
     @DisplayName("노선에 기존 하행 종점역을 상행역으로 새로운 역을 하행행으로 가지는 구간을 추가하면 새로운 역이 하행 종점이 된다.")
