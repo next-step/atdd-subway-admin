@@ -17,7 +17,7 @@ class LineTest {
         Station upStation = new Station();
         Station downStation = new Station();
 
-        Line line = new Line("분당선", "bg-red-600", upStation, downStation, 10);
+        Line line = Line.of("분당선", "bg-red-600", upStation, downStation, 10);
         line.update("다른분당선", "bg-red-200");
 
         assertAll(() -> assertThat(line.getName()).isEqualTo("다른분당선"),

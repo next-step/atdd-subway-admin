@@ -2,17 +2,17 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.station.domain.Station;
 
-class FinalStationDto {
+class StationDto {
     private final Long id;
     private final String name;
 
-    private FinalStationDto(Long id, String name) {
+    private StationDto(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public static FinalStationDto from(Station station) {
-        return new FinalStationDto(station.getId(), station.getName());
+    public static StationDto from(Station station) {
+        return new StationDto(station.getId(), station.getName());
     }
 
     public Long getId() {

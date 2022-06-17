@@ -3,7 +3,6 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.station.StationCRUD;
 import nextstep.subway.line.dto.LineRequestDto;
 import nextstep.subway.line.dto.UpdateLineRequestDto;
 import org.springframework.http.MediaType;
@@ -17,7 +16,7 @@ public final class LineCRUD {
                 .post("/lines").then().log().all().extract();
     }
 
-    static ExtractableResponse<Response> 지하철노선_아이디로_조회(Long lineId) {
+    public static ExtractableResponse<Response> 지하철노선_아이디로_조회(Long lineId) {
         return RestAssured.given().log().all().when().get("/lines/" + lineId).then().log().all().extract();
     }
 

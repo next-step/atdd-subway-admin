@@ -1,13 +1,11 @@
 package nextstep.subway.line.domain;
 
+import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import nextstep.subway.station.domain.Station;
 
 @Entity
@@ -22,26 +20,39 @@ public class Line {
     @Embedded
     private LineColor color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
-
     @Embedded
-    private LineDistance distance;
+    private Sections sections;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = new LineName(name);
-        this.color = new LineColor(color);
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = new LineDistance(distance);
+    public Line(String name, String color) {
+        this(null, new LineName(name), new LineColor(color), new Sections());
+    }
+
+    public Line(String name, String color, Sections sections) {
+        this(null, new LineName(name), new LineColor(color), Sections.from(sections));
+    }
+
+    public Line(Long id, LineName name, LineColor color, Sections sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
+
+    public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
+        Section section = Section.of(upStation, downStation, distance);
+
+        Line line = new Line(name, color);
+        line.addSection(section);
+
+        return line;
+    }
+
+    public void addSection(Section section) {
+        section.toLine(this);
+        sections.add(section);
     }
 
     public Long getId() {
@@ -56,12 +67,8 @@ public class Line {
         return color.value();
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
+    public List<Station> getStations() {
+        return sections.getAllStation();
     }
 
     public void update(String name, String color) {

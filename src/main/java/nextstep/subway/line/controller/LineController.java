@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import nextstep.subway.line.dto.LineRequestDto;
 import nextstep.subway.line.dto.LineResponseDto;
+import nextstep.subway.line.dto.SectionRequestDto;
 import nextstep.subway.line.dto.UpdateLineRequestDto;
 import nextstep.subway.line.service.LineService;
 import org.springframework.http.MediaType;

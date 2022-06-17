@@ -3,13 +3,15 @@ package nextstep.subway.line.service;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.common.exception.NotFoundException;
-import nextstep.subway.station.domain.Station;
-import nextstep.subway.station.repository.StationRepository;
 import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.repository.LineRepository;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.dto.LineRequestDto;
 import nextstep.subway.line.dto.LineResponseDto;
+import nextstep.subway.line.dto.SectionRequestDto;
 import nextstep.subway.line.dto.UpdateLineRequestDto;
+import nextstep.subway.line.repository.LineRepository;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +40,7 @@ public class LineService {
     }
 
     private LineResponseDto createLine(LineRequestDto lineRequestDto, Station upStation, Station downStation) {
-        Line line = new Line(lineRequestDto.getName(), lineRequestDto.getColor(), upStation, downStation,
+        Line line = Line.of(lineRequestDto.getName(), lineRequestDto.getColor(), upStation, downStation,
                 lineRequestDto.getDistance());
         Line persistLine = lineRepository.save(line);
 
@@ -47,9 +49,7 @@ public class LineService {
 
     public List<LineResponseDto> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-        return lines.stream()
-                .map(line -> LineResponseDto.from(line))
-                .collect(Collectors.toList());
+        return lines.stream().map(line -> LineResponseDto.from(line)).collect(Collectors.toList());
     }
 
     public LineResponseDto findLine(Long id) {
@@ -57,7 +57,7 @@ public class LineService {
         return LineResponseDto.from(line);
     }
 
-    private Line findLineById(Long id) {
+    Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(String.format("입력한 아이디(%d)의 지하철 노선을 찾을 수 없습니다.", id)));
     }
@@ -72,5 +72,17 @@ public class LineService {
     public void deleteLine(Long id) {
         Line line = findLineById(id);
         lineRepository.delete(line);
+    }
+
+    @Transactional
+    public LineResponseDto addSection(Long id, SectionRequestDto sectionRequestDto) {
+        Line line = findLineById(id);
+
+        Station upStation = findStationById(sectionRequestDto.getUpStationId());
+        Station downStation = findStationById(sectionRequestDto.getDownStationId());
+        Section section = Section.of(upStation, downStation, sectionRequestDto.getDistance());
+
+        line.addSection(section);
+        return LineResponseDto.from(line);
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -9,6 +10,7 @@ public class LineDistance {
     private int value;
 
     protected LineDistance() {
+        this(0);
     }
 
     public LineDistance(int value) {
@@ -24,5 +26,39 @@ public class LineDistance {
 
     public int value() {
         return value;
+    }
+
+    public LineDistance add(LineDistance lineDistance) {
+        return new LineDistance(value + lineDistance.value);
+    }
+
+    public LineDistance minus(LineDistance lineDistance) {
+        return new LineDistance(value - lineDistance.value);
+    }
+
+    public Boolean isGreaterThan(LineDistance lineDistance) {
+        return value > lineDistance.value;
+    }
+
+    @Override
+    public String toString() {
+        return "LineDistance{" + "value=" + value + '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        LineDistance distance = (LineDistance) o;
+        return value == distance.value;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(value);
     }
 }
