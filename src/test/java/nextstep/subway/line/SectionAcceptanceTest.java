@@ -123,6 +123,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      *   Then 400 Bad Request를 반환한다.
      */
     @Test
+    @DisplayName("노선에 상하행역 모두 같은 구간이 존재하면 추가할 수 없다.")
     void 상행역_하행역_모두_같은_구간_추가() {
         SectionRequestDto sectionRequestDto = new SectionRequestDto(강남역, 선릉역, 5);
 
