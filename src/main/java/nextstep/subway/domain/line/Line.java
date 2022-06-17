@@ -86,9 +86,9 @@ public class Line extends BaseEntity {
         throw new IllegalArgumentException("상행역과 하행역 둘 중 하나라도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
     }
 
-    private void divideSection(Section section, Station section1) {
+    private void divideSection(Section section, Station station) {
         sections.addBetweenSection(section);
-        lineStations.add(LineStation.create(this, section1));
+        lineStations.add(LineStation.create(this, station));
     }
 
     private void createDownStationSection(Section section) {
