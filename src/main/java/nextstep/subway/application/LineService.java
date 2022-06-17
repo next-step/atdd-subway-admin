@@ -1,10 +1,8 @@
 package nextstep.subway.application;
 
+import nextstep.subway.domain.LineStation.LineStations;
 import nextstep.subway.domain.common.Distance;
-import nextstep.subway.domain.line.Line;
-import nextstep.subway.domain.line.LineColor;
-import nextstep.subway.domain.line.LineName;
-import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.line.*;
 import nextstep.subway.domain.section.Section;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.line.LineRequest;
@@ -22,10 +20,12 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationService stationService;
+    private final LineStationService lineStationService;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService, LineStationService lineStationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.lineStationService = lineStationService;
     }
 
     @Transactional
@@ -131,8 +131,14 @@ public class LineService {
 
     @Transactional
     public void removeSectionByStationId(Long lineId, Long stationId) {
-        Line line = getLineById(lineId);
+        LineStations lineStations = lineStationService.getLineStationsByStationId(stationId);
 
-        line.removeSection(stationId);
+        if (lineStations.isContainLine(lineId)) {
+            throw new IllegalArgumentException("노선에 포함되지 않는 역입니다. lineId : " + lineId + ", stationId : " + stationId);
+        }
+
+        Lines lines = lineStations.getLines();
+
+        lines.removeStation(stationId);
     }
 }
