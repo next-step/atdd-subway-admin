@@ -131,8 +131,7 @@ public class Line extends BaseEntity {
             return;
         }
 
-        sections.removeMiddleStation(stationId);
-
+        sections.removeMiddleStation(this, stationId);
     }
 
     private void removeTerminusSection(Long stationId) {

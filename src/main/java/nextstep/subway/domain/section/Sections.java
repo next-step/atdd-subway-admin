@@ -1,6 +1,7 @@
 package nextstep.subway.domain.section;
 
 import nextstep.subway.domain.common.Distance;
+import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.station.Station;
 
 import javax.persistence.CascadeType;
@@ -102,12 +103,13 @@ public class Sections {
         return sections.size();
     }
 
-    public void removeMiddleStation(Long stationId) {
+    public void removeMiddleStation(Line line, Long stationId) {
         Section leftSection = getLeftSection(stationId);
         Section rightSection = getRightSection(stationId);
         Section section = Section.create(
                 leftSection.getUpStation(),
                 rightSection.getDownStation(),
+                line,
                 Distance.of(leftSection.getDistance().getValue() + rightSection.getDistance().getValue()));
 
         remove(leftSection);
