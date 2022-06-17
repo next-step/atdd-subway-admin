@@ -26,14 +26,34 @@ public class Section {
     @Column
     private Distance distance;
 
+    public static class Builder {
+        private final Station upStation;
+        private final Station downStation;
+        private int distance;
+
+        public Builder(Station upStation, Station downStation) {
+            this.upStation = upStation;
+            this.downStation = downStation;
+        }
+
+        public Builder distance(int distance) {
+            this.distance = distance;
+            return this;
+        }
+
+        public Section build() {
+            return new Section(this);
+        }
+    }
+
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, Distance distance) {
-        validate(upStation, downStation);
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    private Section(Builder builder) {
+        validate(builder.upStation, builder.downStation);
+        this.upStation = builder.upStation;
+        this.downStation = builder.downStation;
+        this.distance = new Distance(builder.distance);
     }
 
     private void validate(Station upStation, Station downStation) {
@@ -51,10 +71,6 @@ public class Section {
         if (ObjectUtils.isEmpty(downStation)) {
             throw new IllegalArgumentException(ERROR_MSG_DOWN_STATION_EMPTY);
         }
-    }
-
-    public static Section of(Station upStation, Station downStation, int distance) {
-        return new Section(upStation, downStation, new Distance(distance));
     }
 
     public Long getId() {
@@ -102,5 +118,14 @@ public class Section {
 
     private void updateDistance(Distance newDistance) {
         this.distance.setDistanceGap(newDistance);
+    }
+
+    public void merge(Section other) {
+        this.downStation = other.getDownStation();
+        this.distance.add(other.distance);
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

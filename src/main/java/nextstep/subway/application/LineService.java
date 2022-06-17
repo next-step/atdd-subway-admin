@@ -62,8 +62,15 @@ public class LineService {
         Line line = getLineFindById(id);
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
-        line.addSection(Section.of(upStation, downStation, sectionRequest.getDistance()));
+        line.addSection(new Section.Builder(upStation, downStation).distance(sectionRequest.getDistance()).build());
         return line;
+    }
+
+    @Transactional
+    public void deleteSection(final Long lineId, final Long stationId) throws NotFoundStationException, NotFoundLineException {
+        Station station = stationService.findStationById(stationId);
+        Line line = getLineFindById(lineId);
+        line.deleteSection(station);
     }
 
     private Line getLineFindById(Long id) throws NotFoundLineException {

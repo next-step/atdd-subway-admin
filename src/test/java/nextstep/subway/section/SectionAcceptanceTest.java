@@ -141,4 +141,91 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         // then
         구간_추가_실패_확인(구간_추가_응답);
     }
+
+    /**
+     * Given 지하철 노선이 생성되어있으며, 2개의 구간이 등록되어 있다.
+     * When 중간역을 제거하면
+     * Then 구간이 재배치되며, 거리는 두 구간의 거리의 합으로 정해진다.
+     */
+    @DisplayName("지하철 노선의 중간역을 제거한다.")
+    @Test
+    public void deleteSection_center() {
+        // given
+        구간_추가_요청(노선_ID, 종합운동장역_ID, 잠실역_ID, 2);
+
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(노선_ID, 종합운동장역_ID);
+
+        // then
+        구간_삭제_성공_확인(구간_삭제_응답);
+        지하철노선_역갯수_확인(노선_ID, 2);
+    }
+
+    /**
+     * Given 지하철 노선이 생성되어있으며, 2개의 구간이 등록되어 있다.
+     * When 상행 종점역을 제거하면
+     * Then 다음으로 오던 역이 상행 종점이 된다.
+     */
+    @DisplayName("지하철 노선의 상행 종점역을 제거한다.")
+    @Test
+    public void deleteSection_up() {
+        // given
+        구간_추가_요청(노선_ID, 종합운동장역_ID, 잠실역_ID, 2);
+
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(노선_ID, 강남역_ID);
+
+        // then
+        구간_삭제_성공_확인(구간_삭제_응답);
+        지하철노선_역갯수_확인(노선_ID, 2);
+    }
+
+    /**
+     * Given 지하철 노선이 생성되어있으며, 2개의 구간이 등록되어 있다.
+     * When 하행 종점역을 제거하면
+     * Then 다음으로 오던 역이 하행 종점이 된다.
+     */
+    @DisplayName("지하철 노선의 하행 종점역을 제거한다.")
+    @Test
+    public void deleteSection_down() {
+        // given
+        구간_추가_요청(노선_ID, 종합운동장역_ID, 잠실역_ID, 2);
+
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(노선_ID, 잠실역_ID);
+
+        // then
+        구간_삭제_성공_확인(구간_삭제_응답);
+        지하철노선_역갯수_확인(노선_ID, 2);
+    }
+
+    /**
+     * Given 지하철 노선이 생성되어있으며, 1개의 구간이 등록되어 있다.
+     * When 등록되지 않은 역을 제거하면
+     * Then 구간 제거에 실패한다.
+     */
+    @DisplayName("지하철 노선의 구간 제거 실패 - 등록되지 않은 역 제거")
+    @Test
+    public void deleteSection_fail_not_registered() {
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(노선_ID, 삼성역_ID);
+
+        // then
+        구간_삭제_찾기_실패_확인(구간_삭제_응답);
+    }
+
+    /**
+     * Given 지하철 노선이 생성되어있으며, 1개의 구간이 등록되어 있다.
+     * When 노선의 마지막 구간을 제거하면
+     * Then 구간 제거에 실패한다.
+     */
+    @DisplayName("지하철 노선의 구간 제거 실패 - 마지막구간 제거")
+    @Test
+    public void deleteSection_fail_last_station() {
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제_요청(노선_ID, 강남역_ID);
+
+        // then
+        구간_삭제_실패_확인(구간_삭제_응답);
+    }
 }
