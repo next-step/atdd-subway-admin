@@ -1,19 +1,18 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 import java.util.Objects;
-import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
-public class LineName {
-    @Column(name = "name", unique = true)
+public class LineColor {
+    @Column(name = "color", unique = true)
     private String value;
 
-    protected LineName() {
+    protected LineColor() {
     }
 
-    public LineName(String value) {
+    public LineColor(String value) {
         validate(value);
         this.value = value;
     }
@@ -25,17 +24,17 @@ public class LineName {
 
     private void validateNonNull(String name) {
         if (Objects.isNull(name)) {
-            throw new IllegalArgumentException("노선 이름은 필수값 입니다.");
+            throw new IllegalArgumentException("노선 색상은 필수값 입니다.");
         }
     }
 
     private void validateEmptyString(String name) {
         if (name.isEmpty()) {
-            throw new IllegalArgumentException("노선 이름이 빈 문자열입니다.");
+            throw new IllegalArgumentException("노선 색상이 빈 문자열입니다.");
         }
     }
 
-    public String value() {
+    String value() {
         return value;
     }
 }

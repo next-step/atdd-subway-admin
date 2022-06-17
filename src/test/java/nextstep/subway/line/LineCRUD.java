@@ -3,7 +3,6 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.station.StationCRUD;
 import nextstep.subway.line.dto.LineRequestDto;
 import nextstep.subway.line.dto.UpdateLineRequestDto;
 import org.springframework.http.MediaType;
@@ -12,17 +11,12 @@ public final class LineCRUD {
     private LineCRUD() {
     }
 
-    static Long 지하철역_생성(String stationName) {
-        ExtractableResponse<Response> response = StationCRUD.지하철역_추가(stationName);
-        return response.jsonPath().getLong("id");
-    }
-
-    static ExtractableResponse<Response> 지하철노선_생성(LineRequestDto request) {
+    public static ExtractableResponse<Response> 지하철노선_생성(LineRequestDto request) {
         return RestAssured.given().log().all().body(request).contentType(MediaType.APPLICATION_JSON_VALUE).when()
                 .post("/lines").then().log().all().extract();
     }
 
-    static ExtractableResponse<Response> 지하철노선_아이디로_조회(Long lineId) {
+    public static ExtractableResponse<Response> 지하철노선_아이디로_조회(Long lineId) {
         return RestAssured.given().log().all().when().get("/lines/" + lineId).then().log().all().extract();
     }
 
