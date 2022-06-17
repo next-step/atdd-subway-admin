@@ -29,12 +29,16 @@ public class Section {
     public static class Builder {
         private final Station upStation;
         private final Station downStation;
-        private final int distance;
+        private int distance;
 
-        public Builder(Station upStation, Station downStation, int distance) {
+        public Builder(Station upStation, Station downStation) {
             this.upStation = upStation;
             this.downStation = downStation;
+        }
+
+        public Builder distance(int distance) {
             this.distance = distance;
+            return this;
         }
 
         public Section build() {
@@ -45,14 +49,7 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, Distance distance) {
-        validate(upStation, downStation);
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
-    public Section(Builder builder) {
+    private Section(Builder builder) {
         validate(builder.upStation, builder.downStation);
         this.upStation = builder.upStation;
         this.downStation = builder.downStation;
@@ -126,5 +123,9 @@ public class Section {
     public void merge(Section other) {
         this.downStation = other.getDownStation();
         this.distance.add(other.distance);
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
