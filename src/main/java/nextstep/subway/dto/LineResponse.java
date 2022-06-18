@@ -25,10 +25,6 @@ public class LineResponse {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), getStationResponses(line));
     }
 
-    public static LineResponse of(Line line, List<SectionResponse> sections) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), getStationResponses(line));
-    }
-
     private static List<StationResponse> getStationResponses(Line line) {
         return line.getAllStations().stream()
                 .map(StationResponse::of)

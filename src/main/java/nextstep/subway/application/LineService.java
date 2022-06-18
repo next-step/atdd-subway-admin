@@ -33,11 +33,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line =  findLineById(id);
-        List<SectionResponse> sections = line.getAllSections().stream()
-                .map(SectionResponse::of)
-                .collect(Collectors.toList());
-        return LineResponse.of(line, sections);
+        return LineResponse.of(findLineById(id));
     }
 
     @Transactional(readOnly = true)
