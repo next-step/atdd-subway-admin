@@ -14,6 +14,8 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+    private static final int MINIMUM_NUMBER_OF_SECTIONS_FOR_DELETION = 1;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id")
     private final List<Section> values;
@@ -55,25 +57,40 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        if (values.size() == 1) {
+        validateMinimumNumberOfSections();
+
+        List<Section> sections = findSectionsByStation(station);
+
+        Section sectionToDelete = findSectionToDelete(station, sections);
+
+        mergeSections(sections, sectionToDelete);
+
+        values.remove(sectionToDelete);
+    }
+
+    private void validateMinimumNumberOfSections() {
+        if (values.size() == MINIMUM_NUMBER_OF_SECTIONS_FOR_DELETION) {
             throw new IllegalStateException("구간이 하나인 노선에서 역을 삭제할 수 없습니다.");
         }
+    }
 
-        List<Section> sections = values.stream()
+    private List<Section> findSectionsByStation(Station station) {
+        return values.stream()
                 .filter(section -> section.hasStation(station))
                 .collect(Collectors.toList());
+    }
 
-        if (sections.isEmpty()) {
-            throw new IllegalArgumentException(String.format("해당 역(%s)을 찾을 수 없습니다.", station));
-        }
+    private Section findSectionToDelete(Station station, List<Section> sections) {
+        return sections.stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("해당 역(%s)을 찾을 수 없습니다.", station)));
+    }
 
-        Section sectionToDelete = sections.get(0);
+    private void mergeSections(List<Section> sections, Section sectionToDelete) {
         sections.stream()
                 .filter(section -> !section.equals(sectionToDelete))
                 .findAny()
                 .ifPresent((sectionToUpdate) -> sectionToUpdate.merge(sectionToDelete));
-
-        values.remove(sectionToDelete);
     }
 
     public void add(Section newSection) {
