@@ -8,12 +8,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "line_id")
     private final List<Section> values;
 
     protected Sections() {

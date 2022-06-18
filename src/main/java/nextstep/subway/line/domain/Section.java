@@ -31,10 +31,6 @@ public class Section extends BaseEntity {
     @Embedded
     private Distance distance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id")
-    private Line line;
-
     protected Section() {
     }
 
@@ -118,10 +114,6 @@ public class Section extends BaseEntity {
         return Arrays.asList(upStation, downStation);
     }
 
-    public void toLine(Line line) {
-        this.line = line;
-    }
-
     public Long getId() {
         return id;
     }
@@ -132,8 +124,12 @@ public class Section extends BaseEntity {
 
     @Override
     public String toString() {
-        return "Section{" + "id=" + id + ", upStation=" + upStation + ", downStation=" + downStation + ", distance="
-                + distance + ", line=" + line + '}';
+        return "Section{" +
+                "id=" + id +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", distance=" + distance +
+                '}';
     }
 
     @Override

@@ -47,7 +47,6 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        section.toLine(this);
         sections.add(section);
     }
 
