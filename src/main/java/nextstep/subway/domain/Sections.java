@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final int MIN_SECTIONS_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new LinkedList<>();
 
@@ -170,7 +172,7 @@ public class Sections {
     }
 
     private void validateRemoveSection(Station station) {
-        if (sections.size() <= 1) {
+        if (sections.size() <= MIN_SECTIONS_SIZE) {
             throw new IllegalArgumentException("현재 지하철 구간이 하나인 경우 삭제할 수 없습니다.");
         }
         if (!hasSectionWithStation(station)) {
