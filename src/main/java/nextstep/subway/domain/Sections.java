@@ -2,7 +2,9 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Embeddable
 public class Sections {
@@ -18,6 +20,7 @@ public class Sections {
     }
 
     public void add(Section section) {
+        checkValidation(section);
         if (hasNextStation(section.upStationId())) {
             this.sections.stream()
                     .filter(it -> it.upStationId().equals(section.upStationId()))
@@ -41,6 +44,28 @@ public class Sections {
             stationId = nextStationId(stationId);
         }
         return stations;
+    }
+
+
+
+    private void checkValidation(Section target) {
+        if (this.sections.isEmpty()) {
+            return;
+        }
+
+        Set<Long> uniqueIds = new HashSet<>();
+        this.sections.forEach( it -> {
+                    uniqueIds.add(it.upStationId());
+                    uniqueIds.add(it.downStationId());
+        });
+
+        if (uniqueIds.contains(target.upStationId()) && uniqueIds.contains(target.downStationId())) {
+            throw new IllegalArgumentException("이미 추가된 역입니다.");
+        }
+
+        if (!uniqueIds.contains(target.upStationId()) && !uniqueIds.contains(target.downStationId())) {
+            throw new IllegalArgumentException("노선에 등록된 역이 없습니다.");
+        }
     }
 
     private Long findFirstStation(Long stationId) {

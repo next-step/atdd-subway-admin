@@ -10,6 +10,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -114,17 +116,17 @@ class SectionAcceptanceTest {
      * Given 지하철 노선에 역을 등록할 경우 기존 역 사이 길이와 크거나 같게 입력한다.
      * When 지하철 노선에 지하철역 등록을 요청한다.
      * Then 지하철 노선등록이 실패한다.
-     * Then 지하철 노선등록 실패에러 메세지를 반환한다.
      */
     @DisplayName("새로운 역을 등록할 때 기존 역사이 길이와 크거나 같을 경우 실패한다.")
-    @Test
-    void createInvalidDistance() {
-        // given
-
-        // when
+    @ParameterizedTest
+    @ValueSource(ints = {10, 11})
+    void createInvalidDistance(Integer distance) {
+        // given, when
+        ExtractableResponse<Response> response
+                = lineApi.addSection(신분당선, 강남역, stationApi.createId("양재역"), distance);
 
         // then
-
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -136,11 +138,13 @@ class SectionAcceptanceTest {
     @DisplayName("새로운 역을 등록할 때 이미 등록된 구간일 경우 실패한다.")
     @Test
     void createSameRequest() {
-        // given
-
-        // when
+        // given, when
+        ExtractableResponse<Response> response
+                = lineApi.addSection(신분당선, 강남역, 광교역, 5);
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("이미 추가된 역입니다.");
 
     }
 
@@ -155,10 +159,16 @@ class SectionAcceptanceTest {
     void createUnknownRequest() {
         // given
 
+        Long 신사역 = stationApi.createId("신사역");
+        Long 양재역 = stationApi.createId("양재역");
+
         // when
+        ExtractableResponse<Response> response
+                = lineApi.addSection(신분당선, 신사역, 양재역, 10);
 
         // then
-
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.asString()).isEqualTo("노선에 등록된 역이 없습니다.");
     }
 
     private List<String> getLineStationNames(Long id) {
