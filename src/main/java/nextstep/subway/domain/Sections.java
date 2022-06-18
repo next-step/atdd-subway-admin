@@ -17,14 +17,14 @@ public class Sections {
 
     public void add(Section section) {
         checkValidation(section);
-        if (hasNextStation(section.upStationId())) {
+        if (hasNextStation(section.getUpStationId())) {
             this.sections.stream()
-                    .filter(it -> it.upStationId().equals(section.upStationId()))
+                    .filter(it -> it.sameUpStation(section.getUpStationId()))
                     .findFirst()
                     .ifPresent(it ->
                             {
-                                it.updateUpStationId(section.downStationId());
-                                it.calculateDistance(section.distance());
+                                it.updateUpStationId(section.getDownStationId());
+                                it.calculateDistance(section.getDistance());
                             }
                     );
         }
@@ -33,7 +33,7 @@ public class Sections {
 
     public List<Long> toLineStationIds() {
         List<Long> stations = new ArrayList<>();
-        Long stationId = findFirstStation(this.sections.get(0).upStationId());
+        Long stationId = findFirstStation(this.sections.get(0).getUpStationId());
         stations.add(stationId);
         while (hasNextStation(stationId)) {
             stations.add(nextStationId(stationId));
@@ -49,15 +49,15 @@ public class Sections {
 
         Set<Long> uniqueIds = new HashSet<>();
         this.sections.forEach( it -> {
-                    uniqueIds.add(it.upStationId());
-                    uniqueIds.add(it.downStationId());
+                    uniqueIds.add(it.getUpStationId());
+                    uniqueIds.add(it.getDownStationId());
         });
 
-        if (uniqueIds.contains(target.upStationId()) && uniqueIds.contains(target.downStationId())) {
+        if (uniqueIds.contains(target.getUpStationId()) && uniqueIds.contains(target.getDownStationId())) {
             throw new IllegalArgumentException("이미 추가된 역입니다.");
         }
 
-        if (!uniqueIds.contains(target.upStationId()) && !uniqueIds.contains(target.downStationId())) {
+        if (!uniqueIds.contains(target.getUpStationId()) && !uniqueIds.contains(target.getDownStationId())) {
             throw new IllegalArgumentException("노선에 등록된 역이 없습니다.");
         }
     }
@@ -72,21 +72,21 @@ public class Sections {
 
     private Long prevStationId(Long stationId) {
         return this.sections.stream()
-                .filter(it -> it.downStationId().equals(stationId))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("이전 역이 없습니다.")).upStationId();
+                .filter(it -> it.sameDownStation(stationId))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("이전 역이 없습니다.")).getUpStationId();
     }
 
     private boolean hasPrevStation(Long stationId) {
-        return this.sections.stream().anyMatch(it -> it.downStationId().equals(stationId));
+        return this.sections.stream().anyMatch(it -> it.sameDownStation(stationId));
     }
 
     private Long nextStationId(Long stationId) {
         return this.sections.stream()
-                .filter(it -> it.upStationId().equals(stationId))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("다음 역이 없습니다.")).downStationId();
+                .filter(it -> it.sameUpStation(stationId))
+                .findFirst().orElseThrow(() -> new IllegalArgumentException("다음 역이 없습니다.")).getDownStationId();
     }
 
     private boolean hasNextStation(Long stationId) {
-        return this.sections.stream().anyMatch(it -> it.upStationId().equals(stationId));
+        return this.sections.stream().anyMatch(it -> it.sameUpStation(stationId));
     }
 }

@@ -45,7 +45,7 @@ public class LineService {
     }
 
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).get();
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         line.modify(lineRequest);
         lineRepository.save(line);
     }
