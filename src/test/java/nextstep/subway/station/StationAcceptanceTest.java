@@ -4,9 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
+import nextstep.subway.common.ResponseAssertTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
@@ -47,7 +47,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청(stationNames.get(0));
 
         // then
-        지하철역_생성완료(response.statusCode());
+        ResponseAssertTest.생성_확인(response);
 
         // then
         ExtractableResponse<Response> getResponse = 지하철역_목록조회_요청();
@@ -70,7 +70,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청(stationNames.get(0));
 
         // then
-        지하철역_요청오류(response.statusCode());
+        ResponseAssertTest.요청오류_확인(response);
     }
 
     /**
@@ -91,7 +91,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         assertAll(
-            () -> 지하철역_조회완료(response.statusCode()),
+            () -> ResponseAssertTest.성공_확인(response),
             () -> {
                 List<String> findStations = response.jsonPath().getList("name", String.class);
                 assertThat(findStations.size()).isEqualTo(stationNames.size());
@@ -118,31 +118,14 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         // then
         ExtractableResponse<Response> getResponse = 지하철역_목록조회_요청();
         assertAll(
-            () -> 지하철역_삭제완료(deleteResponse.statusCode()),
-            () -> 지하철역_조회완료(getResponse.statusCode()),
+            () -> ResponseAssertTest.빈응답_확인(deleteResponse),
+            () -> ResponseAssertTest.성공_확인(getResponse),
             () -> {
                 List<String> findStations = getResponse.jsonPath().getList("name", String.class);
                 assertThat(findStations.size()).isZero();
                 assertThat(findStations).doesNotContain(stationNames.get(1));
             }
         );
-    }
-
-    // TODO: common 모듈로 분리
-    private void 지하철역_삭제완료(int deleteResponse) {
-        assertThat(deleteResponse).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private void 지하철역_생성완료(int response) {
-        assertThat(response).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    private void 지하철역_조회완료(int response) {
-        assertThat(response).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private void 지하철역_요청오류(int response) {
-        assertThat(response).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 지하철역_삭제_요청(Long stationId) {
