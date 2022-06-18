@@ -213,6 +213,32 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         assertThat(lineResponse.getSections().get(0).getDistance()).isEqualTo(10);
     }
 
+    @DisplayName("노선에 등록되지 않은 구간 삭제 시 예외 발생")
+    @Test
+    void 예외_노선에_등록되지_않은_역_삭제() {
+        // given
+        // 신분당선: 강남역 - 판교역 - 광교역
+        구간_등록_테스트_동일_상행역();
+
+        // given, when
+        // 삼성역 삭제
+        ExtractableResponse<Response> deleteResponse = 지하철_구간_제거(신분당선.getId(), 삼성역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("노선에 구간이 한 개인 경우 예외 발생")
+    @Test
+    void 예외_노선_구간이_하나인_경우() {
+        // given, when
+        // 강남역 삭제
+        ExtractableResponse<Response> deleteResponse = 지하철_구간_제거(신분당선.getId(), 강남역.getId());
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     public ExtractableResponse<Response> 지하철_구간_등록(Long id, SectionRequest request) {
         return RestAssured.given().log().all()
                 .body(request)
