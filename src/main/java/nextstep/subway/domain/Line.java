@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -17,45 +18,23 @@ public class Line extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String color;
 
-    @ManyToOne
-    @JoinColumn(name = "up_final_station_id")
-    private Station upFinalStation;
-
-    @ManyToOne
-    @JoinColumn(name = "down_final_station_id")
-    private Station downFinalStation;
-
     @Embedded
     private Sections sections = new Sections();
-
-    @Column(nullable = false)
-    private Integer distance;
-
-    public static final int MIN_LINE_DISTANCE = 0;
 
     protected Line() {
     }
 
-    private Line(String name, String color, Station upFinalStation, Station downFinalStation, Integer distance) {
-        validateDistance(distance);
-        validateUpDownStations(upFinalStation, downFinalStation);
+    private Line(String name, String color, Station upStation, Station downStation, Integer distance) {
+        validateUpDownStations(upStation, downStation);
 
         this.name = name;
         this.color = color;
-        this.upFinalStation = upFinalStation;
-        this.downFinalStation = downFinalStation;
-        this.distance = distance;
-    }
-
-    private void validateDistance(Integer distance) {
-        if (distance <= MIN_LINE_DISTANCE) {
-            throw new IllegalArgumentException("지하철 노선의 거리는 양수만 입력해 주세요.");
-        }
+        sections.addSection(Section.of(upStation, downStation, this, distance));
     }
 
     private void validateUpDownStations(Station upFinalStation, Station downFinalStation) {
         if (upFinalStation.equals(downFinalStation)) {
-            throw new IllegalArgumentException("상행종점역과 하행종점역은 같을 수 없습니다.");
+            throw new IllegalArgumentException("상행역과 하행역은 같을 수 없습니다.");
         }
     }
 
@@ -68,27 +47,13 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line withSection(Section section) {
-        section.updateLine(this);
-        sections.addSection(section);
-        return this;
-    }
-
     public void addSection(Section section) {
         section.updateLine(this);
         sections.addSection(section);
     }
 
-    public void updateUpFinalStation(Station upStation) {
-        this.upFinalStation = upStation;
-    }
-
-    public void updateDownFinalStation(Station downStation) {
-        this.downFinalStation = downStation;
-    }
-
-    public void addDistance(Integer distance) {
-        this.distance += distance;
+    public void removeSection(Station station) {
+        sections.removeSection(station);
     }
 
     public Long getId() {
@@ -103,20 +68,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpFinalStation() {
-        return upFinalStation;
-    }
-
-    public Station getDownFinalStation() {
-        return downFinalStation;
-    }
-
-    public Integer getDistance() {
-        return distance;
-    }
-
-    public List<Section> getAllSections() {
-        return sections.getSectionsInOrder(upFinalStation, downFinalStation);
+    public List<Station> getAllStations() {
+        return sections.getStationsInOrder();
     }
 
     public Sections getSections() {
@@ -124,17 +77,15 @@ public class Line extends BaseEntity {
     }
 
     public Section getUpFinalSection() {
-        if (sections.isEmpty()) {
-            throw new NoSuchElementException("지하철 구간이 존재하지 않습니다.");
-        }
-        return sections.getSectionsInOrder(upFinalStation, downFinalStation).get(0);
+        Optional<Section> upFinalSection = sections.geUpFinalSection();
+        return upFinalSection
+                .orElseThrow(() -> new NoSuchElementException("상행종점 구간이 존재하지 않습니다."));
     }
 
     public Section getDownFinalSection() {
-        if (sections.isEmpty()) {
-            throw new NoSuchElementException("지하철 구간이 존재하지 않습니다.");
-        }
-        return sections.getSectionsInOrder(upFinalStation, downFinalStation).get(sections.size()-1);
+        Optional<Section> downFinalSection = sections.getDownFinalSection();
+        return downFinalSection
+                .orElseThrow(() -> new NoSuchElementException("하행종점 구간이 존재하지 않습니다."));
     }
 
     @Override

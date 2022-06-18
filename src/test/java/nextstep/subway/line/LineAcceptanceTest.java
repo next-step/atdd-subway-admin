@@ -46,7 +46,7 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        LineResponse createdLine = createLineRequest(firstLine).jsonPath().getObject("", LineResponse.class);
+        LineResponse createdLine = createLineRequest(firstLine).as(LineResponse.class);
 
         // then
         List<LineResponse> allFoundLines = findAllLinesRequest().jsonPath().getList("", LineResponse.class);
@@ -73,8 +73,8 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineResponse firstCreatedLine = createLineRequest(firstLine).jsonPath().getObject("", LineResponse.class);
-        LineResponse secondCreatedLine = createLineRequest(secondLine).jsonPath().getObject("", LineResponse.class);
+        LineResponse firstCreatedLine = createLineRequest(firstLine).as(LineResponse.class);
+        LineResponse secondCreatedLine = createLineRequest(secondLine).as(LineResponse.class);
 
         // when
         List<LineResponse> allFoundLines = findAllLinesRequest().jsonPath().getList("", LineResponse.class);
@@ -98,16 +98,12 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
     @DisplayName("생성된 특정 지하철 노선을 조회할 수 있다.")
     @Test
     void getLine() {
-        // when
+        // given
         ExtractableResponse<Response> response = createLineRequest(firstLine);
         int lineId = response.jsonPath().get("id");
-
-        List<StationResponse> stations = response.jsonPath().getList("finalStations", StationResponse.class);
-        StationResponse upStation = stations.get(0);
-        StationResponse downStation = stations.get(1);
-
+        
         // when
-        LineResponse lineResponse = findLineRequest(lineId).jsonPath().getObject("", LineResponse.class);
+        LineResponse lineResponse = findLineRequest(lineId).as(LineResponse.class);
 
         // then
         assertThat(lineResponse)
@@ -116,10 +112,8 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
                             .isEqualTo(firstLine.getName());
                     assertThat(line.getColor())
                             .isEqualTo(firstLine.getColor());
-                    assertThat(line.getFinalStations().get(0).getId())
-                            .isEqualTo(upStation.getId());
-                    assertThat(line.getFinalStations().get(1).getId())
-                            .isEqualTo(downStation.getId());
+                    assertThat(line.getStations())
+                            .hasSize(2);
                 });
     }
 

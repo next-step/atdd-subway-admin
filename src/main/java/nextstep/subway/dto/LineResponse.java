@@ -2,47 +2,33 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private Integer distance;
-    private List<StationResponse> finalStations;
-    private List<SectionResponse> sections;
+    private List<StationResponse> stations;
 
     private LineResponse() {
     }
 
-    private LineResponse(Long id, String name, String color, Integer distance, List<StationResponse> finalStations, List<SectionResponse> sections) {
+    private LineResponse(Long id, String name, String color, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.finalStations = finalStations;
-        this.sections = sections;
+        this.stations = stations;
     }
 
     public static LineResponse of(Line line) {
-        List<StationResponse> finalStations = Arrays.asList(
-                StationResponse.of(line.getUpFinalStation()),
-                StationResponse.of(line.getDownFinalStation())
-        );
-        List<SectionResponse> sections = new ArrayList<>();
-        line.getAllSections().forEach(section -> sections.add(SectionResponse.of(section)));
-
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), finalStations, sections);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), getStationResponses(line));
     }
 
-    public static LineResponse of(Line line, List<SectionResponse> sections) {
-        List<StationResponse> finalStations = Arrays.asList(
-                StationResponse.of(line.getUpFinalStation()),
-                StationResponse.of(line.getDownFinalStation())
-        );
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), finalStations, sections);
+    private static List<StationResponse> getStationResponses(Line line) {
+        return line.getAllStations().stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -57,15 +43,7 @@ public class LineResponse {
         return color;
     }
 
-    public Integer getDistance() {
-        return distance;
-    }
-
-    public List<StationResponse> getFinalStations() {
-        return finalStations;
-    }
-
-    public List<SectionResponse> getSections() {
-        return sections;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 }

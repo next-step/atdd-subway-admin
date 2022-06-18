@@ -73,7 +73,15 @@ public class Section extends BaseEntity {
                 || sections.stream().anyMatch(section -> section.containsStation(downStation));
     }
 
-    private boolean containsStation(Station station) {
+    public boolean matchUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean matchDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean containsStation(Station station) {
         return upStation.equals(station) || downStation.equals(station);
     }
 
@@ -91,10 +99,6 @@ public class Section extends BaseEntity {
         return upStation.equals(section.upStation);
     }
 
-    public void addLineDistance() {
-        line.addDistance(distance);
-    }
-
     public boolean isLongerThan(Section section) {
         return this.distance >= section.distance;
     }
@@ -102,14 +106,6 @@ public class Section extends BaseEntity {
     public void updateUpStation(Section section) {
         this.upStation = section.downStation;
         this.distance = this.distance - section.distance;
-    }
-
-    public void updateLineUpFinalStation() {
-        line.updateUpFinalStation(upStation);
-    }
-
-    public void updateLineDownFinalStation() {
-        line.updateDownFinalStation(downStation);
     }
 
     public Long getId() {
@@ -124,6 +120,10 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public Line getLine() {
+        return line;
+    }
+
     public Integer getDistance() {
         return distance;
     }
@@ -133,11 +133,13 @@ public class Section extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        return Objects.equals(id, section.id)
+                && Objects.equals(upStation, section.upStation)
+                && Objects.equals(downStation, section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(id, upStation, downStation);
     }
 }

@@ -26,20 +26,14 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
-        Integer distance = lineRequest.getDistance();
 
-        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation))
-                .withSection(Section.of(upStation, downStation, distance));
+        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(line);
     }
 
     @Transactional(readOnly = true)
     public LineResponse findLine(Long id) {
-        Line line =  findLineById(id);
-        List<SectionResponse> sections = line.getAllSections().stream()
-                .map(SectionResponse::of)
-                .collect(Collectors.toList());
-        return LineResponse.of(line, sections);
+        return LineResponse.of(findLineById(id));
     }
 
     @Transactional(readOnly = true)
@@ -68,6 +62,13 @@ public class LineService {
 
         line.addSection(Section.of(upStation, downStation, distance));
         return LineResponse.of(line);
+    }
+
+    public void removeSection(Long id, Long stationId) {
+        Line line = findLineById(id);
+        Station station = findStationById(stationId);
+
+        line.removeSection(station);
     }
 
     private Line findLineById(Long id) {

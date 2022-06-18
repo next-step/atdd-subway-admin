@@ -16,12 +16,12 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler({IllegalArgumentException.class})
-    public ResponseEntity handleIllegalArgsException() {
+    public ResponseEntity handleIllegalArgsException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleDataIntegrityViolationException() {
+    public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
         return ResponseEntity.badRequest().build();
     }
 }

@@ -21,8 +21,7 @@ class SectionsTest {
         Station 강남역 = Station.from("강남역");
 
         정자역_강남역 = Section.of(정자역, 강남역, 신분당선, 10000);
-        신분당선 = Line.of("신분당선", "bg-red-600", 정자역, 강남역, 10000)
-                .withSection(정자역_강남역);
+        신분당선 = Line.of("신분당선", "bg-red-600", 정자역, 강남역, 10000);
 
         모든구간 = 신분당선.getSections();
     }
@@ -49,8 +48,7 @@ class SectionsTest {
             assertThat(하행역.getName())
                     .isEqualTo("정자역");
         });
-        assertThat(신분당선.getUpFinalStation().getName())
-                .isEqualTo("광교역");
+
     }
 
     @Test
@@ -70,8 +68,6 @@ class SectionsTest {
             assertThat(하행역.getName())
                     .isEqualTo("논현역");
         });
-        assertThat(신분당선.getDownFinalStation().getName())
-                .isEqualTo("논현역");
     }
 
     @Test
@@ -101,10 +97,6 @@ class SectionsTest {
             assertThat(하행역.getName())
                     .isEqualTo("신사역");
         });
-        assertThat(신분당선.getUpFinalStation().getName())
-                .isEqualTo("정자역");
-        assertThat(신분당선.getDownFinalStation().getName())
-                .isEqualTo("신사역");
     }
 
     @Test
@@ -161,7 +153,7 @@ class SectionsTest {
         모든구간.addSection(강남역_신사역);
         모든구간.addSection(강남역_논현역);
 
-        List<Section> 정렬된_구간 = 모든구간.getSectionsInOrder(광교역_정자역.getUpStation(), 강남역_신사역.getDownStation());
+        List<Section> 정렬된_구간 = 모든구간.getSectionsInOrder();
 
         assertThat(정렬된_구간)
                 .hasSize(4);
@@ -182,4 +174,103 @@ class SectionsTest {
                     .isEqualTo("신사역");
         });
     }
+
+    @Test
+    @DisplayName("입력받은 지하철역이 포함된 구간을 제거한다.")
+    void removeSectionByStation() {
+        Station 정자역 = 정자역_강남역.getUpStation();
+        Station 강남역 = 정자역_강남역.getDownStation();
+        Station 논현역 = Station.from("논현역");
+        Station 신사역 = Station.from("신사역");
+        Section 강남역_논현역 = Section.of(강남역, 논현역, 신분당선, 5000);
+        Section 논현역_신사역 = Section.of(논현역, 신사역, 신분당선, 7000);
+        모든구간.addSection(강남역_논현역);
+        모든구간.addSection(논현역_신사역);
+
+        모든구간.removeSection(강남역);
+
+        Section 정자역_논현역 = Section.of(정자역, 논현역, 신분당선, 1500);
+        assertThat(모든구간.getSectionsInOrder())
+                .hasSize(2)
+                .containsExactly(정자역_논현역, 논현역_신사역)
+                .satisfies(구간 -> {
+                    assertThat(구간.get(0).getDistance())
+                            .isEqualTo(정자역_강남역.getDistance() + 강남역_논현역.getDistance());
+                    assertThat(구간.get(1).getDistance())
+                            .isEqualTo(논현역_신사역.getDistance());
+                });
+    }
+
+    @Test
+    @DisplayName("입력받은 상행종점역이 포함된 구간을 제거한다.")
+    void removeUpFinalSection() {
+        Station 정자역 = 정자역_강남역.getUpStation();
+        Station 강남역 = 정자역_강남역.getDownStation();
+        Station 논현역 = Station.from("논현역");
+        Section 강남역_논현역 = Section.of(강남역, 논현역, 신분당선, 5000);
+        모든구간.addSection(강남역_논현역);
+
+        모든구간.removeSection(정자역);
+
+        assertThat(모든구간.getSectionsInOrder())
+                .hasSize(1)
+                .containsExactly(강남역_논현역);
+    }
+
+    @Test
+    @DisplayName("입력받은 하행종점역이 포함된 구간을 제거한다.")
+    void removeDownFinalSection() {
+        Station 강남역 = 정자역_강남역.getDownStation();
+        Station 논현역 = Station.from("논현역");
+        Section 강남역_논현역 = Section.of(강남역, 논현역, 신분당선, 5000);
+        모든구간.addSection(강남역_논현역);
+
+        모든구간.removeSection(논현역);
+
+        assertThat(모든구간.getSectionsInOrder())
+                .hasSize(1)
+                .containsExactly(정자역_강남역);
+    }
+
+    @Test
+    @DisplayName("마지막 구간을 제거하려고 하면 예외를 발생시킨다.")
+    void removeLastSection() {
+        Station 강남역 = 정자역_강남역.getDownStation();
+
+        assertThatThrownBy(() -> 모든구간.removeSection(강남역))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("현재 지하철 구간이 하나인 경우 삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 구간을 제거하려고 하면 예외를 발생시킨다.")
+    void removeNonExistingSection() {
+        Section 강남역_논현역 = Section.of(Station.from("강남역"), Station.from("논현역"), 신분당선, 5000);
+        모든구간.addSection(강남역_논현역);
+
+        assertThatThrownBy(() -> 모든구간.removeSection(Station.from("신사역")))
+                .isExactlyInstanceOf(IllegalArgumentException.class)
+                .hasMessage("존재하지 않는 구간은 삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("등록된 역들을 실제 순서로 정렬하여 조회한다.")
+    void getStationsInOrder() {
+        Station 광교역 = Station.from("광교역");
+        Station 정자역 = 정자역_강남역.getUpStation();
+        Station 강남역 = 정자역_강남역.getDownStation();
+        Station 논현역 = Station.from("논현역");
+        Station 신사역 = Station.from("신사역");
+        Section 광교역_정자역 = Section.of(광교역, 정자역, 신분당선, 5000);
+        Section 강남역_신사역 = Section.of(강남역, 신사역, 신분당선, 2000);
+        Section 강남역_논현역 = Section.of(강남역, 논현역, 신분당선, 1000);
+
+        모든구간.addSection(광교역_정자역);
+        모든구간.addSection(강남역_신사역);
+        모든구간.addSection(강남역_논현역);
+
+        assertThat(모든구간.getStationsInOrder())
+                .containsExactly(광교역, 정자역, 강남역, 논현역, 신사역);
+    }
+
 }
