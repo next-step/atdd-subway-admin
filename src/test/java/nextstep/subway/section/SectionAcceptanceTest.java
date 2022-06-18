@@ -312,8 +312,8 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
      * Then 해당 구간이 제거된다
      */
     @Test
-    @DisplayName("구간을 제거 후 조회하면 제거된 구간 리스트를 확인할 수 있다.")
-    void removeSection() {
+    @DisplayName("중간역 제거 후 조회하면 제거 후 업데이트 된 구간 리스트를 확인할 수 있다.")
+    void removeMiddleStation() {
         // given
         StationResponse 신사역 = createStationRequest("신사역").as(StationResponse.class);
         SectionRequest 강남역_신사역 = SectionRequest.of(강남역.getId(), 신사역.getId(), 5000);
@@ -335,6 +335,70 @@ public class SectionAcceptanceTest extends BaseSectionAcceptanceTest {
                     .isEqualTo("판교역");
             assertThat(하행역.getName())
                     .isEqualTo("신사역");
+        });
+    }
+
+    /**
+     * Given 새로운 구간들을 등록하고
+     * When 상행종점역을 제거하면
+     * Then 해당 구간이 제거된다
+     */
+    @Test
+    @DisplayName("상행종점역 제거 후 조회하면 제거 후 업데이트 된 구간 리스트를 확인할 수 있다.")
+    void removeUpFinalStation() {
+        // given
+        StationResponse 신사역 = createStationRequest("신사역").as(StationResponse.class);
+        SectionRequest 강남역_신사역 = SectionRequest.of(강남역.getId(), 신사역.getId(), 5000);
+        createSectionRequest(신분당선.getId(), 강남역_신사역).as(LineResponse.class);
+
+        // when
+        deleteSectionRequest(신분당선.getId(), 판교역.getId());
+        LineResponse 새로운_신분당선 = findLineRequest(신분당선.getId().intValue()).as(LineResponse.class);
+
+        // then
+        assertThat(새로운_신분당선.getSections()).satisfies(모든구간 -> {
+            assertThat(모든구간)
+                    .hasSize(1);
+            SectionResponse 삭제_후_구간 = 모든구간.get(0);
+            StationResponse 상행역 = 삭제_후_구간.getUpDownStations().get(0);
+            StationResponse 하행역 = 삭제_후_구간.getUpDownStations().get(1);
+
+            assertThat(상행역.getName())
+                    .isEqualTo("강남역");
+            assertThat(하행역.getName())
+                    .isEqualTo("신사역");
+        });
+    }
+
+    /**
+     * Given 새로운 구간들을 등록하고
+     * When 하행종점역을 제거하면
+     * Then 해당 구간이 제거된다
+     */
+    @Test
+    @DisplayName("하행종점역 제거 후 조회하면 제거 후 업데이트 된 구간 리스트를 확인할 수 있다.")
+    void removeDownFinalStation() {
+        // given
+        StationResponse 신사역 = createStationRequest("신사역").as(StationResponse.class);
+        SectionRequest 강남역_신사역 = SectionRequest.of(강남역.getId(), 신사역.getId(), 5000);
+        createSectionRequest(신분당선.getId(), 강남역_신사역).as(LineResponse.class);
+
+        // when
+        deleteSectionRequest(신분당선.getId(), 신사역.getId());
+        LineResponse 새로운_신분당선 = findLineRequest(신분당선.getId().intValue()).as(LineResponse.class);
+
+        // then
+        assertThat(새로운_신분당선.getSections()).satisfies(모든구간 -> {
+            assertThat(모든구간)
+                    .hasSize(1);
+            SectionResponse 삭제_후_구간 = 모든구간.get(0);
+            StationResponse 상행역 = 삭제_후_구간.getUpDownStations().get(0);
+            StationResponse 하행역 = 삭제_후_구간.getUpDownStations().get(1);
+
+            assertThat(상행역.getName())
+                    .isEqualTo("판교역");
+            assertThat(하행역.getName())
+                    .isEqualTo("강남역");
         });
     }
 }
