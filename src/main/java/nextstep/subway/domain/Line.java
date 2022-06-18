@@ -21,24 +21,15 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections();
 
-    public static final int MIN_LINE_DISTANCE = 0;
-
     protected Line() {
     }
 
     private Line(String name, String color, Station upStation, Station downStation, Integer distance) {
-        validateDistance(distance);
         validateUpDownStations(upStation, downStation);
 
         this.name = name;
         this.color = color;
         sections.addSection(Section.of(upStation, downStation, this, distance));
-    }
-
-    private void validateDistance(Integer distance) {
-        if (distance <= MIN_LINE_DISTANCE) {
-            throw new IllegalArgumentException("지하철 노선의 거리는 양수만 입력해 주세요.");
-        }
     }
 
     private void validateUpDownStations(Station upFinalStation, Station downFinalStation) {
