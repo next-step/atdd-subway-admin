@@ -81,7 +81,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 기능 요구사항
 
-- [ ] Step1. PR 리뷰 반영
+- [x] Step1. PR 리뷰 반영
 - [x] 인수 테스트 작성
     - 인수조건
         - [x] 지하철노선 생성
@@ -103,5 +103,5 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
             - Given 지하철 노선을 생성하고
             - When 생성한 지하철 노선을 삭제하면
             - Then 해당 지하철 노선 정보는 삭제된다
-- [ ] 인수 테스트의 결과가 다른 인수 테스트에 영향을 끼치지 않도록 인수 테스트를 서로 격리
+- [x] 인수 테스트의 결과가 다른 인수 테스트에 영향을 끼치지 않도록 인수 테스트를 서로 격리
 - [ ] 인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링
