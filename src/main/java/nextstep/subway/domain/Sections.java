@@ -15,10 +15,6 @@ public class Sections {
     protected Sections() {
     }
 
-    public Sections(List<Section> sections) {
-        this.sections = sections;
-    }
-
     public void add(Section section) {
         checkValidation(section);
         if (hasNextStation(section.upStationId())) {
@@ -46,8 +42,6 @@ public class Sections {
         return stations;
     }
 
-
-
     private void checkValidation(Section target) {
         if (this.sections.isEmpty()) {
             return;
@@ -71,6 +65,7 @@ public class Sections {
     private Long findFirstStation(Long stationId) {
         if (hasPrevStation(stationId)) {
             stationId = prevStationId(stationId);
+            return findFirstStation(stationId);
         }
         return stationId;
     }

@@ -113,13 +113,36 @@ class SectionAcceptanceTest {
     }
 
     /**
+     * Given 두개의 구간이 등록되어 있는 지하철 노선이 있다.
+     * When 지하철 노선에 새로운 구간 등록을 요청한다.
+     * Then 지하철 노선에 지하철역이 등록된다.
+     */
+    @DisplayName("노선에 구간을 여러개 등록한다.")
+    @Test
+    void createSections() {
+        // Given
+        lineApi.addSection(신분당선, 강남역, stationApi.createId("양재역"), 50);
+
+        // when
+        Long 신논현역 = stationApi.createId("신논현역");
+        ExtractableResponse<Response> response = lineApi.addSection(신분당선, 신논현역, 강남역, 10);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(lineApi.findById(신분당선).jsonPath().getList("stations.name")).contains("신논현역"),
+                () -> assertThat(lineApi.findById(신분당선).jsonPath().getList("stations.name")).contains("강남역")
+        );
+    }
+
+    /**
      * Given 지하철 노선에 역을 등록할 경우 기존 역 사이 길이와 크거나 같게 입력한다.
      * When 지하철 노선에 지하철역 등록을 요청한다.
      * Then 지하철 노선등록이 실패한다.
      */
     @DisplayName("새로운 역을 등록할 때 기존 역사이 길이와 크거나 같을 경우 실패한다.")
     @ParameterizedTest
-    @ValueSource(ints = {10, 11})
+    @ValueSource(ints = {100, 101})
     void createInvalidDistance(Integer distance) {
         // given, when
         ExtractableResponse<Response> response
