@@ -2,34 +2,37 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<SectionResponse> sections;
+    private List<StationResponse> stations;
 
     private LineResponse() {
     }
 
-    private LineResponse(Long id, String name, String color, List<SectionResponse> sections) {
+    private LineResponse(Long id, String name, String color, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.sections = sections;
+        this.stations = stations;
     }
 
     public static LineResponse of(Line line) {
-        List<SectionResponse> sections = new LinkedList<>();
-        line.getAllSections().forEach(section -> sections.add(SectionResponse.of(section)));
-
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), sections);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), getStationResponses(line));
     }
 
     public static LineResponse of(Line line, List<SectionResponse> sections) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), sections);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), getStationResponses(line));
+    }
+
+    private static List<StationResponse> getStationResponses(Line line) {
+        return line.getAllStations().stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -44,7 +47,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<SectionResponse> getSections() {
-        return sections;
+    public List<StationResponse> getStations() {
+        return stations;
     }
 }
