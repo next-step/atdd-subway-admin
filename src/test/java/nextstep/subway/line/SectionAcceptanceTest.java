@@ -164,6 +164,29 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(역_이름).containsExactlyInAnyOrder("역삼역", "선릉역");
     }
 
+    /**
+     * Scenario: 중간역을 제거한다.
+     *   When 중간역을 제거하면
+     *   Then 제거된 역의 이전역과 다음역으로 재배치하고
+     */
+    @Test
+    void 중간역_삭제() {
+        Long 역삼역 = 지하철역_생성("역삼역");
+        SectionRequestDto sectionRequestDto = new SectionRequestDto(강남역, 역삼역, 4);
+
+        // Given 강남역 > 역삼역 > 선릉역
+        구간_추가(sectionRequestDto, 노선);
+
+        // When 역삼역 제거
+        ExtractableResponse<Response> response = 구간_삭제(노선, 역삼역);
+
+        // Then 강남역 > 선릉역
+        응답코드_검증(response, HttpStatus.NO_CONTENT);
+
+        List<String> 역_이름 = 역_이름_추출(지하철노선_아이디로_조회(노선));
+        assertThat(역_이름).containsExactlyInAnyOrder("강남역", "선릉역");
+    }
+
     private ExtractableResponse<Response> 구간_추가(SectionRequestDto sectionRequestDto, Long lineId) {
         return RestAssured.given().log().all()
                 .body(sectionRequestDto).contentType(MediaType.APPLICATION_JSON_VALUE)

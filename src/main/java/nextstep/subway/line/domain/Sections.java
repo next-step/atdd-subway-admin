@@ -55,10 +55,20 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        Section sectionToDelete = values.stream()
+        List<Section> sections = values.stream()
                 .filter(section -> section.hasStation(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("해당 역(%s)을 찾을 수 없습니다.")));
+                .collect(Collectors.toList());
+
+        if (sections.isEmpty()) {
+            throw new IllegalArgumentException(String.format("해당 역(%s)을 찾을 수 없습니다.", station));
+        }
+
+        Section sectionToDelete = sections.get(0);
+        sections.stream()
+                .filter(section -> !section.equals(sectionToDelete))
+                .findAny()
+                .ifPresent((sectionToUpdate) -> sectionToUpdate.merge(sectionToDelete));
+
         values.remove(sectionToDelete);
     }
 

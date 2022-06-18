@@ -78,4 +78,20 @@ class SectionTest {
         Section 또다른_강남_선릉_구간 = Section.of(강남역, 선릉역, 1);
         assertThatThrownBy(() -> 강남_선릉_구간.update(또다른_강남_선릉_구간)).isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    @DisplayName("연결된 두 구간을 하나로 병합하면 상행 종점역과 하행 종점역만 가지는 구간이 된다.")
+    void 연결된_두_구간_병합() {
+        강남_역삼_구간.merge(역삼_선릉_구간);
+        assertThat(강남_역삼_구간.getStations()).containsExactlyInAnyOrder(강남역, 선릉역);
+    }
+
+    @Test
+    @DisplayName("두 구간을 병합할 때 연결된 역이 없으면 예외를 발생시킨다.")
+    void 비연결된_두_구간_병합() {
+        Station 삼성역 = new Station("삼성역");
+        Section 선릉_삼성_구간 = Section.of(선릉역, 삼성역, 4);
+
+        assertThatThrownBy(() -> 강남_역삼_구간.merge(선릉_삼성_구간)).isInstanceOf(IllegalArgumentException.class);
+    }
 }
