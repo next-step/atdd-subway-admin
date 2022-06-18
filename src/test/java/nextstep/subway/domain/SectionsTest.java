@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -199,6 +200,37 @@ class SectionsTest {
                     assertThat(구간.get(1).getDistance())
                             .isEqualTo(논현역_신사역.getDistance());
                 });
+    }
+
+    @Test
+    @DisplayName("입력받은 상행종점역이 포함된 구간을 제거한다.")
+    void removeUpFinalSection() {
+        Station 정자역 = 정자역_강남역.getUpStation();
+        Station 강남역 = 정자역_강남역.getDownStation();
+        Station 논현역 = Station.from("논현역");
+        Section 강남역_논현역 = Section.of(강남역, 논현역, 신분당선, 5000);
+        모든구간.addSection(강남역_논현역);
+
+        모든구간.removeSectionByStation(정자역);
+
+        assertThat(모든구간.getSectionsInOrder())
+                .hasSize(1)
+                .containsExactly(강남역_논현역);
+    }
+
+    @Test
+    @DisplayName("입력받은 하행종점역이 포함된 구간을 제거한다.")
+    void removeDownFinalSection() {
+        Station 강남역 = 정자역_강남역.getDownStation();
+        Station 논현역 = Station.from("논현역");
+        Section 강남역_논현역 = Section.of(강남역, 논현역, 신분당선, 5000);
+        모든구간.addSection(강남역_논현역);
+
+        모든구간.removeSectionByStation(논현역);
+
+        assertThat(모든구간.getSectionsInOrder())
+                .hasSize(1)
+                .containsExactly(정자역_강남역);
     }
 
     @Test
