@@ -4,7 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
-import nextstep.subway.common.ResponseAssertTest;
+import nextstep.subway.ResponseAssertTest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.station.StationAcceptanceTest;

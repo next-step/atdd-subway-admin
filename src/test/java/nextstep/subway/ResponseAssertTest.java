@@ -1,4 +1,4 @@
-package nextstep.subway.common;
+package nextstep.subway;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
