@@ -12,36 +12,15 @@ import static nextstep.subway.utils.StationsAcceptanceUtils.generateStation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import nextstep.subway.config.BaseTest;
 import nextstep.subway.dto.station.StationRequest;
-import nextstep.subway.utils.TearDownUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.web.server.LocalServerPort;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends BaseTest {
-
-    private final TearDownUtils tearDownUtils;
-
-    public StationAcceptanceTest(TearDownUtils tearDownUtils) {
-        this.tearDownUtils = tearDownUtils;
-    }
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        tearDownUtils.tableClear();
-    }
 
     public static final String STATION_BASE_URL = "/stations";
 
