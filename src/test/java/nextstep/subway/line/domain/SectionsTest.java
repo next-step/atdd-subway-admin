@@ -107,6 +107,15 @@ class SectionsTest {
     }
 
     @Test
+    @DisplayName("구간이 하나일 때 역을 삭제하면 예외를 발생시킨다.")
+    void 구간이_하나일_때_삭제() {
+        Sections sections = new Sections();
+        sections.add(강남_역삼_구간);
+
+        assertThatThrownBy(() -> sections.delete(역삼역)).isInstanceOf(IllegalStateException.class);
+    }
+
+    @Test
     @DisplayName("모든 구간의 거리의 합을 계산한다.")
     void 구간_총_거리() {
         Sections sections = 구간_리스트_생성(강남_역삼_구간, 역삼_선릉_구간);

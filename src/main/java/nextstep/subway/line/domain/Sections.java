@@ -55,6 +55,10 @@ public class Sections {
     }
 
     public void delete(Station station) {
+        if (values.size() == 1) {
+            throw new IllegalStateException("구간이 하나인 노선에서 역을 삭제할 수 없습니다.");
+        }
+
         List<Section> sections = values.stream()
                 .filter(section -> section.hasStation(station))
                 .collect(Collectors.toList());

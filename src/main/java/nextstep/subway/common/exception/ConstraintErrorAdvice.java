@@ -14,9 +14,9 @@ public class ConstraintErrorAdvice {
         return ResponseEntity.internalServerError().body(ex.getMessage());
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    @ExceptionHandler({IllegalArgumentException.class, IllegalStateException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<String> handleIllegalArgumentStateException(RuntimeException ex) {
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 

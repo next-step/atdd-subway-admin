@@ -187,6 +187,23 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(역_이름).containsExactlyInAnyOrder("강남역", "선릉역");
     }
 
+    /**
+     * Scenario: 구간이 하나인 노선에서 역을 제거한다.
+     *   Given 구간이 하나인 노선에서
+     *   When 역을 제거하면
+     *   Then 제거되지 않고 오류가 발생한다.
+     */
+    @Test
+    @DisplayName("구간이 하나인 노선에서 역을 삭제하면 삭제되지 않고 오류가 발생한다.")
+    void 구간이_하나인_노선에서_역_삭제() {
+        // Given 노선 (강남역 - 선릉역)
+        // When
+        ExtractableResponse<Response> response = 구간_삭제(노선, 강남역);
+
+        // Then
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
     private ExtractableResponse<Response> 구간_추가(SectionRequestDto sectionRequestDto, Long lineId) {
         return RestAssured.given().log().all()
                 .body(sectionRequestDto).contentType(MediaType.APPLICATION_JSON_VALUE)
