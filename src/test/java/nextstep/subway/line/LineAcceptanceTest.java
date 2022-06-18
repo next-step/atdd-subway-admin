@@ -112,8 +112,8 @@ public class LineAcceptanceTest extends BaseLineAcceptanceTest {
                             .isEqualTo(firstLine.getName());
                     assertThat(line.getColor())
                             .isEqualTo(firstLine.getColor());
-                    assertThat(line.getSections())
-                            .hasSize(1);
+                    assertThat(line.getStations())
+                            .hasSize(2);
                 });
     }
 
