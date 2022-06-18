@@ -59,8 +59,8 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     public void getAllLines() {
         // Given
-        Response createFirstLineResponse = generateLine("신분당선", "강남역", "판교역");
-        Response createSecondLineResponse = generateLine("분당선", "문정역", "야탑역");
+        generateLine("신분당선", "강남역", "판교역");
+        generateLine("분당선", "문정역", "야탑역");
 
         // When
         Response getAllStationsResponse = get(LINE_BASE_URL).extract().response();
@@ -68,8 +68,6 @@ public class LineAcceptanceTest extends BaseTest {
         // Then
         JsonPath jsonPath = getAllStationsResponse.jsonPath();
         assertAll(
-            () -> assertCreated(createFirstLineResponse),
-            () -> assertCreated(createSecondLineResponse),
             () -> assertOk(getAllStationsResponse),
             () -> assertThat(jsonPath.getList("name"))
                 .as("지하철 목록 정보에서 생성한 지하철 노선 포함 여부 검증")
