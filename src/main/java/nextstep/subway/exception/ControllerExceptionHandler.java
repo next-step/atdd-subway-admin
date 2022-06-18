@@ -17,13 +17,11 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity handleIllegalArgsException(IllegalArgumentException e) {
-        System.out.println("[IllegalArgumentException] : " + e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleDataIntegrityViolationException(DataIntegrityViolationException e) {
-        System.out.println("[DataIntegrityViolationException]" + e.getMessage());
         return ResponseEntity.badRequest().build();
     }
 }
