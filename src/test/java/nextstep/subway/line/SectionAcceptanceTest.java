@@ -12,6 +12,7 @@ import java.util.List;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequestDto;
 import nextstep.subway.line.dto.SectionRequestDto;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -199,6 +200,28 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // Given 노선 (강남역 - 선릉역)
         // When
         ExtractableResponse<Response> response = 구간_삭제(노선, 강남역);
+
+        // Then
+        응답코드_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Scenario: 노선에 등록되지 않은 역을 제거한다.
+     *   When 구간에 등록되지 않은 역을 제거하면
+     *   Then 제거되지 않고 오류가 발생한다.
+     */
+    @Test
+    @DisplayName("노선에 등록되지 않은 역을 삭제하면 오류가 발생한다.")
+    void 노선에_없는_역_삭제() {
+        // Given 강남역 - 역삼역 - 선릉역 << 잠실역 삭제
+        Long 잠실역 = 지하철역_생성("잠실역");
+
+        Long 역삼역 = 지하철역_생성("역삼역");
+        SectionRequestDto sectionRequestDto = new SectionRequestDto(강남역, 역삼역, 4);
+        구간_추가(sectionRequestDto, 노선);
+
+        // When
+        ExtractableResponse<Response> response = 구간_삭제(노선, 잠실역);
 
         // Then
         응답코드_검증(response, HttpStatus.BAD_REQUEST);

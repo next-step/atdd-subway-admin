@@ -116,6 +116,18 @@ class SectionsTest {
     }
 
     @Test
+    @DisplayName("구간에 없는 역 삭제 시 예외를 발생시킨다.")
+    void 구간에_없는_역_삭제() {
+        Station 삼성역 = new Station("삼성역");
+
+        Sections sections = new Sections();
+        sections.add(강남_역삼_구간);
+        sections.add(역삼_선릉_구간);
+
+        assertThatThrownBy(() -> sections.delete(삼성역)).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("모든 구간의 거리의 합을 계산한다.")
     void 구간_총_거리() {
         Sections sections = 구간_리스트_생성(강남_역삼_구간, 역삼_선릉_구간);
