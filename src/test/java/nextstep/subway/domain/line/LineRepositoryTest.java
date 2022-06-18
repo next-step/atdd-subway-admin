@@ -71,17 +71,16 @@ class LineRepositoryTest {
     }
 
     @Test
-    @DisplayName("asdf")
+    @DisplayName("지하철 노선 중복 생성 시 예외 발생 검증")
     public void asf() {
         // Given
-        final Line given = new Line(name, color, upStation, downStation, distance);
-        final Line given2 = new Line(name, color, upStation, downStation, distance);
+        final Line line = new Line(name, color, upStation, downStation, distance);
+        final Line duplicatedLine = new Line(name, color, upStation, downStation, distance);
+        lineRepository.save(line);
 
-        // When
-        Line actual = lineRepository.save(given);
+        // When & Then
         assertThatExceptionOfType(DataIntegrityViolationException.class)
-            .isThrownBy(() -> lineRepository.save(given2));
-        // Then
+            .isThrownBy(() -> lineRepository.save(duplicatedLine));
     }
 
     @Test
@@ -129,8 +128,6 @@ class LineRepositoryTest {
         // When
         lineRepository.deleteById(given.getId());
         entityManager.flush();
-
-        System.out.println(given.getId());
 
         // Then
         assertThatExceptionOfType(IllegalArgumentException.class)

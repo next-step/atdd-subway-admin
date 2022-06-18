@@ -46,7 +46,9 @@ public class StationAcceptanceTest extends BaseTest {
     public static final String STATION_BASE_URL = "/stations";
 
     /**
-     * When 지하철역을 생성하면 Then 지하철역이 생성된다 Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
+     * When 지하철역을 생성하면
+     * Then 지하철역이 생성된다
+     * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
@@ -71,9 +73,11 @@ public class StationAcceptanceTest extends BaseTest {
     }
 
     /**
-     * Given 지하철역을 생성하고 When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면 Then 지하철역 생성이 안된다
+     * Given 지하철역을 생성하고
+     * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
+     * Then 지하철역 생성이 안된다
      */
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("이미 존재하는 지하철역 이름으로 지하철역을 생성할 수 없다")
     @Test
     void createStationWithDuplicateName() {
         // given
@@ -91,7 +95,9 @@ public class StationAcceptanceTest extends BaseTest {
     }
 
     /**
-     * Given 2개의 지하철역을 생성하고 When 지하철역 목록을 조회하면 Then 2개의 지하철역을 응답 받는다
+     * Given 2개의 지하철역을 생성하고
+     * When 지하철역 목록을 조회하면
+     * Then 2개의 지하철역을 응답 받는다
      */
     @DisplayName("지하철역을 조회한다.")
     @Test
@@ -116,7 +122,9 @@ public class StationAcceptanceTest extends BaseTest {
     }
 
     /**
-     * Given 지하철역을 생성하고 When 그 지하철역을 삭제하면 Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
+     * Given 지하철역을 생성하고
+     * When 그 지하철역을 삭제하면
+     * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
     @DisplayName("지하철역을 제거한다.")
     @Test

@@ -25,7 +25,8 @@ public class LineAcceptanceTest extends BaseTest {
     public static final String LINE_BASE_URL = "/lines";
 
     /**
-     * When 지하철 노선을 생성하면 Then 지하철 목록 정보에서 생성한 지하철 노선을 찾을 수 있다.
+     * When 지하철 노선을 생성하면
+     * Then 지하철 목록 정보에서 생성한 지하철 노선을 찾을 수 있다.
      */
     @Test
     @DisplayName("지하철 노선을 생성한다.")
@@ -50,7 +51,9 @@ public class LineAcceptanceTest extends BaseTest {
     }
 
     /**
-     * Given 2개의 지하철 노선을 생성하고 When 지하철 목록 정보를 조회하면 Then 생성한 지하철 노선 정보를 찾을 수 있다.
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 목록 정보를 조회하면
+     * Then 생성한 지하철 노선 정보를 찾을 수 있다.
      */
     @Test
     @DisplayName("지하철 노선 목록을 조회한다.")
@@ -75,7 +78,9 @@ public class LineAcceptanceTest extends BaseTest {
     }
 
     /**
-     * Given 1개의 지허철 노선을 생성하고 When 지하철 노선을 조회하면 Then 생성한 지하철 노선이 조회된다.
+     * Given 1개의 지허철 노선을 생성하고
+     * When 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선이 조회된다.
      */
     @Test
     @DisplayName("특정 지하철 노선을 조회한다.")
@@ -98,7 +103,9 @@ public class LineAcceptanceTest extends BaseTest {
     }
 
     /**
-     * Given 1개의 지하철 노선을 생성하고 When 지하철 노선을 수정하면 Then 지하철 노선이 수정된다.
+     * Given 1개의 지하철 노선을 생성하고
+     * When 지하철 노선을 수정하면
+     * Then 지하철 노선이 수정된다.
      */
     @Test
     @DisplayName("지하철 노선을 수정한다.")
@@ -123,7 +130,9 @@ public class LineAcceptanceTest extends BaseTest {
     }
 
     /**
-     * Given 1개의 지하철 노선을 생성하고 When 지하철 노선을 삭제하면 Then 지하철 노선이 삭제된다.
+     * Given 1개의 지하철 노선을 생성하고
+     * When 지하철 노선을 삭제하면
+     * Then 지하철 노선이 삭제된다.
      */
     @Test
     @DisplayName("지하철 노선을 삭제한다.")

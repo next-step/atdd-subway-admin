@@ -180,6 +180,6 @@ API 명세
 [x] 인수테스트 작성 시 중복으로 작성되는 설정 부 추출
     - AcceptanceTest : 인수테스트 작성에 공통적으로 명시되는 Annotations 설정을 Custom Annotation 으로 추출
     - BaseTest : 인수 테스트 실행에 필요한 처리 부 추출(RestAssured port 설정, DB 데이터 초기화를 위한 Tear Down)
-[ ] 명확하지 않은 테스트 내용 표현 개선
+[x] 명확하지 않은 테스트 내용 표현 개선
 [ ] `Given`절에 대한 검증 부 제거
 [ ] 개행을 이용한 인수 조건 표현 개선
