@@ -4,11 +4,12 @@ import static nextstep.subway.utils.AssertionsUtils.assertCreated;
 import static nextstep.subway.utils.AssertionsUtils.assertInternalServerError;
 import static nextstep.subway.utils.AssertionsUtils.assertNoContent;
 import static nextstep.subway.utils.AssertionsUtils.assertOk;
-import static nextstep.subway.utils.LineAcceptanceTestUtils.generateLine;
+import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_목록_조회_요청;
+import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_삭제_요청;
+import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_생성_요청;
+import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_수정_요청;
+import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_조회_요청;
 import static nextstep.subway.utils.ResponseBodyExtractUtils.getId;
-import static nextstep.subway.utils.RestAssuredUtils.delete;
-import static nextstep.subway.utils.RestAssuredUtils.get;
-import static nextstep.subway.utils.RestAssuredUtils.put;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -22,8 +23,6 @@ import org.junit.jupiter.api.Test;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseTest {
 
-    public static final String LINE_BASE_URL = "/lines";
-
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 목록 정보에서 생성한 지하철 노선을 찾을 수 있다.
@@ -32,8 +31,8 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선을 생성한다.")
     public void createLine() {
         // When
-        Response createLineResponse = generateLine("신분당선", "강남역", "판교역");
-        Response getAllStationsResponse = get(LINE_BASE_URL).extract().response();
+        Response createLineResponse = 지하철_노선_생성_요청("신분당선", "강남역", "판교역");
+        Response getAllStationsResponse = 지하철_노선_목록_조회_요청();
 
         // Then
         JsonPath createLineResponseBody = createLineResponse.jsonPath();
@@ -59,11 +58,11 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     public void getAllLines() {
         // Given
-        generateLine("신분당선", "강남역", "판교역");
-        generateLine("분당선", "문정역", "야탑역");
+        지하철_노선_생성_요청("신분당선", "강남역", "판교역");
+        지하철_노선_생성_요청("분당선", "문정역", "야탑역");
 
         // When
-        Response getAllStationsResponse = get(LINE_BASE_URL).extract().response();
+        Response getAllStationsResponse = 지하철_노선_목록_조회_요청();
 
         // Then
         JsonPath jsonPath = getAllStationsResponse.jsonPath();
@@ -84,11 +83,10 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("특정 지하철 노선을 조회한다.")
     public void getLineById() {
         // Given
-        Response createLineResponse = generateLine("신분당선", "강남역", "판교역");
-        String lineId = getId(createLineResponse);
+        String 신분당선 = getId(지하철_노선_생성_요청("신분당선", "강남역", "판교역"));
 
         // When
-        Response response = get(LINE_BASE_URL, lineId).extract().response();
+        Response response = 지하철_노선_조회_요청(신분당선);
 
         // Then
         JsonPath jsonPath = response.jsonPath();
@@ -109,13 +107,12 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선을 수정한다.")
     public void updateLine() {
         // Given
-        Response createLineResponse = generateLine("신분당선", "강남역", "판교역");
-        String lineId = getId(createLineResponse);
+        String 신분당선 = getId(지하철_노선_생성_요청("신분당선", "강남역", "판교역"));
         UpdateLineRequest updateLineRequest = new UpdateLineRequest("분당선", "bg-yellow-600");
 
         // When
-        Response updateLineResponse = put(LINE_BASE_URL, lineId, updateLineRequest).extract().response();
-        Response getLineByIdResponse = get(LINE_BASE_URL, lineId).extract().response();
+        Response updateLineResponse = 지하철_노선_수정_요청(신분당선, updateLineRequest);
+        Response getLineByIdResponse = 지하철_노선_조회_요청(신분당선);
 
         // Then
         JsonPath getLineByIdResponseBody = getLineByIdResponse.jsonPath();
@@ -136,12 +133,11 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선을 삭제한다.")
     public void deleteLineById() {
         // Given
-        Response createLineResponse = generateLine("신분당선", "강남역", "판교역");
-        String lineId = getId(createLineResponse);
+        String 신분당선 = getId(지하철_노선_생성_요청("신분당선", "강남역", "판교역"));
 
         // When
-        Response deleteLineResponse = delete(LINE_BASE_URL, lineId).extract().response();
-        Response getLineByIdResponse = get(LINE_BASE_URL, lineId).extract().response();
+        Response deleteLineResponse = 지하철_노선_삭제_요청(신분당선);
+        Response getLineByIdResponse = 지하철_노선_조회_요청(신분당선);
 
         // Then
         assertAll(

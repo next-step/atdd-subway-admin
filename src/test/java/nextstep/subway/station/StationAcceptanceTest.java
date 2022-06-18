@@ -5,24 +5,20 @@ import static nextstep.subway.utils.AssertionsUtils.assertCreated;
 import static nextstep.subway.utils.AssertionsUtils.assertNoContent;
 import static nextstep.subway.utils.AssertionsUtils.assertOk;
 import static nextstep.subway.utils.ResponseBodyExtractUtils.getId;
-import static nextstep.subway.utils.RestAssuredUtils.delete;
-import static nextstep.subway.utils.RestAssuredUtils.get;
-import static nextstep.subway.utils.RestAssuredUtils.post;
-import static nextstep.subway.utils.StationsAcceptanceUtils.generateStation;
+import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_목록_조회_요청;
+import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_삭제_요청;
+import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import nextstep.subway.config.BaseTest;
-import nextstep.subway.dto.station.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends BaseTest {
-
-    public static final String STATION_BASE_URL = "/stations";
 
     /**
      * When 지하철역을 생성하면
@@ -32,22 +28,18 @@ public class StationAcceptanceTest extends BaseTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // Given
-        final String stationName = "강남역";
-        final StationRequest stationRequest = new StationRequest(stationName);
-
         // When
-        Response stationCreateResponse = post(STATION_BASE_URL, stationRequest).extract().response();
+        Response stationCreateResponse = 지하철역_생성_요청("강남역");
 
         // Then
-        Response getAllStationsResponse = get(STATION_BASE_URL).extract().response();
+        Response getAllStationsResponse = 지하철역_목록_조회_요청();
         JsonPath jsonPath = getAllStationsResponse.jsonPath();
         assertAll(
             () -> assertCreated(stationCreateResponse),
             () -> assertOk(getAllStationsResponse),
             () -> assertThat(jsonPath.getList("name"))
                 .as("지하철역 목록 조회 시 생성한 지하철역 이름 포함 여부 검증")
-                .containsAnyOf(stationName)
+                .containsAnyOf("강남역")
         );
     }
 
@@ -60,11 +52,10 @@ public class StationAcceptanceTest extends BaseTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        final String stationName = "판교역";
-        Response creationResponse = generateStation(stationName);
+        Response creationResponse = 지하철역_생성_요청("판교역");
 
         // when
-        Response duplicationCreateResponse = generateStation(stationName);
+        Response duplicationCreateResponse = 지하철역_생성_요청("판교역");
 
         // then
         assertAll(
@@ -82,13 +73,11 @@ public class StationAcceptanceTest extends BaseTest {
     @Test
     void getStations() {
         // Given
-        final String firstStationName = "논현역";
-        final String secondStationName = "신논현역";
-        generateStation(firstStationName);
-        generateStation(secondStationName);
+        지하철역_생성_요청("논현역");
+        지하철역_생성_요청("신논현역");
 
         // When
-        Response getAllStationsResponse = get(STATION_BASE_URL).extract().response();
+        Response getAllStationsResponse = 지하철역_목록_조회_요청();
 
         // Then
         JsonPath jsonPath = getAllStationsResponse.jsonPath();
@@ -96,7 +85,7 @@ public class StationAcceptanceTest extends BaseTest {
             () -> assertOk(getAllStationsResponse),
             () -> assertThat(jsonPath.getList("name"))
                 .as("지하철역 목록 조회 응답에 생성한 두개의 지하철역 이름 포함 여부 검증")
-                .containsAnyOf(firstStationName, secondStationName)
+                .containsAnyOf("논현역", "신논현역")
         );
     }
 
@@ -109,22 +98,20 @@ public class StationAcceptanceTest extends BaseTest {
     @Test
     void deleteStation() {
         // Given
-        final String stationName = "선릉역";
-        final Response generateStationResponse = generateStation(stationName);
-        final String stationId = getId(generateStationResponse);
+        final String 선릉역 = getId(지하철역_생성_요청("선릉역"));
 
         // When
-        Response deleteResponse = delete(STATION_BASE_URL, stationId).extract().response();
+        Response deleteResponse = 지하철역_삭제_요청(선릉역);
 
         // Then
-        Response getAllStationsResponse = get(STATION_BASE_URL).extract().response();
+        Response getAllStationsResponse = 지하철역_목록_조회_요청();
         JsonPath jsonPath = getAllStationsResponse.jsonPath();
         assertAll(
             () -> assertNoContent(deleteResponse),
             () -> assertOk(getAllStationsResponse),
             () -> assertThat(jsonPath.getList("name"))
                 .as("지하철역 목록 조회 응답에 삭제한 지하철역 미포함 여부 검증")
-                .doesNotContain(stationName)
+                .doesNotContain("선릉역")
         );
     }
 }
