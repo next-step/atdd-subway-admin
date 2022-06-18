@@ -68,10 +68,6 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getAllSections() {
-        return sections.getSectionsInOrder();
-    }
-
     public List<Station> getAllStations() {
         return sections.getStationsInOrder();
     }
