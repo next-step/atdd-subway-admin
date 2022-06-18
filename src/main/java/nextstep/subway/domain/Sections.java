@@ -93,6 +93,17 @@ public class Sections {
         return allSections;
     }
 
+    public List<Station> getStationsInOrder() {
+        List<Station> stations = new ArrayList<>();
+        Station station = getUpFinalStation();
+
+        while (station != null) {
+            stations.add(station);
+            station = getNextStation(station);
+        }
+        return stations;
+    }
+
     private Station getUpFinalStation() {
         List<Station> upStations = sections.stream()
                 .map(Section::getUpStation).collect(Collectors.toList());
@@ -117,6 +128,14 @@ public class Sections {
             throw new NoSuchElementException("하행종점역을 찾을 수 없습니다.");
         }
         return downStations.get(0);
+    }
+
+    private Station getNextStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.matchUpStation(station))
+                .findFirst()
+                .orElse(new Section())
+                .getDownStation();
     }
 
     public Optional<Section> geUpFinalSection() {

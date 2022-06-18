@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -252,6 +251,26 @@ class SectionsTest {
         assertThatThrownBy(() -> 모든구간.removeSection(Station.from("신사역")))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 구간은 삭제할 수 없습니다.");
+    }
+
+    @Test
+    @DisplayName("등록된 역들을 실제 순서로 정렬하여 조회한다.")
+    void getStationsInOrder() {
+        Station 광교역 = Station.from("광교역");
+        Station 정자역 = 정자역_강남역.getUpStation();
+        Station 강남역 = 정자역_강남역.getDownStation();
+        Station 논현역 = Station.from("논현역");
+        Station 신사역 = Station.from("신사역");
+        Section 광교역_정자역 = Section.of(광교역, 정자역, 신분당선, 5000);
+        Section 강남역_신사역 = Section.of(강남역, 신사역, 신분당선, 2000);
+        Section 강남역_논현역 = Section.of(강남역, 논현역, 신분당선, 1000);
+
+        모든구간.addSection(광교역_정자역);
+        모든구간.addSection(강남역_신사역);
+        모든구간.addSection(강남역_논현역);
+
+        assertThat(모든구간.getStationsInOrder())
+                .containsExactly(광교역, 정자역, 강남역, 논현역, 신사역);
     }
 
 }
