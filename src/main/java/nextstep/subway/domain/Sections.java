@@ -135,13 +135,13 @@ public class Sections {
 
     private Optional<Section> getSectionByUpStation(Station upStation) {
         return sections.stream()
-                .filter(section -> section.getUpStation().equals(upStation))
+                .filter(section -> section.matchUpStation(upStation))
                 .findFirst();
     }
 
     private Optional<Section> getSectionByDownStation(Station downStation) {
         return sections.stream()
-                .filter(section -> section.getDownStation().equals(downStation))
+                .filter(section -> section.matchDownStation(downStation))
                 .findFirst();
     }
 

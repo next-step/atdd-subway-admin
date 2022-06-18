@@ -73,6 +73,14 @@ public class Section extends BaseEntity {
                 || sections.stream().anyMatch(section -> section.containsStation(downStation));
     }
 
+    public boolean matchUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean matchDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     public boolean containsStation(Station station) {
         return upStation.equals(station) || downStation.equals(station);
     }
