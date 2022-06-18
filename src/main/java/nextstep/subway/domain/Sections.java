@@ -147,7 +147,7 @@ public class Sections {
                 .findFirst();
     }
 
-    public void removeSectionByStation(Station station) {
+    public void removeSection(Station station) {
         validateRemoveSection(station);
 
         Optional<Section> sectionByUpStation = getSectionByUpStation(station);

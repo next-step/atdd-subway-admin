@@ -188,7 +188,7 @@ class SectionsTest {
         모든구간.addSection(강남역_논현역);
         모든구간.addSection(논현역_신사역);
 
-        모든구간.removeSectionByStation(강남역);
+        모든구간.removeSection(강남역);
 
         Section 정자역_논현역 = Section.of(정자역, 논현역, 신분당선, 1500);
         assertThat(모든구간.getSectionsInOrder())
@@ -211,7 +211,7 @@ class SectionsTest {
         Section 강남역_논현역 = Section.of(강남역, 논현역, 신분당선, 5000);
         모든구간.addSection(강남역_논현역);
 
-        모든구간.removeSectionByStation(정자역);
+        모든구간.removeSection(정자역);
 
         assertThat(모든구간.getSectionsInOrder())
                 .hasSize(1)
@@ -226,7 +226,7 @@ class SectionsTest {
         Section 강남역_논현역 = Section.of(강남역, 논현역, 신분당선, 5000);
         모든구간.addSection(강남역_논현역);
 
-        모든구간.removeSectionByStation(논현역);
+        모든구간.removeSection(논현역);
 
         assertThat(모든구간.getSectionsInOrder())
                 .hasSize(1)
@@ -238,7 +238,7 @@ class SectionsTest {
     void removeLastSection() {
         Station 강남역 = 정자역_강남역.getDownStation();
 
-        assertThatThrownBy(() -> 모든구간.removeSectionByStation(강남역))
+        assertThatThrownBy(() -> 모든구간.removeSection(강남역))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("현재 지하철 구간이 하나인 경우 삭제할 수 없습니다.");
     }
@@ -249,7 +249,7 @@ class SectionsTest {
         Section 강남역_논현역 = Section.of(Station.from("강남역"), Station.from("논현역"), 신분당선, 5000);
         모든구간.addSection(강남역_논현역);
 
-        assertThatThrownBy(() -> 모든구간.removeSectionByStation(Station.from("신사역")))
+        assertThatThrownBy(() -> 모든구간.removeSection(Station.from("신사역")))
                 .isExactlyInstanceOf(IllegalArgumentException.class)
                 .hasMessage("존재하지 않는 구간은 삭제할 수 없습니다.");
     }

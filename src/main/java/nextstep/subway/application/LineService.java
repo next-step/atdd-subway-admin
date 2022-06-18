@@ -68,11 +68,11 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    public void removeSectionByStationId(Long id, Long stationId) {
+    public void removeSection(Long id, Long stationId) {
         Line line = findLineById(id);
         Station station = findStationById(stationId);
 
-        line.removeSectionByStation(station);
+        line.removeSection(station);
     }
 
     private Line findLineById(Long id) {
