@@ -15,22 +15,16 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import nextstep.subway.config.BaseTest;
 import nextstep.subway.dto.station.StationRequest;
 import nextstep.subway.utils.TearDownUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestConstructor.AutowireMode;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestConstructor(autowireMode = AutowireMode.ALL)
-@Import(TearDownUtils.class)
-public class StationAcceptanceTest {
+public class StationAcceptanceTest extends BaseTest {
 
     private final TearDownUtils tearDownUtils;
 

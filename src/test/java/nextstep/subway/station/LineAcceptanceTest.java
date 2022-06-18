@@ -12,43 +12,15 @@ import static nextstep.subway.utils.RestAssuredUtils.put;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
+import nextstep.subway.config.BaseTest;
 import nextstep.subway.dto.UpdateLineRequest;
-import nextstep.subway.utils.TearDownUtils;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.TestConstructor;
-import org.springframework.test.context.TestConstructor.AutowireMode;
 
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-@TestConstructor(autowireMode = AutowireMode.ALL)
-@Import(TearDownUtils.class)
-public class LineAcceptanceTest {
-
-    private final TearDownUtils tearDownUtils;
-
-    public LineAcceptanceTest(TearDownUtils tearDownUtils) {
-        this.tearDownUtils = tearDownUtils;
-    }
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        tearDownUtils.tableClear();
-    }
+public class LineAcceptanceTest extends BaseTest {
 
     public static final String LINE_BASE_URL = "/lines";
 
@@ -151,21 +123,19 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * Given 1개의 지하철 노선을 생성하고
-     * When 지하철 노선을 삭제하면
-     * Then 지하철 노선이 삭제된다.
+     * Given 1개의 지하철 노선을 생성하고 When 지하철 노선을 삭제하면 Then 지하철 노선이 삭제된다.
      */
     @Test
     @DisplayName("지하철 노선을 삭제한다.")
-    public void deleteLineById(){
+    public void deleteLineById() {
         // Given
         Response createLineResponse = generateLine("신분당선", "강남역", "판교역");
         String lineId = getId(createLineResponse);
-    
+
         // When
         Response deleteLineResponse = delete(LINE_BASE_URL, lineId).extract().response();
         Response getLineByIdResponse = get(LINE_BASE_URL, lineId).extract().response();
-    
+
         // Then
         assertAll(
             () -> assertNoContent(deleteLineResponse),
