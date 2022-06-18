@@ -86,10 +86,11 @@ public class Sections {
                 .findFirst()
                 .orElse(Section.empty());
 
-        if (isValidContains(upSection, downSection)) {
+        if (isValidAndEndStation(upSection, downSection)) {
             createSection(upSection, downSection);
         }
 
+        updateUpStationOrDownStation(upSection, downSection);
         removeSection(upSection, downSection);
     }
 
@@ -99,9 +100,13 @@ public class Sections {
         }
     }
 
-    private boolean isValidContains(Section upSection, Section downSection) {
+    private boolean isValidAndEndStation(Section upSection, Section downSection) {
         if (upSection.isEmpty() && downSection.isEmpty()) {
             throw new IllegalArgumentException("노선에 등록된 역이 아닙니다.");
+        }
+
+        if (upSection.isEmpty() || downSection.isEmpty()) {
+            return false;
         }
 
         return true;
@@ -109,6 +114,16 @@ public class Sections {
 
     private void createSection(Section upSection, Section downSection) {
         addSection(Section.of(upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance()+downSection.getDistance(), upSection.getLine()));
+    }
+
+    private void updateUpStationOrDownStation(Section upSection, Section downSection) {
+        if (upSection.isEmpty()) {
+            downSection.getLine().updateUpStationOrDownStation(downSection);
+        }
+
+        if (downSection.isEmpty()) {
+            upSection.getLine().updateUpStationOrDownStation(upSection);
+        }
     }
 
     private void removeSection(Section upSection, Section downSection) {
