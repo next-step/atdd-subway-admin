@@ -21,7 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
     private LineRequestDto 신분당선;
     private LineRequestDto 분당선;
 
@@ -60,7 +60,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
      */
     @Test
-    @DisplayName("지사철노선을 조회하면 생성한 모든 노선을 조회할 수 있다.")
+    @DisplayName("지하철노선을 조회하면 생성한 모든 노선을 조회할 수 있다.")
     void 지하철노선_목록_조회() {
         // Given
         지하철노선_생성(신분당선);

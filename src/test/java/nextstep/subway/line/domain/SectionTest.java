@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("구간")
@@ -43,55 +44,57 @@ class SectionTest {
                 () -> assertThat(역삼_선릉_구간.hasSameUpOrDownStation(강남_선릉_구간)).isTrue());
     }
 
-    // 기존 강남 선릉
-    // 강남 역삼
-    // 신규 역삼 선릉
-    @Test
-    @DisplayName("입력받은 구간과 상행역이 같은 경우 상행역을 입력받은 구간의 하행역으로 변경한다.")
-    void 상행역이_같은_구간_업데이트() {
-        강남_선릉_구간.update(강남_역삼_구간);
-        assertThat(강남_선릉_구간).isEqualTo(역삼_선릉_구간);
+    @Nested
+    @DisplayName("구간 업데이트")
+    class 업데이트 {
+        @Test
+        @DisplayName("입력받은 구간과 상행역이 같은 경우 상행역을 입력받은 구간의 하행역으로 변경한다.")
+        void 상행역이_같은_구간_업데이트() {
+            강남_선릉_구간.update(강남_역삼_구간);
+            assertThat(강남_선릉_구간).isEqualTo(역삼_선릉_구간);
+        }
+
+        @Test
+        @DisplayName("입력받은 구간과 하행역이 같은 경우 하행역을 입력받은 구간의 상행역으로 변경한다.")
+        void 하행역이_같은_구간_업데이트() {
+            강남_선릉_구간.update(역삼_선릉_구간);
+            assertThat(강남_선릉_구간).isEqualTo(강남_역삼_구간);
+        }
+
+        @Test
+        @DisplayName("상행역 또는 하행역은 같지만 새 구간의 거리가 기존 구간의 거리보다 크거나 같으면 예외를 발생시킨다.")
+        void 상행역_또는_하행역이_같은_구간_업데이트시_거리_검증() {
+            Station 삼성역 = new Station("삼성역");
+            Section 강남_삼성_구간 = Section.of(강남역, 삼성역, 15);
+
+            assertThatThrownBy(() -> 강남_선릉_구간.update(강남_삼성_구간)).isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("동일한 상하행역을 가진 구ㅜ간을 추가하면 예외를 발생시킨다.")
+        void 동일한_상하행역을_가진_구간_업데이트() {
+            Section 또다른_강남_선릉_구간 = Section.of(강남역, 선릉역, 1);
+            assertThatThrownBy(() -> 강남_선릉_구간.update(또다른_강남_선릉_구간)).isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
-    // 기존 강남 선릉
-    // 역삼 선릉
-    // 변경 강남 역삼
-    @Test
-    @DisplayName("입력받은 구간과 하행역이 같은 경우 하행역을 입력받은 구간의 상행역으로 변경한다.")
-    void 하행역이_같은_구간_업데이트() {
-        강남_선릉_구간.update(역삼_선릉_구간);
-        assertThat(강남_선릉_구간).isEqualTo(강남_역삼_구간);
-    }
+    @Nested
+    @DisplayName("병합")
+    class 병합 {
+        @Test
+        @DisplayName("연결된 두 구간을 하나로 병합하면 상행 종점역과 하행 종점역만 가지는 구간이 된다.")
+        void 연결된_두_구간_병합() {
+            강남_역삼_구간.merge(역삼_선릉_구간);
+            assertThat(강남_역삼_구간.getStations()).containsExactlyInAnyOrder(강남역, 선릉역);
+        }
 
-    @Test
-    @DisplayName("상행역 또는 하행역은 같지만 새 구간의 거리가 기존 구간의 거리보다 크거나 같으면 예외를 발생시킨다.")
-    void 상행역_또는_하행역이_같은_구간_업데이트시_거리_검증() {
-        Station 삼성역 = new Station("삼성역");
-        Section 강남_삼성_구간 = Section.of(강남역, 삼성역, 15);
+        @Test
+        @DisplayName("두 구간을 병합할 때 연결된 역이 없으면 예외를 발생시킨다.")
+        void 비연결된_두_구간_병합() {
+            Station 삼성역 = new Station("삼성역");
+            Section 선릉_삼성_구간 = Section.of(선릉역, 삼성역, 4);
 
-        assertThatThrownBy(() -> 강남_선릉_구간.update(강남_삼성_구간)).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("동일한 상하행역을 가진 구ㅜ간을 추가하면 예외를 발생시킨다.")
-    void 동일한_상하행역을_가진_구간_업데이트() {
-        Section 또다른_강남_선릉_구간 = Section.of(강남역, 선릉역, 1);
-        assertThatThrownBy(() -> 강남_선릉_구간.update(또다른_강남_선릉_구간)).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("연결된 두 구간을 하나로 병합하면 상행 종점역과 하행 종점역만 가지는 구간이 된다.")
-    void 연결된_두_구간_병합() {
-        강남_역삼_구간.merge(역삼_선릉_구간);
-        assertThat(강남_역삼_구간.getStations()).containsExactlyInAnyOrder(강남역, 선릉역);
-    }
-
-    @Test
-    @DisplayName("두 구간을 병합할 때 연결된 역이 없으면 예외를 발생시킨다.")
-    void 비연결된_두_구간_병합() {
-        Station 삼성역 = new Station("삼성역");
-        Section 선릉_삼성_구간 = Section.of(선릉역, 삼성역, 4);
-
-        assertThatThrownBy(() -> 강남_역삼_구간.merge(선릉_삼성_구간)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> 강남_역삼_구간.merge(선릉_삼성_구간)).isInstanceOf(IllegalArgumentException.class);
+        }
     }
 }

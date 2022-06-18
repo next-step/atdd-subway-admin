@@ -7,6 +7,7 @@ import java.util.Arrays;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("구간 리스트")
@@ -28,103 +29,111 @@ class SectionsTest {
         역삼_선릉_구간 = Section.of(역삼역, 선릉역, 10);
     }
 
-    @Test
-    @DisplayName("구간을 추가하면 구간 리스트에 구간이 추가된다.")
-    void 구간_추가() {
-        Sections sections = new Sections();
-        sections.add(강남_역삼_구간);
+    @Nested
+    @DisplayName("구간 추가")
+    class 추가 {
+        @Test
+        @DisplayName("구간을 추가하면 구간 리스트에 구간이 추가된다.")
+        void 구간_추가() {
+            Sections sections = new Sections();
+            sections.add(강남_역삼_구간);
 
-        assertThat(sections.size()).isEqualTo(1);
+            assertThat(sections.size()).isEqualTo(1);
+        }
+
+        @Test
+        @DisplayName("상행역이 같은 구간을 추가하면 기존 구간의 상행역을 새로운 구간의 하행역으로 변경되고 새로운 구간이 추가된다.")
+        void 상행역이_같은_구간_추가() {
+            Sections sections = new Sections();
+
+            Section 강남_선릉_구간 = Section.of(강남역, 선릉역, 15);
+            sections.add(강남_선릉_구간);
+            sections.add(강남_역삼_구간);
+
+            assertThat(sections.get()).containsExactlyInAnyOrder(강남_역삼_구간, 역삼_선릉_구간);
+        }
+
+        @Test
+        @DisplayName("하행역이 같은 구간을 추가하면 기존 구간의 하행역을 새로운 구간의 상행역으로 변경되고 새로운 구간이 추가된다.")
+        void 하행역이_같은_구간_추가() {
+            Sections sections = new Sections();
+
+            Section 강남_선릉_구간 = Section.of(강남역, 선릉역, 15);
+            sections.add(강남_선릉_구간);
+            sections.add(역삼_선릉_구간);
+
+            assertThat(sections.get()).containsExactlyInAnyOrder(강남_역삼_구간, 역삼_선릉_구간);
+        }
+
+        @Test
+        @DisplayName("상하행역 모두 다른 역을 가진 구간을 추가하면 예외를 발생시킨다.")
+        void 상하행역_모두_다른_구간_추가() {
+            Station 삼성역 = new Station("삼성역");
+            Section 선릉_삼성_구간 = Section.of(선릉역, 삼성역, 7);
+
+            Sections sections = new Sections();
+            sections.add(강남_역삼_구간);
+
+            assertThatThrownBy(() -> sections.add(선릉_삼성_구간)).isInstanceOf(IllegalArgumentException.class);
+        }
+
+        @Test
+        @DisplayName("기존 구간의 상행 또는 하행역과 같은 역을 가진 역을 추가할 수 있다.")
+        void 새로운_상행_종점_등록() {
+            Sections sections = new Sections();
+
+            sections.add(역삼_선릉_구간);
+            sections.add(강남_역삼_구간);
+
+            assertThat(sections.get()).containsExactlyInAnyOrder(강남_역삼_구간, 역삼_선릉_구간);
+        }
     }
 
-    @Test
-    @DisplayName("상행역이 같은 구간을 추가하면 기존 구간의 상행역을 새로운 구간의 하행역으로 변경되고 새로운 구간이 추가된다.")
-    void 상행역이_같은_구간_추가() {
-        Sections sections = new Sections();
+    @Nested
+    @DisplayName("구간 삭제")
+    class 삭제 {
+        @Test
+        @DisplayName("상하행 종점역을 삭제하면 삭제된다.")
+        void 종점역_삭제() {
+            Sections sections = new Sections();
+            sections.add(강남_역삼_구간);
+            sections.add(역삼_선릉_구간);
 
-        Section 강남_선릉_구간 = Section.of(강남역, 선릉역, 15);
-        sections.add(강남_선릉_구간);
-        sections.add(강남_역삼_구간);
+            sections.delete(강남역);
+            assertThat(sections.getAllStation()).containsExactlyInAnyOrder(역삼역, 선릉역);
+        }
 
-        assertThat(sections.get()).containsExactlyInAnyOrder(강남_역삼_구간, 역삼_선릉_구간);
-    }
+        @Test
+        @DisplayName("중간역을 삭제하면 삭제된다.")
+        void 중간역_삭제() {
+            Sections sections = new Sections();
+            sections.add(강남_역삼_구간);
+            sections.add(역삼_선릉_구간);
 
-    @Test
-    @DisplayName("하행역이 같은 구간을 추가하면 기존 구간의 하행역을 새로운 구간의 상행역으로 변경되고 새로운 구간이 추가된다.")
-    void 하행역이_같은_구간_추가() {
-        Sections sections = new Sections();
+            sections.delete(역삼역);
+            assertThat(sections.getAllStation()).containsExactlyInAnyOrder(강남역, 선릉역);
+        }
 
-        Section 강남_선릉_구간 = Section.of(강남역, 선릉역, 15);
-        sections.add(강남_선릉_구간);
-        sections.add(역삼_선릉_구간);
+        @Test
+        @DisplayName("구간이 하나일 때 역을 삭제하면 예외를 발생시킨다.")
+        void 구간이_하나일_때_삭제() {
+            Sections sections = new Sections();
+            sections.add(강남_역삼_구간);
 
-        assertThat(sections.get()).containsExactlyInAnyOrder(강남_역삼_구간, 역삼_선릉_구간);
-    }
+            assertThatThrownBy(() -> sections.delete(역삼역)).isInstanceOf(IllegalStateException.class);
+        }
 
-    @Test
-    @DisplayName("상하행역 모두 다른 역을 가진 구간을 추가하면 예외를 발생시킨다.")
-    void 상하행역_모두_다른_구간_추가() {
-        Station 삼성역 = new Station("삼성역");
-        Section 선릉_삼성_구간 = Section.of(선릉역, 삼성역, 7);
+        @Test
+        @DisplayName("구간에 없는 역 삭제 시 예외를 발생시킨다.")
+        void 구간에_없는_역_삭제() {
+            Station 삼성역 = new Station("삼성역");
 
-        Sections sections = new Sections();
-        sections.add(강남_역삼_구간);
+            Sections sections = new Sections();
+            sections.add(강남_역삼_구간);
+            sections.add(역삼_선릉_구간);
 
-        assertThatThrownBy(() -> sections.add(선릉_삼성_구간)).isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    @DisplayName("기존 구간의 상행 또는 하행역과 같은 역을 가진 역을 추가할 수 있다.")
-    void 새로운_상행_종점_등록() {
-        Sections sections = new Sections();
-
-        sections.add(역삼_선릉_구간);
-        sections.add(강남_역삼_구간);
-
-        assertThat(sections.get()).containsExactlyInAnyOrder(강남_역삼_구간, 역삼_선릉_구간);
-    }
-
-    @Test
-    @DisplayName("상하행 종점역을 삭제하면 삭제된다.")
-    void 종점역_삭제() {
-        Sections sections = new Sections();
-        sections.add(강남_역삼_구간);
-        sections.add(역삼_선릉_구간);
-
-        sections.delete(강남역);
-        assertThat(sections.getAllStation()).containsExactlyInAnyOrder(역삼역, 선릉역);
-    }
-
-    @Test
-    @DisplayName("중간역을 삭제하면 삭제된다.")
-    void 중간역_삭제() {
-        Sections sections = new Sections();
-        sections.add(강남_역삼_구간);
-        sections.add(역삼_선릉_구간);
-
-        sections.delete(역삼역);
-        assertThat(sections.getAllStation()).containsExactlyInAnyOrder(강남역, 선릉역);
-    }
-
-    @Test
-    @DisplayName("구간이 하나일 때 역을 삭제하면 예외를 발생시킨다.")
-    void 구간이_하나일_때_삭제() {
-        Sections sections = new Sections();
-        sections.add(강남_역삼_구간);
-
-        assertThatThrownBy(() -> sections.delete(역삼역)).isInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    @DisplayName("구간에 없는 역 삭제 시 예외를 발생시킨다.")
-    void 구간에_없는_역_삭제() {
-        Station 삼성역 = new Station("삼성역");
-
-        Sections sections = new Sections();
-        sections.add(강남_역삼_구간);
-        sections.add(역삼_선릉_구간);
-
-        assertThatThrownBy(() -> sections.delete(삼성역)).isInstanceOf(IllegalArgumentException.class);
+            assertThatThrownBy(() -> sections.delete(삼성역)).isInstanceOf(IllegalArgumentException.class);
+        }
     }
 
     @Test
