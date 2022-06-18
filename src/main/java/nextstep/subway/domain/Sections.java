@@ -75,21 +75,36 @@ public class Sections {
     }
 
     public void delete(Station station) {
+        validSectionsSizeCheck();
         Section upSection = sections.stream()
                 .filter(section -> section.getDownStation().equals(station))
                 .findFirst()
-                .orElse(null);
+                .orElse(Section.empty());
 
         Section downSection = sections.stream()
                 .filter(section -> section.getUpStation().equals(station))
                 .findFirst()
-                .orElse(null);
+                .orElse(Section.empty());
 
-        if (upSection != null && downSection != null) {
+        if (isValidContains(upSection, downSection)) {
             createSection(upSection, downSection);
         }
 
         removeSection(upSection, downSection);
+    }
+
+    private void validSectionsSizeCheck() {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException("구간이 하나인 노선인 경우 구간 삭제 할 수 없습니다.");
+        }
+    }
+
+    private boolean isValidContains(Section upSection, Section downSection) {
+        if (upSection.isEmpty() && downSection.isEmpty()) {
+            throw new IllegalArgumentException("노선에 등록된 역이 아닙니다.");
+        }
+
+        return true;
     }
 
     private void createSection(Section upSection, Section downSection) {

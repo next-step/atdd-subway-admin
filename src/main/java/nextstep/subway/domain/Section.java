@@ -35,6 +35,10 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, distance, line);
     }
 
+    public static Section empty() {
+        return new Section();
+    }
+
     public boolean isContains(Station station) {
         return upStation == station || downStation == station;
     }
@@ -54,6 +58,19 @@ public class Section extends BaseEntity {
         if (this.getDownStation().equals(newSection.getDownStation())) {
             this.downStation = newSection.getUpStation();
         }
+    }
+
+    public boolean isEmpty() {
+        if (this.id == null &&
+            this.upStation == null &&
+            this.downStation == null &&
+            this.line == null &&
+            this.distance == null) {
+
+            return true;
+        }
+
+        return false;
     }
 
     public Long getId() {
