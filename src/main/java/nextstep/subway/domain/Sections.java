@@ -117,6 +117,22 @@ public class Sections {
         return downStations.get(0);
     }
 
+    public Optional<Section> geUpFinalSection() {
+        if (sections.isEmpty()) {
+            throw new NoSuchElementException("지하철 구간이 존재하지 않습니다.");
+        }
+        Station upFinalStation = getUpFinalStation();
+        return getSectionByUpStation(upFinalStation);
+    }
+
+    public Optional<Section> getDownFinalSection() {
+        if (sections.isEmpty()) {
+            throw new NoSuchElementException("지하철 구간이 존재하지 않습니다.");
+        }
+        Station downFinalStation = getDownFinalStation();
+        return getSectionByDownStation(downFinalStation);
+    }
+
     private Optional<Section> getSectionByUpStation(Station upStation) {
         return sections.stream()
                 .filter(section -> section.getUpStation().equals(upStation))

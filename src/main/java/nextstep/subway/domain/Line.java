@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -85,17 +86,15 @@ public class Line extends BaseEntity {
     }
 
     public Section getUpFinalSection() {
-        if (sections.isEmpty()) {
-            throw new NoSuchElementException("지하철 구간이 존재하지 않습니다.");
-        }
-        return sections.getSectionsInOrder().get(0);
+        Optional<Section> upFinalSection = sections.geUpFinalSection();
+        return upFinalSection
+                .orElseThrow(() -> new NoSuchElementException("상행종점 구간이 존재하지 않습니다."));
     }
 
     public Section getDownFinalSection() {
-        if (sections.isEmpty()) {
-            throw new NoSuchElementException("지하철 구간이 존재하지 않습니다.");
-        }
-        return sections.getSectionsInOrder().get(sections.size()-1);
+        Optional<Section> downFinalSection = sections.getDownFinalSection();
+        return downFinalSection
+                .orElseThrow(() -> new NoSuchElementException("하행종점 구간이 존재하지 않습니다."));
     }
 
     @Override
