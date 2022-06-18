@@ -5,10 +5,13 @@ import java.util.stream.Collectors;
 import nextstep.subway.line.domain.Line;
 
 public class LineResponseDto {
-    private final Long id;
-    private final String name;
-    private final String color;
-    private final List<StationDto> stations;
+    private Long id;
+    private String name;
+    private String color;
+    private List<StationDto> stations;
+
+    private LineResponseDto() {
+    }
 
     private LineResponseDto(Long id, String name, String color, List<StationDto> stations) {
         this.id = id;

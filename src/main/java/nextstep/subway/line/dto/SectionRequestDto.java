@@ -5,7 +5,7 @@ public class SectionRequestDto {
     private Long downStationId;
     private Integer distance;
 
-    SectionRequestDto() {
+    private SectionRequestDto() {
     }
 
     public SectionRequestDto(Long upStationId, Long downStationId, int distance) {
