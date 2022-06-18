@@ -40,8 +40,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 노선의 구간과 동일한 상행역 또는 동일한 하행역을 가지는 구간을 추가하면
-     * Then 그 구간의 상행역과 하행역 사이에 새로운 역이 추가된다.
+     * When 노선의 구간과 동일한 상행역 또는 동일한 하행역을 가지는 구간을 추가하면 Then 그 구간의 상행역과 하행역 사이에 새로운 역이 추가된다.
      */
     @Test
     @DisplayName("노선에 구간을 추가하면 조회 시 생성한 노선을 찾을 수 있다.")
@@ -60,8 +59,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 새로운 역을 상행으로 상행역을 하행역인 구간을 추가하면
-     * Then 노선은 새로운 역을 상행 종점으로 가진다.
+     * When 새로운 역을 상행으로 상행역을 하행역인 구간을 추가하면 Then 노선은 새로운 역을 상행 종점으로 가진다.
      */
     @Test
     @DisplayName("노선에 새로운 역을 상행으로 기존 상행역을 하행역으로 가지는 구간을 추가하면 새로운 역이 상행 종점이 된다.")
@@ -79,8 +77,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 하행 종점역을 상행역으로 새로운 역을 하행역인 구간을 추가하면
-     * Then 노선은 새로운 역을 하행 종점역으로 가진다.
+     * When 하행 종점역을 상행역으로 새로운 역을 하행역인 구간을 추가하면 Then 노선은 새로운 역을 하행 종점역으로 가진다.
      */
     @Test
     @DisplayName("노선에 기존 하행 종점역을 상행역으로 새로운 역을 하행행으로 가지는 구간을 추가하면 새로운 역이 하행 종점이 된다.")
@@ -98,10 +95,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Scenario: 역 사이에 새로운 역을 등록한다.
-     *   Given 주어진 노선에
-     *   When 기존 역 사이 거리보다 크거나 같은 거리의 구간을 추가하면
-     *   Then 400 Bad Request를 반환한다.
+     * Scenario: 역 사이에 새로운 역을 등록한다. Given 주어진 노선에 When 기존 역 사이 거리보다 크거나 같은 거리의 구간을 추가하면 Then 400 Bad Request를 반환한다.
      */
     @Test
     @DisplayName("역 사이에 새로운 역을 추가할 때 기존 구간의 거리보다 크거나 같은 거리의 구간을 추가할 수 없다.")
@@ -117,10 +111,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Scenario: 노선에 상행역과 하행역이 모두 등록된 경우
-     *   Given 주어진 노선에
-     *   When 등록된 역을 상행과 하행역으로 가지는 구간을 추가하면
-     *   Then 400 Bad Request를 반환한다.
+     * Scenario: 노선에 상행역과 하행역이 모두 등록된 경우 Given 주어진 노선에 When 등록된 역을 상행과 하행역으로 가지는 구간을 추가하면 Then 400 Bad Request를 반환한다.
      */
     @Test
     @DisplayName("노선에 상하행역 모두 같은 구간이 존재하면 추가할 수 없다.")
@@ -135,10 +126,8 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Scenario: 새로운 구간에 노선의 상행역과 하행역 둘 중 하나도 포함되지 않은 경우
-     *   Given 주어진 노선에
-     *   When 등록되지 않은 역을 상행과 하행역으로 가지는 구간을 추가하면
-     *   Then 400 Bad Request를 반환한다.
+     * Scenario: 새로운 구간에 노선의 상행역과 하행역 둘 중 하나도 포함되지 않은 경우 Given 주어진 노선에 When 등록되지 않은 역을 상행과 하행역으로 가지는 구간을 추가하면 Then 400
+     * Bad Request를 반환한다.
      */
     @Test
     @DisplayName("추가할 구간에 기존 상행역이나 하행역과 동일하지 않으면 추가할 수 없다.")
@@ -154,6 +143,27 @@ class SectionAcceptanceTest extends AcceptanceTest {
         응답코드_검증(response, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * Scenario: 종점역을 제거한다. When 종점역을 제거하면 Then 종점역의 바로 다음 혹은 바로 이전 역이 종점이 된다.
+     */
+    @Test
+    void 종점역_삭제() {
+        Long 역삼역 = 지하철역_생성("역삼역");
+        SectionRequestDto sectionRequestDto = new SectionRequestDto(강남역, 역삼역, 4);
+
+        // Given 강남역 > 역삼역 > 선릉역
+        구간_추가(sectionRequestDto, 노선);
+
+        // When 강남역 제거
+        ExtractableResponse<Response> response = 구간_삭제(노선, 강남역);
+
+        // Then 역삼역 > 선릉역
+        응답코드_검증(response, HttpStatus.NO_CONTENT);
+
+        List<String> 역_이름 = 역_이름_추출(지하철노선_아이디로_조회(노선));
+        assertThat(역_이름).containsExactlyInAnyOrder("역삼역", "선릉역");
+    }
+
     private ExtractableResponse<Response> 구간_추가(SectionRequestDto sectionRequestDto, Long lineId) {
         return RestAssured.given().log().all()
                 .body(sectionRequestDto).contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -162,7 +172,17 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     private void 노선의_지하철역_검증(String 역이름) {
-        List<String> stationNames = 지하철노선_아이디로_조회(노선).jsonPath().getList("stations.name", String.class);
+        List<String> stationNames = 역_이름_추출(지하철노선_아이디로_조회(노선));
         assertThat(stationNames).containsAnyOf(역이름);
+    }
+
+    private List<String> 역_이름_추출(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("stations.name", String.class);
+    }
+
+    private ExtractableResponse<Response> 구간_삭제(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .when().delete(String.format("/lines/%d/sections?stationId=%d", lineId, stationId))
+                .then().log().all().extract();
     }
 }

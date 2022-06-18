@@ -70,4 +70,8 @@ public class Line {
         this.name = new LineName(name);
         this.color = new LineColor(color);
     }
+
+    public void deleteStation(Station station) {
+        sections.delete(station);
+    }
 }

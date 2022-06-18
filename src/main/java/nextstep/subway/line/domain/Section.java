@@ -56,6 +56,10 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, new Distance(distance));
     }
 
+    public boolean hasStation(Station station) {
+        return getStations().contains(station);
+    }
+
     public boolean hasSameUpOrDownStation(Section section) {
         return hasSameUpStation(section) || hasSameDownStation(section);
     }
@@ -124,12 +128,8 @@ public class Section extends BaseEntity {
 
     @Override
     public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                '}';
+        return "Section{" + "id=" + id + ", upStation=" + upStation + ", downStation=" + downStation + ", distance="
+                + distance + '}';
     }
 
     @Override

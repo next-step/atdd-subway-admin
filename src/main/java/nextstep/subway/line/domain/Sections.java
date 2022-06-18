@@ -54,6 +54,14 @@ public class Sections {
         return values.size();
     }
 
+    public void delete(Station station) {
+        Section sectionToDelete = values.stream()
+                .filter(section -> section.hasStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("해당 역(%s)을 찾을 수 없습니다.")));
+        values.remove(sectionToDelete);
+    }
+
     public void add(Section newSection) {
         if (Objects.isNull(newSection)) {
             return;

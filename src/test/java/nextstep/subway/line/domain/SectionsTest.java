@@ -85,6 +85,17 @@ class SectionsTest {
     }
 
     @Test
+    @DisplayName("상하행 종점역을 삭제하면 삭제된다.")
+    void 종점역_삭제() {
+        Sections sections = new Sections();
+        sections.add(강남_역삼_구간);
+        sections.add(역삼_선릉_구간);
+
+        sections.delete(강남역);
+        assertThat(sections.getAllStation()).containsExactlyInAnyOrder(역삼역, 선릉역);
+    }
+
+    @Test
     @DisplayName("모든 구간의 거리의 합을 계산한다.")
     void 구간_총_거리() {
         Sections sections = 구간_리스트_생성(강남_역삼_구간, 역삼_선릉_구간);

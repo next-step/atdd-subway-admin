@@ -30,6 +30,13 @@ class SectionTest {
     }
 
     @Test
+    @DisplayName("입력받은 아이디를 가진 역이 구간에 포함되는지 확인할 수 있다.")
+    void 같은_역_포함_여부() {
+        assertAll(() -> assertThat(강남_선릉_구간.hasStation(강남역)).isTrue(),
+                () -> assertThat(강남_선릉_구간.hasStation(역삼역)).isFalse());
+    }
+
+    @Test
     @DisplayName("입력받은 구간과 같은 상행역 또는 하행역을 가지는지 확인할 수 있다.")
     void 같은_상행_또는_하행역_포함_여부() {
         assertAll(() -> assertThat(역삼_선릉_구간.hasSameUpOrDownStation(강남_역삼_구간)).isFalse(),
