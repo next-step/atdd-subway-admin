@@ -50,6 +50,10 @@ public class Line {
         sections.add(section);
     }
 
+    public void deleteStation(Station station) {
+        sections.delete(station);
+    }
+
     public Long getId() {
         return id;
     }
@@ -69,9 +73,5 @@ public class Line {
     public void update(String name, String color) {
         this.name = new LineName(name);
         this.color = new LineColor(color);
-    }
-
-    public void deleteStation(Station station) {
-        sections.delete(station);
     }
 }
