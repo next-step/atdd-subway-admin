@@ -17,17 +17,7 @@ public class Sections {
 
     public void add(Section section) {
         checkValidation(section);
-        if (hasNextStation(section.getUpStationId())) {
-            this.sections.stream()
-                    .filter(it -> it.sameUpStation(section.getUpStationId()))
-                    .findFirst()
-                    .ifPresent(it ->
-                            {
-                                it.updateUpStationId(section.getDownStationId());
-                                it.calculateDistance(section.getDistance());
-                            }
-                    );
-        }
+        checkAddBetweenExistSection(section);
         this.sections.add(section);
     }
 
@@ -59,6 +49,20 @@ public class Sections {
 
         if (!uniqueIds.contains(target.getUpStationId()) && !uniqueIds.contains(target.getDownStationId())) {
             throw new IllegalArgumentException("노선에 등록된 역이 없습니다.");
+        }
+    }
+
+    private void checkAddBetweenExistSection(Section section) {
+        if (hasNextStation(section.getUpStationId())) {
+            this.sections.stream()
+                    .filter(it -> it.sameUpStation(section.getUpStationId()))
+                    .findFirst()
+                    .ifPresent(it ->
+                            {
+                                it.updateUpStationId(section.getDownStationId());
+                                it.calculateDistance(section.getDistance());
+                            }
+                    );
         }
     }
 

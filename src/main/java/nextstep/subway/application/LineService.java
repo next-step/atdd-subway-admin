@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -20,6 +20,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line line = lineRequest.toLine();
         line.addSection(
@@ -44,16 +45,19 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         line.modify(lineRequest);
         lineRepository.save(line);
     }
 
+    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
     public LineResponse addSection(Long id, SectionRequest request) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         line.addSection(new Section(request));
