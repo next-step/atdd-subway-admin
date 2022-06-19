@@ -129,4 +129,20 @@ class SectionsTest {
         신분당선_구간.delete(광교역.getId());
         assertThat(신분당선_구간.toLineStationIds()).doesNotContain(광교역.getId());
     }
+
+    @Test
+    @DisplayName("구간이 하나만 있을 경우 삭제시 오류")
+    void errorDeleteOnlyOneSection() {
+        신분당선_구간.delete(판교역.getId());
+        assertThatThrownBy(() -> 신분당선_구간.delete(강남역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("구간에 없는 역을 삭제할 경우 오류")
+    void errorDeleteUnknownStation() {
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+        assertThatThrownBy(() -> 신분당선_구간.delete(양재역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
