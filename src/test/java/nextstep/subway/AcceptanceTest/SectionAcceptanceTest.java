@@ -210,6 +210,81 @@ class SectionAcceptanceTest {
         assertThat(response.asString()).isEqualTo("노선에 등록된 역이 없습니다.");
     }
 
+    /**
+     * Given 지하철 노선에 하나 이상의 구간을 등록한다.
+     * When 등록된 지하철역을 삭제한다.
+     * Then 노선의 지하철역 삭제를 성공한다.
+     */
+    @DisplayName("기존에 등록된 지하철역을 삭제한다.")
+    @Test
+    void deleteStation() {
+        // Given
+
+        // when
+
+        // then
+    }
+
+    /**
+     * Given 지하철 노선에 하나 이상의 구간을 등록한다.
+     * When 등록된 상행 지하철역을 삭제한다.
+     * Then 노선의 지하철역 삭제를 성공한다.
+     * Then 노선의 지하철역 재배치에 성공한다.
+     */
+    @DisplayName("상행 종점역을 삭제한다.")
+    @Test
+    void deleteFirstStation() {
+        // Given
+
+        // when
+
+        // then
+    }
+
+    /**
+     * Given 지하철 노선에 하나 이상의 구간을 등록한다.
+     * When 등록된 하행 지하철역을 삭제한다.
+     * Then 노선의 지하철역 삭제를 성공한다.
+     * Then 노선의 지하철역 재배치에 성공한다.
+     */
+    @DisplayName("하행 종점역을 삭제한다.")
+    @Test
+    void deleteLastStation() {
+        // Given
+
+        // when
+
+        // then
+    }
+
+    /**
+     * When 등록된 구간이 하나인 역을 삭제한다.
+     * Then 구간 제거가 실패한다.
+     */
+    @DisplayName("구간이 하나일때 노선을 삭제하려고 할 경우 오류발생")
+    @Test
+    void errorDeleteStationOnlyOne() {
+        // Given
+
+        // when
+
+        // then
+    }
+
+    /**
+     * When 구간에 없는 역을 삭제한다.
+     * Then 구간 제거가 실패한다.
+     */
+    @DisplayName("노선에 없는 역을 삭제하려고 할 경우 오류 발생")
+    @Test
+    void errorDeleteUnknownStation() {
+        // Given
+
+        // when
+
+        // then
+    }
+
     private List<String> getLineStationNames(Long id) {
         return lineApi.findById(id).jsonPath().getList("stations.name");
     }
