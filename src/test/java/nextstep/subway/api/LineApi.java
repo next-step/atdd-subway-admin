@@ -56,4 +56,10 @@ public class LineApi extends BaseApi {
                 .when().post(super.baseUrl + "/" + id + "/sections")
                 .then().log().all().extract();
     }
+
+    public ExtractableResponse<Response> deleteSection(Long id, Long stationId) {
+        return RestAssured.given().log().all()
+                .when().delete(super.baseUrl + "/" + id + "/sections?stationId=" + stationId)
+                .then().log().all().extract();
+    }
 }

@@ -219,10 +219,15 @@ class SectionAcceptanceTest {
     @Test
     void deleteStation() {
         // Given
+        Long 양재역 = stationApi.createId("양재역");
+        lineApi.addSection(신분당선, 강남역, 양재역, 50);
 
         // when
+        ExtractableResponse<Response> response
+                = lineApi.deleteSection(신분당선, 양재역);
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     /**
@@ -235,10 +240,16 @@ class SectionAcceptanceTest {
     @Test
     void deleteFirstStation() {
         // Given
+        Long 양재역 = stationApi.createId("양재역");
+        lineApi.addSection(신분당선, 강남역, 양재역, 50);
 
         // when
+        ExtractableResponse<Response> response
+                = lineApi.deleteSection(신분당선, 강남역);
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(getLineStationNames(신분당선)).containsExactly("양재약", "광교역");
     }
 
     /**
@@ -251,10 +262,16 @@ class SectionAcceptanceTest {
     @Test
     void deleteLastStation() {
         // Given
+        Long 양재역 = stationApi.createId("양재역");
+        lineApi.addSection(신분당선, 강남역, 양재역, 50);
 
         // when
+        ExtractableResponse<Response> response
+                = lineApi.deleteSection(신분당선, 광교역);
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(getLineStationNames(신분당선)).containsExactly("강남역", "양재역");
     }
 
     /**
@@ -264,25 +281,30 @@ class SectionAcceptanceTest {
     @DisplayName("구간이 하나일때 노선을 삭제하려고 할 경우 오류발생")
     @Test
     void errorDeleteStationOnlyOne() {
-        // Given
-
         // when
+        ExtractableResponse<Response> response
+                = lineApi.deleteSection(신분당선, 강남역);
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
+     * Given 구간에 등록하지 않을 역을 하나 생성한다.
      * When 구간에 없는 역을 삭제한다.
      * Then 구간 제거가 실패한다.
      */
     @DisplayName("노선에 없는 역을 삭제하려고 할 경우 오류 발생")
     @Test
     void errorDeleteUnknownStation() {
-        // Given
+        Long 양재역 = stationApi.createId("양재역");
 
         // when
+        ExtractableResponse<Response> response
+                = lineApi.deleteSection(신분당선, 양재역);
 
         // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private List<String> getLineStationNames(Long id) {
