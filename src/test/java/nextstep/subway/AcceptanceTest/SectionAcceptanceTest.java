@@ -210,6 +210,104 @@ class SectionAcceptanceTest {
         assertThat(response.asString()).isEqualTo("노선에 등록된 역이 없습니다.");
     }
 
+    /**
+     * Given 지하철 노선에 하나 이상의 구간을 등록한다.
+     * When 등록된 지하철역을 삭제한다.
+     * Then 노선의 지하철역 삭제를 성공한다.
+     */
+    @DisplayName("기존에 등록된 지하철역을 삭제한다.")
+    @Test
+    void deleteStation() {
+        // Given
+        Long 양재역 = stationApi.createId("양재역");
+        lineApi.addSection(신분당선, 강남역, 양재역, 50);
+
+        // when
+        ExtractableResponse<Response> response
+                = lineApi.deleteSection(신분당선, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(getLineStationNames(신분당선)).containsExactly("강남역", "광교역");
+    }
+
+    /**
+     * Given 지하철 노선에 하나 이상의 구간을 등록한다.
+     * When 등록된 상행 지하철역을 삭제한다.
+     * Then 노선의 지하철역 삭제를 성공한다.
+     * Then 노선의 지하철역 재배치에 성공한다.
+     */
+    @DisplayName("상행 종점역을 삭제한다.")
+    @Test
+    void deleteFirstStation() {
+        // Given
+        Long 양재역 = stationApi.createId("양재역");
+        lineApi.addSection(신분당선, 강남역, 양재역, 50);
+
+        // when
+        ExtractableResponse<Response> response
+                = lineApi.deleteSection(신분당선, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(getLineStationNames(신분당선)).containsExactly("양재역", "광교역");
+    }
+
+    /**
+     * Given 지하철 노선에 하나 이상의 구간을 등록한다.
+     * When 등록된 하행 지하철역을 삭제한다.
+     * Then 노선의 지하철역 삭제를 성공한다.
+     * Then 노선의 지하철역 재배치에 성공한다.
+     */
+    @DisplayName("하행 종점역을 삭제한다.")
+    @Test
+    void deleteLastStation() {
+        // Given
+        Long 양재역 = stationApi.createId("양재역");
+        lineApi.addSection(신분당선, 강남역, 양재역, 50);
+
+        // when
+        ExtractableResponse<Response> response
+                = lineApi.deleteSection(신분당선, 광교역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(getLineStationNames(신분당선)).containsExactly("강남역", "양재역");
+    }
+
+    /**
+     * When 등록된 구간이 하나인 역을 삭제한다.
+     * Then 구간 제거가 실패한다.
+     */
+    @DisplayName("구간이 하나일때 노선을 삭제하려고 할 경우 오류발생")
+    @Test
+    void errorDeleteStationOnlyOne() {
+        // when
+        ExtractableResponse<Response> response
+                = lineApi.deleteSection(신분당선, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 구간에 등록하지 않을 역을 하나 생성한다.
+     * When 구간에 없는 역을 삭제한다.
+     * Then 구간 제거가 실패한다.
+     */
+    @DisplayName("노선에 없는 역을 삭제하려고 할 경우 오류 발생")
+    @Test
+    void errorDeleteUnknownStation() {
+        Long 양재역 = stationApi.createId("양재역");
+
+        // when
+        ExtractableResponse<Response> response
+                = lineApi.deleteSection(신분당선, 양재역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private List<String> getLineStationNames(Long id) {
         return lineApi.findById(id).jsonPath().getList("stations.name");
     }

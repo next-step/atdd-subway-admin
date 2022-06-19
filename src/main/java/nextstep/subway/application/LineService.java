@@ -33,8 +33,7 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        return toLineResponse(line);
+        return toLineResponse(lineById(id));
     }
 
     public List<LineResponse> findAllLines() {
@@ -47,7 +46,7 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineById(id);
         line.modify(lineRequest);
         lineRepository.save(line);
     }
@@ -59,9 +58,19 @@ public class LineService {
 
     @Transactional
     public LineResponse addSection(Long id, SectionRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineById(id);
         line.addSection(new Section(request));
         return toLineResponse(line);
+    }
+
+    @Transactional
+    public void deleteSection(Long id, Long stationId) {
+        Line line = lineById(id);
+        line.deleteSection(stationId);
+    }
+
+    private Line lineById(Long id) {
+        return lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
     }
 
     private LineResponse toLineResponse(Line line) {

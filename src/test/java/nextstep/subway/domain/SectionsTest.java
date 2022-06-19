@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간 도메인 테스트")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
 class SectionsTest {
     @Autowired
     DatabaseCleaner databaseCleaner;
@@ -97,6 +97,52 @@ class SectionsTest {
         Station 선릉역 = stationRepository.save(new Station("선릉역"));
         Station 삼성역 = stationRepository.save(new Station("삼성역"));
         assertThatThrownBy(() -> 신분당선_구간.add(new Section(선릉역.getId(), 삼성역.getId(), 100)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("가운데역이 삭제되고 거리가 계산이 정상적으로 되는지 검증")
+    void deleteBetween() {
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+        신분당선_구간.add(new Section(강남역.getId(), 양재역.getId(), 100));
+        assertThat(신분당선_구간.findSectionUpStationId(강남역.getId()).getDistance()).isEqualTo(100);
+        assertThat(신분당선_구간.findSectionUpStationId(양재역.getId()).getDistance()).isEqualTo(400);
+        신분당선_구간.delete(양재역.getId());
+        assertThat(신분당선_구간.toLineStationIds()).doesNotContain(양재역.getId());
+        assertThat(신분당선_구간.findSectionUpStationId(강남역.getId()).getDistance()).isEqualTo(500);
+    }
+
+    @Test
+    @DisplayName("상행 종점역 삭제 검증")
+    void deleteEndUpStation() {
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+        신분당선_구간.add(new Section(강남역.getId(), 양재역.getId(), 100));
+        신분당선_구간.delete(강남역.getId());
+        assertThat(신분당선_구간.toLineStationIds()).doesNotContain(강남역.getId());
+    }
+
+    @Test
+    @DisplayName("하행 종점역 삭제 검증")
+    void deleteEndDownStation() {
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+        신분당선_구간.add(new Section(강남역.getId(), 양재역.getId(), 100));
+        신분당선_구간.delete(광교역.getId());
+        assertThat(신분당선_구간.toLineStationIds()).doesNotContain(광교역.getId());
+    }
+
+    @Test
+    @DisplayName("구간이 하나만 있을 경우 삭제시 오류")
+    void errorDeleteOnlyOneSection() {
+        신분당선_구간.delete(판교역.getId());
+        assertThatThrownBy(() -> 신분당선_구간.delete(강남역.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    @DisplayName("구간에 없는 역을 삭제할 경우 오류")
+    void errorDeleteUnknownStation() {
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+        assertThatThrownBy(() -> 신분당선_구간.delete(양재역.getId()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

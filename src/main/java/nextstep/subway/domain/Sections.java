@@ -13,9 +13,18 @@ public class Sections {
     }
 
     public void add(Section section) {
-        checkValidation(section);
+        checkAddValidation(section);
         checkAddBetweenExist(section);
         this.sections.add(section);
+    }
+
+    public void delete(Long stationId) {
+        checkDeleteValidation(stationId);
+        deleteBetweenExist(stationId);
+    }
+
+    public Section findSectionUpStationId(Long upStationId) {
+        return hasStation(upStationId, SectionExistType.UP_STATION).orElseThrow(IllegalArgumentException::new);
     }
 
     public List<Long> toLineStationIds() {
@@ -33,7 +42,7 @@ public class Sections {
         return stations;
     }
 
-    private void checkValidation(Section target) {
+    private void checkAddValidation(Section target) {
         if (this.sections.isEmpty()) {
             return;
         }
@@ -53,16 +62,62 @@ public class Sections {
         SectionExistType existType = null;
         if (hasNextStation(section.getUpStationId())) {
             existType = SectionExistType.UP_STATION;
-        } else if (hasPrevStation(section.getDownStationId())) {
+        }
+        if (hasPrevStation(section.getDownStationId())) {
             existType = SectionExistType.DOWN_STATION;
         }
+        relocationAddSection(section, existType);
+    }
+
+    private void relocationAddSection(Section section, SectionExistType existType) {
         if (existType != null) {
-            SectionExistType finalExistType = existType;
             this.sections.stream()
-                    .filter(it -> it.sameStation(section, finalExistType))
+                    .filter(it -> it.sameStation(section, existType))
                     .findFirst()
-                    .ifPresent(it -> it.updateExistOf(section, finalExistType));
+                    .ifPresent(it -> it.updateExistOf(section, existType));
         }
+    }
+
+    private void checkDeleteValidation(Long stationId) {
+        Set<Long> uniqueIds = getUniqueIdsOrderByUpStation();
+
+        if (uniqueIds.size() <= 2) {
+            throw new IllegalArgumentException("하나의 구간만 존재해서 삭제할 수 없습니다.");
+        }
+
+        if (!uniqueIds.contains(stationId)) {
+            throw new IllegalArgumentException("노선에 등록된 역이 없습니다.");
+        }
+    }
+
+    private void deleteBetweenExist(Long stationId) {
+        if (hasPrevStation(stationId) && hasNextStation(stationId)) {
+            Section deleteSection = hasStation(stationId, SectionExistType.UP_STATION)
+                    .orElseThrow(IllegalArgumentException::new);
+            relocationDeleteSection(hasStation(stationId, SectionExistType.DOWN_STATION)
+                    .orElseThrow(IllegalArgumentException::new), deleteSection);
+            removeSection(deleteSection);
+            this.sections.remove(deleteSection);
+            return;
+        }
+
+        if (hasPrevStation(stationId)) {
+            removeSection(hasStation(stationId, SectionExistType.DOWN_STATION)
+                    .orElseThrow(IllegalArgumentException::new));
+        }
+
+        if (hasNextStation(stationId)) {
+            removeSection(hasStation(stationId, SectionExistType.UP_STATION)
+                    .orElseThrow(IllegalArgumentException::new));
+        }
+    }
+
+    private void removeSection(Section section) {
+        this.sections.remove(section);
+    }
+
+    private void relocationDeleteSection(Section upSection, Section downSection) {
+        upSection.updateDeleteExistOf(downSection);
     }
 
     private Long findFirstStation(Long stationId) {
@@ -74,22 +129,27 @@ public class Sections {
     }
 
     private Long prevStationId(Long stationId) {
-        return this.sections.stream()
-                .filter(it -> it.sameDownStation(stationId))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("이전 역이 없습니다.")).getUpStationId();
+        return hasStation(stationId, SectionExistType.DOWN_STATION)
+                .orElseThrow(() -> new IllegalArgumentException("이전 역이 없습니다.")).getUpStationId();
     }
 
     private boolean hasPrevStation(Long stationId) {
-        return this.sections.stream().anyMatch(it -> it.sameDownStation(stationId));
+        return hasStation(stationId, SectionExistType.DOWN_STATION).isPresent();
     }
 
+
     private Long nextStationId(Long stationId) {
-        return this.sections.stream()
-                .filter(it -> it.sameUpStation(stationId))
-                .findFirst().orElseThrow(() -> new IllegalArgumentException("다음 역이 없습니다.")).getDownStationId();
+        return hasStation(stationId, SectionExistType.UP_STATION)
+                .orElseThrow(() -> new IllegalArgumentException("다음 역이 없습니다.")).getDownStationId();
     }
 
     private boolean hasNextStation(Long stationId) {
-        return this.sections.stream().anyMatch(it -> it.sameUpStation(stationId));
+        return hasStation(stationId, SectionExistType.UP_STATION).isPresent();
+    }
+
+    private Optional<Section> hasStation(Long stationId, SectionExistType existType) {
+        return this.sections.stream()
+                .filter(it -> it.sameStationId(stationId, existType))
+                .findFirst();
     }
 }
