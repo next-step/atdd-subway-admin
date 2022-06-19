@@ -1,6 +1,8 @@
 package nextstep.subway.domain.line;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -15,8 +17,12 @@ public class Sections {
 
     }
 
-    public Sections(List<Section> sections) {
+    private Sections(List<Section> sections) {
         this.sections = sections;
+    }
+
+    public static Sections addFirstSection(Section section) {
+        return new Sections(Collections.singletonList(section));
     }
 
     public List<Section> getSections() {

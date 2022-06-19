@@ -1,5 +1,6 @@
 package nextstep.subway.domain.line;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -40,9 +41,18 @@ public class Line extends BaseEntity {
     )
     private Station downStation;
 
+    @Embedded
+    private Sections sections;
+
     private int distance;
 
+
     protected Line() {
+    }
+
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public Line(
@@ -57,6 +67,7 @@ public class Line extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.sections = Sections.addFirstSection(new Section(this, upStation, downStation, distance));
     }
 
     public Long getId() {
