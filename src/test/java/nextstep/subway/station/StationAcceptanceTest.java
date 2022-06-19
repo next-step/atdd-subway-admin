@@ -4,9 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
+import nextstep.subway.ResponseAssertTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.ArrayList;
@@ -22,6 +22,19 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     static final String rootPath = "/stations";
     static final List<String> stationNames = new ArrayList<>(Arrays.asList("수락산역", "마들역"));
 
+    public static ExtractableResponse<Response> 지하철역_생성_요청(String name) {
+        return RestAssured.given().log().all()
+            .body(new HashMap<String, String>() {
+                {
+                    put("name", name);
+                }
+            })
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post(rootPath)
+            .then().log().all()
+            .extract();
+    }
+
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -34,10 +47,10 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청(stationNames.get(0));
 
         // then
-        지하철역_생성완료(response.statusCode());
+        ResponseAssertTest.생성_확인(response);
 
         // then
-        ExtractableResponse<Response> getResponse = 지하철역_조회_요청();
+        ExtractableResponse<Response> getResponse = 지하철역_목록조회_요청();
         List<String> stationNamesOfResponse = getResponse.jsonPath().getList("name", String.class);
         assertThat(stationNamesOfResponse).containsAnyOf(stationNames.get(0));
     }
@@ -57,7 +70,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성_요청(stationNames.get(0));
 
         // then
-        지하철역_요청오류(response.statusCode());
+        ResponseAssertTest.요청오류_확인(response);
     }
 
     /**
@@ -74,11 +87,11 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         }
 
         // when
-        ExtractableResponse<Response> response = 지하철역_조회_요청();
+        ExtractableResponse<Response> response = 지하철역_목록조회_요청();
 
         // then
         assertAll(
-            () -> 지하철역_조회완료(response.statusCode()),
+            () -> ResponseAssertTest.성공_확인(response),
             () -> {
                 List<String> findStations = response.jsonPath().getList("name", String.class);
                 assertThat(findStations.size()).isEqualTo(stationNames.size());
@@ -100,13 +113,13 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
         // when
         Long stationId = createdResponse.jsonPath().getLong("id");
-        ExtractableResponse<Response> deleteResponse = requestDeleteStation(stationId);
+        ExtractableResponse<Response> deleteResponse = 지하철역_삭제_요청(stationId);
 
         // then
-        ExtractableResponse<Response> getResponse = 지하철역_조회_요청();
+        ExtractableResponse<Response> getResponse = 지하철역_목록조회_요청();
         assertAll(
-            () -> 지하철역_삭제완료(deleteResponse.statusCode()),
-            () -> 지하철역_조회완료(getResponse.statusCode()),
+            () -> ResponseAssertTest.빈응답_확인(deleteResponse),
+            () -> ResponseAssertTest.성공_확인(getResponse),
             () -> {
                 List<String> findStations = getResponse.jsonPath().getList("name", String.class);
                 assertThat(findStations.size()).isZero();
@@ -115,43 +128,14 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         );
     }
 
-    private void 지하철역_삭제완료(int deleteResponse) {
-        assertThat(deleteResponse).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private void 지하철역_생성완료(int response) {
-        assertThat(response).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    private void 지하철역_조회완료(int response) {
-        assertThat(response).isEqualTo(HttpStatus.OK.value());
-    }
-
-    private void 지하철역_요청오류(int response) {
-        assertThat(response).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private ExtractableResponse<Response> requestDeleteStation(Long stationId) {
+    private ExtractableResponse<Response> 지하철역_삭제_요청(Long stationId) {
         return RestAssured.given().log().all()
             .when().delete(rootPath + "/" + stationId)
             .then().log().all()
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철역_생성_요청(String name) {
-        return RestAssured.given().log().all()
-            .body(new HashMap<String, String>() {
-                {
-                    put("name", name);
-                }
-            })
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post(rootPath)
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철역_조회_요청() {
+    private ExtractableResponse<Response> 지하철역_목록조회_요청() {
         return RestAssured.given().log().all()
             .when().get(rootPath)
             .then().log().all()
