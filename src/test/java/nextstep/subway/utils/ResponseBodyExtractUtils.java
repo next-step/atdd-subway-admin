@@ -1,15 +1,16 @@
 package nextstep.subway.utils;
 
 import io.restassured.response.Response;
-import java.util.List;
 
 public class ResponseBodyExtractUtils {
+
+    public static final String ID = "id";
 
     public static String getString(Response response, String property) {
         return response.body().jsonPath().getString(property);
     }
 
-    public static List<String> getList(Response response, String property) {
-        return response.body().jsonPath().getList(property, String.class);
+    public static String getId(Response response) {
+        return getString(response, ID);
     }
 }

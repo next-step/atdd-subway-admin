@@ -1,43 +1,24 @@
 package nextstep.subway.station;
 
 import static nextstep.subway.utils.AssertionsUtils.assertBadRequest;
+import static nextstep.subway.utils.AssertionsUtils.assertCreated;
 import static nextstep.subway.utils.AssertionsUtils.assertNoContent;
 import static nextstep.subway.utils.AssertionsUtils.assertOk;
-import static nextstep.subway.utils.RequestParamUtils.generateRequestParam;
-import static nextstep.subway.utils.ResponseBodyExtractUtils.getList;
-import static nextstep.subway.utils.ResponseBodyExtractUtils.getString;
-import static nextstep.subway.utils.RestAssuredUtils.delete;
-import static nextstep.subway.utils.RestAssuredUtils.get;
-import static nextstep.subway.utils.RestAssuredUtils.post;
-import static nextstep.subway.utils.StationsUtils.NAME;
-import static nextstep.subway.utils.StationsUtils.generateStation;
+import static nextstep.subway.utils.ResponseBodyExtractUtils.getId;
+import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_목록_조회_요청;
+import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_삭제_요청;
+import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import java.util.List;
-import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.config.BaseTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
-
-    public static final String BASE_URL = "/stations";
+public class StationAcceptanceTest extends BaseTest {
 
     /**
      * When 지하철역을 생성하면
@@ -47,18 +28,19 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // Given
-        final String stationName = "강남역";
-        generateStation(stationName);
-
         // When
-        Response response = get(BASE_URL).extract().response();
+        Response stationCreateResponse = 지하철역_생성_요청("강남역");
 
         // Then
-        List<String> stationNames = getList(response, NAME);
-        assertThat(stationNames)
-            .as("지하철역 목록 조회 시 생성한 지하철역 이름 포함 여부 검증")
-            .containsAnyOf(stationName);
+        Response getAllStationsResponse = 지하철역_목록_조회_요청();
+        JsonPath jsonPath = getAllStationsResponse.jsonPath();
+        assertAll(
+            () -> assertCreated(stationCreateResponse),
+            () -> assertOk(getAllStationsResponse),
+            () -> assertThat(jsonPath.getList("name"))
+                .as("지하철역 목록 조회 시 생성한 지하철역 이름 포함 여부 검증")
+                .containsAnyOf("강남역")
+        );
     }
 
     /**
@@ -66,19 +48,20 @@ public class StationAcceptanceTest {
      * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
      * Then 지하철역 생성이 안된다
      */
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
+    @DisplayName("이미 존재하는 지하철역 이름으로 지하철역을 생성할 수 없다")
     @Test
     void createStationWithDuplicateName() {
         // given
-        final String stationName = "판교역";
-        generateStation(stationName);
+        Response creationResponse = 지하철역_생성_요청("판교역");
 
         // when
-        Map<String, String> requestParam = generateRequestParam(NAME, stationName);
-        Response response = post(BASE_URL, requestParam).extract().response();
+        Response duplicationCreateResponse = 지하철역_생성_요청("판교역");
 
         // then
-        assertBadRequest(response);
+        assertAll(
+            () -> assertCreated(creationResponse),
+            () -> assertBadRequest(duplicationCreateResponse)
+        );
     }
 
     /**
@@ -90,21 +73,20 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // Given
-        final String firstStationName = "논현역";
-        final String secondStationName = "신논현역";
-        generateStation(firstStationName);
-        generateStation(secondStationName);
+        지하철역_생성_요청("논현역");
+        지하철역_생성_요청("신논현역");
 
         // When
-        Response getAllStationsResponse = get(BASE_URL).extract().response();
+        Response getAllStationsResponse = 지하철역_목록_조회_요청();
 
         // Then
-        assertOk(getAllStationsResponse);
-        List<String> stationNames = getList(getAllStationsResponse, NAME);
-        assertThat(stationNames)
-            .hasSize(2)
-            .as("지하철역 목록 조회 응답에 생성한 두개의 지하철역 이름 포함 여부 검증")
-            .contains(firstStationName, secondStationName);
+        JsonPath jsonPath = getAllStationsResponse.jsonPath();
+        assertAll(
+            () -> assertOk(getAllStationsResponse),
+            () -> assertThat(jsonPath.getList("name"))
+                .as("지하철역 목록 조회 응답에 생성한 두개의 지하철역 이름 포함 여부 검증")
+                .containsAnyOf("논현역", "신논현역")
+        );
     }
 
     /**
@@ -116,21 +98,20 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // Given
-        final String stationName = "선릉역";
-        final Response generateStationResponse = generateStation(stationName);
-        final String stationId = getString(generateStationResponse, "id");
+        final String 선릉역 = getId(지하철역_생성_요청("선릉역"));
 
         // When
-        Response deleteResponse = delete(BASE_URL, stationId).extract().response();
+        Response deleteResponse = 지하철역_삭제_요청(선릉역);
 
         // Then
-        assertNoContent(deleteResponse);
-
-        Response getAllStationsResponse = get(BASE_URL).extract().response();
-        assertOk(getAllStationsResponse);
-        List<String> stationNames = getList(getAllStationsResponse, NAME);
-        assertThat(stationNames)
-            .as("지하철역 목록 조회 응답에 삭제한 지하철역 미포함 여부 검증")
-            .doesNotContain(stationName);
+        Response getAllStationsResponse = 지하철역_목록_조회_요청();
+        JsonPath jsonPath = getAllStationsResponse.jsonPath();
+        assertAll(
+            () -> assertNoContent(deleteResponse),
+            () -> assertOk(getAllStationsResponse),
+            () -> assertThat(jsonPath.getList("name"))
+                .as("지하철역 목록 조회 응답에 삭제한 지하철역 미포함 여부 검증")
+                .doesNotContain("선릉역")
+        );
     }
 }
