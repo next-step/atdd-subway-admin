@@ -6,7 +6,7 @@ import io.restassured.specification.RequestSpecification;
 import nextstep.subway.dto.UpdateLineRequest;
 import org.springframework.http.MediaType;
 
-public class RestAssuredUtils<T> {
+public class RestAssuredUtils {
 
     private static RequestSpecification requestSpecification;
 
@@ -17,10 +17,17 @@ public class RestAssuredUtils<T> {
             .accept(MediaType.APPLICATION_JSON_VALUE);
     }
 
-    public static <T> ValidatableResponse post(final String urlTemplate, T request) {
+    public static <T> ValidatableResponse post(final String urlTemplate, final T request) {
         return requestSpecification.when()
             .body(request)
             .post(urlTemplate)
+            .then().log().all();
+    }
+
+    public static <T> ValidatableResponse post(final String urlTemplate, final Long path, final T request) {
+        return requestSpecification.when()
+            .body(request)
+            .post(makeEndPoint(urlTemplate, path))
             .then().log().all();
     }
 
@@ -30,26 +37,27 @@ public class RestAssuredUtils<T> {
             .then().log().all();
     }
 
-    public static ValidatableResponse get(final String urlTemplate, final String path) {
+    public static ValidatableResponse get(final String urlTemplate, final Long path) {
         return requestSpecification.when()
-            .get(makeUrlTemplate(urlTemplate, path))
+            .get(makeEndPoint(urlTemplate, path))
             .then().log().all();
     }
 
-    public static ValidatableResponse delete(final String urlTemplate, final String path) {
+    public static ValidatableResponse delete(final String urlTemplate, final Long path) {
         return requestSpecification.when()
-            .delete(makeUrlTemplate(urlTemplate, path))
+            .delete(makeEndPoint(urlTemplate, path))
             .then().log().all();
     }
 
-    public static ValidatableResponse put(String urlTemplate, String path, UpdateLineRequest updateLineRequest) {
+    public static ValidatableResponse put(final String urlTemplate, final Long path,
+        final UpdateLineRequest updateLineRequest) {
         return requestSpecification.when()
             .body(updateLineRequest)
-            .put(makeUrlTemplate(urlTemplate, path))
+            .put(makeEndPoint(urlTemplate, path))
             .then().log().all();
     }
 
-    private static String makeUrlTemplate(String urlTemplate, String path) {
+    private static String makeEndPoint(final String urlTemplate, final Long path) {
         return String.format(urlTemplate.concat("/%s"), path);
     }
 }

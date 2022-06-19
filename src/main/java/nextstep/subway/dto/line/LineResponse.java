@@ -12,6 +12,9 @@ public class LineResponse {
     private String color;
     private List<StationSimpleResponse> stations;
 
+    private LineResponse() {
+    }
+
     private LineResponse(Long id, String name, String color,
         List<StationSimpleResponse> stations) {
         this.id = id;

@@ -4,7 +4,7 @@ import static nextstep.subway.utils.AssertionsUtils.assertBadRequest;
 import static nextstep.subway.utils.AssertionsUtils.assertCreated;
 import static nextstep.subway.utils.AssertionsUtils.assertNoContent;
 import static nextstep.subway.utils.AssertionsUtils.assertOk;
-import static nextstep.subway.utils.ResponseBodyExtractUtils.getId;
+import static nextstep.subway.utils.ResponseBodyExtractUtils.getIdAsLong;
 import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_목록_조회_요청;
 import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_삭제_요청;
 import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_생성_요청;
@@ -98,7 +98,7 @@ public class StationAcceptanceTest extends BaseTest {
     @Test
     void deleteStation() {
         // Given
-        final String 선릉역 = getId(지하철역_생성_요청("선릉역"));
+        Long 선릉역 = getIdAsLong(지하철역_생성_요청("선릉역"));
 
         // When
         Response deleteResponse = 지하철역_삭제_요청(선릉역);

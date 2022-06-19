@@ -9,7 +9,7 @@ import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_삭
 import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_생성_요청;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_수정_요청;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_조회_요청;
-import static nextstep.subway.utils.ResponseBodyExtractUtils.getId;
+import static nextstep.subway.utils.ResponseBodyExtractUtils.getIdAsLong;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -83,7 +83,7 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("특정 지하철 노선을 조회한다.")
     public void getLineById() {
         // Given
-        String 신분당선 = getId(지하철_노선_생성_요청("신분당선", "강남역", "판교역"));
+        Long 신분당선 = getIdAsLong(지하철_노선_생성_요청("신분당선", "강남역", "판교역"));
 
         // When
         Response response = 지하철_노선_조회_요청(신분당선);
@@ -107,7 +107,7 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선을 수정한다.")
     public void updateLine() {
         // Given
-        String 신분당선 = getId(지하철_노선_생성_요청("신분당선", "강남역", "판교역"));
+        Long 신분당선 = getIdAsLong(지하철_노선_생성_요청("신분당선", "강남역", "판교역"));
         UpdateLineRequest updateLineRequest = new UpdateLineRequest("분당선", "bg-yellow-600");
 
         // When
@@ -133,7 +133,7 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선을 삭제한다.")
     public void deleteLineById() {
         // Given
-        String 신분당선 = getId(지하철_노선_생성_요청("신분당선", "강남역", "판교역"));
+        Long 신분당선 = getIdAsLong(지하철_노선_생성_요청("신분당선", "강남역", "판교역"));
 
         // When
         Response deleteLineResponse = 지하철_노선_삭제_요청(신분당선);
