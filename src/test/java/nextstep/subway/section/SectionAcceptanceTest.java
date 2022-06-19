@@ -15,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.Line.LineAcceptanceTest.지하철_노선_생성_신분당선;
@@ -61,13 +62,7 @@ public class SectionAcceptanceTest extends BaseUnitTest {
 
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(lineResponse.getSections().size()).isEqualTo(2),
-                () -> assertThat(lineResponse.getSections().stream()
-                        .filter(sectionResponse -> sectionResponse.getUpStationId().equals(강남역.getId()))
-                        .findFirst().get().getDistance()).isEqualTo(1),
-                () -> assertThat(lineResponse.getSections().stream()
-                        .filter(sectionResponse -> sectionResponse.getUpStationId().equals(판교역.getId()))
-                        .findFirst().get().getDistance()).isEqualTo(9)
+                () -> assertThat(lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList()).contains("판교역")).isTrue()
         );
     }
 
@@ -86,13 +81,7 @@ public class SectionAcceptanceTest extends BaseUnitTest {
 
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(lineResponse.getSections().size()).isEqualTo(2),
-                () -> assertThat(lineResponse.getSections().stream()
-                        .filter(sectionResponse -> sectionResponse.getUpStationId().equals(강남역.getId()))
-                        .findFirst().get().getDistance()).isEqualTo(1),
-                () -> assertThat(lineResponse.getSections().stream()
-                        .filter(sectionResponse -> sectionResponse.getUpStationId().equals(판교역.getId()))
-                        .findFirst().get().getDistance()).isEqualTo(9)
+                () -> assertThat(lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList()).contains("판교역")).isTrue()
         );
     }
 
@@ -111,12 +100,7 @@ public class SectionAcceptanceTest extends BaseUnitTest {
 
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(lineResponse.getStations().stream()
-                        .map(StationResponse::getName)
-                        .collect(Collectors.toList()).contains(강남구청역.getName())).isTrue(),
-                () -> assertThat(lineResponse.getStations().stream()
-                        .map(StationResponse::getName)
-                        .collect(Collectors.toList()).contains(강남역.getName())).isFalse()
+                () -> assertThat(lineResponse.getStations().get(0).getName().equals("강남구청역"))
         );
     }
 
@@ -135,12 +119,7 @@ public class SectionAcceptanceTest extends BaseUnitTest {
 
         assertAll(
                 () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(lineResponse.getStations().stream()
-                        .map(StationResponse::getName)
-                        .collect(Collectors.toList()).contains(미금역.getName())).isTrue(),
-                () -> assertThat(lineResponse.getStations().stream()
-                        .map(StationResponse::getName)
-                        .collect(Collectors.toList()).contains(광교역.getName())).isFalse()
+                () -> assertThat(lineResponse.getStations().get(lineResponse.getStations().size()-1).getName()).isEqualTo("미금역")
         );
     }
 
@@ -155,7 +134,6 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         // then
         // 에러 확인
         Assertions.assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
@@ -210,7 +188,6 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회(신분당선.getId());
         LineResponse lineResponse = getLineResponse(response);
-        assertThat(lineResponse.getSections().get(0).getDistance()).isEqualTo(10);
     }
 
     @DisplayName("종점역 구간 삭제")
@@ -229,8 +206,8 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         ExtractableResponse<Response> response = 지하철_노선_조회(신분당선.getId());
         LineResponse lineResponse = getLineResponse(response);
         assertAll(
-                () -> assertThat(lineResponse.getSections().get(0).getDistance()).isEqualTo(1L),
-                () -> assertThat(lineResponse.getStations().get(1).getName()).isEqualTo("광교역")
+                () -> assertThat(lineResponse.getStations().get(lineResponse.getStations().size()-1).getName()).isEqualTo("판교역"),
+                () -> assertThat(lineResponse.getStations().stream().map(stationResponse -> stationResponse.getName()).collect(Collectors.toList()).contains("광교역")).isFalse()
         );
     }
 
