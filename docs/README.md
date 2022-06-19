@@ -5,6 +5,7 @@
 * ### [1 단계 - 엔티티 매핑](#1단계---지하철역-인수-테스트-작성)
 * ### [2 단계 - 지하철 노선 기능](#2단계---지하철-노선-기능)
 * ### [3 단계 - 구간 추가 기능](#3단계---구간-추가-기능)
+* ### [4 단계 - 구간 제거 기능](#4단계---구간-제거-기능)
 
 # 1단계 - 지하철역 인수 테스트 작성
 
@@ -151,37 +152,39 @@ Then 해당 지하철 노선 정보는 삭제된다
 
 * `요구사항 설명`에서 제공되는 요구사항을 기반으로 **지하철 구간 추가 기능**을 구현하세요.
 * 요구사항을 정의한 **인수 조건**을 조출하세요.
+
 ```gherkin
 Scenario: 역 사이에 새로운 역을 등록한다.
-  Given 주어진 노선에  
-  When 노선의 구간과 동일한 상행역 또는 동일한 하행역을 가지는 구간을 추가하면
-  Then 그 구간의 상행역과 하행역 사이에 새로운 역이 추가된다.
+Given 주어진 노선에
+When 노선의 구간과 동일한 상행역 또는 동일한 하행역을 가지는 구간을 추가하면
+Then 그 구간의 상행역과 하행역 사이에 새로운 역이 추가된다.
 
 Scenario: 새로운 역을 상행 종점으로 등록한다.
-  Given 주어진 노선에
-  When 새로운 역을 상행으로 상행역을 하행역인 구간을 추가하면
-  Then 노선은 새로운 역을 상행 종점으로 가진다.
-  
+Given 주어진 노선에
+When 새로운 역을 상행으로 상행역을 하행역인 구간을 추가하면
+Then 노선은 새로운 역을 상행 종점으로 가진다.
+
 Scenario: 새로운 역을 하행 종점으로 등록한다.
-  Given 주어진 노선에
-  When 하행 종점역을 상행역으로 새로운 역을 하행역인 구간을 추가하면
-  Then 노선은 새로운 역을 하행 종점역으로 가진다.
+Given 주어진 노선에
+When 하행 종점역을 상행역으로 새로운 역을 하행역인 구간을 추가하면
+Then 노선은 새로운 역을 하행 종점역으로 가진다.
 
 Scenario: 역 사이에 새로운 역을 등록한다.
-  Given 주어진 노선에
-  When 기존 역 사이 거리보다 크거나 같은 거리의 구간을 추가하면
-  Then 400 Bad Request를 반환한다.
+Given 주어진 노선에
+When 기존 역 사이 거리보다 크거나 같은 거리의 구간을 추가하면
+Then 400 Bad Request를 반환한다.
 
 Scenario: 노선에 상행역과 하행역이 모두 등록된 경우
-  Given 주어진 노선에
-  When 등록된 역을 상행과 하행역으로 가지는 구간을 추가하면
-  Then 400 Bad Request를 반환한다.
+Given 주어진 노선에
+When 등록된 역을 상행과 하행역으로 가지는 구간을 추가하면
+Then 400 Bad Request를 반환한다.
 
 Scenario: 새로운 구간에 노선의 상행역과 하행역 둘 중 하나도 포함되지 않은 경우
-  Given 주어진 노선에
-  When 등록되지 않은 역을 상행과 하행역으로 가지는 구간을 추가하면
-  Then 400 Bad Request를 반환한다.
+Given 주어진 노선에
+When 등록되지 않은 역을 상행과 하행역으로 가지는 구간을 추가하면
+Then 400 Bad Request를 반환한다.
 ```
+
 * 인수 조건을 검증하는 **인수 테스트**를 작성하세요.
 * 예외 케이스에 대한 검증도 포함하세요.
 
@@ -259,7 +262,7 @@ host: localhost:52165
 void addSection(){
     // when
     // 지하철_노선에_지하철역_등록_요청
-
+  
     // then
     // 지하철_노선에_지하철역_등록됨
 }
@@ -274,11 +277,11 @@ void addSection(){
 @BeforeEach
 public void setUp(){
     super.setUp();
-
+  
     // given
     강남역=StationAcceptanceTest.지하철역_등록되어_있음("강남역").as(StationResponse.class);
     광교역=StationAcceptanceTest.지하철역_등록되어_있음("광교역").as(StationResponse.class);
-
+  
     createParams=new HashMap<>();
     createParams.put("name","신분당선");
     createParams.put("color","bg-red-600");
@@ -310,10 +313,10 @@ public class SectionRequest {
 public ResponseEntity addSection(
     @PathVariable Long lineId,
     @RequestBody SectionRequest sectionRequest){
-        // TODO: 구간 등록 기능 구현
-        // ...
-    }
-    ...
+  // TODO: 구간 등록 기능 구현
+  // ...
+}
+        ...
 ```
 
 #### 기능 구현 팁
@@ -337,5 +340,103 @@ public ResponseEntity addSection(
   https://github.com/next-step/atdd-subway-map/blob/boorownie/src/main/java/nextstep/subway/line/domain/LineStations.java
     * 참고한 코드에서는 LineStation을 일급컬렉션을 묶어 LineStations로 둠
     * [JPA @Embedded And @Embeddable](https://www.baeldung.com/jpa-embedded-embeddable) 을 참고하세요.
+
+### [목차로 ...](#목차)
+
+# 4단계 - 구간 제거 기능
+
+## 요구사항
+
+### 기능 요구사항
+
+* **`요구사항 설명`**에서 제공되는 요구사항을 기반으로 **지하철 구간 제거 기능**을 구현하세요.
+* 요구사항을 정의한 **인수 조건**을 도출하세요.
+* 인수 조건을 검증하는 **인수 테스트**를 작성하세요.
+* 예외 케이스에 대한 검증도 포함하세요.
+
+### 프로그래밍 요구사항
+
+* **인수 테스트 주도 개발 프로세스**에 맞춰서 기능을 구현하세요.
+    * **`요구사항 설명`**을 참고하여 인수 조건을 정의
+    ```gherkin
+    Feature: 노선의 역을 제거한다.
+      Scenario: 종점역을 제거한다.
+        When 종점역을 제거하면
+        Then 종점역의 바로 다음 혹은 바로 이전 역이 종점이 된다.
+  
+      Scenario: 중간역을 제거한다.
+        When 중간역을 제거하면
+        Then 제거된 역의 이전역과 다음역으로 재배치하고
+        And 거리는 두 구간의 합이 된다.
+  
+      Scenario: 구간이 하나인 노선에서 역을 제거한다.
+        Given 구간이 하나인 노선에서
+        When 역을 제거하면
+        Then 제거되지 않고 오류가 발생한다.
+  
+      Scenario: 노선에 등록되지 않은 역을 제거한다.
+        When 구간에 등록되지 않은 역을 제거하면
+        Then 제거되지 않고 오류가 발생한다.
+    ```
+
+    * 인수 조건을 검증하는 인수 테스트 작성
+    * 인수 테스트를 충족하는 기능 구현
+* 인수 조건은 인수 테스트 메서드 상단에 주석으로 작성하세요.
+    * 뼈대 코드의 인수 테스트를 참고
+* 인수 테스트의 결과가 다른 인수 테스트에 영향을 끼치지 않도록 인수 테스트를 서로 격리 시키세요.
+* 인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링 하세요.
+
+## 요구사항 설명
+
+### API 명세
+
+#### 지하철 구간 삭제 request
+
+```http request
+DELETE /lines/1/sections?stationId=2 HTTP/1.1
+accept: */*
+host: localhost:52165
+```
+
+### 노선의 구간을 제거하는 기능을 구현하기
+
+* 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
+* 중간역이 제거될 경우 재배치를 함
+    * 노선에 A - B - C 역이 연결되어 있을 때 B역을 제거할 경우 A - C로 재배치 됨
+    * 거리는 두 구간의 거리의 합으로 정함
+
+![지하철 구간 삭제](https://nextstep-storage.s3.ap-northeast-2.amazonaws.com/a8751b272c36421481c779e5a743a928)
+
+### 구간 삭제 시 예외 케이스를 고려하기
+
+* 기능 설명을 참고하여 예외가 발생할 수 있는 경우를 검증할 수 있는 인수 테스트를 만들고 이를 성공 시키세요.
+
+> 예시) 노선에 등록되어있지 않은 역을 제거하려 한다.
+
+#### 구간이 하나인 노선에서 마지막 구간을 제거할 때
+
+* 제거할 수 없음
+
+![지하철 구간 삭제 예외](https://nextstep-storage.s3.ap-northeast-2.amazonaws.com/b8db3f754c2c4d3684dafe29eae53270)
+
+## 힌트
+
+### 구간 제거
+
+#### 구간 제거 요청 처리
+
+```java
+@DeleteMapping("/{lineId}/sections")
+public ResponseEntity removeLineStation(
+    @PathVariable Long lineId,
+    @RequestParam Long stationId){
+  lineService.removeSectionByStationId(lineId,stationId);
+  return ResponseEntity.ok().build();
+}
+```
+
+### 프론트엔드
+
+![프론트엔드](https://techcourse-storage.s3.ap-northeast-2.amazonaws.com/019e7f82cb5d4b0d833ce41e3c43fd0f)
 
 ### [목차로 ...](#목차)

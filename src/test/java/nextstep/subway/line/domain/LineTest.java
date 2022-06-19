@@ -21,4 +21,20 @@ class LineTest {
         assertAll(() -> assertThat(line.getName()).isEqualTo("다른분당선"),
                 () -> assertThat(line.getColor()).isEqualTo("bg-red-200"));
     }
+
+    @Test
+    @DisplayName("노선에서 역을 삭제할 수 있다.")
+    void 역_삭제() {
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+        Station 선릉역 = new Station("선릉역");
+
+        Section 역삼_선릉_구간 = Section.of(역삼역, 선릉역, 6);
+
+        Line 노선 = Line.of("분당선", "bg-red-600", 강남역, 역삼역, 4);
+        노선.addSection(역삼_선릉_구간);
+
+        노선.deleteStation(선릉역);
+        assertThat(노선.getStations()).containsExactlyInAnyOrder(강남역, 역삼역);
+    }
 }

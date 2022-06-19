@@ -47,8 +47,11 @@ public class Line {
     }
 
     public void addSection(Section section) {
-        section.toLine(this);
         sections.add(section);
+    }
+
+    public void deleteStation(Station station) {
+        sections.delete(station);
     }
 
     public Long getId() {

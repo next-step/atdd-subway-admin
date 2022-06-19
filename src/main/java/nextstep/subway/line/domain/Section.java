@@ -31,10 +31,6 @@ public class Section extends BaseEntity {
     @Embedded
     private Distance distance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id")
-    private Line line;
-
     protected Section() {
     }
 
@@ -60,31 +56,62 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, new Distance(distance));
     }
 
+    public void merge(Section section) {
+        isMergeable(section);
+
+        mergeByUpStation(section);
+        mergeByDownStation(section);
+
+        distance = distance.add(section.distance);
+    }
+
+    private void mergeByUpStation(Section section) {
+        if (hasUpStation(section.downStation)) {
+            upStation = section.upStation;
+        }
+    }
+
+    private void mergeByDownStation(Section section) {
+        if (hasDownStation(section.upStation)) {
+            downStation = section.downStation;
+        }
+    }
+
+    private void isMergeable(Section section) {
+        if (!hasDownStation(section.upStation) && !hasUpStation(section.downStation)) {
+            throw new IllegalArgumentException("연결된 역을 찾을 수 없어 두 구간을 합칠 수 없습니다.");
+        }
+    }
+
+    public boolean hasStation(Station station) {
+        return hasUpStation(station) || hasDownStation(station);
+    }
+
     public boolean hasSameUpOrDownStation(Section section) {
-        return hasSameUpStation(section) || hasSameDownStation(section);
+        return hasUpStation(section.upStation) || hasDownStation(section.downStation);
     }
 
-    private boolean hasSameUpStation(Section section) {
-        return upStation.equals(section.upStation);
+    public boolean hasUpStation(Station station) {
+        return upStation.equals(station);
     }
 
-    private boolean hasSameDownStation(Section section) {
-        return downStation.equals(section.downStation);
+    private boolean hasDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public void update(Section section) {
         validateStations(section);
 
-        if (hasSameUpStation(section)) {
+        if (hasUpStation(section.upStation)) {
             updateUpStation(section);
         }
-        if (hasSameDownStation(section)) {
+        if (hasDownStation(section.downStation)) {
             updateDownStation(section);
         }
     }
 
     private void validateStations(Section section) {
-        if (hasSameUpStation(section) && hasSameDownStation(section)) {
+        if (hasUpStation(section.upStation) && hasDownStation(section.downStation)) {
             throw new IllegalArgumentException("동일한 상하행역을 가진 구간을 추가할 수 없습니다.");
         }
     }
@@ -118,10 +145,6 @@ public class Section extends BaseEntity {
         return Arrays.asList(upStation, downStation);
     }
 
-    public void toLine(Line line) {
-        this.line = line;
-    }
-
     public Long getId() {
         return id;
     }
@@ -133,7 +156,7 @@ public class Section extends BaseEntity {
     @Override
     public String toString() {
         return "Section{" + "id=" + id + ", upStation=" + upStation + ", downStation=" + downStation + ", distance="
-                + distance + ", line=" + line + '}';
+                + distance + '}';
     }
 
     @Override

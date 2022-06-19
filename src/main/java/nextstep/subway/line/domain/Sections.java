@@ -8,12 +8,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+    private static final int MINIMUM_NUMBER_OF_SECTIONS_FOR_DELETION = 1;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "line_id")
     private final List<Section> values;
 
     protected Sections() {
@@ -50,6 +54,43 @@ public class Sections {
 
     public int size() {
         return values.size();
+    }
+
+    public void delete(Station station) {
+        validateMinimumNumberOfSections();
+
+        List<Section> sections = findSectionsByStation(station);
+
+        Section sectionToDelete = findSectionToDelete(station, sections);
+
+        mergeSections(sections, sectionToDelete);
+
+        values.remove(sectionToDelete);
+    }
+
+    private void validateMinimumNumberOfSections() {
+        if (values.size() == MINIMUM_NUMBER_OF_SECTIONS_FOR_DELETION) {
+            throw new IllegalStateException("구간이 하나인 노선에서 역을 삭제할 수 없습니다.");
+        }
+    }
+
+    private List<Section> findSectionsByStation(Station station) {
+        return values.stream()
+                .filter(section -> section.hasStation(station))
+                .collect(Collectors.toList());
+    }
+
+    private Section findSectionToDelete(Station station, List<Section> sections) {
+        return sections.stream()
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(String.format("해당 역(%s)을 찾을 수 없습니다.", station)));
+    }
+
+    private void mergeSections(List<Section> sections, Section sectionToDelete) {
+        sections.stream()
+                .filter(section -> !section.equals(sectionToDelete))
+                .findAny()
+                .ifPresent((sectionToUpdate) -> sectionToUpdate.merge(sectionToDelete));
     }
 
     public void add(Section newSection) {

@@ -9,6 +9,9 @@ public class StationResponseDto {
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
+    private StationResponseDto() {
+    }
+
     private StationResponseDto(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
@@ -17,7 +20,8 @@ public class StationResponseDto {
     }
 
     public static StationResponseDto of(Station station) {
-        return new StationResponseDto(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
+        return new StationResponseDto(station.getId(), station.getName(), station.getCreatedDate(),
+                station.getModifiedDate());
     }
 
     public Long getId() {
