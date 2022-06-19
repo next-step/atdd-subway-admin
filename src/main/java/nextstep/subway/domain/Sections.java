@@ -20,9 +20,11 @@ public class Sections {
         }
 
         if (isValidAndUpStationOrDownStation(section)) {
-            updateExitSection(section);
+            addSection(section);
+            return;
         }
 
+        updateExitSection(section);
         addSection(section);
     }
 
@@ -31,7 +33,7 @@ public class Sections {
         boolean isDownStationContains = isContains(section.getDownStation());
 
         validContains(isUpStationContains, isDownStationContains);
-        return isDownStationContains && isDownStationContains;
+        return isUpStationContains && isDownStationContains;
     }
 
     private void validContains(boolean isUpStationContains, boolean isDownStationContains) {
