@@ -14,7 +14,7 @@ public class LineRequest {
         params.put(KEY_COLOR, color);
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
-        params.put("distance", "10");
+        params.put("distance", "100");
         return params;
     }
 
