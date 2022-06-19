@@ -5,6 +5,8 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -73,6 +75,15 @@ class SectionsTest {
         assertThat(신분당선_구간.toLineStationIds().get(신분당선_구간.toLineStationIds().size() - 1)).isEqualTo(호매실역.getId());
     }
 
+    @ParameterizedTest
+    @ValueSource(ints = {500, 501})
+    @DisplayName("기존 구간과 같거나 긴 구간을 등록할 경우 오류 반환")
+    void errorInvalidDistance(int distance) {
+        Station 정자역 = stationRepository.save(new Station("정자역"));
+        assertThatThrownBy(() -> 신분당선_구간.add(new Section(판교역.getId(), 정자역.getId(), distance)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @Test
     @DisplayName("이미 등록된 구간을 요청할 경우 오류 반환")
     void errorExistSection() {
@@ -81,7 +92,7 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("이미 등록된 구간을 요청할 경우 오류 반환")
+    @DisplayName("알수 없는 구간을 요청할 경우 오류 반환")
     void errorUnknownSection() {
         Station 선릉역 = stationRepository.save(new Station("선릉역"));
         Station 삼성역 = stationRepository.save(new Station("삼성역"));
