@@ -1,10 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -17,12 +14,16 @@ public class Sections {
 
     public void add(Section section) {
         checkValidation(section);
-        checkAddBetweenExistSection(section);
+        checkAddBetweenExist(section);
         this.sections.add(section);
     }
 
     public List<Long> toLineStationIds() {
-        List<Long> stations = new ArrayList<>();
+        return new ArrayList<>(getUniqueIdsOrderByUpStation());
+    }
+
+    private Set<Long> getUniqueIdsOrderByUpStation() {
+        Set<Long> stations = new LinkedHashSet<>();
         Long stationId = findFirstStation(this.sections.get(0).getUpStationId());
         stations.add(stationId);
         while (hasNextStation(stationId)) {
@@ -37,11 +38,7 @@ public class Sections {
             return;
         }
 
-        Set<Long> uniqueIds = new HashSet<>();
-        this.sections.forEach( it -> {
-                    uniqueIds.add(it.getUpStationId());
-                    uniqueIds.add(it.getDownStationId());
-        });
+        Set<Long> uniqueIds = getUniqueIdsOrderByUpStation();
 
         if (uniqueIds.contains(target.getUpStationId()) && uniqueIds.contains(target.getDownStationId())) {
             throw new IllegalArgumentException("이미 추가된 역입니다.");
@@ -52,27 +49,19 @@ public class Sections {
         }
     }
 
-    private void checkAddBetweenExistSection(Section section) {
+    private void checkAddBetweenExist(Section section) {
+        SectionExistType existType = null;
         if (hasNextStation(section.getUpStationId())) {
-            this.sections.stream()
-                    .filter(it -> it.sameUpStation(section.getUpStationId()))
-                    .findFirst()
-                    .ifPresent(it ->
-                            {
-                                it.updateUpStationId(section.getDownStationId());
-                                it.calculateDistance(section.getDistance());
-                            }
-                    );
+            existType = SectionExistType.UP_STATION;
         } else if (hasPrevStation(section.getDownStationId())) {
+            existType = SectionExistType.DOWN_STATION;
+        }
+        if (existType != null) {
+            SectionExistType finalExistType = existType;
             this.sections.stream()
-                    .filter(it -> it.sameDownStation(section.getDownStationId()))
+                    .filter(it -> it.sameStation(section, finalExistType))
                     .findFirst()
-                    .ifPresent(it ->
-                            {
-                                it.updateDownStationId(section.getUpStationId());
-                                it.calculateDistance(section.getDistance());
-                            }
-                    );
+                    .ifPresent(it -> it.updateExistOf(section, finalExistType));
         }
     }
 

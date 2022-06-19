@@ -29,6 +29,24 @@ public class Section {
         this(request.getUpStationId(), request.getDownStationId(), request.getDistance());
     }
 
+    public boolean sameStation(Section target, SectionExistType existType) {
+        if (existType.equals(SectionExistType.UP_STATION)) {
+            return this.upStationId.equals(target.getUpStationId());
+        } else if (existType.equals(SectionExistType.DOWN_STATION)) {
+            return this.downStationId.equals(target.getDownStationId());
+        }
+        return false;
+    }
+
+    public void updateExistOf(Section target, SectionExistType existType) {
+        if (existType.equals(SectionExistType.UP_STATION)) {
+            this.upStationId = target.getDownStationId();
+        } else if (existType.equals(SectionExistType.DOWN_STATION)) {
+            this.downStationId = target.getUpStationId();
+        }
+        this.calculateDistance(target.getDistance());
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }
@@ -41,15 +59,7 @@ public class Section {
         return distance;
     }
 
-    public void updateUpStationId(Long stationId) {
-        this.upStationId = stationId;
-    }
-
-    public void updateDownStationId(Long stationId) {
-        this.downStationId = stationId;
-    }
-
-    public void calculateDistance(Integer distance) {
+    private void calculateDistance(Integer distance) {
         if (this.distance <= distance) {
             throw new IllegalArgumentException("기존 역 사이 길이보다 작은 값만 등록 가능합니다.");
         }
