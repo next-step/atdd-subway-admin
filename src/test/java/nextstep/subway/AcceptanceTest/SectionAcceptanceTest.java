@@ -228,6 +228,7 @@ class SectionAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(getLineStationNames(신분당선)).containsExactly("강남역", "광교역");
     }
 
     /**
@@ -249,7 +250,7 @@ class SectionAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(getLineStationNames(신분당선)).containsExactly("양재약", "광교역");
+        assertThat(getLineStationNames(신분당선)).containsExactly("양재역", "광교역");
     }
 
     /**

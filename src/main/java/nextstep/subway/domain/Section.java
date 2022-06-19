@@ -59,7 +59,12 @@ public class Section {
         if (existType.equals(SectionExistType.DOWN_STATION)) {
             this.downStationId = target.getUpStationId();
         }
-        this.relocationDistance(target.getDistance());
+        this.relocationAddDistance(target.getDistance());
+    }
+
+    public void updateDeleteExistOf(Section target) {
+        this.downStationId = target.getDownStationId();
+        this.relocationDeleteDistance(target.getDistance());
     }
 
     public Long getUpStationId() {
@@ -78,10 +83,14 @@ public class Section {
         return stationId.equals(targetId);
     }
 
-    private void relocationDistance(Integer distance) {
+    private void relocationAddDistance(Integer distance) {
         if (this.distance <= distance) {
             throw new IllegalArgumentException("기존 역 사이 길이보다 작은 값만 등록 가능합니다.");
         }
         this.distance = this.distance - distance;
+    }
+
+    private void relocationDeleteDistance(Integer distance) {
+        this.distance = this.distance + distance;
     }
 }

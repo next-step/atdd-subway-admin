@@ -51,9 +51,15 @@ public class LineController {
     }
 
     @PostMapping("/{id}/sections")
-    public ResponseEntity addSection(@PathVariable Long id, @RequestBody SectionRequest request) {
+    public ResponseEntity<LineResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest request) {
         LineResponse line = lineService.addSection(id, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(line);
+    }
+
+    @DeleteMapping("/{id}/sections")
+    public ResponseEntity deleteSection(@PathVariable Long id, @RequestParam Long stationId) {
+        lineService.deleteSection(id, stationId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(IllegalArgumentException.class)

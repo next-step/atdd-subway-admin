@@ -99,4 +99,34 @@ class SectionsTest {
         assertThatThrownBy(() -> 신분당선_구간.add(new Section(선릉역.getId(), 삼성역.getId(), 100)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @Test
+    @DisplayName("가운데역이 삭제되고 거리가 계산이 정상적으로 되는지 검증")
+    void deleteBetween() {
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+        신분당선_구간.add(new Section(강남역.getId(), 양재역.getId(), 100));
+        assertThat(신분당선_구간.findSectionUpStationId(강남역.getId()).getDistance()).isEqualTo(100);
+        assertThat(신분당선_구간.findSectionUpStationId(양재역.getId()).getDistance()).isEqualTo(400);
+        신분당선_구간.delete(양재역.getId());
+        assertThat(신분당선_구간.toLineStationIds()).doesNotContain(양재역.getId());
+        assertThat(신분당선_구간.findSectionUpStationId(강남역.getId()).getDistance()).isEqualTo(500);
+    }
+
+    @Test
+    @DisplayName("상행 종점역 삭제 검증")
+    void deleteEndUpStation() {
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+        신분당선_구간.add(new Section(강남역.getId(), 양재역.getId(), 100));
+        신분당선_구간.delete(강남역.getId());
+        assertThat(신분당선_구간.toLineStationIds()).doesNotContain(강남역.getId());
+    }
+
+    @Test
+    @DisplayName("하행 종점역 삭제 검증")
+    void deleteEndDownStation() {
+        Station 양재역 = stationRepository.save(new Station("양재역"));
+        신분당선_구간.add(new Section(강남역.getId(), 양재역.getId(), 100));
+        신분당선_구간.delete(광교역.getId());
+        assertThat(신분당선_구간.toLineStationIds()).doesNotContain(광교역.getId());
+    }
 }
