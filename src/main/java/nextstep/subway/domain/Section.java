@@ -45,6 +45,10 @@ public class Section {
         this.upStationId = stationId;
     }
 
+    public void updateDownStationId(Long stationId) {
+        this.downStationId = stationId;
+    }
+
     public void calculateDistance(Integer distance) {
         if (this.distance <= distance) {
             throw new IllegalArgumentException("기존 역 사이 길이보다 작은 값만 등록 가능합니다.");

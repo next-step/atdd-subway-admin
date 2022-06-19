@@ -63,6 +63,16 @@ public class Sections {
                                 it.calculateDistance(section.getDistance());
                             }
                     );
+        } else if (hasPrevStation(section.getDownStationId())) {
+            this.sections.stream()
+                    .filter(it -> it.sameDownStation(section.getDownStationId()))
+                    .findFirst()
+                    .ifPresent(it ->
+                            {
+                                it.updateDownStationId(section.getUpStationId());
+                                it.calculateDistance(section.getDistance());
+                            }
+                    );
         }
     }
 

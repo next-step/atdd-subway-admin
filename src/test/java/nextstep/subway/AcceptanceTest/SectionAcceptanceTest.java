@@ -46,6 +46,7 @@ class SectionAcceptanceTest {
         광교역 = stationApi.createId("광교역");
         강남역 = stationApi.createId("강남역");
         신분당선 = lineApi.create("신분당선", "bg-red-600", 강남역, 광교역).jsonPath().getLong("id");
+
     }
 
     @AfterEach
@@ -116,6 +117,8 @@ class SectionAcceptanceTest {
      * Given 두개의 구간이 등록되어 있는 지하철 노선이 있다.
      * When 지하철 노선에 새로운 구간 등록을 요청한다.
      * Then 지하철 노선에 지하철역이 등록된다.
+     * When 지하철 노선에 새로운 상하행선을 등록한다.
+     * Then 지하철 노선에 신규 상하행선이 등록된다.
      */
     @DisplayName("노선에 구간을 여러개 등록한다.")
     @Test
@@ -124,14 +127,27 @@ class SectionAcceptanceTest {
         lineApi.addSection(신분당선, 강남역, stationApi.createId("양재역"), 50);
 
         // when
-        Long 신논현역 = stationApi.createId("신논현역");
-        ExtractableResponse<Response> response = lineApi.addSection(신분당선, 신논현역, 강남역, 10);
+        Long 판교역 = stationApi.createId("판교역");
+        ExtractableResponse<Response> response_판교역_등록 = lineApi.addSection(신분당선, 판교역, 광교역, 10);
 
         // then
         assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(lineApi.findById(신분당선).jsonPath().getList("stations.name")).contains("신논현역"),
-                () -> assertThat(lineApi.findById(신분당선).jsonPath().getList("stations.name")).contains("강남역")
+                () -> assertThat(response_판교역_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(getLineStationNames(신분당선)).contains("판교역")
+        );
+
+        // when
+        Long 호매실역 = stationApi.createId("호매실역");
+        Long 신사역 = stationApi.createId("신사역");
+        ExtractableResponse<Response> response_신사역_등록 = lineApi.addSection(신분당선, 신사역, 강남역, 500);
+        ExtractableResponse<Response> response_호매실역_등록 =  lineApi.addSection(신분당선, 광교역, 호매실역, 500);
+
+        // then
+        assertAll(
+                () -> assertThat(response_신사역_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response_호매실역_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(getLineStationNames(신분당선)).contains("신사역"),
+                () -> assertThat(getLineStationNames(신분당선)).contains("호매실역")
         );
     }
 
