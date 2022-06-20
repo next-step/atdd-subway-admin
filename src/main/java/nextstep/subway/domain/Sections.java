@@ -19,24 +19,15 @@ public class Sections {
             return;
         }
 
-        if (isValidAndUpStationOrDownStation(section)) {
-            addSection(section);
-            return;
-        }
-
+        validation(section);
         updateExitSection(section);
         addSection(section);
     }
 
-    private boolean isValidAndUpStationOrDownStation(Section section) {
+    private void validation(Section section) {
         boolean isUpStationContains = isContains(section.getUpStation());
         boolean isDownStationContains = isContains(section.getDownStation());
 
-        validContains(isUpStationContains, isDownStationContains);
-        return isUpStationContains && isDownStationContains;
-    }
-
-    private void validContains(boolean isUpStationContains, boolean isDownStationContains) {
         if (isUpStationContains && isDownStationContains) {
             throw new IllegalArgumentException("상행역과 하행역이 모두 등록되어 있으면 추가할 수 없습니다.");
         }
