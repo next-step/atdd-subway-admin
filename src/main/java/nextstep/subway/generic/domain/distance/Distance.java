@@ -37,6 +37,10 @@ public class Distance implements Comparable<Distance> {
         return this.value >= distance.value;
     }
 
+    public Distance plus(final Distance distance) {
+        return Distance.valueOf(value + distance.value);
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {

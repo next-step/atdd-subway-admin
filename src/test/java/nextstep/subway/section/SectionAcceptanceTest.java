@@ -7,6 +7,7 @@ import io.restassured.RestAssured;
 import io.restassured.mapper.ObjectMapperType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Collections;
 import java.util.Map;
 import nextstep.subway.BaseSubwayTest;
 import nextstep.subway.dto.LineRequest;
@@ -15,6 +16,7 @@ import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.station.StationAcceptanceTest;
+import org.apache.groovy.util.Maps;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -149,7 +151,7 @@ public class SectionAcceptanceTest extends BaseSubwayTest {
 
         // when
         final ExtractableResponse<Response> 지하철_노선에_지하철역_등록 = 지하철_노선에_지하철역_등록(신분당선.getId(),
-                SectionRequest.of(강남역.getId(), null, 10));
+                Maps.of("upStationId", 강남역.getId().toString(), "downStationId", null, "distance", "10"));
 
         // then
         assertThat(지하철_노선에_지하철역_등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -171,6 +173,57 @@ public class SectionAcceptanceTest extends BaseSubwayTest {
         assertThat(지하철_노선에_지하철역_등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 노선에 새로운 지하철 역을 등록한다.
+     * When 지하철 역을 제거한다.
+     * Then 지하철 노선에서 역이 제거 된다.
+     */
+    @Test
+    void deleteStation() {
+        // given
+        final StationResponse 판교역 = StationAcceptanceTest.지하철_생성("판교역").as(StationResponse.class);
+        지하철_노선에_지하철역_등록(신분당선.getId(), SectionRequest.of(강남역.getId(), 판교역.getId(), 4));
+
+        // when
+        지하철_노선에_지하철역_제거(신분당선.getId(), 판교역.getId());
+
+        // then
+        final ExtractableResponse<Response> 지하철노선_조회 = LineAcceptanceTest.지하철노선_조회(신분당선.getId());
+        assertThat(지하철노선_조회.jsonPath().getList("stations.name")).containsExactly(강남역.getName(), 광교역.getName());
+    }
+
+    /**
+     * Given 지하철 노선에 새로운 지하철 역을 등록한다.
+     * When 지하철 노선에 등록되지 않은 역을 제거한다.
+     * Then 지하철 역이 제거 되지 않는다..
+     */
+    @Test
+    void deleteStation_not_found_station() {
+        // given
+        final StationResponse 판교역 = StationAcceptanceTest.지하철_생성("판교역").as(StationResponse.class);
+        final StationResponse 미금역 = StationAcceptanceTest.지하철_생성("미금역").as(StationResponse.class);
+        지하철_노선에_지하철역_등록(신분당선.getId(), SectionRequest.of(강남역.getId(), 판교역.getId(), 4));
+
+        // when
+        final ExtractableResponse<Response> 지하철_노선에_지하철역_제거 = 지하철_노선에_지하철역_제거(신분당선.getId(), 미금역.getId());
+
+        // then
+        assertThat(지하철_노선에_지하철역_제거.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+    * When 지하철 역을 제거한다.
+    * Then 지하철 역이 제거 되지 않는다.
+    */
+    @Test
+    void deleteStation_exception_last_section() {
+        // when
+        final ExtractableResponse<Response> 지하철_노선에_지하철역_제거 = 지하철_노선에_지하철역_제거(신분당선.getId(), 광교역.getId());
+
+        // then
+        assertThat(지하철_노선에_지하철역_제거.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 지하철_노선에_지하철역_등록(final Long lineId, final SectionRequest request) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -187,6 +240,15 @@ public class SectionAcceptanceTest extends BaseSubwayTest {
                 .when()
                 .body(request, ObjectMapperType.JACKSON_2)
                 .post("/lines/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선에_지하철역_제거(final Long lineId, final Long stationId) {
+        return RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .when()
+                .delete("/lines/{id}/sections", lineId)
                 .then().log().all()
                 .extract();
     }

@@ -23,6 +23,10 @@ public class Section {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
+    private Line line;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_to_up_station"))
     private Station upStation;
 
@@ -36,10 +40,23 @@ public class Section {
     protected Section() {
     }
 
-    public Section(final Station upStation, final Station downStation, final int distance) {
+    public Section(final Line line, final Station upStation, final Station downStation, final Distance distance) {
+        this.line = line;
         this.upStation = Objects.requireNonNull(upStation);
         this.downStation = Objects.requireNonNull(downStation);
-        this.distance = Distance.valueOf(distance);
+        this.distance = distance;
+    }
+
+    public Section(final Line line, final Station upStation, final Station downStation, final int distance) {
+        this(line, upStation, downStation, Distance.valueOf(distance));
+    }
+
+    public static Section merge(final Section sectionByDownStation, final Section sectionByUpStation) {
+        return new Section(sectionByUpStation.line, sectionByDownStation.upStation, sectionByUpStation.downStation, sectionByDownStation.plusDistance(sectionByDownStation));
+    }
+
+    private Distance plusDistance(final Section section) {
+        return distance.plus(section.distance);
     }
 
     public Set<Station> getStations() {

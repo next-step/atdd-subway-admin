@@ -8,16 +8,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.ForeignKey;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.exception.SubwayException;
 import nextstep.subway.exception.SubwayExceptionMessage;
 
 @Embeddable
 public class Sections {
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
+    public static final int MIN_COUNT = 1;
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(final Section section) {
@@ -61,6 +59,13 @@ public class Sections {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
+    private Section findSectionByDownStation(final Station station) {
+        return sections.stream()
+                .filter(section -> section.hasDownStation(station))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
     private Station findFirstStation() {
         return getStations().stream()
                 .filter(this::noneHasDownStation)
@@ -76,6 +81,58 @@ public class Sections {
         return sections.stream()
                 .flatMap(section -> section.getStations().stream())
                 .collect(Collectors.toSet());
+    }
+
+    public void deleteStation(final Station station) {
+        validateDeleteStation(station);
+
+        final Section sectionByUpStation = findSectionByUpStation(station);
+        final Section sectionByDownStation = findSectionByDownStation(station);
+
+        if (isNeedMerge(station)) {
+            sections.add(Section.merge(sectionByDownStation, sectionByUpStation));
+        }
+
+        if (existSectionByUpStation(station)) {
+            sections.remove(sectionByUpStation);
+        }
+
+        if (existSectionByDownStation(station)) {
+            sections.remove(sectionByDownStation);
+        }
+    }
+
+    private boolean isNeedMerge(final Station station) {
+        return existSectionByUpStation(station) && existSectionByDownStation(station);
+    }
+
+
+    private void validateDeleteStation(final Station station) {
+        if (isNotContainStation(station)) {
+            throw new SubwayException(SubwayExceptionMessage.NOT_FOUND_STATION);
+        }
+
+        if (isLastSection()) {
+            throw new SubwayException(SubwayExceptionMessage.DO_NOT_DELETE_LAST_SECTION);
+        }
+    }
+
+    private boolean isLastSection() {
+        return sections.size() <= MIN_COUNT;
+    }
+
+    private boolean isNotContainStation(final Station station) {
+        return !getStations().contains(station);
+    }
+
+    private boolean existSectionByUpStation(final Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.hasUpStation(station));
+    }
+
+    private boolean existSectionByDownStation(final Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.hasDownStation(station));
     }
 
     @Override

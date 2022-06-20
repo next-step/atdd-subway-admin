@@ -23,7 +23,7 @@ public class Line {
     private String color;
 
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -57,6 +57,10 @@ public class Line {
 
     public Set<Station> getStations() {
         return sections.getStationsOrderBy();
+    }
+
+    public void deleteStation(final Station station) {
+        sections.deleteStation(station);
     }
 
     @Override
