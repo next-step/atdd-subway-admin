@@ -86,19 +86,21 @@ public class Line extends BaseEntity {
         throw new IllegalArgumentException("상행역과 하행역 둘 중 하나라도 포함되어있지 않으면 구간을 추가할 수 없습니다.");
     }
 
-    private void divideSection(Section section, Station section1) {
+    private void divideSection(Section section, Station station) {
         sections.addBetweenSection(section);
-        lineStations.add(LineStation.create(this, section1));
+        lineStations.add(LineStation.create(this, station));
     }
 
     private void createDownStationSection(Section section) {
         setDownStation(section.getDownStation());
+        lineStations.add(LineStation.create(this, downStation));
         sections.addSection(section);
         distance = distance.add(section.getDistance().getValue());
     }
 
     private void createUpStationSection(Section section) {
         setUpStation(section.getUpStation());
+        lineStations.add(LineStation.create(this, upStation));
         sections.addSection(section);
         distance = distance.add(section.getDistance().getValue());
     }
@@ -106,22 +108,60 @@ public class Line extends BaseEntity {
 
     private void setUpStation(Station upStation) {
         if (!Objects.equals(this.upStation, upStation)) {
-            lineStations.add(LineStation.create(this, upStation));
             this.upStation = upStation;
         }
     }
 
     private void setDownStation(Station downStation) {
         if (!Objects.equals(this.downStation, downStation)) {
-            lineStations.add(LineStation.create(this, downStation));
             this.downStation = downStation;
         }
     }
 
-
     public void modify(String name, String color) {
         this.name = LineName.of(name);
         this.color = LineColor.of(color);
+    }
+
+    public void removeSection(Long stationId) {
+        validateRemoveSection(stationId);
+
+        if (isTerminus(stationId)) {
+            removeTerminusSection(stationId);
+            return;
+        }
+
+        sections.removeMiddleStation(this, stationId);
+    }
+
+    private void removeTerminusSection(Long stationId) {
+        Section section = null;
+
+        if (Objects.equals(upStation.getId(), stationId)) {
+            section = sections.getRightSection(stationId);
+            setUpStation(section.getDownStation());
+        }
+
+        if (Objects.equals(downStation.getId(), stationId)) {
+            section = sections.getLeftSection(stationId);
+            setDownStation(section.getUpStation());
+        }
+
+        sections.remove(section);
+    }
+
+    private void validateRemoveSection(Long stationId) {
+        if (!lineStations.isContainStation(stationId)) {
+            throw new IllegalArgumentException("노선에 포함되지 않은 역입니다.");
+        }
+
+        if (sections.getSize() == 1) {
+            throw new IllegalStateException("노선에 구간이 하나인 경우 구간을 삭제할 수 없습니다.");
+        }
+    }
+
+    private boolean isTerminus(Long stationId) {
+        return Objects.equals(upStation.getId(), stationId) || Objects.equals(downStation.getId(), stationId);
     }
 
 

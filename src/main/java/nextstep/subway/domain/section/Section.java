@@ -38,8 +38,19 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    private Section(Station upStation, Station downStation, Line line, Distance distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.line = line;
+        this.distance = distance;
+    }
+
     public static Section create(Station upStation, Station downStation, Distance distance) {
         return new Section(upStation, downStation, distance);
+    }
+
+    public static Section create(Station upStation, Station downStation, Line line, Distance distance) {
+        return new Section(upStation, downStation, line, distance);
     }
 
     public Station getUpStation() {

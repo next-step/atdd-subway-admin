@@ -1,5 +1,6 @@
 package nextstep.subway.domain.LineStation;
 
+import nextstep.subway.domain.line.Lines;
 import nextstep.subway.domain.station.Station;
 
 import javax.persistence.CascadeType;
@@ -8,6 +9,8 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class LineStations {
@@ -23,8 +26,16 @@ public class LineStations {
     protected LineStations() {
     }
 
+    public LineStations(List<LineStation> lineStations) {
+        this.lineStations = lineStations;
+    }
+
     public static LineStations create() {
         return new LineStations();
+    }
+
+    public static LineStations create(List<LineStation> lineStations) {
+        return new LineStations(lineStations);
     }
 
     public void add(LineStation lineStation) {
@@ -44,5 +55,23 @@ public class LineStations {
         return lineStations.stream()
                 .map(LineStation::getStation)
                 .anyMatch(storedStation -> storedStation.equals(station));
+    }
+
+    public boolean isContainStation(Long stationId) {
+        return lineStations.stream()
+                .map(lineStation -> lineStation.getStation().getId())
+                .anyMatch(registeredStationId -> Objects.equals(registeredStationId, stationId));
+    }
+
+    public boolean isContainLine(Long lineId) {
+        return lineStations.stream()
+                .map(lineStation -> lineStation.getLine().getId())
+                .anyMatch(registeredLineId -> Objects.equals(registeredLineId, lineId));
+    }
+
+    public Lines getLines() {
+        return Lines.create(lineStations.stream()
+                .map(lineStation -> lineStation.getLine())
+                .collect(Collectors.toList()));
     }
 }

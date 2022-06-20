@@ -404,4 +404,151 @@ public class LineAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * Given 추가할 역을 생성하고
+     * When 상행역과 하행역이 이미 노선에 등록되어 있는 구간을 등록할 때
+     * Then 구간이 추가되지 않는다.
+     */
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있으면 추가할 수 없음")
+    @Test
+    void removeSection_상행역_하행역_둘다_포함된_경우_추가할_수_없다() {
+        // given
+        LineResponse 사호선 = response.body().as(LineResponse.class);
+
+        // when
+        SectionRequest sectionRequest = new SectionRequest(오이도역.getId(), 당고개역.getId(), 10);
+        ExtractableResponse<Response> response = 지하철_노선_구간추가(사호선.getId(), sectionRequest);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 노선에 구간을 추가한다.
+     * Given 추가할 역을 생성한다.
+     * Given 구간을 추가한다.
+     * When 중간역을 제거한다.
+     * Then 해당 역이 노선에서 제거된다.
+     */
+    @DisplayName("노선의 중간 역을 제거한다.")
+    @Test
+    void removeSection_중간역_제거() {
+        // given
+        LineResponse 사호선 = response.body().as(LineResponse.class);
+
+        StationResponse 상록수역 = 지하철역_생성("상록수역").body().as(StationResponse.class);
+
+        SectionRequest sectionRequest = new SectionRequest(상록수역.getId(), 오이도역.getId(), 10);
+        지하철_노선_구간추가(사호선.getId(), sectionRequest);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간제거(사호선.getId(), 상록수역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 노선에 구간을 추가한다.
+     * Given 추가할 역을 생성한다.
+     * Given 구간을 추가한다.
+     * When 노선의 상행역을 제거한다.
+     * Then 노선의 상행역 제거된다.
+     */
+    @DisplayName("노선의 상행역을 제거한다.")
+    @Test
+    void removeSection_상행역_제거() {
+        // given
+        LineResponse 사호선 = response.body().as(LineResponse.class);
+
+        StationResponse 상록수역 = 지하철역_생성("상록수역").body().as(StationResponse.class);
+
+        SectionRequest sectionRequest = new SectionRequest(상록수역.getId(), 오이도역.getId(), 10);
+        지하철_노선_구간추가(사호선.getId(), sectionRequest);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간제거(사호선.getId(), 당고개역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 노선에 구간을 추가한다.
+     * Given 추가할 역을 생성한다.
+     * Given 구간을 추가한다.
+     * When 노선의 하행역을 제거한다.
+     * Then 노선의 하행역 제거된다.
+     */
+    @DisplayName("노선의 하행역을 제거한다.")
+    @Test
+    void removeSection_하행역_제거() {
+        // given
+        LineResponse 사호선 = response.body().as(LineResponse.class);
+
+        StationResponse 상록수역 = 지하철역_생성("상록수역").body().as(StationResponse.class);
+
+        SectionRequest sectionRequest = new SectionRequest(상록수역.getId(), 오이도역.getId(), 10);
+        지하철_노선_구간추가(사호선.getId(), sectionRequest);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간제거(사호선.getId(), 오이도역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 노선에 구간을 추가한다.
+     * When 노선에 포함되지 않는 역을 제거한다.
+     * Then 해당역을 제거할 수 없음
+     */
+    @DisplayName("노선에 포함되지 않는 역을 제거한다.")
+    @Test
+    void removeSection_노선에_포함되지_않는_역_제거() {
+        // given
+        LineResponse 사호선 = response.body().as(LineResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간제거(사호선.getId(), 오이도역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 상행역을 제거한다.
+     * Then 해당역을 제거할 수 없음
+     */
+    @DisplayName("구간이 하나인 경우 상행역을 제거 시 제거할 수 없음")
+    @Test
+    void removeSection_구간이_하나인_경우_상행역을_제거_시_제거_할_수_없다() {
+        // given
+        LineResponse 사호선 = response.body().as(LineResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간제거(사호선.getId(), 당고개역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 하행역을 제거한다.
+     * Then 해당역을 제거할 수 없음
+     */
+    @DisplayName("구간이 하나인 경우 하행역을 제거 시 제거할 수 없음")
+    @Test
+    void removeSection_구간이_하나인_경우_하행역을_제거_시_제거_할_수_없다() {
+        // given
+        LineResponse 사호선 = response.body().as(LineResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간제거(사호선.getId(), 오이도역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }
