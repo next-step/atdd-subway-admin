@@ -12,8 +12,8 @@ public class LineUpdateRequest {
         this.color = color;
     }
 
-    public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation);
+    public Line toLine(Long distance, Station upStation, Station downStation) {
+        return new Line(name, color, distance, upStation, downStation);
     }
 
     public String getName() {

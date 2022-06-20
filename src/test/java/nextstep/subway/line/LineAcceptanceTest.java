@@ -28,7 +28,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역");
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
 
         // then
         ResponseAssertTest.생성_확인(createResponse);
@@ -47,8 +47,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLines() {
         // given
-        지하철노선_생성_요청("7호선", "green", "수락산역", "마들역");
-        지하철노선_생성_요청("신분당선", "red", "강남역", "논현역");
+        지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
+        지하철노선_생성_요청("신분당선", "red", "강남역", "논현역", 15L);
 
         // when
         ExtractableResponse<Response> getResponse = 지하철노선_목록조회_요청();
@@ -66,7 +66,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역");
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
 
         // when
         Long id = createResponse.jsonPath().getLong("id");
@@ -85,7 +85,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역");
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
 
         // when
         Long id = createResponse.jsonPath().getLong("id");
@@ -105,7 +105,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역");
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
 
         // when
         Long id = createResponse.jsonPath().getLong("id");
@@ -190,11 +190,11 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color, String upStationName, String downStationName) {
+    private ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color, String upStationName, String downStationName, Long distance) {
         Long upStationId = StationAcceptanceTest.지하철역_생성_요청(upStationName).jsonPath().getLong("id");
         Long downStationId = StationAcceptanceTest.지하철역_생성_요청(downStationName).jsonPath().getLong("id");
 
-        LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId);
+        LineRequest lineRequest = new LineRequest(name, color, distance, upStationId, downStationId);
 
         return RestAssured.given().log().all()
             .body(lineRequest)

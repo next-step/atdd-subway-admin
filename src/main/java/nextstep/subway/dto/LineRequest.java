@@ -6,12 +6,14 @@ import nextstep.subway.domain.Station;
 public class LineRequest {
     private String name;
     private String color;
+    private Long distance;
     private Long upStationId;
     private Long downStationId;
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId) {
+    public LineRequest(String name, String color, Long distance, Long upStationId, Long downStationId) {
         this.name = name;
         this.color = color;
+        this.distance = distance;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
     }
@@ -24,6 +26,10 @@ public class LineRequest {
         return color;
     }
 
+    public Long getDistance() {
+        return distance;
+    }
+
     public Long getUpStationId() {
         return upStationId;
     }
@@ -33,6 +39,6 @@ public class LineRequest {
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation);
+        return new Line(name, color, distance, upStation, downStation);
     }
 }
