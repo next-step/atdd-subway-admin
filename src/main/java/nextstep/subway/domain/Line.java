@@ -20,7 +20,7 @@ public class Line extends BaseEntity {
     @Column
     private Long distance;
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     protected Line() {
     }

@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
@@ -124,20 +125,43 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createSection() {
         // when
-        ExtractableResponse<Response> createResponse = 지하철노선_구간추가_요청("수락산역", "노원역", 10L);
+        ExtractableResponse<Response> createResponse = 하행선에_구간추가_요청("수락산역", "노원역", 10L);
 
         // then
         ResponseAssertTest.생성_확인(createResponse);
     }
 
-    private ExtractableResponse<Response> 지하철노선_구간추가_요청(String upStationName, String downStationName, Long distance) {
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 해당 노선에 이미 등록된 구간을 추가하면
+     * Then 구간 추가가 불가하다.
+     */
+    @DisplayName("상행역, 하행역이 이미 노선에 등록되어 있으면 구간 추가가 불가하다.")
+    @Test
+    void createSectionErrorByExistsSection() {
+        // given
+        ExtractableResponse<Response> createLine = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
+
+        // when
+        JsonPath jsonPath = createLine.jsonPath();
+        ExtractableResponse<Response> createSection = 지하철노선_구간추가_요청(jsonPath.getLong("id"), jsonPath.getLong("upStationId"), jsonPath.getLong("downStationId"), 5L);
+
+        // then
+        ResponseAssertTest.요청오류_확인(createSection);
+    }
+
+    private ExtractableResponse<Response> 하행선에_구간추가_요청(String upStationName, String downStationName, Long distance) {
         ExtractableResponse<Response> createLineResponse = 지하철노선_생성_요청("7호선", "green", upStationName, "마들역", 5L);
         Long lineId = createLineResponse.jsonPath().getLong("id");
         Long upStationId = createLineResponse.jsonPath().getLong("upStationId");
 
         Long newDownStationId = StationAcceptanceTest.지하철역_생성_요청(downStationName).jsonPath().getLong("id");
 
-        SectionRequest sectionRequest = new SectionRequest(upStationId, newDownStationId, distance);
+        return 지하철노선_구간추가_요청(lineId, upStationId, newDownStationId, distance);
+    }
+
+    private ExtractableResponse<Response> 지하철노선_구간추가_요청(Long lineId, Long upStationId, Long downStationId, Long distance) {
+        SectionRequest sectionRequest = new SectionRequest(upStationId, downStationId, distance);
         return RestAssured.given().log().all()
             .body(sectionRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -47,4 +47,16 @@ public class Section extends BaseEntity {
     public Long getDistance() {
         return distance;
     }
+
+    public boolean isExistsSection(Section newSection) {
+        if (!upStation.getId().equals(newSection.getUpStation().getId())) {
+            return false;
+        }
+
+        if (!downStation.getId().equals(newSection.getDownStation().getId())) {
+            return false;
+        }
+
+        return true;
+    }
 }
