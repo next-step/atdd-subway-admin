@@ -49,6 +49,11 @@ public class LineService {
     }
 
     @Transactional
+    public Line findLineById(Long id) {
+        return lineRepository.getById(id);
+    }
+
+    @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) throws NotFoundLineException {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
         line.update(lineUpdateRequest.toLine(line.getDistance(), line.getUpStation(), line.getDownStation()));

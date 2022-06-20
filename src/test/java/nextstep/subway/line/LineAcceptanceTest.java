@@ -7,6 +7,7 @@ import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.ResponseAssertTest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -113,6 +114,36 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         노선_삭제_확인(id, deleteResponse);
+    }
+
+    /**
+     * When 지하철노선에 구간을 추가하면
+     * Then 노선에 구간이 등록된다.
+     */
+    @DisplayName("지하철노선에 구간을 추가한다.")
+    @Test
+    void createSection() {
+        // when
+        ExtractableResponse<Response> createResponse = 지하철노선_구간추가_요청("수락산역", "노원역", 10L);
+
+        // then
+        ResponseAssertTest.생성_확인(createResponse);
+    }
+
+    private ExtractableResponse<Response> 지하철노선_구간추가_요청(String upStationName, String downStationName, Long distance) {
+        ExtractableResponse<Response> createLineResponse = 지하철노선_생성_요청("7호선", "green", upStationName, "마들역", 5L);
+        Long lineId = createLineResponse.jsonPath().getLong("id");
+        Long upStationId = createLineResponse.jsonPath().getLong("upStationId");
+
+        Long newDownStationId = StationAcceptanceTest.지하철역_생성_요청(downStationName).jsonPath().getLong("id");
+
+        SectionRequest sectionRequest = new SectionRequest(upStationId, newDownStationId, distance);
+        return RestAssured.given().log().all()
+            .body(sectionRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post(rootPath + "/" + lineId + "/sections")
+            .then().log().all()
+            .extract();
     }
 
     private void 노선_삭제_확인(Long id, ExtractableResponse<Response> response) {
