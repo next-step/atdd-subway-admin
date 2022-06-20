@@ -19,6 +19,8 @@ public class Line extends BaseEntity {
     private Station downStation;
     @Column
     private Long distance;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
@@ -29,6 +31,10 @@ public class Line extends BaseEntity {
         this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
+    }
+    
+    public void addSection() {
+        this.sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public void update(Line newLine) {
@@ -58,5 +64,9 @@ public class Line extends BaseEntity {
 
     public Long getDistance() {
         return distance;
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 }

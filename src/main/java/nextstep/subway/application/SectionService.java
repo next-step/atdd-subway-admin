@@ -29,6 +29,7 @@ public class SectionService {
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
 
         Section persistSection = sectionRepository.save(sectionRequest.toSection(line, upStation, downStation));
+        line.addSection();
         return SectionResponse.of(persistSection);
     }
 }
