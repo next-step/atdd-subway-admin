@@ -13,7 +13,13 @@ public class StationTestHelper {
     }
 
 
-    static ExtractableResponse<Response> 지하철역_생성(StationRequest stationRequest) {
+    public static Long 지하철역_생성하고_역_ID_응답(String name) {
+        return StationTestHelper.지하철역_생성(name)
+                .jsonPath().getLong("id");
+    }
+
+    public static ExtractableResponse<Response> 지하철역_생성(String name) {
+        StationRequest stationRequest = new StationRequest(name);
         return RestAssured.given().log().all()
                 .body(stationRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -22,14 +28,14 @@ public class StationTestHelper {
                 .extract();
     }
 
-    static ExtractableResponse<Response> 지하철역_전체목록_조회() {
+    public static ExtractableResponse<Response> 지하철역_전체목록_조회() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
     }
 
-    static ExtractableResponse<Response> 지하철역_ID로_삭제(Long stationId) {
+    public static ExtractableResponse<Response> 지하철역_ID로_삭제(Long stationId) {
         return RestAssured.given().log().all()
                 .when().delete("/stations/{stationId}", stationId)
                 .then().log().all()
