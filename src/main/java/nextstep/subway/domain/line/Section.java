@@ -99,4 +99,12 @@ public class Section {
             ", downStation=" + downStation.getName() +
             '}';
     }
+
+    public void swapUpStationToTargetDownStation(Station targetDownStation) {
+        this.upStation = targetDownStation;
+    }
+
+    public void swapDownStationToTargetUpStation(Station targetUpStation) {
+        this.downStation = targetUpStation;
+    }
 }

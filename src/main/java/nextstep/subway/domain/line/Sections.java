@@ -14,7 +14,6 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
-
     }
 
     private Sections(List<Section> sections) {
@@ -32,8 +31,24 @@ public class Sections {
         return sections;
     }
 
+    private boolean isSameUpStation(Station upStation) {
+        return getAllUpStations().contains(upStation);
+    }
+
+    private boolean isSameDownStation(Station downStation){
+        return getAllDownStations().contains(downStation);
+    }
+
     public void add(Section section) {
-        // TODO 상행/하행역 사이에 중간 구간을 삽입 : 중간 구간 추가 및 연결되어야 하는 구간의 상행/하행역 갱신 처리
+        // TODO Validation : 구간 길이 검증, 연결 구간 포함 여부 검증, 동일 구간 여부 검증
+        if (isSameUpStation(section.getUpStation())) {
+            findSectionByUpStation(section.getUpStation())
+                .swapUpStationToTargetDownStation(section.getDownStation());
+        }
+        if (isSameDownStation(section.getDownStation())) {
+            findSectionByDownStation(section.getDownStation())
+                .swapDownStationToTargetUpStation(section.getUpStation());
+        }
         sections.add(section);
     }
 
