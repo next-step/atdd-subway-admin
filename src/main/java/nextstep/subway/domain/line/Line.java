@@ -1,5 +1,6 @@
 package nextstep.subway.domain.line;
 
+import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -46,7 +47,6 @@ public class Line extends BaseEntity {
 
     private int distance;
 
-
     protected Line() {
     }
 
@@ -67,7 +67,7 @@ public class Line extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.sections = Sections.addFirstSection(new Section(this, upStation, downStation, distance));
+        this.sections = Sections.addInitialSection(new Section(this, upStation, downStation, distance));
     }
 
     public Long getId() {
@@ -97,5 +97,33 @@ public class Line extends BaseEntity {
     public void updateColor(UpdateLineRequest updateLineRequest) {
         this.name = updateLineRequest.getName();
         this.color = updateLineRequest.getColor();
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public Station getFinalUpStation() {
+        return sections.getFinalUpStation();
+    }
+
+    public Station getFinalDownStation() {
+        return sections.getFinalDownStation();
+    }
+
+    public List<Station> getAllStations() {
+        return sections.sortedByFinalUpStations();
+    }
+
+    public List<Section> getAllSections() {
+        return sections.getSections();
+    }
+
+    public Section getFinalUpSection() {
+        return sections.getFinalUpSection();
+    }
+
+    public Section getFinalDownSection() {
+        return sections.getFinalDownSection();
     }
 }

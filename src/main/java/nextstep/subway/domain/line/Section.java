@@ -54,6 +54,14 @@ public class Section {
         this.distance = distance;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -64,10 +72,6 @@ public class Section {
 
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     @Override
@@ -85,5 +89,14 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+            "line=" + line.getName() +
+            ", upStation=" + upStation.getName() +
+            ", downStation=" + downStation.getName() +
+            '}';
     }
 }
