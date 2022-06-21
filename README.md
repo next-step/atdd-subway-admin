@@ -112,7 +112,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 기능 요구사항
 
-- [ ] Step2. PR 리뷰 반영
+- [x] Step2. PR 리뷰 반영
 - [x] 지하철 구간 추가 기능 작성
     - [x] 성공 케이스 작성
         - [x] 인수 조건 작성
