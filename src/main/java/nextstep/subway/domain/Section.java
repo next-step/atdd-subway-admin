@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.InvalidSectionException;
+
 import javax.persistence.*;
 
 @Entity
@@ -18,14 +20,27 @@ public class Section extends BaseEntity {
     private Station downStation;
     private Long distance;
 
-    public Section() {
+    protected Section() {
     }
 
     public Section(Line line, Station upStation, Station downStation, Long distance) {
+        validateIncludeAnyStation(line, upStation, downStation);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateIncludeAnyStation(Line line, Station newUpStation, Station newDownStation) {
+        if (line.getUpStation().getId().equals(newUpStation.getId())) {
+            return;
+        }
+
+        if (line.getDownStation().getId().equals(newDownStation.getId())) {
+            return;
+        }
+
+        throw new InvalidSectionException(line.getUpStation().getId(), line.getDownStation().getId());
     }
 
     public Long getId() {

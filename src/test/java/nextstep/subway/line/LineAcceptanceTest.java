@@ -150,6 +150,25 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ResponseAssertTest.요청오류_확인(createSection);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 기존 상행역 하행역 둘 중 하나에도 포함되어있지 않으면
+     * Then 구간 추가가 불가하다.
+     */
+    @DisplayName("구간 추가 시 상행역 하행역 둘 중 하나에도 포함되어있지 않으면 구간 추가가 불가하다.")
+    @Test
+    void createSectionErrorByInvalidStation() {
+        // given
+        ExtractableResponse<Response> createLine = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
+
+        // when
+        JsonPath jsonPath = createLine.jsonPath();
+        ExtractableResponse<Response> createSection = 역이름으로_구간추가_요청(jsonPath.getLong("id"), "공릉역", "태릉입구역", 3L);
+
+        // then
+        ResponseAssertTest.요청오류_확인(createSection);
+    }
+
     private ExtractableResponse<Response> 하행선에_구간추가_요청(String upStationName, String downStationName, Long distance) {
         ExtractableResponse<Response> createLineResponse = 지하철노선_생성_요청("7호선", "green", upStationName, "마들역", 5L);
         Long lineId = createLineResponse.jsonPath().getLong("id");
@@ -158,6 +177,13 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         Long newDownStationId = StationAcceptanceTest.지하철역_생성_요청(downStationName).jsonPath().getLong("id");
 
         return 지하철노선_구간추가_요청(lineId, upStationId, newDownStationId, distance);
+    }
+
+    private ExtractableResponse<Response> 역이름으로_구간추가_요청(Long lineId, String upStationName, String downStationName, Long distance) {
+        Long upStationId = StationAcceptanceTest.지하철역_생성_요청(upStationName).jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTest.지하철역_생성_요청(downStationName).jsonPath().getLong("id");
+
+        return 지하철노선_구간추가_요청(lineId, upStationId, downStationId, distance);
     }
 
     private ExtractableResponse<Response> 지하철노선_구간추가_요청(Long lineId, Long upStationId, Long downStationId, Long distance) {

@@ -12,4 +12,10 @@ public class CommonExceptionHandler {
     public String handleSectionDuplicatedException(DuplicatedSectionException exception) {
         return exception.getMessage();
     }
+
+    @ExceptionHandler(InvalidSectionException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleInvalidSectionException(InvalidSectionException exception) {
+        return exception.getMessage();
+    }
 }
