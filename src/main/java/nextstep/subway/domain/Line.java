@@ -31,7 +31,6 @@ public class Line extends BaseEntity {
         this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
-        addSection();
     }
     
     public void addSection() {
