@@ -58,7 +58,7 @@ class LineTest {
         final Station 논현역 = new Station("논현역");
         final int 구간_길이 = 5;
 
-        final Section 신규_상행종점역_구간 = new Section(신분당선, 신사역, 논현역, 구간_길이);
+        final Section 신규_상행종점역_구간 = Section.of(신분당선, 신사역, 논현역, 구간_길이);
 
         // When
         신분당선.addSection(신규_상행종점역_구간);
@@ -68,7 +68,7 @@ class LineTest {
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(신사역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(정자역),
             () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(신규_상행종점역_구간),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(new Section(신분당선, 논현역, 정자역, 5)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 논현역, 정자역, 5)),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
                 .as("노선에 포함된 정렬된 지하철 역 목록 조회")
@@ -84,7 +84,7 @@ class LineTest {
         final Station 광교역 = new Station("광교역");
         final int 구간_길이 = 5;
 
-        final Section 신규_하행종점역_구간 = new Section(신분당선, 정자역, 광교역, 구간_길이);
+        final Section 신규_하행종점역_구간 = Section.of(신분당선, 정자역, 광교역, 구간_길이);
 
         // When
         신분당선.addSection(신규_하행종점역_구간);
@@ -94,7 +94,7 @@ class LineTest {
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(논현역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(광교역),
             () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(신규_하행종점역_구간),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(new Section(신분당선, 정자역, 광교역, 5)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 정자역, 광교역, 5)),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
                 .as("노선에 포함된 정렬된 지하철 역 목록 조회")
@@ -110,7 +110,7 @@ class LineTest {
         final Station 신논현역 = new Station("신논현역");
         final int 구간_길이 = 5;
 
-        final Section 상행역이_동일한_구간 = new Section(신분당선, 논현역, 신논현역, 구간_길이);
+        final Section 상행역이_동일한_구간 = Section.of(신분당선, 논현역, 신논현역, 구간_길이);
 
         // When
         신분당선.addSection(상행역이_동일한_구간);
@@ -119,8 +119,8 @@ class LineTest {
         assertAll(
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(논현역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(정자역),
-            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(new Section(신분당선, 논현역, 신논현역, 5)),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(new Section(신분당선, 신논현역, 정자역, 5)),
+            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 논현역, 신논현역, 5)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 신논현역, 정자역, 5)),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
                 .as("노선에 포함된 정렬된 지하철 역 목록 조회")
@@ -136,7 +136,7 @@ class LineTest {
         final Station 정자역 = new Station("정자역");
         final int 구간_길이 = 5;
 
-        final Section 하행역이_동일한_구간 = new Section(신분당선, 신논현역, 정자역, 구간_길이);
+        final Section 하행역이_동일한_구간 = Section.of(신분당선, 신논현역, 정자역, 구간_길이);
 
         // When
         신분당선.addSection(하행역이_동일한_구간);
@@ -145,8 +145,8 @@ class LineTest {
         assertAll(
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(논현역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(정자역),
-            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(new Section(신분당선, 논현역, 신논현역, 5)),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(new Section(신분당선, 신논현역, 정자역, 5)),
+            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 논현역, 신논현역, 5)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 신논현역, 정자역, 5)),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
                 .as("노선에 포함된 정렬된 지하철 역 목록 조회")
@@ -168,21 +168,21 @@ class LineTest {
         Station 미금역 = new Station("미금역");
 
         // When
-        신분당선.addSection(new Section(신분당선, 정자역, 미금역, 5));
-        신분당선.addSection(new Section(신분당선, 논현역, 신논현역, 5));
-        신분당선.addSection(new Section(신분당선, 신논현역, 강남역, 5));
-        신분당선.addSection(new Section(신분당선, 강남역, 양재역, 10));
-        신분당선.addSection(new Section(신분당선, 양재시민의숲역, 정자역, 65));
-        신분당선.addSection(new Section(신분당선, 양재시민의숲역, 청계산입구역, 35));
-        신분당선.addSection(new Section(신분당선, 판교역, 정자역, 5));
-        신분당선.addSection(new Section(신분당선, 신사역, 논현역, 5));
+        신분당선.addSection(Section.of(신분당선, 정자역, 미금역, 5));
+        신분당선.addSection(Section.of(신분당선, 논현역, 신논현역, 5));
+        신분당선.addSection(Section.of(신분당선, 신논현역, 강남역, 5));
+        신분당선.addSection(Section.of(신분당선, 강남역, 양재역, 10));
+        신분당선.addSection(Section.of(신분당선, 양재시민의숲역, 정자역, 65));
+        신분당선.addSection(Section.of(신분당선, 양재시민의숲역, 청계산입구역, 35));
+        신분당선.addSection(Section.of(신분당선, 판교역, 정자역, 5));
+        신분당선.addSection(Section.of(신분당선, 신사역, 논현역, 5));
 
         // Then
         assertAll(
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(신사역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(미금역),
-            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(new Section(신분당선, 신사역, 논현역, 5)),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(new Section(신분당선, 정자역, 미금역, 5)),
+            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 신사역, 논현역, 5)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 정자역, 미금역, 5)),
             () -> assertThat(신분당선.getAllSections()).hasSize(9),
             () -> assertThat(신분당선.getTotalDistance())
                 .as("신사-5-논현-5-신논현-5-강남-10-양재-15-양재시민의숲-35-청계산입구-25-판교-5-정자-5-미금")
@@ -201,7 +201,7 @@ class LineTest {
         Station 정자역 = new Station("정자역");
         final int 구간_길이 = 5;
 
-        Section 동일구간 = new Section(신분당선, 논현역, 정자역, 구간_길이);
+        Section 동일구간 = Section.of(신분당선, 논현역, 정자역, 구간_길이);
 
         // When & Then
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -216,7 +216,7 @@ class LineTest {
         Station 양재역 = new Station("양재역");
         final int 구간_길이 = 5;
 
-        Section 접점이_없는_구간 = new Section(신분당선, 강남역, 양재역, 구간_길이);
+        Section 접점이_없는_구간 = Section.of(신분당선, 강남역, 양재역, 구간_길이);
 
         // When & Then
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -237,7 +237,7 @@ class LineTest {
     ) {
         // Given
         final Station 강남역 = new Station("강남역");
-        final Section 상행역이_동일한_구간 = new Section(신분당선, 강남역, 정자역, 10);
+        final Section 상행역이_동일한_구간 = Section.of(신분당선, 강남역, 정자역, 10);
         신분당선.addSection(상행역이_동일한_구간);
 
         // When
@@ -251,10 +251,10 @@ class LineTest {
         final Station 강남역 = new Station("강남역");
         final Station 양재역 = new Station("양재역");
         return Stream.of(
-            Arguments.of(new Section(신분당선, 강남역, 양재역, 10), "인접 구간의 길이와 추가하는 구간의 길이가 같은 경우"),
-            Arguments.of(new Section(신분당선, 강남역, 양재역, 11), "인접 구간의 길이보다 추가하는 구간의 길이가 큰 경우"),
-            Arguments.of(new Section(신분당선, 강남역, 양재역, 100), "전체 구간의 길이와 추가하는 구간의 길이가 같은 경우"),
-            Arguments.of(new Section(신분당선, 강남역, 양재역, 101), "전체 구간의 길이보다 추가하는 구간의 길이가 큰 경우")
+            Arguments.of(Section.of(신분당선, 강남역, 양재역, 10), "인접 구간의 길이와 추가하는 구간의 길이가 같은 경우"),
+            Arguments.of(Section.of(신분당선, 강남역, 양재역, 11), "인접 구간의 길이보다 추가하는 구간의 길이가 큰 경우"),
+            Arguments.of(Section.of(신분당선, 강남역, 양재역, 100), "전체 구간의 길이와 추가하는 구간의 길이가 같은 경우"),
+            Arguments.of(Section.of(신분당선, 강남역, 양재역, 101), "전체 구간의 길이보다 추가하는 구간의 길이가 큰 경우")
         );
     }
 }

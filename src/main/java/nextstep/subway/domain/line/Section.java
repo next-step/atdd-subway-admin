@@ -17,6 +17,8 @@ import nextstep.subway.domain.station.Station;
 public class Section {
 
     public static final String SECTION_DISTANCE_OVER_DISTANCE_ERROR_MESSAGE = "추가하는 구간의 길이는 연결되는 구간의 길이보다 크거나 같을 수 없습니다.";
+    public static final String NULL_STATIONS_ERROR_MESSAGE = "구간 생성 시, 상행역과 하행역 정보는 필수 입니다.";
+    public static final String EQUALS_STATIONS_ERROR_MESSAGE = "구간 생성 시, 상행역과 하행역 정보는 필수 입니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,11 +52,33 @@ public class Section {
 
     }
 
-    public Section(Line line, Station upStation, Station downStation, Integer distance) {
+    private Section(Line line, Station upStation, Station downStation, Integer distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = new Distance(distance);
+    }
+
+    public static Section of(Line line, Station upStation, Station downStation, int distance) {
+        validateStation(upStation, downStation);
+        return new Section(line, upStation, downStation, distance);
+    }
+
+    private static void validateStation(Station upStation, Station downStation) {
+        validateIsNotNullStation(upStation, downStation);
+        validateEqualsStations(upStation, downStation);
+    }
+
+    private static void validateIsNotNullStation(Station upStation, Station downStation) {
+        if (upStation == null || downStation == null) {
+            throw new IllegalArgumentException(NULL_STATIONS_ERROR_MESSAGE);
+        }
+    }
+
+    private static void validateEqualsStations(Station upStation, Station downStation) {
+        if (upStation.equals(downStation)) {
+            throw new IllegalArgumentException(EQUALS_STATIONS_ERROR_MESSAGE);
+        }
     }
 
     public void swapUpStationToTargetDownStation(Section targetSection) {

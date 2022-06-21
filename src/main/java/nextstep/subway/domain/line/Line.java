@@ -67,7 +67,7 @@ public class Line extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.sections = Sections.addInitialSection(new Section(this, upStation, downStation, distance));
+        this.sections = Sections.addInitialSection(Section.of(this, upStation, downStation, distance));
     }
 
     public void updateColor(UpdateLineRequest updateLineRequest) {
