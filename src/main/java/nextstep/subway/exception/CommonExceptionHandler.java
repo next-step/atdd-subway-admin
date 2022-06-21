@@ -18,4 +18,10 @@ public class CommonExceptionHandler {
     public String handleInvalidSectionException(InvalidSectionException exception) {
         return exception.getMessage();
     }
+
+    @ExceptionHandler(InvalidDistanceException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleInvalidDistanceException(InvalidDistanceException exception) {
+        return exception.getMessage();
+    }
 }

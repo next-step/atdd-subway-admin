@@ -40,6 +40,7 @@ public class Line extends BaseEntity {
 
     public void addSection(Section newSection) {
         this.sections.add(newSection);
+        newSection.validateDistance();
     }
 
     public void update(Line newLine) {

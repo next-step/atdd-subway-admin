@@ -169,6 +169,31 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ResponseAssertTest.요청오류_확인(createSection);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성된 노선 사이에 구간을 추가할 때 기존 거리보다 신규 구간의 거리가 크거나 같으면
+     * Then 구간 추가가 불가하다.
+     */
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 거리가 크거나 같으면 구간 추가가 불가하다.")
+    @Test
+    void createSectionErrorByInvalidDistance() {
+        // given
+        ExtractableResponse<Response> createLine = 지하철노선_생성_요청("7호선", "green", "수락산역", "노원역", 5L);
+
+        // when
+        JsonPath jsonPath = createLine.jsonPath();
+        ExtractableResponse<Response> createSection = 상행선_사이에_구간추가_요청(jsonPath.getLong("id"), jsonPath.getLong("upStationId"), "마들역", 5L);
+
+        // then
+        ResponseAssertTest.요청오류_확인(createSection);
+    }
+
+    private ExtractableResponse<Response> 상행선_사이에_구간추가_요청(Long lineId, Long upStationId, String downStationName, Long distance) {
+        Long newDownStationId = StationAcceptanceTest.지하철역_생성_요청(downStationName).jsonPath().getLong("id");
+
+        return 지하철노선_구간추가_요청(lineId, upStationId, newDownStationId, distance);
+    }
+
     private ExtractableResponse<Response> 하행선에_구간추가_요청(String newUpStationName, String newDownStationName, Long distance) {
         ExtractableResponse<Response> createLineResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", newUpStationName, 5L);
         Long lineId = createLineResponse.jsonPath().getLong("id");

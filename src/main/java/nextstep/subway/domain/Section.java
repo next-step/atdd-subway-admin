@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.InvalidDistanceException;
 import nextstep.subway.exception.InvalidSectionException;
 
 import javax.persistence.*;
@@ -29,6 +30,30 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void validateDistance() {
+        if (!isBetweenSection(line, upStation, downStation)) {
+            return;
+        }
+
+        if (distance < line.getDistance()) {
+            return;
+        }
+
+        throw new InvalidDistanceException(line.getDistance());
+    }
+
+    private boolean isBetweenSection(Line line, Station newUpStation, Station newDownStation) {
+        if (line.getUpStation().getId().equals(newUpStation.getId())) {
+            return true;
+        }
+
+        if (line.getDownStation().getId().equals(newDownStation.getId())) {
+            return true;
+        }
+
+        return false;
     }
 
     private void validateIncludeAnyStation(Line line, Station newUpStation, Station newDownStation) {
