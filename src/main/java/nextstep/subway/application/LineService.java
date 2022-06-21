@@ -9,6 +9,7 @@ import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.UpdateLineRequest;
 import nextstep.subway.dto.line.CreateLineRequest;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.dto.line.section.CreateSectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +60,17 @@ public class LineService {
 
     private Line findLine(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+    }
+
+    @Transactional
+    public LineResponse addSection(Long id, CreateSectionRequest createSectionRequest) {
+        Line line = findLine(id);
+        List<Station> stations = stationRepository.findAllById(createSectionRequest.getQueryParams());
+        Station upStation = createSectionRequest.findUpStationById(stations);
+        Station downStation = createSectionRequest.findDownStationById(stations);
+
+        line.addSection(createSectionRequest.toEntity(line, upStation, downStation));
+        return LineResponse.of(line);
     }
 }

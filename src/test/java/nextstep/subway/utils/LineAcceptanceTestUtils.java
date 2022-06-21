@@ -23,7 +23,7 @@ public class LineAcceptanceTestUtils {
             "some-color-code",
             getIdAsLong(upStationResponse),
             getIdAsLong(downStationResponse),
-            10
+            100
         );
         return post(LINE_BASE_URL, createLineRequest).extract().response();
     }

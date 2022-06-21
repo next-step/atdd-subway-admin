@@ -1,8 +1,7 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.utils.AssertionsUtils.assertOk;
+import static nextstep.subway.utils.AssertionsUtils.assertCreated;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_생성_요청;
-import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_조회_요청;
 import static nextstep.subway.utils.ResponseBodyExtractUtils.getIdAsLong;
 import static nextstep.subway.utils.SectionAcceptanceTestUtils.지하철_구간_생성_요청;
 import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_생성_요청;
@@ -27,8 +26,8 @@ import org.springframework.boot.web.server.LocalServerPort;
 public class SectionAcceptanceTest {
 
     private Long 신분당선;
-    private Long 신논현역;
-    private Long 삼성중앙역;
+    private Long 논현역;
+    private Long 정자역;
 
     @LocalServerPort
     int port;
@@ -46,9 +45,9 @@ public class SectionAcceptanceTest {
     }
 
     private void 지하철_노선_생성() {
-        LineResponse lineResponse = 지하철_노선_생성_요청("신분당선", "신논현역", "삼성중앙역").as(LineResponse.class);
-        신논현역 = lineResponse.getStations().get(0).getId();
-        삼성중앙역 = lineResponse.getStations().get(1).getId();
+        LineResponse lineResponse = 지하철_노선_생성_요청("신분당선", "논현역", "정자역").as(LineResponse.class);
+        논현역 = lineResponse.getStations().get(0).getId();
+        정자역 = lineResponse.getStations().get(1).getId();
         신분당선 = lineResponse.getId();
     }
 
@@ -61,18 +60,17 @@ public class SectionAcceptanceTest {
     @DisplayName("지하철 노선에 구간을 추가한다.")
     public void addLineSection() {
         // Given
-        Long 선정릉역 = getIdAsLong(지하철역_생성_요청("선정릉역"));
-        CreateSectionRequest createSectionRequest = new CreateSectionRequest(신논현역, 선정릉역, 10);
+        Long 신논현역 = getIdAsLong(지하철역_생성_요청("신논현역"));
+        CreateSectionRequest createSectionRequest = new CreateSectionRequest(논현역, 신논현역, 10);
 
         // When
-        지하철_구간_생성_요청(신분당선, createSectionRequest);
-        Response response = 지하철_노선_조회_요청(신분당선);
+        Response 지하철_구간_생성_응답 = 지하철_구간_생성_요청(신분당선, createSectionRequest);
 
         // Then
-        JsonPath jsonPath = response.jsonPath();
+        JsonPath jsonPath = 지하철_구간_생성_응답.jsonPath();
         assertAll(
-            () -> assertOk(response),
-            () -> assertThat(jsonPath.getList("stations.id", Long.class)).containsExactly(신논현역, 선정릉역, 삼성중앙역)
+            () -> assertCreated(지하철_구간_생성_응답),
+            () -> assertThat(jsonPath.getList("stations.id", Long.class)).containsExactly(논현역, 신논현역, 정자역)
         );
     }
 }
