@@ -45,11 +45,11 @@ public class Section extends BaseEntity {
     }
 
     private boolean isBetweenSection(Line line, Station newUpStation, Station newDownStation) {
-        if (line.getUpStation().getId().equals(newUpStation.getId())) {
+        if (line.getUpStation().equals(newUpStation)) {
             return true;
         }
 
-        if (line.getDownStation().getId().equals(newDownStation.getId())) {
+        if (line.getDownStation().equals(newDownStation)) {
             return true;
         }
 
@@ -57,11 +57,11 @@ public class Section extends BaseEntity {
     }
 
     private void validateIncludeAnyStation(Line line, Station newUpStation, Station newDownStation) {
-        if (line.getUpStation().getId().equals(newUpStation.getId()) || line.getUpStation().getId().equals(newDownStation.getId())) {
+        if (line.getUpStation().equals(newUpStation) || line.getUpStation().equals(newDownStation)) {
             return;
         }
 
-        if (line.getDownStation().getId().equals(newUpStation.getId()) || line.getDownStation().getId().equals(newDownStation.getId())) {
+        if (line.getDownStation().equals(newUpStation) || line.getDownStation().equals(newDownStation)) {
             return;
         }
 
@@ -89,11 +89,11 @@ public class Section extends BaseEntity {
     }
 
     public boolean isExistsSection(Section newSection) {
-        if (!upStation.getId().equals(newSection.getUpStation().getId())) {
+        if (!upStation.equals(newSection.getUpStation())) {
             return false;
         }
 
-        if (!downStation.getId().equals(newSection.getDownStation().getId())) {
+        if (!downStation.equals(newSection.getDownStation())) {
             return false;
         }
 
