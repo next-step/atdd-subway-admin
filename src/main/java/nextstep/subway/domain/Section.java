@@ -32,11 +32,11 @@ public class Section extends BaseEntity {
     }
 
     private void validateIncludeAnyStation(Line line, Station newUpStation, Station newDownStation) {
-        if (line.getUpStation().getId().equals(newUpStation.getId())) {
+        if (line.getUpStation().getId().equals(newUpStation.getId()) || line.getUpStation().getId().equals(newDownStation.getId())) {
             return;
         }
 
-        if (line.getDownStation().getId().equals(newDownStation.getId())) {
+        if (line.getDownStation().getId().equals(newUpStation.getId()) || line.getDownStation().getId().equals(newDownStation.getId())) {
             return;
         }
 
