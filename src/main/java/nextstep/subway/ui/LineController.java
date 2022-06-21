@@ -50,10 +50,10 @@ public class LineController {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
-    
+
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<SectionResponse> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) throws NotFoundStationException {
-        SectionResponse section = sectionService.saveSection(lineId, sectionRequest);
+        SectionResponse section = sectionService.addSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(section);
     }
 }
