@@ -39,10 +39,6 @@ public class CreateSectionRequest {
         return Section.of(line, upStation, downStation, distance);
     }
 
-    public List<Long> getQueryParams() {
-        return new ArrayList<>(Arrays.asList(upStationId, downStationId));
-    }
-
     public Station findUpStationById(List<Station> stations) {
         return stations.stream()
             .filter(it -> it.getId().equals(upStationId))

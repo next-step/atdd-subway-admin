@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.line.Line;
@@ -66,7 +67,8 @@ public class LineService {
     @Transactional
     public LineResponse addSection(Long id, CreateSectionRequest createSectionRequest) {
         Line line = findLine(id);
-        List<Station> stations = stationRepository.findAllById(createSectionRequest.getQueryParams());
+        List<Long> queryParams = Arrays.asList(createSectionRequest.getUpStationId(), createSectionRequest.getDownStationId());
+        List<Station> stations = stationRepository.findAllById(queryParams);
         Station upStation = createSectionRequest.findUpStationById(stations);
         Station downStation = createSectionRequest.findDownStationById(stations);
 

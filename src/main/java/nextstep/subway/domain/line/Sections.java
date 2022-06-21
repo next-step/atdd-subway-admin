@@ -92,20 +92,12 @@ public class Sections {
     public List<Station> sortedByFinalUpStations() {
         List<Station> sortedByFinalUpStations = new ArrayList<>();
         sortedByFinalUpStations.add(getFinalUpStation());
-        if(hasOnlyInitialSection()){
-            sortedByFinalUpStations.add(getFinalDownStation());
-            return sortedByFinalUpStations;
-        }
 
         for (int i = 0; i < sections.size(); i++) {
             Station nextNode = findSectionByUpStation(sortedByFinalUpStations.get(i)).getDownStation();
             sortedByFinalUpStations.add(nextNode);
         }
         return sortedByFinalUpStations;
-    }
-
-    private boolean hasOnlyInitialSection() {
-        return sections.size() == 1;
     }
 
     private List<Station> getAllUpStations() {
@@ -138,16 +130,16 @@ public class Sections {
             .orElseThrow(IllegalArgumentException::new);
     }
 
-    private Section findSectionByUpStation(Station station) {
+    public Section findSectionByUpStation(Station station) {
         return sections.stream()
-            .filter(it -> it.getUpStation().equals(station))
+            .filter(it -> it.getUpStation().getName().equals(station.getName()))
             .findFirst()
             .orElseThrow(IllegalArgumentException::new);
     }
 
     private Section findSectionByDownStation(Station station) {
         return sections.stream()
-            .filter(it -> it.getDownStation().equals(station))
+            .filter(it -> it.getDownStation().getName().equals(station.getName()))
             .findFirst()
             .orElseThrow(IllegalArgumentException::new);
     }
