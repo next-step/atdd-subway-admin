@@ -34,19 +34,19 @@ public class LineService {
 
         Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(),
                 upStation, downStation, lineRequest.getDistance()));
-        return LineResponse.of(line);
+        return new LineResponse(line);
     }
 
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll().stream()
-                .map(LineResponse::of)
+                .map(LineResponse::new)
                 .collect(Collectors.toList());
     }
 
     public LineResponse getLineById(Long lineId)
             throws LineNotFoundException {
         Line line = getLineEntity(lineId);
-        return LineResponse.of(line);
+        return new LineResponse(line);
     }
 
     private Line getLineEntity(Long lineId) throws LineNotFoundException {
@@ -64,6 +64,6 @@ public class LineService {
             throws LineNotFoundException {
         Line line = getLineEntity(lineId);
         line.update(lineUpdateRequest);
-        return LineResponse.of(lineRepository.save(line));
+        return new LineResponse(line);
     }
 }

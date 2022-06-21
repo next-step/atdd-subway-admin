@@ -14,6 +14,16 @@ public class LineResponse {
     public LineResponse() {
     }
 
+    public LineResponse(Line saved) {
+        this.id = saved.getId();
+        this.name = saved.getName();
+        this.color = saved.getColor();
+        this.stations = Arrays.asList(
+                new StationResponse(saved.getUpStation()),
+                new StationResponse(saved.getDownStation())
+        );
+    }
+
     public Long getId() {
         return id;
     }
@@ -28,17 +38,5 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
-    }
-
-    public static LineResponse of(Line saved) {
-        LineResponse lineResponse = new LineResponse();
-        lineResponse.id = saved.getId();
-        lineResponse.name = saved.getName();
-        lineResponse.color = saved.getColor();
-        lineResponse.stations = Arrays.asList(
-                StationResponse.of(saved.getUpStation()),
-                StationResponse.of(saved.getDownStation())
-        );
-        return lineResponse;
     }
 }

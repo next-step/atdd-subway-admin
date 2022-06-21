@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.StationService;
+import nextstep.subway.dto.ApiExceptionResponse;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -37,7 +38,8 @@ public class StationController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<ApiExceptionResponse> handleIllegalArgsException(Exception e) {
+        return ResponseEntity.badRequest()
+                .body(new ApiExceptionResponse(0, e.getMessage()));
     }
 }
