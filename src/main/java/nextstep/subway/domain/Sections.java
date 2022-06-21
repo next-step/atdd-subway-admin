@@ -21,11 +21,11 @@ public class Sections {
     }
 
     public void add(Section section) {
-        validateSection(section);
+        validateUnique(section);
         sections.add(section);
     }
 
-    private void validateSection(Section newSection) {
+    private void validateUnique(Section newSection) {
         sections.forEach(section -> {
             boolean isExists = section.isExistsSection(newSection);
             if (isExists) {
