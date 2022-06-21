@@ -31,12 +31,13 @@ public class Line extends BaseEntity {
         this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
+        addSection();
     }
-    
+
     public void addSection() {
         this.sections.add(new Section(this, upStation, downStation, distance));
     }
-
+    
     public void update(Line newLine) {
         this.name = newLine.name;
         this.color = newLine.color;
