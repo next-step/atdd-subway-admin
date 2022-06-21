@@ -3,6 +3,7 @@ package nextstep.subway.domain.line;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import nextstep.subway.domain.station.Station;
@@ -14,7 +15,7 @@ public class Sections {
     private static final String NOT_CONTAINS_ANY_STATION_ERROR_MESSAGE = "인근역과 접점이 없는 구간은 추가할 수 없습니다.";
     public static final String TOTAL_DISTANCE_OVER_RANGE_ERROR_MESSAGE = "구간의 길이는 노선의 총 길이보다 클 수 없습니다.";
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -31,7 +32,6 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        // TODO 정렬된 구간 목록 반환 기능이 필요 여부 고민
         return sections;
     }
 
@@ -92,11 +92,20 @@ public class Sections {
     public List<Station> sortedByFinalUpStations() {
         List<Station> sortedByFinalUpStations = new ArrayList<>();
         sortedByFinalUpStations.add(getFinalUpStation());
+        if(hasOnlyInitialSection()){
+            sortedByFinalUpStations.add(getFinalDownStation());
+            return sortedByFinalUpStations;
+        }
+
         for (int i = 0; i < sections.size(); i++) {
             Station nextNode = findSectionByUpStation(sortedByFinalUpStations.get(i)).getDownStation();
             sortedByFinalUpStations.add(nextNode);
         }
         return sortedByFinalUpStations;
+    }
+
+    private boolean hasOnlyInitialSection() {
+        return sections.size() == 1;
     }
 
     private List<Station> getAllUpStations() {

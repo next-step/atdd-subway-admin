@@ -52,7 +52,7 @@ public class Section {
 
     }
 
-    private Section(Line line, Station upStation, Station downStation, Integer distance) {
+    private Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
