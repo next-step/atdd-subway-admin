@@ -10,6 +10,10 @@ import nextstep.subway.domain.station.Station;
 @Embeddable
 public class Sections {
 
+    private static final String EQUALS_SECTION_ERROR_MESSAGE = "동일 구간은 추가할 수 없습니다.";
+    private static final String NOT_CONTAINS_ANY_STATION_ERROR_MESSAGE = "인근역과 접점이 없는 구간은 추가할 수 없습니다.";
+    public static final String TOTAL_DISTANCE_OVER_RANGE_ERROR_MESSAGE = "구간의 길이는 노선의 총 길이보다 클 수 없습니다.";
+
     @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
 
@@ -35,21 +39,54 @@ public class Sections {
         return getAllUpStations().contains(upStation);
     }
 
-    private boolean isSameDownStation(Station downStation){
+    private boolean isSameDownStation(Station downStation) {
         return getAllDownStations().contains(downStation);
     }
 
     public void add(Section section) {
-        // TODO Validation : 구간 길이 검증, 연결 구간 포함 여부 검증, 동일 구간 여부 검증
+        validateSection(section);
         if (isSameUpStation(section.getUpStation())) {
             findSectionByUpStation(section.getUpStation())
-                .swapUpStationToTargetDownStation(section.getDownStation());
+                .swapUpStationToTargetDownStation(section);
         }
         if (isSameDownStation(section.getDownStation())) {
             findSectionByDownStation(section.getDownStation())
-                .swapDownStationToTargetUpStation(section.getUpStation());
+                .swapDownStationToTargetUpStation(section);
         }
         sections.add(section);
+    }
+
+    private void validateSection(Section section) {
+        validateEqualsSection(section);
+        validateNotContainsAnyStation(section);
+        validateDistance(section);
+    }
+
+    private void validateEqualsSection(Section section) {
+        if (isSameUpStation(section.getUpStation()) && isSameDownStation(section.getDownStation())) {
+            throw new IllegalArgumentException(EQUALS_SECTION_ERROR_MESSAGE);
+        }
+    }
+
+    private void validateNotContainsAnyStation(Section section) {
+        List<Station> allStations = sortedByFinalUpStations();
+        if (!allStations.contains(section.getUpStation())
+            && !allStations.contains(section.getDownStation())) {
+            throw new IllegalArgumentException(NOT_CONTAINS_ANY_STATION_ERROR_MESSAGE);
+        }
+    }
+
+    private void validateDistance(Section section) {
+        if (section.getDistance() >= totalDistance()) {
+            throw new IllegalArgumentException(TOTAL_DISTANCE_OVER_RANGE_ERROR_MESSAGE);
+        }
+    }
+
+    public int totalDistance() {
+        return sections.stream()
+            .map(Section::getDistance)
+            .mapToInt(value -> value)
+            .sum();
     }
 
     public List<Station> sortedByFinalUpStations() {

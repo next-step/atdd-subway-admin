@@ -70,30 +70,6 @@ public class Line extends BaseEntity {
         this.sections = Sections.addInitialSection(new Section(this, upStation, downStation, distance));
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
     public void updateColor(UpdateLineRequest updateLineRequest) {
         this.name = updateLineRequest.getName();
         this.color = updateLineRequest.getColor();
@@ -125,5 +101,33 @@ public class Line extends BaseEntity {
 
     public Section getFinalDownSection() {
         return sections.getFinalDownSection();
+    }
+
+    public int getTotalDistance() {
+        return sections.totalDistance();
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }
