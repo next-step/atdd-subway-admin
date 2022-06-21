@@ -22,7 +22,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     Long downStationId;
 
     @BeforeEach
-    public void setUp() {
+    public void setUp2() {
         upStationId = StationTestHelper.지하철역_생성하고_역_ID_응답("상행역");
         downStationId = StationTestHelper.지하철역_생성하고_역_ID_응답("하행역");
     }

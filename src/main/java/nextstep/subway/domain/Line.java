@@ -1,6 +1,12 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.StationNotFoundException;
+
 import javax.persistence.*;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -58,5 +64,15 @@ public class Line extends BaseEntity {
 
     public int getDistance() {
         return distance;
+    }
+
+    public void update(LineUpdateRequest lineUpdateRequest) {
+        if (lineUpdateRequest.getName() != null) {
+            this.name = lineUpdateRequest.getName();
+        }
+
+        if (lineUpdateRequest.getColor() != null) {
+            this.color = lineUpdateRequest.getColor();
+        }
     }
 }

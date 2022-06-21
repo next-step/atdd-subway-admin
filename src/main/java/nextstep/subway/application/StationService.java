@@ -4,10 +4,12 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.StationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,5 +38,10 @@ public class StationService {
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findStationEntityById(Long stationId) throws StationNotFoundException {
+        return stationRepository.findById(stationId).orElseThrow(
+                () -> new StationNotFoundException(stationId));
     }
 }
