@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance;
 
 import static nextstep.subway.utils.AssertionsUtils.assertCreated;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.지하철_노선_생성_요청;

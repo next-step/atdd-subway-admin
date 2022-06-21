@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance;
 
 import static nextstep.subway.utils.AssertionsUtils.assertBadRequest;
 import static nextstep.subway.utils.AssertionsUtils.assertCreated;
