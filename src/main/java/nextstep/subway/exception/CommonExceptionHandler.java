@@ -7,21 +7,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class CommonExceptionHandler {
-    @ExceptionHandler(DuplicatedSectionException.class)
+    @ExceptionHandler({DuplicatedSectionException.class, InvalidSectionException.class, InvalidDistanceException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleSectionDuplicatedException(DuplicatedSectionException exception) {
-        return exception.getMessage();
-    }
-
-    @ExceptionHandler(InvalidSectionException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleInvalidSectionException(InvalidSectionException exception) {
-        return exception.getMessage();
-    }
-
-    @ExceptionHandler(InvalidDistanceException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleInvalidDistanceException(InvalidDistanceException exception) {
+    public String handleBadRequestException(Exception exception) {
         return exception.getMessage();
     }
 }
