@@ -57,7 +57,7 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "{id}")
+    @PostMapping(value = "{id}/sections")
     public ResponseEntity addSection(
         @PathVariable(value = "id") Long id,
         @RequestBody CreateSectionRequest createSectionRequest
