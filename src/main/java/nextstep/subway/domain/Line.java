@@ -74,4 +74,40 @@ public class Line extends BaseEntity {
     public Sections getSections() {
         return sections;
     }
+
+    public boolean isSameUpStation(Station newUpStation) {
+        return upStation.equals(newUpStation);
+    }
+
+    public boolean isSameDownStation(Station newDownStation) {
+        return downStation.equals(newDownStation);
+    }
+
+    public boolean isSameOtherStation(Station newUpStation, Station newDownStation) {
+        if (upStation.equals(newDownStation)) {
+            return true;
+        }
+
+        if (downStation.equals(newUpStation)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public boolean isSameAnyStation(Station newUpStation, Station newDownStation) {
+        if (isSameUpStation(newUpStation)) {
+            return true;
+        }
+
+        if (isSameDownStation(newDownStation)) {
+            return true;
+        }
+
+        if (isSameOtherStation(newUpStation, newDownStation)) {
+            return true;
+        }
+
+        return false;
+    }
 }

@@ -45,11 +45,11 @@ public class Section extends BaseEntity {
     }
 
     private boolean isBetweenSection(Line line, Station newUpStation, Station newDownStation) {
-        if (line.getUpStation().equals(newUpStation)) {
+        if (line.isSameUpStation(newUpStation)) {
             return true;
         }
 
-        if (line.getDownStation().equals(newDownStation)) {
+        if (line.isSameDownStation(newDownStation)) {
             return true;
         }
 
@@ -57,11 +57,7 @@ public class Section extends BaseEntity {
     }
 
     private void validateIncludeAnyStation(Line line, Station newUpStation, Station newDownStation) {
-        if (line.getUpStation().equals(newUpStation) || line.getUpStation().equals(newDownStation)) {
-            return;
-        }
-
-        if (line.getDownStation().equals(newUpStation) || line.getDownStation().equals(newDownStation)) {
+        if (line.isSameAnyStation(newUpStation, newDownStation)) {
             return;
         }
 
