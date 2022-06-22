@@ -69,10 +69,24 @@ public class LineService {
         Line line = findLine(id);
         List<Long> queryParams = Arrays.asList(createSectionRequest.getUpStationId(), createSectionRequest.getDownStationId());
         List<Station> stations = stationRepository.findAllById(queryParams);
-        Station upStation = createSectionRequest.findUpStationById(stations);
-        Station downStation = createSectionRequest.findDownStationById(stations);
+        Station upStation = findUpStationById(stations, createSectionRequest.getUpStationId());
+        Station downStation = findDownStationById(stations, createSectionRequest.getDownStationId());
 
         line.addSection(createSectionRequest.toEntity(line, upStation, downStation));
         return LineResponse.of(line);
+    }
+
+    private Station findUpStationById(List<Station> stations, Long upStationId) {
+        return stations.stream()
+            .filter(it -> it.getId().equals(upStationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("요청에 해당하는 상행역을 찾을 수 없습니다."));
+    }
+
+    private Station findDownStationById(List<Station> stations, Long downStationId) {
+        return stations.stream()
+            .filter(it -> it.getId().equals(downStationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("요청에 해당하는 하행역을 찾을 수 없습니다."));
     }
 }
