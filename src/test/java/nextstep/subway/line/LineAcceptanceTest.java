@@ -118,17 +118,50 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * When 지하철노선에 구간을 추가하면
+     * When 지하철노선 상행선에 구간을 추가하면
      * Then 노선에 구간이 등록된다.
      */
-    @DisplayName("지하철노선에 구간을 추가한다.")
+    @DisplayName("지하철노선 상행선에 구간을 추가한다.")
     @Test
-    void createSection() {
+    void createSectionByUpStation() {
+        // when
+        ExtractableResponse<Response> createResponse = 상행선에_구간추가_요청("도봉산역", "수락산역", 10L);
+
+        // then
+        ResponseAssertTest.생성_확인(createResponse);
+    }
+
+    /**
+     * When 지하철노선 하행선에 구간을 추가하면
+     * Then 노선에 구간이 등록된다.
+     */
+    @DisplayName("지하철노선 하행선에 구간을 추가한다.")
+    @Test
+    void createSectionByDownStation() {
         // when
         ExtractableResponse<Response> createResponse = 하행선에_구간추가_요청("마들역", "노원역", 10L);
 
         // then
         ResponseAssertTest.생성_확인(createResponse);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 상행선 사이에 구간을 추가하면
+     * Then 노선에 구간이 등록된다.
+     */
+    @DisplayName("지하철노선 상행선 사이에 구간을 추가한다.")
+    @Test
+    void createSectionByBetween() {
+        // given
+        ExtractableResponse<Response> createLine = 지하철노선_생성_요청("7호선", "green", "수락산역", "노원역", 5L);
+
+        // when
+        JsonPath jsonPath = createLine.jsonPath();
+        ExtractableResponse<Response> createSection = 상행선_사이에_구간추가_요청(jsonPath.getLong("id"), jsonPath.getLong("upStationId"), "마들역", 2L);
+
+        // then
+        ResponseAssertTest.생성_확인(createSection);
     }
 
     /**
@@ -192,6 +225,16 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         Long newDownStationId = StationAcceptanceTest.지하철역_생성_요청(downStationName).jsonPath().getLong("id");
 
         return 지하철노선_구간추가_요청(lineId, upStationId, newDownStationId, distance);
+    }
+
+    private ExtractableResponse<Response> 상행선에_구간추가_요청(String newUpStationName, String newDownStationName, Long distance) {
+        ExtractableResponse<Response> createLineResponse = 지하철노선_생성_요청("7호선", "green", newDownStationName, "마들역", 5L);
+        Long lineId = createLineResponse.jsonPath().getLong("id");
+        Long upStationId = createLineResponse.jsonPath().getLong("upStationId");
+
+        Long newUpStationId = StationAcceptanceTest.지하철역_생성_요청(newUpStationName).jsonPath().getLong("id");
+
+        return 지하철노선_구간추가_요청(lineId, newUpStationId, upStationId, distance);
     }
 
     private ExtractableResponse<Response> 하행선에_구간추가_요청(String newUpStationName, String newDownStationName, Long distance) {
