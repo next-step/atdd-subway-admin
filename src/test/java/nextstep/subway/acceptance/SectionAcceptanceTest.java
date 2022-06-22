@@ -9,41 +9,29 @@ import static nextstep.subway.utils.StationsAcceptanceUtils.지하철역_생성_
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import javax.annotation.Resource;
-import nextstep.subway.config.AcceptanceTest;
+import java.util.stream.Stream;
+import nextstep.subway.config.BaseTest;
 import nextstep.subway.dto.line.LineResponse;
 import nextstep.subway.dto.line.section.CreateSectionRequest;
-import nextstep.subway.utils.TearDownUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.web.server.LocalServerPort;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("구간 관련 기능")
-@AcceptanceTest
-public class SectionAcceptanceTest {
+public class SectionAcceptanceTest extends BaseTest {
 
     private Long 신분당선;
     private Long 논현역;
     private Long 정자역;
 
-    @LocalServerPort
-    int port;
-
-    @Resource
-    protected TearDownUtils tearDownUtils;
-
     @BeforeEach
-    void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        tearDownUtils.tableClear();
+    public void setUp() {
+        super.setUp();
         지하철_노선_생성();
     }
 
@@ -147,7 +135,7 @@ public class SectionAcceptanceTest {
      * Then 동일 구간 추가 시, 오류가 발생한다.
      */
     @Test
-    @DisplayName("동일한 구간을 추가하는 경우 예외가 발생한다.")
+    @DisplayName("동일한 구간은 추가할 수 없다.")
     public void throwException_WhenAddSameSections() {
         // When
         Response 지하철_구간_생성_응답 = 지하철_구간_생성_요청(신분당선, new CreateSectionRequest(논현역, 정자역, 100));
@@ -162,7 +150,7 @@ public class SectionAcceptanceTest {
      * Then 접점이 없는 역이 포함된 구간 추가 시 오류가 발생한다.
      */
     @Test
-    @DisplayName("접점이 없는 역이 포함된 구간을 추가하는 경우 예외가 발생한다.")
+    @DisplayName("추가 구간의 상행/하행역이 모두 노선에 존재하지 않는 경우 추가할 수 없다.")
     public void throwException_WhenStationsIsNotConnected() {
         // Given
         Long 강남역 = getIdAsLong(지하철역_생성_요청("강남역"));
@@ -177,19 +165,19 @@ public class SectionAcceptanceTest {
 
     /**
      * Given `논현-(50)-신논현-(50)-정자` 구간이 존재하는 노선을 생성한다.
-     * When 추가하는 구간의 길이가 유효하지 않은 구간을 추가한다.
-     *     When - 추가하는 구간의 길이가 0 혹은 음수인 경우
-     *     When - 추가하는 구간의 길이가 연결 구간의 길이보다 크거나 같은 경우
-     *     When - 추가하는 구간의 길이가 전체 구간의 길이보다 크거나 같은 경우
+     * When 구간의 길이가 유효하지 않은 구간을 추가한다.
+     *      When - 추가 구간의 길이가 0 혹은 음수인 경우
+     *      When - 추가 구간의 길이가 연결 구간의 길이보다 크거나 같은 경우
+     *      When - 추가 구간의 길이가 전체 구간의 길이보다 크거나 같은 경우
      * Then 구간의 길이가 유효하지 않는 경우 오류가 발생한다.
      */
     @ParameterizedTest
-    @ValueSource(ints = {Integer.MIN_VALUE, 0, 50, 51, 100, 101})
-    @DisplayName("구간의 길이가 유효하지 않은 경우 예외가 발생한다.")
-    public void throwException_WhenAddInvalidSectionDistance(int 유효하지_않은_구간_길이) {
+    @MethodSource
+    @DisplayName("추가 구간의 길이가 `0, 음수, 연결 구간의 길이보다 크거나 같은 경우, 전체 구간의 길이보다 크거나 같은 경우`는 추가할 수 없다.")
+    public void throwException_WhenAddInvalidSectionDistance(int 유효하지_않은_구간_길이, String givenDescription) {
         // Given
         Long 신논현역 = getIdAsLong(지하철역_생성_요청("신논현역"));
-        Long 강남역 =  getIdAsLong(지하철역_생성_요청("강남역"));
+        Long 강남역 = getIdAsLong(지하철역_생성_요청("강남역"));
         지하철_구간_생성_요청(신분당선, new CreateSectionRequest(논현역, 신논현역, 50));
 
         // When
@@ -197,5 +185,16 @@ public class SectionAcceptanceTest {
 
         // Then
         assertInternalServerError(지하철_구간_생성_응답);
+    }
+
+    private static Stream throwException_WhenAddInvalidSectionDistance() {
+        return Stream.of(
+            Arguments.of(Integer.MIN_VALUE, "추가 구간의 길이가 음수인 경우"),
+            Arguments.of(0, "추가 구간의 길이가 0인 경우"),
+            Arguments.of(50, "추가 구간의 길이가 연결 구간의 길이와 같은 경우"),
+            Arguments.of(51, "추가 구간의 길이가 연결 구간의 길이보다 큰 경우"),
+            Arguments.of(100, "추가 구간의 길이가 노선 전체 길이와 같은 경우"),
+            Arguments.of(101, "추가 구간의 길이가 노선 전체 길이보다 큰 경우")
+        );
     }
 }
