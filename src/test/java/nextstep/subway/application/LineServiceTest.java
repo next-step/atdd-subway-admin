@@ -64,7 +64,7 @@ class LineServiceTest {
         lines.createLine(new LineRequest("2호선", "bg-blue-200", sinchon.getId(), sillim.getId(), 80L));
 
         // when
-        List<LineResponse> lines = this.lines.getLines();
+        List<LineResponse> lines = this.lines.toLineResponses();
 
         // then
         assertThat(lines.size()).isEqualTo(2);
@@ -77,7 +77,7 @@ class LineServiceTest {
         LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
 
         // when
-        LineResponse line = lines.getLine(response.getId());
+        LineResponse line = lines.toLineResponse(response.getId());
 
         // then
         assertThat(line.getId()).isNotNull();
@@ -93,7 +93,7 @@ class LineServiceTest {
         lines.deleteLine(response.getId());
 
         // then
-        assertThatThrownBy(() -> lines.getLine(response.getId())).isInstanceOf(NoSuchElementException.class);
+        assertThatThrownBy(() -> lines.toLineResponse(response.getId())).isInstanceOf(NoSuchElementException.class);
     }
 
     @DisplayName("지하철 노선을 수정한다")
@@ -106,7 +106,7 @@ class LineServiceTest {
         lines.updateLine(response.getId(), new LineRequest("다른분당선", "bg-blue-100", gangnam.getId(), gyodae.getId(), 10L));
 
         // then
-        LineResponse line = lines.getLine(response.getId());
+        LineResponse line = lines.toLineResponse(response.getId());
         assertAll(
                 () -> assertEquals("다른분당선", line.getName()),
                 () -> assertEquals("bg-blue-100", line.getColor())
@@ -123,7 +123,7 @@ class LineServiceTest {
         lines.addSection(response.getId(), new SectionRequest(gangnam.getId(), sinchon.getId(), 10L));
 
         // then
-        List<String> names = lines.getLine(response.getId())
+        List<String> names = lines.toLineResponse(response.getId())
                                   .getStations()
                                   .stream()
                                   .map(LineResponse.StationDto::getName)
@@ -141,7 +141,7 @@ class LineServiceTest {
         lines.addSection(response.getId(), new SectionRequest(sinchon.getId(), gangnam.getId(), 10L));
 
         // then
-        List<String> names = lines.getLine(response.getId())
+        List<String> names = lines.toLineResponse(response.getId())
                                   .getStations()
                                   .stream()
                                   .map(LineResponse.StationDto::getName)
@@ -159,7 +159,7 @@ class LineServiceTest {
         lines.addSection(response.getId(), new SectionRequest(gyodae.getId(), sinchon.getId(), 10L));
 
         // then
-        List<String> names = lines.getLine(response.getId())
+        List<String> names = lines.toLineResponse(response.getId())
                                   .getStations()
                                   .stream()
                                   .map(LineResponse.StationDto::getName)

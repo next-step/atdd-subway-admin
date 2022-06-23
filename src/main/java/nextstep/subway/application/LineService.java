@@ -52,16 +52,16 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, LineRequest request) {
-        Line line = findLine(id);
+        Line line = findById(id);
         line.update(request);
     }
 
-    public LineResponse getLine(Long id) {
-        Line line = findLine(id);
+    public LineResponse toLineResponse(Long id) {
+        Line line = findById(id);
         return LineResponse.of(line, line.getStations());
     }
 
-    public List<LineResponse> getLines() {
+    public List<LineResponse> toLineResponses() {
         List<LineResponse> responses = new LinkedList<>();
         List<Line> lines = lineRepository.findAll();
         for (Line line : lines) {
@@ -71,7 +71,7 @@ public class LineService {
         return responses;
     }
 
-    public Line findLine(Long id) {
+    public Line findById(Long id) {
         return lineRepository.findById(id)
                              .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다."));
     }
@@ -83,7 +83,7 @@ public class LineService {
 
     @Transactional
     public void addSection(Long id, SectionRequest request) {
-        Line line = findLine(id);
+        Line line = findById(id);
         Station upStation = findStation(request.getUpStationId());
         Station downStation = findStation(request.getDownStationId());
         Section section = sectionRepository.save(new Section(line, upStation, downStation, request.getDistance()));
