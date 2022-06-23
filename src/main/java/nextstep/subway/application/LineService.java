@@ -6,8 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.exception.LineNotFoundException;
-import nextstep.subway.exception.StationNotFoundException;
+import nextstep.subway.error.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,8 +26,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest)
-            throws StationNotFoundException {
+    public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationService.findStationEntityById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationEntityById(lineRequest.getDownStationId());
 
@@ -43,13 +41,12 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse getLineById(Long lineId)
-            throws LineNotFoundException {
+    public LineResponse getLineById(Long lineId) {
         Line line = getLineEntity(lineId);
         return new LineResponse(line);
     }
 
-    private Line getLineEntity(Long lineId) throws LineNotFoundException {
+    private Line getLineEntity(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new LineNotFoundException(lineId));
     }
@@ -60,8 +57,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse updateLineById(Long lineId, LineUpdateRequest lineUpdateRequest)
-            throws LineNotFoundException {
+    public LineResponse updateLineById(Long lineId, LineUpdateRequest lineUpdateRequest) {
         Line line = getLineEntity(lineId);
         line.update(lineUpdateRequest);
         return new LineResponse(line);

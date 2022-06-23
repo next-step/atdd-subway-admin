@@ -1,10 +1,11 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.StationService;
-import nextstep.subway.dto.ApiExceptionResponse;
+import nextstep.subway.error.ApiExceptionResponse;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
-import org.springframework.dao.DataIntegrityViolationException;
+import nextstep.subway.error.SubwayError;
+import nextstep.subway.error.exception.SubWayApiException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -37,9 +38,15 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ApiExceptionResponse> handleIllegalArgsException(Exception e) {
+    @ExceptionHandler(SubWayApiException.class)
+    public ResponseEntity<ApiExceptionResponse> handleSubWayApiException(SubWayApiException e) {
         return ResponseEntity.badRequest()
-                .body(new ApiExceptionResponse(0, e.getMessage()));
+                .body(new ApiExceptionResponse(e.getError(), e.getMessage()));
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiExceptionResponse> handleException(Exception e) {
+        return ResponseEntity.badRequest()
+                .body(new ApiExceptionResponse(SubwayError.LINE_NOT_FOUND, e.getMessage()));
     }
 }

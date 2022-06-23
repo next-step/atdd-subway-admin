@@ -1,12 +1,8 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.StationResponse;
-import nextstep.subway.exception.StationNotFoundException;
 
 import javax.persistence.*;
-import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {

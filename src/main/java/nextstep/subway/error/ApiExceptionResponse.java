@@ -1,17 +1,23 @@
-package nextstep.subway.dto;
+package nextstep.subway.error;
 
 public class ApiExceptionResponse {
-    private int error;
+    private int errorCode;
+    private String error;
     private String message;
     private long timestamp;
 
-    public ApiExceptionResponse(int error, String message) {
-        this.error = error;
+    public ApiExceptionResponse(SubwayError error, String message) {
+        this.errorCode = error.getCode();
+        this.error = error.name();
         this.message = message;
         this.timestamp = System.currentTimeMillis();
     }
 
-    public int getError() {
+    public int getErrorCode() {
+        return errorCode;
+    }
+
+    public String getError() {
         return error;
     }
 
