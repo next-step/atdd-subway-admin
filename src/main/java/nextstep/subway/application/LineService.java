@@ -7,8 +7,10 @@ import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class LineService {
@@ -71,7 +73,7 @@ public class LineService {
 
     public Line findLine(Long id) {
         return lineRepository.findById(id)
-                             .orElseThrow(() -> new NoSuchElementException(""));
+                             .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다."));
     }
 
     public Station findStation(Long stationId) {
