@@ -15,13 +15,16 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.Line.LineAcceptanceTest.지하철_노선_생성_신분당선;
 import static nextstep.subway.station.StationAcceptanceTest.createStation;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.InstanceOfAssertFactories.ARRAY;
 import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -53,17 +56,14 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         SectionRequest sectionRequest = SectionRequest.of(강남역.getId(), 판교역.getId(), 1L);
-        ExtractableResponse<Response> createResponse = 지하철_구간_등록(신분당선.getId(), sectionRequest);
+        지하철_구간_등록(신분당선.getId(), sectionRequest);
 
         // then
         // 지하철_노선_조회
         ExtractableResponse<Response> response = 지하철_노선_조회(신분당선.getId());
         LineResponse lineResponse = getLineResponse(response);
-
-        assertAll(
-                () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList()).contains("판교역")).isTrue()
-        );
+        List<Long> expect = Arrays.asList(강남역.getId(), 판교역.getId(), 광교역.getId());
+        지하철_노선_정렬_확인(lineResponse.getStations(), expect);
     }
 
     @DisplayName("역과 역 사이에 새로운 구간을 등록한다. (하행역이 같은 경우)")
@@ -72,17 +72,14 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         SectionRequest sectionRequest = SectionRequest.of(판교역.getId(), 광교역.getId(), 9L);
-        ExtractableResponse<Response> createResponse = 지하철_구간_등록(신분당선.getId(), sectionRequest);
+        지하철_구간_등록(신분당선.getId(), sectionRequest);
 
         // then
         // 지하철_노선_조회
         ExtractableResponse<Response> response = 지하철_노선_조회(신분당선.getId());
         LineResponse lineResponse = getLineResponse(response);
-
-        assertAll(
-                () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList()).contains("판교역")).isTrue()
-        );
+        List<Long> expect = Arrays.asList(강남역.getId(), 판교역.getId(), 광교역.getId());
+        지하철_노선_정렬_확인(lineResponse.getStations(), expect);
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
@@ -91,17 +88,14 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         SectionRequest sectionRequest = SectionRequest.of(강남구청역.getId(), 강남역.getId(), 9L);
-        ExtractableResponse<Response> createResponse = 지하철_구간_등록(신분당선.getId(), sectionRequest);
+        지하철_구간_등록(신분당선.getId(), sectionRequest);
 
         // then
         // 지하철_노선_조회
         ExtractableResponse<Response> response = 지하철_노선_조회(신분당선.getId());
         LineResponse lineResponse = getLineResponse(response);
-
-        assertAll(
-                () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(lineResponse.getStations().get(0).getName().equals("강남구청역"))
-        );
+        List<Long> expect = Arrays.asList(강남구청역.getId(), 강남역.getId(), 광교역.getId());
+        지하철_노선_정렬_확인(lineResponse.getStations(), expect);
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
@@ -110,17 +104,14 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         // when
         // 지하철_노선에_지하철역_등록_요청
         SectionRequest sectionRequest = SectionRequest.of(광교역.getId(), 미금역.getId(), 9L);
-        ExtractableResponse<Response> createResponse = 지하철_구간_등록(신분당선.getId(), sectionRequest);
+        지하철_구간_등록(신분당선.getId(), sectionRequest);
 
         // then
         // 지하철_노선_조회
         ExtractableResponse<Response> response = 지하철_노선_조회(신분당선.getId());
         LineResponse lineResponse = getLineResponse(response);
-
-        assertAll(
-                () -> assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(lineResponse.getStations().get(lineResponse.getStations().size()-1).getName()).isEqualTo("미금역")
-        );
+        List<Long> expect = Arrays.asList(강남역.getId(), 광교역.getId(), 미금역.getId());
+        지하철_노선_정렬_확인(lineResponse.getStations(), expect);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없다.")
@@ -188,6 +179,8 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회(신분당선.getId());
         LineResponse lineResponse = getLineResponse(response);
+        List<Long> expect = Arrays.asList(강남역.getId(), 광교역.getId());
+        지하철_노선_정렬_확인(lineResponse.getStations(), expect);
     }
 
     @DisplayName("종점역 구간 삭제")
@@ -205,10 +198,9 @@ public class SectionAcceptanceTest extends BaseUnitTest {
         // then
         ExtractableResponse<Response> response = 지하철_노선_조회(신분당선.getId());
         LineResponse lineResponse = getLineResponse(response);
-        assertAll(
-                () -> assertThat(lineResponse.getStations().get(lineResponse.getStations().size()-1).getName()).isEqualTo("판교역"),
-                () -> assertThat(lineResponse.getStations().stream().map(stationResponse -> stationResponse.getName()).collect(Collectors.toList()).contains("광교역")).isFalse()
-        );
+
+        List<Long> expect = Arrays.asList(강남역.getId(), 판교역.getId());
+        지하철_노선_정렬_확인(lineResponse.getStations(), expect);
     }
 
     @DisplayName("노선에 등록되지 않은 구간 삭제 시 예외 발생")
@@ -265,6 +257,11 @@ public class SectionAcceptanceTest extends BaseUnitTest {
 
     public LineResponse getLineResponse(ExtractableResponse<Response> response) {
         return response.as(LineResponse.class);
+    }
+
+    public void 지하철_노선_정렬_확인(List<StationResponse> stations, List<Long> expectStationIdList) {
+        List<Long> stationIdList = stations.stream().map(StationResponse::getId).collect(Collectors.toList());
+        assertThat(stationIdList).containsExactlyElementsOf(expectStationIdList);
     }
 
     private void 지하철역_등록() {
