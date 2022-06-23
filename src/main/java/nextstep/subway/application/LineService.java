@@ -34,7 +34,7 @@ public class LineService {
         sectionRepository.save(new Section(line, upStation));
         sectionRepository.save(new Section(line, upStation, downStation, request.getDistance()));
 
-        return LineResponse.of(line, Arrays.asList(upStation, downStation));
+        return LineResponse.from(line);
     }
 
     @Transactional
@@ -58,14 +58,14 @@ public class LineService {
 
     public LineResponse toLineResponse(Long id) {
         Line line = findById(id);
-        return LineResponse.of(line, line.getStations());
+        return LineResponse.from(line);
     }
 
     public List<LineResponse> toLineResponses() {
         List<LineResponse> responses = new LinkedList<>();
         List<Line> lines = lineRepository.findAll();
         for (Line line : lines) {
-            responses.add(LineResponse.of(line, line.getStations()));
+            responses.add(LineResponse.from(line));
         }
 
         return responses;

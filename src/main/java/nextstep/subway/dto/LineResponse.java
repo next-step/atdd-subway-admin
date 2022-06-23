@@ -18,17 +18,17 @@ public class LineResponse {
     public LineResponse() {
     }
 
-    public LineResponse(Line line, List<Station> stations) {
+    public LineResponse(Line line) {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();
-        this.stations = stations.stream().map(StationDto::new).collect(Collectors.toList());
+        this.stations = line.getStations().stream().map(StationDto::new).collect(Collectors.toList());
         this.createdDate = line.getCreatedDate();
         this.modifiedDate = line.getModifiedDate();
     }
 
-    public static LineResponse of(Line line, List<Station> stations) {
-        return new LineResponse(line, stations);
+    public static LineResponse from(Line line) {
+        return new LineResponse(line);
     }
 
     public static class StationDto {
