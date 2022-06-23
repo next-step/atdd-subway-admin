@@ -27,8 +27,8 @@ public class LineService {
     @Transactional
     public LineResponse createLine(LineRequest request) {
         Line line = lineRepository.save(request.createLine());
-        Station upStation = findStation(request.getUpStationId());
-        Station downStation = findStation(request.getDownStationId());
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
         line.addStation(upStation);
         line.addStation(downStation);
         sectionRepository.save(new Section(line, upStation));
@@ -71,12 +71,14 @@ public class LineService {
         return responses;
     }
 
+    @Transactional(readOnly=true)
     public Line findById(Long id) {
         return lineRepository.findById(id)
                              .orElseThrow(() -> new NoSuchElementException("지하철 노선이 존재하지 않습니다."));
     }
 
-    public Station findStation(Long stationId) {
+    @Transactional(readOnly=true)
+    public Station findStationById(Long stationId) {
         return stationRepository.findById(stationId)
                                 .orElseThrow(() -> new NoSuchElementException("지하철 역이 존재하지 않습니다"));
     }
@@ -84,8 +86,8 @@ public class LineService {
     @Transactional
     public void addSection(Long id, SectionRequest request) {
         Line line = findById(id);
-        Station upStation = findStation(request.getUpStationId());
-        Station downStation = findStation(request.getDownStationId());
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
         Section section = sectionRepository.save(new Section(line, upStation, downStation, request.getDistance()));
         line.addSection(section);
     }
