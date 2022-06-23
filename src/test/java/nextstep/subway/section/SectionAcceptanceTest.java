@@ -15,15 +15,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.Line.LineAcceptanceTest.지하철_노선_생성_신분당선;
 import static nextstep.subway.station.StationAcceptanceTest.createStation;
-import static org.assertj.core.api.InstanceOfAssertFactories.ARRAY;
-import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
