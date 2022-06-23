@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static int SECTION_LEAST_SIZE = 1;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
@@ -145,7 +146,7 @@ public class Sections {
     }
 
     private void validSectionsSizeCheck() {
-        if (sections.size() <= 1) {
+        if (sections.size() <= SECTION_LEAST_SIZE) {
             throw new IllegalArgumentException("구간이 하나인 노선인 경우 구간 삭제 할 수 없습니다.");
         }
     }
@@ -155,11 +156,7 @@ public class Sections {
             throw new IllegalArgumentException("노선에 등록된 역이 아닙니다.");
         }
 
-        if (upSection.isEmpty() || downSection.isEmpty()) {
-            return false;
-        }
-
-        return true;
+        return !upSection.isEmpty() && !downSection.isEmpty();
     }
 
     private void createSection(Section upSection, Section downSection) {
