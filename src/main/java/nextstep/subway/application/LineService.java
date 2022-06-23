@@ -88,6 +88,5 @@ public class LineService {
         Station downStation = findStation(request.getDownStationId());
         Section section = sectionRepository.save(new Section(line, upStation, downStation, request.getDistance()));
         line.addSection(section);
-        System.out.println("asdf");
     }
 }
