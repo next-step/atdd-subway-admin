@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.line.Line;
@@ -9,6 +10,7 @@ import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.UpdateLineRequest;
 import nextstep.subway.dto.line.CreateLineRequest;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.dto.line.section.CreateSectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +61,32 @@ public class LineService {
 
     private Line findLine(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(IllegalArgumentException::new);
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+    }
+
+    @Transactional
+    public LineResponse addSection(Long id, CreateSectionRequest createSectionRequest) {
+        Line line = findLine(id);
+        List<Long> queryParams = Arrays.asList(createSectionRequest.getUpStationId(), createSectionRequest.getDownStationId());
+        List<Station> stations = stationRepository.findAllById(queryParams);
+        Station upStation = findUpStationById(stations, createSectionRequest.getUpStationId());
+        Station downStation = findDownStationById(stations, createSectionRequest.getDownStationId());
+
+        line.addSection(createSectionRequest.toEntity(line, upStation, downStation));
+        return LineResponse.of(line);
+    }
+
+    private Station findUpStationById(List<Station> stations, Long upStationId) {
+        return stations.stream()
+            .filter(it -> it.getId().equals(upStationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("요청에 해당하는 상행역을 찾을 수 없습니다."));
+    }
+
+    private Station findDownStationById(List<Station> stations, Long downStationId) {
+        return stations.stream()
+            .filter(it -> it.getId().equals(downStationId))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException("요청에 해당하는 하행역을 찾을 수 없습니다."));
     }
 }

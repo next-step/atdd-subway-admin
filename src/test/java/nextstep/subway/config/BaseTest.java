@@ -16,7 +16,7 @@ public class BaseTest {
     protected TearDownUtils tearDownUtils;
 
     @BeforeEach
-    void setUp() {
+    protected void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }

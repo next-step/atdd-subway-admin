@@ -10,7 +10,7 @@ public class ResponseBodyExtractUtils {
         return response.body().jsonPath().getString(property);
     }
 
-    public static String getId(Response response) {
-        return getString(response, ID);
+    public static Long getIdAsLong(Response response) {
+        return Long.parseLong(getString(response, ID));
     }
 }

@@ -19,7 +19,7 @@ public class StationsAcceptanceUtils {
         return get(STATION_BASE_URL).extract().response();
     }
 
-    public static Response 지하철역_삭제_요청(final String id) {
+    public static Response 지하철역_삭제_요청(final Long id) {
         return delete(STATION_BASE_URL, id).extract().response();
     }
 }
