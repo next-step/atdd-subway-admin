@@ -1,8 +1,10 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.application.SectionService;
-import nextstep.subway.dto.*;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.exception.NotFoundStationException;
 import org.springframework.http.MediaType;
@@ -16,11 +18,9 @@ import java.util.List;
 @RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
-    private final SectionService sectionService;
 
-    public LineController(LineService lineService, SectionService sectionService) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.sectionService = sectionService;
     }
 
     @PostMapping()
@@ -52,8 +52,8 @@ public class LineController {
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity<SectionResponse> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) throws NotFoundStationException {
-        SectionResponse section = sectionService.addSection(lineId, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(section);
+    public ResponseEntity<LineResponse> createSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) throws NotFoundStationException {
+        LineResponse line = lineService.addSection(lineId, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(line);
     }
 }
