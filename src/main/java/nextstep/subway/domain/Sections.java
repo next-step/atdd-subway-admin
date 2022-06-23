@@ -27,11 +27,8 @@ public class Sections {
     }
 
     private void validateUnique(Section newSection) {
-        sections.forEach(section -> {
-            boolean isExists = section.isExistsSection(newSection);
-            if (isExists) {
-                throw new DuplicatedSectionException(newSection.getUpStation().getId(), newSection.getDownStation().getId());
-            }
-        });
+        if (sections.contains(newSection)) {
+            throw new DuplicatedSectionException(newSection.getUpStation().getId(), newSection.getDownStation().getId());
+        }
     }
 }

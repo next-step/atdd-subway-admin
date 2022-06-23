@@ -64,18 +64,6 @@ public class Section extends BaseEntity {
         throw new InvalidSectionException(line.getUpStation().getId(), line.getDownStation().getId());
     }
 
-    public boolean isExistsSection(Section newSection) {
-        if (!upStation.equals(newSection.getUpStation())) {
-            return false;
-        }
-
-        if (!downStation.equals(newSection.getDownStation())) {
-            return false;
-        }
-
-        return true;
-    }
-
     public Long getId() {
         return id;
     }
