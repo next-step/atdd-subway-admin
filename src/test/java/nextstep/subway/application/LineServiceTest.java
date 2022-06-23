@@ -128,7 +128,7 @@ class LineServiceTest {
                                   .stream()
                                   .map(LineResponse.StationDto::getName)
                                   .collect(Collectors.toList());
-        assertThat(names).contains("강남역", "신촌역", "교대역");
+        assertThat(names).containsExactly("강남역", "신촌역", "교대역");
     }
 
     @DisplayName("노선 시작 구간을 추가한다.")
@@ -146,7 +146,7 @@ class LineServiceTest {
                                   .stream()
                                   .map(LineResponse.StationDto::getName)
                                   .collect(Collectors.toList());
-        assertThat(names).contains("신촌역", "강남역", "교대역");
+        assertThat(names).containsExactly("신촌역", "강남역", "교대역");
     }
 
     @DisplayName("노선 마지막에 구간을 등록한다.")
@@ -164,6 +164,6 @@ class LineServiceTest {
                                   .stream()
                                   .map(LineResponse.StationDto::getName)
                                   .collect(Collectors.toList());
-        assertThat(names).contains("강남역", "교대역", "신촌역");
+        assertThat(names).containsExactly("강남역", "교대역", "신촌역");
     }
 }
