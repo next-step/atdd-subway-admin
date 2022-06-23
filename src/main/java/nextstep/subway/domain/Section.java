@@ -68,6 +68,14 @@ public class Section extends BaseEntity {
         return false;
     }
 
+    public boolean isMatchedUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isMatchedDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     public Long getId() {
         return id;
     }

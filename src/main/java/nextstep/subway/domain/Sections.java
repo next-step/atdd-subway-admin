@@ -90,7 +90,7 @@ public class Sections {
         Station station = findUpStation();
 
         return sections.stream()
-                .filter(section -> section.getUpStation().equals(station))
+                .filter(section -> section.isMatchedUpStation(station))
                 .findFirst()
                 .orElseThrow(() -> new NoSuchElementException("노선의 역을 찾을 수 없습니다."));
     }
@@ -108,7 +108,7 @@ public class Sections {
 
     private boolean isNotContainsDownStation(Station station) {
         return sections.stream()
-                .noneMatch(section -> section.getDownStation().equals(station));
+                .noneMatch(section -> section.isMatchedDownStation(station));
     }
 
     private void findStations(List<Station> stations, Section section) {
@@ -122,19 +122,19 @@ public class Sections {
 
     private Optional<Section> findNextDownSection(Section preSection) {
         return sections.stream()
-                .filter(section -> section.getUpStation().equals(preSection.getDownStation()))
+                .filter(section -> section.isMatchedUpStation(preSection.getDownStation()))
                 .findFirst();
     }
 
     public void delete(Station station) {
         validSectionsSizeCheck();
         Section upSection = sections.stream()
-                .filter(section -> section.getDownStation().equals(station))
+                .filter(section -> section.isMatchedDownStation(station))
                 .findFirst()
                 .orElse(Section.empty());
 
         Section downSection = sections.stream()
-                .filter(section -> section.getUpStation().equals(station))
+                .filter(section -> section.isMatchedUpStation(station))
                 .findFirst()
                 .orElse(Section.empty());
 
