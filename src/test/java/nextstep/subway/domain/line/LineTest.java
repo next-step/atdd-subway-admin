@@ -257,4 +257,42 @@ class LineTest {
             Arguments.of(Section.of(신분당선, 강남역, 양재역, 101), "전체 구간의 길이보다 추가하는 구간의 길이가 큰 경우")
         );
     }
+
+    @Test
+    @DisplayName("상행 종점역 구간 삭제")
+    public void removeFinalUpSection() {
+        // Given
+        final Station 강남역 = new Station("강남역");
+        final Section 상행역이_동일한_구간 = Section.of(신분당선, 강남역, 정자역, 30);
+        신분당선.addSection(상행역이_동일한_구간);
+
+        // When
+        신분당선.removeSection(논현역);
+
+        // Then
+        assertAll(
+            () -> assertThat(신분당선.getTotalDistance()).isEqualTo(30),
+            () -> assertThat(신분당선.getAllSections()).hasSize(1),
+            () -> assertThat(신분당선.getAllStations()).containsExactly(강남역, 정자역)
+        );
+    }
+
+    @Test
+    @DisplayName("하행 종점역 구간 삭제")
+    public void removeFinalDownSection() {
+        // Given
+        final Station 강남역 = new Station("강남역");
+        final Section 상행역이_동일한_구간 = Section.of(신분당선, 강남역, 정자역, 30);
+        신분당선.addSection(상행역이_동일한_구간);
+
+        // When
+        신분당선.removeSection(정자역);
+
+        // Then
+        assertAll(
+            () -> assertThat(신분당선.getTotalDistance()).isEqualTo(70),
+            () -> assertThat(신분당선.getAllSections()).hasSize(1),
+            () -> assertThat(신분당선.getAllStations()).containsExactly(논현역, 강남역)
+        );
+    }
 }

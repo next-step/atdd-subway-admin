@@ -151,4 +151,14 @@ public class Sections {
     public Section getFinalDownSection() {
         return findSectionByDownStation(getFinalDownStation());
     }
+
+    public void remove(Station station) {
+        if (getFinalUpStation().equals(station)) {
+            sections.remove(getFinalUpSection());
+        }
+
+        if (getFinalDownStation().equals(station)) {
+            sections.remove(getFinalDownSection());
+        }
+    }
 }
