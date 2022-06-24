@@ -22,8 +22,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
-@DisplayName("구간 관련 기능")
-public class SectionAcceptanceTest extends BaseTest {
+@DisplayName("구간 추가 관련 기능")
+public class SectionAddAcceptanceTest extends BaseTest {
 
     private Long 신분당선;
     private Long 논현역;
