@@ -32,6 +32,10 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
+    public static Section of(Line line, Station upStation, Station downStation, Long distance) {
+        return new Section(line, upStation, downStation, distance);
+    }
+
     public void validateDistance() {
         if (!isBetweenSection(line, upStation, downStation)) {
             return;

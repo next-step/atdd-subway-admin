@@ -32,7 +32,7 @@ public class LineService {
         Station upStation = stationService.findStationById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());
 
-        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        Line persistLine = lineRepository.save(Line.of(lineRequest, upStation, downStation));
         persistLine.addSection(upStation, downStation, persistLine.getDistance());
         return LineResponse.of(persistLine);
     }
@@ -59,7 +59,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) throws NotFoundLineException {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
-        line.update(lineUpdateRequest.toLine(line.getDistance(), line.getUpStation(), line.getDownStation()));
+        line.update(Line.of(lineUpdateRequest, line.getDistance(), line.getUpStation(), line.getDownStation()));
     }
 
     @Transactional
@@ -72,7 +72,7 @@ public class LineService {
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
 
-        Section newSection = sectionRequest.toSection(line, upStation, downStation);
+        Section newSection = Section.of(line, upStation, downStation, sectionRequest.getDistance());
         line.addSection(newSection);
         return LineResponse.of(line);
     }
