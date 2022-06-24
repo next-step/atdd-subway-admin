@@ -15,14 +15,6 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
-
     @Embedded
     private Sections sections = new Sections();
 
@@ -32,8 +24,6 @@ public class Line extends BaseEntity {
     private Line(String name, String color, Station upStation, Station downStation, Long distance) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
         addSection(upStation, downStation, distance);
     }
 
@@ -55,19 +45,17 @@ public class Line extends BaseEntity {
         this.color = line.getColor();
     }
 
+    public List<Station> getStations() {
+        return sections.getStations();
+    }
+
     public void addSection(Station upStation, Station downStation, Long distance) {
         Section section = Section.of(upStation, downStation, distance, this);
         this.sections.add(section);
     }
 
-    public void updateUpStationOrDownStation(Section section) {
-        if (section.getUpStation().equals(downStation)) {
-            downStation = section.getDownStation();
-        }
-
-        if (section.getDownStation().equals(upStation)) {
-            upStation = section.getUpStation();
-        }
+    public void deleteStation(Station station) {
+        this.sections.delete(station);
     }
 
     public Long getId() {
@@ -80,14 +68,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
     }
 
     public List<Section> getSections() {

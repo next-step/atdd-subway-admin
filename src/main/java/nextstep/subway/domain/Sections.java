@@ -1,13 +1,12 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static int SECTION_LEAST_SIZE = 1;
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
@@ -21,18 +20,12 @@ public class Sections {
             return;
         }
 
-        if (section.isUpStationOrDownStation()) {
-            section.getLine().updateUpStationOrDownStation(section);
-            addSection(section);
-            return;
-        }
-
-        validContains(section);
+        validation(section);
         updateExitSection(section);
         addSection(section);
     }
 
-    private void validContains(Section section) {
+    private void validation(Section section) {
         boolean isUpStationContains = isContains(section.getUpStation());
         boolean isDownStationContains = isContains(section.getDownStation());
 
@@ -72,5 +65,111 @@ public class Sections {
 
     private void addSection(Section section) {
         sections.add(section);
+    }
+
+    public List<Station> getStations() {
+        if (sections.isEmpty()) {
+            return Arrays.asList();
+        }
+
+        return createStations();
+    }
+
+    private List<Station> createStations() {
+        List<Station> stations = new ArrayList<>();
+
+        Section section = getFirstSection();
+        stations.add(section.getUpStation());
+        stations.add(section.getDownStation());
+
+        findStations(stations, section);
+        return stations;
+    }
+
+    private Section getFirstSection() {
+        Station station = findUpStation();
+
+        return sections.stream()
+                .filter(section -> section.isMatchedUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("노선의 역을 찾을 수 없습니다."));
+    }
+
+    private Station findUpStation() {
+        List<Station> upStations = this.sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+
+        return upStations.stream()
+                .filter(station -> isNotContainsDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new NoSuchElementException("노선의 역을 찾을 수 없습니다."));
+    }
+
+    private boolean isNotContainsDownStation(Station station) {
+        return sections.stream()
+                .noneMatch(section -> section.isMatchedDownStation(station));
+    }
+
+    private void findStations(List<Station> stations, Section section) {
+        Optional<Section> optionalSection = findNextDownSection(section);
+
+        while (optionalSection.isPresent()) {
+            stations.add(optionalSection.get().getDownStation());
+            optionalSection = findNextDownSection(optionalSection.get());
+        }
+    }
+
+    private Optional<Section> findNextDownSection(Section preSection) {
+        return sections.stream()
+                .filter(section -> section.isMatchedUpStation(preSection.getDownStation()))
+                .findFirst();
+    }
+
+    public void delete(Station station) {
+        validSectionsSizeCheck();
+        Section upSection = sections.stream()
+                .filter(section -> section.isMatchedDownStation(station))
+                .findFirst()
+                .orElse(Section.empty());
+
+        Section downSection = sections.stream()
+                .filter(section -> section.isMatchedUpStation(station))
+                .findFirst()
+                .orElse(Section.empty());
+
+        if (isValidAndEndStation(upSection, downSection)) {
+            createSection(upSection, downSection);
+        }
+
+        removeSection(upSection, downSection);
+    }
+
+    private void validSectionsSizeCheck() {
+        if (sections.size() <= SECTION_LEAST_SIZE) {
+            throw new IllegalArgumentException("구간이 하나인 노선인 경우 구간 삭제 할 수 없습니다.");
+        }
+    }
+
+    private boolean isValidAndEndStation(Section upSection, Section downSection) {
+        if (upSection.isEmpty() && downSection.isEmpty()) {
+            throw new IllegalArgumentException("노선에 등록된 역이 아닙니다.");
+        }
+
+        return !upSection.isEmpty() && !downSection.isEmpty();
+    }
+
+    private void createSection(Section upSection, Section downSection) {
+        addSection(Section.of(upSection.getUpStation(), downSection.getDownStation(), upSection.getDistance()+downSection.getDistance(), upSection.getLine()));
+    }
+
+    private void removeSection(Section upSection, Section downSection) {
+        if (upSection != null) {
+            sections.remove(upSection);
+        }
+
+        if (downSection != null) {
+            sections.remove(downSection);
+        }
     }
 }
