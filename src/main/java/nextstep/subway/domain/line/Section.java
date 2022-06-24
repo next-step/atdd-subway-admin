@@ -128,11 +128,14 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        return Objects.equals(line, section.line) &&
+            Objects.equals(upStation, section.upStation) &&
+            Objects.equals(downStation, section.downStation) &&
+            Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(line, upStation, downStation, distance);
     }
 }

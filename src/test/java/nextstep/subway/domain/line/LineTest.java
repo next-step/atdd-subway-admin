@@ -68,7 +68,7 @@ class LineTest {
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(신사역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(정자역),
             () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(신규_상행종점역_구간),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 논현역, 정자역, 5)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 논현역, 정자역, 100)),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
                 .as("노선에 포함된 정렬된 지하철 역 목록 조회")
@@ -93,8 +93,8 @@ class LineTest {
         assertAll(
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(논현역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(광교역),
-            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(신규_하행종점역_구간),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 정자역, 광교역, 5)),
+            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 논현역, 정자역, 100)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(신규_하행종점역_구간),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
                 .as("노선에 포함된 정렬된 지하철 역 목록 조회")
@@ -120,7 +120,7 @@ class LineTest {
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(논현역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(정자역),
             () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 논현역, 신논현역, 5)),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 신논현역, 정자역, 5)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 신논현역, 정자역, 95)),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
                 .as("노선에 포함된 정렬된 지하철 역 목록 조회")
@@ -145,7 +145,7 @@ class LineTest {
         assertAll(
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(논현역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(정자역),
-            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 논현역, 신논현역, 5)),
+            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 논현역, 신논현역, 95)),
             () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 신논현역, 정자역, 5)),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
