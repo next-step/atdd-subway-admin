@@ -4,6 +4,7 @@ import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -113,19 +114,8 @@ public class Line extends BaseEntity {
         return false;
     }
 
-    public boolean isSameAnyStation(Station newUpStation, Station newDownStation) {
-        if (isSameUpStation(newUpStation)) {
-            return true;
-        }
-
-        if (isSameDownStation(newDownStation)) {
-            return true;
-        }
-
-        if (isSameOtherStation(newUpStation, newDownStation)) {
-            return true;
-        }
-
-        return false;
+    public boolean includeAnyStation(Station newUpStation, Station newDownStation) {
+        List<Station> stations = this.sections.findStations();
+        return stations.stream().anyMatch(station -> station.equals(newUpStation) || station.equals(newDownStation));
     }
 }

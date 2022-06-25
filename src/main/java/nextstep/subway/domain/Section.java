@@ -27,7 +27,6 @@ public class Section extends BaseEntity {
     }
 
     public Section(Line line, Station upStation, Station downStation, Long distance) {
-//        validateIncludeAnyStation(line, upStation, downStation);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -35,7 +34,16 @@ public class Section extends BaseEntity {
     }
 
     public static Section of(Line line, Station upStation, Station downStation, Long distance) {
+        validateIncludeAnyStation(line, upStation, downStation);
         return new Section(line, upStation, downStation, distance);
+    }
+
+    private static void validateIncludeAnyStation(Line line, Station newUpStation, Station newDownStation) {
+        if (line.includeAnyStation(newUpStation, newDownStation)) {
+            return;
+        }
+
+        throw new InvalidSectionException();
     }
 
     public void validateDistance() {
@@ -60,14 +68,6 @@ public class Section extends BaseEntity {
         }
 
         return false;
-    }
-
-    private void validateIncludeAnyStation(Line line, Station newUpStation, Station newDownStation) {
-        if (line.isSameAnyStation(newUpStation, newDownStation)) {
-            return;
-        }
-
-        throw new InvalidSectionException(line.getUpStation().getId(), line.getDownStation().getId());
     }
 
     public List<Station> getStations() {
