@@ -45,7 +45,7 @@ public class Section extends BaseEntity {
         throw new InvalidSectionException();
     }
 
-    public boolean matchStation(Section newSection) {
+    public boolean isBetweenStation(Section newSection) {
         if (upStation.equals(newSection.upStation)) {
             return true;
         }
@@ -83,5 +83,45 @@ public class Section extends BaseEntity {
 
     public Long getDistance() {
         return distance;
+    }
+
+    public boolean matchUpStation(Section newSection) {
+        return upStation.equals(newSection.upStation);
+    }
+
+    public boolean matchDownStation(Section newSection) {
+        return downStation.equals(newSection.downStation);
+    }
+
+    public void updateUpStationAndDistance(Section newSection) {
+        this.upStation = newSection.downStation;
+        this.distance = minusDistance(newSection.distance);
+    }
+
+    private Long minusDistance(Long newDistance) {
+        return this.distance - newDistance;
+    }
+
+    public void updateDownStationAndDistance(Section newSection) {
+        this.downStation = newSection.upStation;
+        this.distance = minusDistance(newSection.distance);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Section that = (Section) o;
+
+        if (!upStation.equals(that.upStation)) {
+            return false;
+        }
+
+        if (!downStation.equals(that.downStation)) {
+            return false;
+        }
+
+        return true;
     }
 }

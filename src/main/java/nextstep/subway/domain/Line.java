@@ -50,10 +50,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section newSection) {
-        if (this.sections.isNotEmpty()) {
-            this.sections.validateDistance(newSection);
-        }
-
         this.sections.add(newSection);
     }
 
@@ -61,7 +57,6 @@ public class Line extends BaseEntity {
         this.name = newLine.name;
         this.color = newLine.color;
     }
-
 
     public boolean includeAnyStation(Station newUpStation, Station newDownStation) {
         List<Station> stations = this.sections.findStations();

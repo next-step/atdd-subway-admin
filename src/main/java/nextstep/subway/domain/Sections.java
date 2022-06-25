@@ -24,8 +24,29 @@ public class Sections {
     }
 
     public void add(Section newSection) {
+        if (this.sections.isEmpty()) {
+            sections.add(newSection);
+            return;
+        }
+
         validateUnique(newSection);
+        validateDistance(newSection);
+        updateSection(newSection);
         sections.add(newSection);
+    }
+
+    private void updateSection(Section newSection) {
+        this.sections.forEach(section -> {
+            if (section.matchUpStation(newSection)) {
+                section.updateUpStationAndDistance(newSection);
+                return;
+            }
+
+            if (section.matchDownStation(newSection)) {
+                section.updateDownStationAndDistance(newSection);
+                return;
+            }
+        });
     }
 
     private void validateUnique(Section newSection) {
@@ -49,8 +70,8 @@ public class Sections {
     public void validateDistance(Section newSection) {
         boolean validDistance = this.sections.stream()
             .anyMatch(section -> {
-                if (!section.matchStation(newSection)) {
-                    return false;
+                if (!section.isBetweenStation(newSection)) {
+                    return true;
                 }
 
                 return newSection.isShort(section);

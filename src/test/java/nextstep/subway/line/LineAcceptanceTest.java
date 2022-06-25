@@ -158,7 +158,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         // when
         JsonPath jsonPath = createLine.jsonPath();
-        ExtractableResponse<Response> createSection = 상행선_사이에_구간추가_요청(jsonPath.getLong("id"), jsonPath.getLong("upStationId"), "마들역", 2L);
+        ExtractableResponse<Response> createSection = 상행선_사이에_구간추가_요청(jsonPath.getLong("id"), jsonPath.getLong("stations[0].id"), "마들역", 2L);
 
         // then
         ResponseAssertTest.생성_확인(createSection);
@@ -177,7 +177,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         // when
         JsonPath jsonPath = createLine.jsonPath();
-        ExtractableResponse<Response> createSection = 지하철노선_구간추가_요청(jsonPath.getLong("id"), jsonPath.getLong("upStationId"), jsonPath.getLong("downStationId"), 5L);
+        ExtractableResponse<Response> createSection = 지하철노선_구간추가_요청(jsonPath.getLong("id"), jsonPath.getLong("stations[0].id"), jsonPath.getLong("stations[1].id"), 3L);
 
         // then
         ResponseAssertTest.요청오류_확인(createSection);
@@ -230,7 +230,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     private ExtractableResponse<Response> 상행선에_구간추가_요청(String newUpStationName, String newDownStationName, Long distance) {
         ExtractableResponse<Response> createLineResponse = 지하철노선_생성_요청("7호선", "green", newDownStationName, "마들역", 5L);
         Long lineId = createLineResponse.jsonPath().getLong("id");
-        Long upStationId = createLineResponse.jsonPath().getLong("upStationId");
+        Long upStationId = createLineResponse.jsonPath().getLong("stations[0].id");
 
         Long newUpStationId = StationAcceptanceTest.지하철역_생성_요청(newUpStationName).jsonPath().getLong("id");
 
@@ -240,7 +240,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     private ExtractableResponse<Response> 하행선에_구간추가_요청(String newUpStationName, String newDownStationName, Long distance) {
         ExtractableResponse<Response> createLineResponse = 지하철노선_생성_요청("7호선", "green", "수락산역", newUpStationName, 5L);
         Long lineId = createLineResponse.jsonPath().getLong("id");
-        Long downStationId = createLineResponse.jsonPath().getLong("downStationId");
+        Long downStationId = createLineResponse.jsonPath().getLong("stations[1].id");
 
         Long newDownStationId = StationAcceptanceTest.지하철역_생성_요청(newDownStationName).jsonPath().getLong("id");
 
