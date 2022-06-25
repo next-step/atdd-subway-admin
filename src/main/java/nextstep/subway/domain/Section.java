@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.InvalidDistanceException;
 import nextstep.subway.exception.InvalidSectionException;
 
 import javax.persistence.*;
@@ -20,12 +21,13 @@ public class Section extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
-    private Long distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, Long distance) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -34,7 +36,7 @@ public class Section extends BaseEntity {
 
     public static Section of(Line line, Station upStation, Station downStation, Long distance) {
         validateIncludeAnyStation(line, upStation, downStation);
-        return new Section(line, upStation, downStation, distance);
+        return new Section(line, upStation, downStation, new Distance(distance));
     }
 
     private static void validateIncludeAnyStation(Line line, Station newUpStation, Station newDownStation) {
@@ -57,10 +59,6 @@ public class Section extends BaseEntity {
         return false;
     }
 
-    public boolean isShort(Section origin) {
-        return distance < origin.distance;
-    }
-
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
     }
@@ -81,7 +79,7 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public Long getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
@@ -95,16 +93,12 @@ public class Section extends BaseEntity {
 
     public void updateUpStationAndDistance(Section newSection) {
         this.upStation = newSection.downStation;
-        this.distance = minusDistance(newSection.distance);
-    }
-
-    private Long minusDistance(Long newDistance) {
-        return this.distance - newDistance;
+        this.distance = distance.minus(newSection.distance);
     }
 
     public void updateDownStationAndDistance(Section newSection) {
         this.downStation = newSection.upStation;
-        this.distance = minusDistance(newSection.distance);
+        this.distance = distance.minus(newSection.distance);
     }
 
     @Override
@@ -123,5 +117,28 @@ public class Section extends BaseEntity {
         }
 
         return true;
+    }
+
+    public void updateSection(Section newSection) {
+        if (matchUpStation(newSection)) {
+            updateUpStationAndDistance(newSection);
+            return;
+        }
+
+        if (matchDownStation(newSection)) {
+            updateDownStationAndDistance(newSection);
+            return;
+        }
+    }
+
+    public void validateDistanceAndUpdateSection(Section newSection) {
+        validateDistance(newSection.distance);
+        updateSection(newSection);
+    }
+
+    private void validateDistance(Distance target) {
+        if (!distance.isLong(target)) {
+            throw new InvalidDistanceException(target);
+        }
     }
 }

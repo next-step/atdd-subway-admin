@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.DuplicatedSectionException;
-import nextstep.subway.exception.InvalidDistanceException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -31,32 +30,13 @@ public class Sections {
 
         validateUnique(newSection);
         validateDistance(newSection);
-        updateSection(newSection);
         sections.add(newSection);
-    }
-
-    private void updateSection(Section newSection) {
-        this.sections.forEach(section -> {
-            if (section.matchUpStation(newSection)) {
-                section.updateUpStationAndDistance(newSection);
-                return;
-            }
-
-            if (section.matchDownStation(newSection)) {
-                section.updateDownStationAndDistance(newSection);
-                return;
-            }
-        });
     }
 
     private void validateUnique(Section newSection) {
         if (sections.contains(newSection)) {
             throw new DuplicatedSectionException(newSection.getUpStation().getId(), newSection.getDownStation().getId());
         }
-    }
-
-    public boolean isNotEmpty() {
-        return !this.sections.isEmpty();
     }
 
     public List<Station> findStations() {
@@ -68,17 +48,18 @@ public class Sections {
     }
 
     public void validateDistance(Section newSection) {
-        boolean validDistance = this.sections.stream()
-            .anyMatch(section -> {
-                if (!section.isBetweenStation(newSection)) {
-                    return true;
-                }
-
-                return newSection.isShort(section);
-            });
-
-        if (!validDistance) {
-            throw new InvalidDistanceException(newSection.getDistance());
+        Section connectedSection = findConnectedSection(newSection);
+        if (connectedSection == null) {
+            return;
         }
+
+        connectedSection.validateDistanceAndUpdateSection(newSection);
+    }
+
+    private Section findConnectedSection(Section newSection) {
+        return this.sections.stream()
+            .filter(section -> section.isBetweenStation(newSection))
+            .findFirst()
+            .orElse(null);
     }
 }
