@@ -215,7 +215,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
 
         // when
         JsonPath jsonPath = createLine.jsonPath();
-        ExtractableResponse<Response> createSection = 상행선_사이에_구간추가_요청(jsonPath.getLong("id"), jsonPath.getLong("upStationId"), "마들역", 5L);
+        ExtractableResponse<Response> createSection = 상행선_사이에_구간추가_요청(jsonPath.getLong("id"), jsonPath.getLong("stations[0].id"), "마들역", 5L);
 
         // then
         ResponseAssertTest.요청오류_확인(createSection);

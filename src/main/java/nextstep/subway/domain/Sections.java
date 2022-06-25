@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.DuplicatedSectionException;
+import nextstep.subway.exception.InvalidDistanceException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -43,5 +44,20 @@ public class Sections {
             .flatMap(List::stream)
             .distinct()
             .collect(Collectors.toList());
+    }
+
+    public void validateDistance(Section newSection) {
+        boolean validDistance = this.sections.stream()
+            .anyMatch(section -> {
+                if (!section.matchStation(newSection)) {
+                    return false;
+                }
+
+                return newSection.isShort(section);
+            });
+
+        if (!validDistance) {
+            throw new InvalidDistanceException(newSection.getDistance());
+        }
     }
 }

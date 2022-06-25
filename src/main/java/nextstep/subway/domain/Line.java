@@ -49,13 +49,9 @@ public class Line extends BaseEntity {
         return new Line(lineUpdateRequest.getName(), lineUpdateRequest.getColor(), sections);
     }
 
-    public void addSection(Station upStation, Station downStation, Long distance) {
-        this.sections.add(new Section(this, upStation, downStation, distance));
-    }
-
     public void addSection(Section newSection) {
         if (this.sections.isNotEmpty()) {
-//            newSection.validateDistance();
+            this.sections.validateDistance(newSection);
         }
 
         this.sections.add(newSection);
@@ -64,6 +60,12 @@ public class Line extends BaseEntity {
     public void update(Line newLine) {
         this.name = newLine.name;
         this.color = newLine.color;
+    }
+
+
+    public boolean includeAnyStation(Station newUpStation, Station newDownStation) {
+        List<Station> stations = this.sections.findStations();
+        return stations.stream().anyMatch(station -> station.equals(newUpStation) || station.equals(newDownStation));
     }
 
     public Long getId() {
@@ -92,30 +94,5 @@ public class Line extends BaseEntity {
 
     public Sections getSections() {
         return sections;
-    }
-
-    public boolean isSameUpStation(Station newUpStation) {
-        return upStation.equals(newUpStation);
-    }
-
-    public boolean isSameDownStation(Station newDownStation) {
-        return downStation.equals(newDownStation);
-    }
-
-    public boolean isSameOtherStation(Station newUpStation, Station newDownStation) {
-        if (upStation.equals(newDownStation)) {
-            return true;
-        }
-
-        if (downStation.equals(newUpStation)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public boolean includeAnyStation(Station newUpStation, Station newDownStation) {
-        List<Station> stations = this.sections.findStations();
-        return stations.stream().anyMatch(station -> station.equals(newUpStation) || station.equals(newDownStation));
     }
 }
