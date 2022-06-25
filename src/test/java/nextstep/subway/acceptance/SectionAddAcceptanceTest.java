@@ -171,9 +171,9 @@ public class SectionAddAcceptanceTest extends BaseTest {
      *      When - 추가 구간의 길이가 전체 구간의 길이보다 크거나 같은 경우
      * Then 구간의 길이가 유효하지 않는 경우 오류가 발생한다.
      */
-    @ParameterizedTest
+    @ParameterizedTest(name = "case[{index}] : ''{0}'' => {1}")
     @MethodSource
-    @DisplayName("추가 구간의 길이가 `0, 음수, 연결 구간의 길이보다 크거나 같은 경우, 전체 구간의 길이보다 크거나 같은 경우`는 추가할 수 없다.")
+    @DisplayName("추가 구간의 길이가 유효하지 않은 경우는 추가할 수 없다.")
     public void throwException_WhenAddInvalidSectionDistance(int 유효하지_않은_구간_길이, String givenDescription) {
         // Given
         Long 신논현역 = getIdAsLong(지하철역_생성_요청("신논현역"));
