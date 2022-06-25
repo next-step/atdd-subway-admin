@@ -84,13 +84,19 @@ public class Section {
     public void swapUpStationToTargetDownStation(Section targetSection) {
         validateDistance(targetSection.getDistance());
         this.upStation = targetSection.getDownStation();
-        this.distance.updateDistance(targetSection.getDistance());
+        this.distance.minusDistance(targetSection.getDistance());
     }
 
     public void swapDownStationToTargetUpStation(Section targetSection) {
         validateDistance(targetSection.getDistance());
         this.downStation = targetSection.getUpStation();
-        this.distance.updateDistance(targetSection.getDistance());
+        this.distance.minusDistance(targetSection.getDistance());
+    }
+
+    public void swapDownStationToRemoveTargetDownStation(Section targetSection) {
+        validateDistance(targetSection.getDistance());
+        this.downStation = targetSection.getDownStation();
+        this.distance.plusDistance(targetSection.getDistance());
     }
 
     private void validateDistance(Integer targetDistance) {

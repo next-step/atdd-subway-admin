@@ -13,16 +13,12 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
-import java.util.stream.Stream;
 import nextstep.subway.config.BaseTest;
 import nextstep.subway.dto.line.LineResponse;
 import nextstep.subway.dto.line.section.CreateSectionRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 @DisplayName("구간 삭제 관련 기능")
 public class SectionRemoveAcceptanceTest extends BaseTest {
@@ -137,25 +133,21 @@ public class SectionRemoveAcceptanceTest extends BaseTest {
      * When 구간이 하나뿐인 노선의 상행역 또는 하행역을 삭제한다.
      * Then 구간이 하나뿐인 노선의 상행역 또는 하행역은 삭제할 수 없다.
      */
-    @ParameterizedTest
-    @MethodSource
+    @Test
     @DisplayName("구간이 하나뿐인 노선의 상행역 또는 하행역은 삭제할 수 없다")
-    public void throwException_WhenRemoveTargetStationIsNotContainsInLineStations(Long 노선, Long 삭제역, String givenDescription) {
-        // When
-        Response 지하철_구간_삭제_응답 = 지하철_구간_삭제_요청(노선, 삭제역);
-
-        // Then
-        assertInternalServerError(지하철_구간_삭제_응답, givenDescription);
-    }
-
-    private static Stream throwException_WhenRemoveTargetStationIsNotContainsInLineStations() {
+    public void throwException_WhenRemoveTargetStationIsNotContainsInLineStations() {
+        // Given
         LineResponse lineResponse = 지하철_노선_생성_요청("분당선", "선릉역", "수서역").as(LineResponse.class);
         Long 분당선 = lineResponse.getId();
         Long 선릉역 = lineResponse.getStations().get(0).getId();
         Long 수서역 = lineResponse.getStations().get(1).getId();
-        return Stream.of(
-            Arguments.of(분당선, 선릉역, "구간이 하나뿐인 노선의 상행역을 삭제하는 경우"),
-            Arguments.of(분당선, 수서역, "구간이 하나뿐인 노선의 하행역을 삭제하는 경우")
-        );
+
+        // When
+        Response 단일_구간_노선의_상행역_삭제_응답 = 지하철_구간_삭제_요청(분당선, 선릉역);
+        Response 단일_구간_노선의_하행역_삭제_응답 = 지하철_구간_삭제_요청(분당선, 수서역);
+
+        // Then
+        assertInternalServerError(단일_구간_노선의_상행역_삭제_응답);
+        assertInternalServerError(단일_구간_노선의_하행역_삭제_응답);
     }
 }

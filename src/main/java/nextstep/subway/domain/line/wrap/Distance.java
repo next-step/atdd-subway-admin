@@ -36,8 +36,12 @@ public class Distance {
         return distance;
     }
 
-    public void updateDistance(int distance) {
+    public void minusDistance(int distance) {
         this.distance = this.distance - distance;
+    }
+
+    public void plusDistance(int distance) {
+        this.distance = this.distance + distance;
     }
 
     @Override
