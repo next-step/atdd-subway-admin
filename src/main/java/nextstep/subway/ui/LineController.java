@@ -3,9 +3,7 @@ package nextstep.subway.ui;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
-import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.exception.NotFoundStationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -39,11 +37,11 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.getLineById(id));
     }
 
-    @PatchMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) throws NotFoundLineException {
-        lineService.updateLine(id, lineUpdateRequest);
-        return ResponseEntity.ok().build();
-    }
+//    @PatchMapping("/{id}")
+//    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) throws NotFoundLineException {
+//        lineService.updateLine(id, lineUpdateRequest);
+//        return ResponseEntity.ok().build();
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<LineResponse> deleteLine(@PathVariable Long id) {

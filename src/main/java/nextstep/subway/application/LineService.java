@@ -6,9 +6,7 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
-import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +31,6 @@ public class LineService {
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());
 
         Line persistLine = lineRepository.save(Line.of(lineRequest, upStation, downStation));
-        persistLine.addSection(upStation, downStation, persistLine.getDistance());
         return LineResponse.of(persistLine);
     }
 
@@ -56,11 +53,11 @@ public class LineService {
         return lineRepository.getById(id);
     }
 
-    @Transactional
-    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) throws NotFoundLineException {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
-        line.update(Line.of(lineUpdateRequest, line.getDistance(), line.getUpStation(), line.getDownStation()));
-    }
+//    @Transactional
+//    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) throws NotFoundLineException {
+//        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
+//        line.update(Line.of(lineUpdateRequest, line.getDistance(), line.getUpStation(), line.getDownStation()));
+//    }
 
     @Transactional
     public void deleteLineById(Long id) {

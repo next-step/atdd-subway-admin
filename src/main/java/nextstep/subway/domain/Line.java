@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineUpdateRequest;
 
 import javax.persistence.*;
 
@@ -28,24 +27,14 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color, Long distance, Station upStation, Station downStation) {
+    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
-    }
-
-    public static Line of(String name, String color, Long distance, Station upStation, Station downStation) {
-        return new Line(name, color, distance, upStation, downStation);
+        addSection(new Section(this, upStation, downStation, distance));
     }
 
     public static Line of(LineRequest lineRequest, Station upStation, Station downStation) {
-        return new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance(), upStation, downStation);
-    }
-
-    public static Line of(LineUpdateRequest lineUpdateRequest, Long distance, Station upStation, Station downStation) {
-        return new Line(lineUpdateRequest.getName(), lineUpdateRequest.getColor(), distance, upStation, downStation);
+        return new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
     }
 
     public void addSection(Station upStation, Station downStation, Long distance) {
@@ -53,8 +42,11 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section newSection) {
+        if (this.sections.isNotEmpty()) {
+//            newSection.validateDistance();
+        }
+
         this.sections.add(newSection);
-        newSection.validateDistance();
     }
 
     public void update(Line newLine) {

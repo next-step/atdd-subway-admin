@@ -4,6 +4,8 @@ import nextstep.subway.exception.InvalidDistanceException;
 import nextstep.subway.exception.InvalidSectionException;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 public class Section extends BaseEntity {
@@ -25,7 +27,7 @@ public class Section extends BaseEntity {
     }
 
     public Section(Line line, Station upStation, Station downStation, Long distance) {
-        validateIncludeAnyStation(line, upStation, downStation);
+//        validateIncludeAnyStation(line, upStation, downStation);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -66,6 +68,10 @@ public class Section extends BaseEntity {
         }
 
         throw new InvalidSectionException(line.getUpStation().getId(), line.getDownStation().getId());
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
     }
 
     public Long getId() {
