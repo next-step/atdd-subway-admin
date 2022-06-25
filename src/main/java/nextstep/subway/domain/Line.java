@@ -15,14 +15,6 @@ public class Line extends BaseEntity {
     private String name;
     @Column(nullable = false, unique = true)
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-    @Column
-    private Long distance;
     @Embedded
     private Sections sections = new Sections();
 
@@ -73,18 +65,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Long getDistance() {
-        return distance;
     }
 
     public Sections getSections() {
