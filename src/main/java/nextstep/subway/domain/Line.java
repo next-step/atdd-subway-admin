@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 
 import javax.persistence.*;
 
@@ -33,8 +34,18 @@ public class Line extends BaseEntity {
         addSection(new Section(this, upStation, downStation, distance));
     }
 
+    public Line(String name, String color, Sections sections) {
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
+
     public static Line of(LineRequest lineRequest, Station upStation, Station downStation) {
         return new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
+    }
+
+    public static Line of(LineUpdateRequest lineUpdateRequest, Sections sections) {
+        return new Line(lineUpdateRequest.getName(), lineUpdateRequest.getColor(), sections);
     }
 
     public void addSection(Station upStation, Station downStation, Long distance) {
