@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections;
+    private final List<Section> sections;
 
     public Sections() {
         this.sections = new ArrayList<>();

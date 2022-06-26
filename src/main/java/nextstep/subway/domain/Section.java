@@ -52,11 +52,7 @@ public class Section extends BaseEntity {
             return true;
         }
 
-        if (downStation.equals(newSection.downStation)) {
-            return true;
-        }
-
-        return false;
+        return downStation.equals(newSection.downStation);
     }
 
     public List<Station> getStations() {
@@ -112,11 +108,7 @@ public class Section extends BaseEntity {
             return false;
         }
 
-        if (!downStation.equals(that.downStation)) {
-            return false;
-        }
-
-        return true;
+        return downStation.equals(that.downStation);
     }
 
     public void updateSection(Section newSection) {
