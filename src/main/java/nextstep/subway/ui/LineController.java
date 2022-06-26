@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -64,5 +65,14 @@ public class LineController {
     ) {
         LineResponse lineResponse = lineService.addSection(id, createSectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+    }
+
+    @DeleteMapping(value = "{id}/sections")
+    public ResponseEntity removeLineStation(
+        @PathVariable Long id,
+        @RequestParam Long stationId
+    ) {
+        lineService.removeSectionByStationId(id, stationId);
+        return ResponseEntity.ok().build();
     }
 }

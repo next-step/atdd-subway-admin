@@ -89,4 +89,13 @@ public class LineService {
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException("요청에 해당하는 하행역을 찾을 수 없습니다."));
     }
+
+    @Transactional
+    public void removeSectionByStationId(Long id, Long stationId) {
+        Station station = stationRepository.findById(stationId).orElseThrow(
+            () -> new IllegalArgumentException("요청에 해당하는 역을 찾을 수 없습니다.")
+        );
+        Line line = findLine(id);
+        line.removeSection(station);
+    }
 }

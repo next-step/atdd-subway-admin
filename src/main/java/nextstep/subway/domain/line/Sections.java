@@ -14,6 +14,10 @@ public class Sections {
     private static final String EQUALS_SECTION_ERROR_MESSAGE = "동일 구간은 추가할 수 없습니다.";
     private static final String NOT_CONTAINS_ANY_STATION_ERROR_MESSAGE = "인근역과 접점이 없는 구간은 추가할 수 없습니다.";
     public static final String TOTAL_DISTANCE_OVER_RANGE_ERROR_MESSAGE = "구간의 길이는 노선의 총 길이보다 클 수 없습니다.";
+    public static final String NOT_CONTAINS_TARGET_STATION_ERROR_MESSAGE = "삭제 대상역이 노선에 존재하지 않습니다.";
+    public static int MINIMUM_REMOVE_SIZE = 1;
+    public static final String CAN_NOT_REMOVE_SECTIONS_SIZE_ERROR_MESSAGE = String
+        .format("구간의 길이가 %d 이하인 경우 삭제할 수 없습니다.", MINIMUM_REMOVE_SIZE);
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -150,5 +154,44 @@ public class Sections {
 
     public Section getFinalDownSection() {
         return findSectionByDownStation(getFinalDownStation());
+    }
+
+    public void remove(Station station) {
+        validateRemoveStation(station);
+        if (getFinalUpStation().equals(station)) {
+            sections.remove(getFinalUpSection());
+            return;
+        }
+
+        if (getFinalDownStation().equals(station)) {
+            sections.remove(getFinalDownSection());
+            return;
+        }
+
+        Section updateTargetSection = findSectionByDownStation(station);
+        Section removeTargetSection = findSectionByUpStation(station);
+        updateTargetSection.swapDownStationToRemoveTargetDownStation(removeTargetSection);
+        sections.remove(removeTargetSection);
+    }
+
+    private void validateRemoveStation(Station station) {
+        validateSectionsSize();
+        validateRemoveTargetStation(station);
+    }
+
+    private void validateSectionsSize() {
+        if (sections.size() <= MINIMUM_REMOVE_SIZE) {
+            throw new IllegalArgumentException(CAN_NOT_REMOVE_SECTIONS_SIZE_ERROR_MESSAGE);
+        }
+    }
+
+    private void validateRemoveTargetStation(Station station) {
+        if (!contains(station)) {
+            throw new IllegalArgumentException(NOT_CONTAINS_TARGET_STATION_ERROR_MESSAGE);
+        }
+    }
+
+    private boolean contains(Station station) {
+        return sortedByFinalUpStations().contains(station);
     }
 }

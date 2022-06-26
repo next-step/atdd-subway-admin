@@ -43,6 +43,12 @@ public class RestAssuredUtils {
             .then().log().all();
     }
 
+    public static <T> ValidatableResponse delete(final String urlTemplate, final Long path, final T... queryParams) {
+        return requestSpecification.when()
+            .delete(urlTemplate, path, queryParams)
+            .then().log().all();
+    }
+
     public static ValidatableResponse delete(final String urlTemplate, final Long path) {
         return requestSpecification.when()
             .delete(makeEndPoint(urlTemplate, path))

@@ -84,13 +84,19 @@ public class Section {
     public void swapUpStationToTargetDownStation(Section targetSection) {
         validateDistance(targetSection.getDistance());
         this.upStation = targetSection.getDownStation();
-        this.distance.updateDistance(targetSection.getDistance());
+        this.distance.minusDistance(targetSection.getDistance());
     }
 
     public void swapDownStationToTargetUpStation(Section targetSection) {
         validateDistance(targetSection.getDistance());
         this.downStation = targetSection.getUpStation();
-        this.distance.updateDistance(targetSection.getDistance());
+        this.distance.minusDistance(targetSection.getDistance());
+    }
+
+    public void swapDownStationToRemoveTargetDownStation(Section targetSection) {
+        validateDistance(targetSection.getDistance());
+        this.downStation = targetSection.getDownStation();
+        this.distance.plusDistance(targetSection.getDistance());
     }
 
     private void validateDistance(Integer targetDistance) {
@@ -128,11 +134,14 @@ public class Section {
             return false;
         }
         Section section = (Section) o;
-        return Objects.equals(id, section.id);
+        return Objects.equals(line, section.line) &&
+            Objects.equals(upStation, section.upStation) &&
+            Objects.equals(downStation, section.downStation) &&
+            Objects.equals(distance, section.distance);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(line, upStation, downStation, distance);
     }
 }

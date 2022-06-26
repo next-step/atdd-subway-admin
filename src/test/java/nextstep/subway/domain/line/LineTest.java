@@ -68,7 +68,7 @@ class LineTest {
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(신사역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(정자역),
             () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(신규_상행종점역_구간),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 논현역, 정자역, 5)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 논현역, 정자역, 100)),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
                 .as("노선에 포함된 정렬된 지하철 역 목록 조회")
@@ -93,8 +93,8 @@ class LineTest {
         assertAll(
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(논현역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(광교역),
-            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(신규_하행종점역_구간),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 정자역, 광교역, 5)),
+            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 논현역, 정자역, 100)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(신규_하행종점역_구간),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
                 .as("노선에 포함된 정렬된 지하철 역 목록 조회")
@@ -120,7 +120,7 @@ class LineTest {
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(논현역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(정자역),
             () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 논현역, 신논현역, 5)),
-            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 신논현역, 정자역, 5)),
+            () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 신논현역, 정자역, 95)),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
                 .as("노선에 포함된 정렬된 지하철 역 목록 조회")
@@ -145,7 +145,7 @@ class LineTest {
         assertAll(
             () -> assertThat(신분당선.getFinalUpStation()).as("노선의 상행종점역 조회").isEqualTo(논현역),
             () -> assertThat(신분당선.getFinalDownStation()).as("노선의 하행종점역 조회").isEqualTo(정자역),
-            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 논현역, 신논현역, 5)),
+            () -> assertThat(신분당선.getFinalUpSection()).isEqualTo(Section.of(신분당선, 논현역, 신논현역, 95)),
             () -> assertThat(신분당선.getFinalDownSection()).isEqualTo(Section.of(신분당선, 신논현역, 정자역, 5)),
             () -> assertThat(신분당선.getAllSections()).hasSize(2),
             () -> assertThat(신분당선.getAllStations())
@@ -255,6 +255,44 @@ class LineTest {
             Arguments.of(Section.of(신분당선, 강남역, 양재역, 11), "인접 구간의 길이보다 추가하는 구간의 길이가 큰 경우"),
             Arguments.of(Section.of(신분당선, 강남역, 양재역, 100), "전체 구간의 길이와 추가하는 구간의 길이가 같은 경우"),
             Arguments.of(Section.of(신분당선, 강남역, 양재역, 101), "전체 구간의 길이보다 추가하는 구간의 길이가 큰 경우")
+        );
+    }
+
+    @Test
+    @DisplayName("상행 종점역 구간 삭제")
+    public void removeFinalUpSection() {
+        // Given
+        final Station 강남역 = new Station("강남역");
+        final Section 상행역이_동일한_구간 = Section.of(신분당선, 강남역, 정자역, 30);
+        신분당선.addSection(상행역이_동일한_구간);
+
+        // When
+        신분당선.removeSection(논현역);
+
+        // Then
+        assertAll(
+            () -> assertThat(신분당선.getTotalDistance()).isEqualTo(30),
+            () -> assertThat(신분당선.getAllSections()).hasSize(1),
+            () -> assertThat(신분당선.getAllStations()).containsExactly(강남역, 정자역)
+        );
+    }
+
+    @Test
+    @DisplayName("하행 종점역 구간 삭제")
+    public void removeFinalDownSection() {
+        // Given
+        final Station 강남역 = new Station("강남역");
+        final Section 상행역이_동일한_구간 = Section.of(신분당선, 강남역, 정자역, 30);
+        신분당선.addSection(상행역이_동일한_구간);
+
+        // When
+        신분당선.removeSection(정자역);
+
+        // Then
+        assertAll(
+            () -> assertThat(신분당선.getTotalDistance()).isEqualTo(70),
+            () -> assertThat(신분당선.getAllSections()).hasSize(1),
+            () -> assertThat(신분당선.getAllStations()).containsExactly(논현역, 강남역)
         );
     }
 }
