@@ -11,7 +11,7 @@ import nextstep.subway.dto.SectionRequest;
 @Embeddable
 public class LineStations {
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LineStation> lineStations = new ArrayList<>();
 
     private static final int NO_PARENT = -1;
@@ -27,18 +27,17 @@ public class LineStations {
         return lineStations;
     }
 
-    public LineStations addSection(SectionRequest sectionRequest, Line line) {
-        LineStations returnLineStations = new LineStations(lineStations);
+    public void setLineStations(List<LineStation> lineStations) {
+        this.lineStations = lineStations;
+    }
+
+    public void add(LineStation lineStation) {
+        lineStations.add(lineStation);
+    }
+
+    public static LineStations addSection(SectionRequest sectionRequest, Line line) {
+        LineStations returnLineStations = new LineStations(line.getLineStations().getLineStations());
         List<LineStation> lineStationsInstance = returnLineStations.getLineStations();
-
-        LineStation lineStation = new LineStation(sectionRequest.getDownStationId(), sectionRequest.getUpStationId(),
-                sectionRequest.getDistance(), line);
-
-        boolean initalSectionAdded = addInitalSection(sectionRequest, line, lineStationsInstance, lineStation);
-
-        if (initalSectionAdded) {
-            return returnLineStations;
-        }
 
         returnLineStations = addBetweenStation(sectionRequest, line, lineStationsInstance);
 
@@ -49,20 +48,12 @@ public class LineStations {
         if (returnLineStations == null) {
             throw new RuntimeException("상행역과 하행역 둘중 하나도 포함되어 있는 게 없습니다.");
         }
+
         return returnLineStations;
     }
 
-    private boolean addInitalSection(SectionRequest sectionRequest, Line line, List<LineStation> lineStationsInstance,
-                                     LineStation lineStation) {
-        if (lineStationsInstance.size() < 1) {
-            lineStationsInstance.add(new LineStation(sectionRequest.getUpStationId(), -1, 0, line));
-            lineStationsInstance.add(lineStation);
-            return true;
-        }
-        return false;
-    }
-
-    private LineStations addBothEnds(SectionRequest sectionRequest, Line line, List<LineStation> lineStationsInstance) {
+    private static LineStations addBothEnds(SectionRequest sectionRequest, Line line,
+                                            List<LineStation> lineStationsInstance) {
         LineStation lineStation = new LineStation(sectionRequest.getDownStationId(), sectionRequest.getUpStationId(),
                 sectionRequest.getDistance(), line);
         // 상행 역으로 추가
@@ -75,7 +66,8 @@ public class LineStations {
         return addLastEnd(sectionRequest, lineStationsInstance, lineStation);
     }
 
-    private LineStations addBetweenStation(SectionRequest sectionRequest, Line line, List<LineStation> lineStationsInstance)
+    private static LineStations addBetweenStation(SectionRequest sectionRequest, Line line,
+                                                  List<LineStation> lineStationsInstance)
             throws RuntimeException {
 
         LineStation lineStation = new LineStation(sectionRequest.getDownStationId(), sectionRequest.getUpStationId(),
@@ -100,8 +92,9 @@ public class LineStations {
         return null;
     }
 
-    private LineStations addFrontEnd(SectionRequest sectionRequest, Line line, List<LineStation> lineStationsInstance,
-                                     LineStation lineStation) {
+    private static LineStations addFrontEnd(SectionRequest sectionRequest, Line line,
+                                            List<LineStation> lineStationsInstance,
+                                            LineStation lineStation) {
         if (lineStationsInstance.stream()
                 .anyMatch(it -> it.getPreStationId() == NO_PARENT && matchDownStation(it, sectionRequest))) {
 
@@ -116,8 +109,8 @@ public class LineStations {
         return null;
     }
 
-    private LineStations addLastEnd(SectionRequest sectionRequest, List<LineStation> lineStationsInstance,
-                                    LineStation lineStation) {
+    private static LineStations addLastEnd(SectionRequest sectionRequest, List<LineStation> lineStationsInstance,
+                                           LineStation lineStation) {
         if (lineStationsInstance.stream().anyMatch(it -> requestIsAfterStation(it, sectionRequest))) {
             lineStationsInstance.add(lineStation);
             return new LineStations(lineStationsInstance);
@@ -125,23 +118,23 @@ public class LineStations {
         return null;
     }
 
-    private boolean matchPreStation(LineStation lineStation, SectionRequest sectionRequest) {
+    private static boolean matchPreStation(LineStation lineStation, SectionRequest sectionRequest) {
         return lineStation.getPreStationId() == sectionRequest.getUpStationId();
     }
 
-    private boolean matchDownStation(LineStation lineStation, SectionRequest sectionRequest) {
+    private static boolean matchDownStation(LineStation lineStation, SectionRequest sectionRequest) {
         return lineStation.getStationId() == sectionRequest.getDownStationId();
     }
 
-    private boolean requestIsAfterStation(LineStation lineStation, SectionRequest sectionRequest) {
+    private static boolean requestIsAfterStation(LineStation lineStation, SectionRequest sectionRequest) {
         return lineStation.getStationId() == sectionRequest.getUpStationId();
     }
 
-    private boolean isDownMatch(SectionRequest sectionRequest, List<LineStation> lineStationsInstance) {
+    private static boolean isDownMatch(SectionRequest sectionRequest, List<LineStation> lineStationsInstance) {
         return lineStationsInstance.stream().anyMatch(it -> it.getStationId() == sectionRequest.getDownStationId());
     }
 
-    private boolean isUpMatch(SectionRequest sectionRequest, List<LineStation> lineStationsInstance) {
+    private static boolean isUpMatch(SectionRequest sectionRequest, List<LineStation> lineStationsInstance) {
         return lineStationsInstance.stream().anyMatch(it -> it.getPreStationId() == sectionRequest.getUpStationId());
     }
 

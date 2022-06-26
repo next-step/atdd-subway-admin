@@ -59,7 +59,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_생성_정상_응답됨(지하철구간_등록_요청_결과);
-        지하철_구간_등록_목록_포함됨(지하철구간_등록_요청_결과, "양재역");
+        지하철_구간_등록_목록_포함됨(지하철구간_등록_요청_결과, 양재역.getId());
     }
 
     /**
@@ -78,7 +78,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_생성_정상_응답됨(지하철구간_등록_요청_결과);
-        지하철_구간_등록_목록_포함됨(지하철구간_등록_요청_결과, "신사역");
+        지하철_구간_등록_목록_포함됨(지하철구간_등록_요청_결과, 신사역.getId());
     }
 
     /**
@@ -97,7 +97,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_생성_정상_응답됨(지하철구간_등록_요청_결과);
-        지하철_구간_등록_목록_포함됨(지하철구간_등록_요청_결과, "미금역");
+        지하철_구간_등록_목록_포함됨(지하철구간_등록_요청_결과, 미금역.getId());
     }
 
     /**
@@ -157,8 +157,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         지하철구간_등록_오류_응답됨(지하철구간_포함_등록_요청_결과);
     }
-    private void 지하철_구간_등록_목록_포함됨(ExtractableResponse<Response> 지하철구간_등록_요청_결과, String stationName) {
-        assertThat(지하철구간_등록_요청_결과.body().jsonPath().getList("stationResponses.name")).contains(stationName);
+    private void 지하철_구간_등록_목록_포함됨(ExtractableResponse<Response> 지하철구간_등록_요청_결과, long stationId) {
+        assertThat(지하철구간_등록_요청_결과.body().jsonPath().getList("lineStations.stationId")).contains((int)stationId);
     }
 
     private void 지하철_구간_생성_정상_응답됨(ExtractableResponse<Response> 지하철구간_등록_요청_결과) {

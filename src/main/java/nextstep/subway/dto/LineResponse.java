@@ -3,15 +3,17 @@ package nextstep.subway.dto;
 import java.util.ArrayList;
 import java.util.List;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineStations;
 
 public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stationResponses = new ArrayList<>();
+    private List<LineStationResponse>  lineStations = new ArrayList<>();
 
     public static LineResponse from(Line persistLine) {
-        return new LineResponse(persistLine.getId(), persistLine.getName(), persistLine.getColor());
+        return new LineResponse(persistLine.getId(), persistLine.getName(), persistLine.getColor(),
+                persistLine.getLineStations());
     }
 
     public LineResponse() {
@@ -23,11 +25,11 @@ public class LineResponse {
         this.color = color;
     }
 
-    public LineResponse(long id, String name, String color, List<StationResponse> stationResponses) {
+    public LineResponse(long id, String name, String color, LineStations lineStations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stationResponses = stationResponses;
+        this.lineStations = LineStationResponse.to(lineStations);
     }
 
     public Long getId() {
@@ -42,15 +44,11 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStationResponses() {
-        return stationResponses;
-    }
-
-    public void addStationResponses(StationResponse stationResponse) {
-        stationResponses.add(stationResponse);
+    public List<LineStationResponse> getLineStations() {
+        return lineStations;
     }
 
     public Line toLine() {
-        return new Line(id, name, color);
+        return new Line(id, name, color, lineStations);
     }
 }

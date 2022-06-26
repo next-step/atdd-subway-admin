@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -8,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineStationResponse;
 import nextstep.subway.dto.SectionRequest;
 import org.hibernate.Hibernate;
 
@@ -33,10 +35,23 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(Long id, String name, String color) {
+    public Line(Long id, String name, String color, List<LineStationResponse> lineStations) {
         this.id = id;
         this.name = name;
         this.color = color;
+
+        for (LineStationResponse lineStation : lineStations) {
+            this.lineStations.add(lineStation.toLineStation());
+        }
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this(name, color);
+        LineStation lineStationUp =  new LineStation(upStation.getId(), -1, 0, this);
+        LineStation lineStationDown =  new LineStation(downStation.getId(), upStation.getId(), distance, this);
+
+        lineStations.add(lineStationUp);
+        lineStations.add(lineStationDown);
     }
 
     public Long getId() {
@@ -55,13 +70,17 @@ public class Line extends BaseEntity {
         return lineStations;
     }
 
+    public void setLineStations(LineStations lineStations) {
+        this.lineStations = lineStations;
+    }
+
     public void update(LineRequest lineRequest) {
         this.name = lineRequest.getName();
         this.color = lineRequest.getColor();
     }
 
     public void addLineStation(SectionRequest sectionRequest) {
-        this.lineStations = lineStations.addSection(sectionRequest, this);
+        this.lineStations = LineStations.addSection(sectionRequest, this);
     }
 
     @Override
@@ -80,6 +99,4 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return getClass().hashCode();
     }
-
-
 }

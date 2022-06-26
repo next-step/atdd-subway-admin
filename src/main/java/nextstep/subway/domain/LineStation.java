@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -8,7 +9,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import org.hibernate.Hibernate;
 
 @Entity
@@ -22,10 +22,16 @@ public class LineStation extends BaseEntity {
     private long preStationId;
     private int distance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne( fetch = FetchType.LAZY)
     private Line line;
 
     public LineStation() {
+    }
+
+    public LineStation(long stationId, long preStationId, int distance) {
+        this.stationId = stationId;
+        this.preStationId = preStationId;
+        this.distance = distance;
     }
 
     public LineStation(long stationId, long preStationId, int distance, Line line) {
@@ -33,6 +39,13 @@ public class LineStation extends BaseEntity {
         this.preStationId = preStationId;
         this.distance = distance;
         this.line = line;
+    }
+
+    public LineStation(Long id, long stationId, long preStationId, int distance) {
+        this.id = id;
+        this.stationId = stationId;
+        this.preStationId = preStationId;
+        this.distance = distance;
     }
 
     public LineStation(Long id, long stationId, long preStationId, int distance, Line line) {
@@ -53,6 +66,9 @@ public class LineStation extends BaseEntity {
 
     public Line getLine() {
         return line;
+    }
+    public void setLine(Line line) {
+        this.line = line;
     }
 
     public long getStationId() {

@@ -3,7 +3,7 @@ package nextstep.subway.ui;
 import java.net.URI;
 import java.util.List;
 import nextstep.subway.application.LineService;
-import nextstep.subway.application.LineStationService;
+import nextstep.subway.application.StationService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -24,11 +24,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LineController {
 
     LineService lineService;
-    LineStationService sectionService;
+    StationService stationService;
 
-    public LineController(LineService lineService, LineStationService sectionService) {
+    public LineController(LineService lineService, StationService stationService) {
         this.lineService = lineService;
-        this.sectionService = sectionService;
+        this.stationService = stationService;
     }
 
     @PostMapping
@@ -46,7 +46,7 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> readLine(@PathVariable long id) throws NotFoundException {
+    public ResponseEntity<LineResponse> readLine(@PathVariable long id) {
         LineResponse lineResponse = lineService.readLine(id);
 
         return ResponseEntity.ok().body(lineResponse);
@@ -68,17 +68,20 @@ public class LineController {
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable Long lineId,
                                                    @RequestBody SectionRequest sectionRequest) {
-        LineResponse lineResponse = sectionService.addSection(sectionRequest, lineId);
-        return ResponseEntity.ok().body(lineResponse);
-    }
+        lineService.addLineStation(lineId, sectionRequest);
 
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleNotFoundException() {
-        return ResponseEntity.badRequest().body("존재하지 않는 노선입니다.");
+        LineResponse lineResponse = lineService.readLine(lineId);
+
+        return ResponseEntity.ok().body(lineResponse);
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException runtimeException) {
         return ResponseEntity.badRequest().body(runtimeException.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> handleNotFoundException() {
+        return ResponseEntity.badRequest().body("존재하지 않는 노선입니다.");
     }
 }
