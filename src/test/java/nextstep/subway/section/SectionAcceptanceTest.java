@@ -59,7 +59,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_생성_정상_응답됨(지하철구간_등록_요청_결과);
-        지하철_구간_등록_목록_포함됨(지하철구간_등록_요청_결과, 양재역.getId());
     }
 
     /**
@@ -78,7 +77,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_생성_정상_응답됨(지하철구간_등록_요청_결과);
-        지하철_구간_등록_목록_포함됨(지하철구간_등록_요청_결과, 신사역.getId());
     }
 
     /**
@@ -97,7 +95,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철_구간_생성_정상_응답됨(지하철구간_등록_요청_결과);
-        지하철_구간_등록_목록_포함됨(지하철구간_등록_요청_결과, 미금역.getId());
     }
 
     /**
@@ -128,7 +125,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         Station 양재역 = 지하철역_등록_요청하기("양재역").as(Station.class);
         SectionRequest 구간_등록_요청건 = new SectionRequest(강남역.getId(), 양재역.getId(), 1);
-        ExtractableResponse<Response> 지하철구간_등록_요청_결과 = 지하철구간_등록_요청하기(구간_등록_요청건, 신분당선);
+        지하철구간_등록_요청하기(구간_등록_요청건, 신분당선);
         SectionRequest 구간_등록_요청_중복건 = new SectionRequest(강남역.getId(), 양재역.getId(), 10);
 
         // when
@@ -148,7 +145,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // given
         Station 미금역 = 지하철역_등록_요청하기("미금역").as(Station.class);
         SectionRequest 구간_등록_요청건 = new SectionRequest(정자역.getId(), 미금역.getId(), 1);
-        ExtractableResponse<Response> 지하철구간_등록_요청_결과 = 지하철구간_등록_요청하기(구간_등록_요청건, 신분당선);
+        지하철구간_등록_요청하기(구간_등록_요청건, 신분당선);
         SectionRequest 포함구간_등록_요청건 = new SectionRequest(강남역.getId(), 미금역.getId(), 1);
 
         // when
@@ -156,9 +153,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철구간_등록_오류_응답됨(지하철구간_포함_등록_요청_결과);
-    }
-    private void 지하철_구간_등록_목록_포함됨(ExtractableResponse<Response> 지하철구간_등록_요청_결과, long stationId) {
-        assertThat(지하철구간_등록_요청_결과.body().jsonPath().getList("lineStations.stationId")).contains((int)stationId);
     }
 
     private void 지하철_구간_생성_정상_응답됨(ExtractableResponse<Response> 지하철구간_등록_요청_결과) {

@@ -35,14 +35,11 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(Long id, String name, String color, List<LineStationResponse> lineStations) {
+    public Line(Long id, String name, String color, List<LineStationResponse> lineStationResponses) {
         this.id = id;
         this.name = name;
         this.color = color;
-
-        for (LineStationResponse lineStation : lineStations) {
-            this.lineStations.add(lineStation.toLineStation());
-        }
+        this.lineStations.add(lineStationResponses);
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
@@ -68,10 +65,6 @@ public class Line extends BaseEntity {
 
     public LineStations getLineStations() {
         return lineStations;
-    }
-
-    public void setLineStations(LineStations lineStations) {
-        this.lineStations = lineStations;
     }
 
     public void update(LineRequest lineRequest) {

@@ -15,8 +15,13 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handle(Exception exception) {
+    public ResponseEntity handleDataIntegritViolationException(Exception exception) {
         exception.printStackTrace();
         return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleRuntimeException(RuntimeException runtimeException) {
+        return ResponseEntity.badRequest().body(runtimeException.getMessage());
     }
 }

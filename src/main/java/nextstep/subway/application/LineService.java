@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -58,7 +57,7 @@ public class LineService {
     }
 
     @Transactional
-    public void addLineStation(long lineId, SectionRequest sectionRequest){
+    public void addLineStation(long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId).get();
         line.addLineStation(sectionRequest);
     }

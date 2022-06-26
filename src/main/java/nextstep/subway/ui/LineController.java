@@ -10,7 +10,6 @@ import nextstep.subway.dto.SectionRequest;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -66,22 +65,9 @@ public class LineController {
     }
 
     @PostMapping("/{lineId}/sections")
-    public ResponseEntity<LineResponse> addSection(@PathVariable Long lineId,
-                                                   @RequestBody SectionRequest sectionRequest) {
+    public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
         lineService.addLineStation(lineId, sectionRequest);
 
-        LineResponse lineResponse = lineService.readLine(lineId);
-
-        return ResponseEntity.ok().body(lineResponse);
-    }
-
-    @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleRuntimeException(RuntimeException runtimeException) {
-        return ResponseEntity.badRequest().body(runtimeException.getMessage());
-    }
-
-    @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<String> handleNotFoundException() {
-        return ResponseEntity.badRequest().body("존재하지 않는 노선입니다.");
+        return ResponseEntity.ok().build();
     }
 }

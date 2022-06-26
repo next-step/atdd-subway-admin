@@ -6,6 +6,7 @@ import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.dto.LineStationResponse;
 import nextstep.subway.dto.SectionRequest;
 
 @Embeddable
@@ -27,12 +28,14 @@ public class LineStations {
         return lineStations;
     }
 
-    public void setLineStations(List<LineStation> lineStations) {
-        this.lineStations = lineStations;
-    }
-
     public void add(LineStation lineStation) {
         lineStations.add(lineStation);
+    }
+
+    public void add(List<LineStationResponse> lineStationResponses) {
+        for (LineStationResponse lineStationResponse : lineStationResponses) {
+            lineStations.add(lineStationResponse.toLineStation());
+        }
     }
 
     public static LineStations addSection(SectionRequest sectionRequest, Line line) {

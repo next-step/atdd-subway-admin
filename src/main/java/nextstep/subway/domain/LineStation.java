@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import java.time.LocalDateTime;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,12 +27,6 @@ public class LineStation extends BaseEntity {
     public LineStation() {
     }
 
-    public LineStation(long stationId, long preStationId, int distance) {
-        this.stationId = stationId;
-        this.preStationId = preStationId;
-        this.distance = distance;
-    }
-
     public LineStation(long stationId, long preStationId, int distance, Line line) {
         this.stationId = stationId;
         this.preStationId = preStationId;
@@ -48,27 +41,12 @@ public class LineStation extends BaseEntity {
         this.distance = distance;
     }
 
-    public LineStation(Long id, long stationId, long preStationId, int distance, Line line) {
-        this.id = id;
-        this.stationId = stationId;
-        this.preStationId = preStationId;
-        this.distance = distance;
-        this.line = line;
-    }
-
     public Long getId() {
         return id;
     }
 
     public int getDistance() {
         return distance;
-    }
-
-    public Line getLine() {
-        return line;
-    }
-    public void setLine(Line line) {
-        this.line = line;
     }
 
     public long getStationId() {
