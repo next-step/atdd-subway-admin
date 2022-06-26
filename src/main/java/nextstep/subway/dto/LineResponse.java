@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -18,10 +19,9 @@ public class LineResponse {
         this.id = saved.getId();
         this.name = saved.getName();
         this.color = saved.getColor();
-        this.stations = Arrays.asList(
-                new StationResponse(saved.getUpStation()),
-                new StationResponse(saved.getDownStation())
-        );
+        this.stations = saved.getSections().getStationsInOrder().stream()
+                .map(StationResponse::new)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

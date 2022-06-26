@@ -4,7 +4,6 @@ import nextstep.subway.application.LineService;
 import nextstep.subway.dto.*;
 import nextstep.subway.error.ApiExceptionResponse;
 import nextstep.subway.error.SubwayError;
-import nextstep.subway.error.exception.StationNotFoundException;
 import nextstep.subway.error.exception.SubWayApiException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -23,10 +22,16 @@ public class LineController {
     }
 
     @PostMapping
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest)
-            throws StationNotFoundException {
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> addSection(@PathVariable("id") Long lineId,
+                                         @RequestBody SectionRequest sectionRequest) {
+        lineService.addSection(lineId, sectionRequest);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

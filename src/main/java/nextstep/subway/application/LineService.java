@@ -2,10 +2,12 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.error.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +31,9 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationService.findStationEntityById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationEntityById(lineRequest.getDownStationId());
+        Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
+        line.initSections(new Section(upStation, downStation, lineRequest.getDistance(), line));
 
-        Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(),
-                upStation, downStation, lineRequest.getDistance()));
         return new LineResponse(line);
     }
 
@@ -61,5 +63,14 @@ public class LineService {
         Line line = getLineEntity(lineId);
         line.update(lineUpdateRequest);
         return new LineResponse(line);
+    }
+
+    @Transactional
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = getLineEntity(lineId);
+        Station upStation = stationService.findStationEntityById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStationEntityById(sectionRequest.getDownStationId());
+        Section section = new Section(upStation, downStation, sectionRequest.getDistance(), line);
+        line.addSection(section);
     }
 }

@@ -16,26 +16,27 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
-
-    @Column(name = "distance", nullable = false)
-    private int distance;
+    @Embedded
+    private Sections sections;
 
     public Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    }
+
+    public void initSections(Section section) {
+        sections = new Sections(this, section);
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     public Long getId() {
@@ -48,18 +49,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public void update(LineUpdateRequest lineUpdateRequest) {
