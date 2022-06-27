@@ -3,8 +3,10 @@ package nextstep.subway.ui;
 import java.net.URI;
 import java.util.List;
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.StationService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,9 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LineController {
 
     LineService lineService;
+    StationService stationService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, StationService stationService) {
         this.lineService = lineService;
+        this.stationService = stationService;
     }
 
     @PostMapping
@@ -41,23 +45,29 @@ public class LineController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<LineResponse> readLine(@PathVariable long id) throws NotFoundException {
+    public ResponseEntity<LineResponse> readLine(@PathVariable long id) {
         LineResponse lineResponse = lineService.readLine(id);
 
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<LineResponse> deleteLine(@PathVariable long id) {
+    public ResponseEntity deleteLine(@PathVariable long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable long id, @RequestBody LineRequest lineRequest)
+    public ResponseEntity updateLine(@PathVariable long id, @RequestBody LineRequest lineRequest)
             throws NotFoundException {
-        LineResponse lineResponse = lineService.updateLine(id, lineRequest);
-        return ResponseEntity.ok().body(lineResponse);
+        lineService.updateLine(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        lineService.addLineStation(lineId, sectionRequest);
+
+        return ResponseEntity.ok().build();
+    }
 }

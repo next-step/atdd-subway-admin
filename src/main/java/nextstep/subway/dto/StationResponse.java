@@ -7,6 +7,11 @@ import java.time.LocalDateTime;
 public class StationResponse {
     private Long id;
     private String name;
+
+    public StationResponse(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
@@ -38,5 +43,9 @@ public class StationResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    public static StationResponse from(Station station) {
+        return new StationResponse(station.getId(), station.getName());
     }
 }
