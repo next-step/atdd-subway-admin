@@ -62,4 +62,27 @@ public class Sections {
             .findFirst()
             .orElse(null);
     }
+
+    public void remove(Station station) {
+        Section matchedUpStation = this.sections.stream().filter(section -> station.equals(section.getUpStation())).findFirst().orElse(null);
+        Section matchedDownStation = this.sections.stream().filter(section -> station.equals(section.getDownStation())).findFirst().orElse(null);
+
+        if (isUpStationLastStop(matchedDownStation)) {
+            this.sections.remove(matchedUpStation);
+            return;
+        }
+
+        if (isDownStationLastStop(matchedUpStation)) {
+            this.sections.remove(matchedDownStation);
+            return;
+        }
+    }
+
+    private boolean isDownStationLastStop(Section matchedUpStation) {
+        return matchedUpStation == null;
+    }
+
+    private boolean isUpStationLastStop(Section matchedDownStation) {
+        return matchedDownStation == null;
+    }
 }
