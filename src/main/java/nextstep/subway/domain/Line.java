@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.exception.NotFoundSectionException;
 
 import javax.persistence.*;
@@ -34,12 +32,12 @@ public class Line extends BaseEntity {
         this.sections = sections;
     }
 
-    public static Line of(LineRequest lineRequest, Station upStation, Station downStation) {
-        return new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation, lineRequest.getDistance());
+    public static Line of(String name, String color, Long distance, Station upStation, Station downStation) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 
-    public static Line of(LineUpdateRequest lineUpdateRequest, Sections sections) {
-        return new Line(lineUpdateRequest.getName(), lineUpdateRequest.getColor(), sections);
+    public static Line of(String name, String color, Sections sections) {
+        return new Line(name, color, sections);
     }
 
     public void addSection(Section newSection) {
