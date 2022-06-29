@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.DuplicatedSectionException;
 import nextstep.subway.exception.InvalidRemoveSectionException;
+import nextstep.subway.exception.InvalidSectionException;
 import nextstep.subway.exception.NotFoundSectionException;
 
 import javax.persistence.CascadeType;
@@ -32,9 +33,17 @@ public class Sections {
             return;
         }
 
+        validateIncludeAnyStation(newSection);
         validateUnique(newSection);
         validateDistance(newSection);
         sections.add(newSection);
+    }
+
+    private void validateIncludeAnyStation(Section newSection) {
+        boolean contains = findStations().stream().anyMatch(newSection::includeAnySection);
+        if (!contains) {
+            throw new InvalidSectionException();
+        }
     }
 
     private void validateUnique(Section newSection) {
