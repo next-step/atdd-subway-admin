@@ -231,7 +231,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void deleteUpStationSection() {
         // Given
-        ExtractableResponse<Response> createLine = 지하철노선_구간생성_요청("7호선", "green", Arrays.asList("수락산", "마들역", "노원역"), 5L);
+        ExtractableResponse<Response> createLine = 지하철노선_구간생성_요청("7호선", "green", Arrays.asList("수락산역", "마들역", "노원역"), 5L);
 
         // When
         Long lineId = createLine.jsonPath().getLong("id");
@@ -241,6 +241,28 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         assertAll(
             () -> ResponseAssertTest.성공_확인(deleteSection),
             () -> 지하철노선_삭제후_구간확인(lineId, new String[]{"마들역", "노원역"})
+        );
+    }
+
+    /**
+     * Given 3개의 역이 있는 노선을 생성하고 (수락산역-5-마들역-5-노원역)
+     * When 하행 종점역을 삭제하면 (노원역 제거)
+     * Then 2개 역이 남아있는 노선을 확인할 수 있다. (수락산역-5-마들역)
+     */
+    @DisplayName("하행 종점역을 제거한다.")
+    @Test
+    void deleteDownStationSection() {
+        // Given
+        ExtractableResponse<Response> createLine = 지하철노선_구간생성_요청("7호선", "green", Arrays.asList("수락산역", "마들역", "노원역"), 5L);
+
+        // When
+        Long lineId = createLine.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteSection = 지하철노선_구간제거_요청(lineId, createLine.jsonPath().getLong("stations[2].id"));
+
+        // Then
+        assertAll(
+            () -> ResponseAssertTest.성공_확인(deleteSection),
+            () -> 지하철노선_삭제후_구간확인(lineId, new String[]{"수락산역", "마들역"})
         );
     }
 
