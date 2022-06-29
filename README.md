@@ -129,7 +129,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 기능 요구사항
 
-- [ ] Step3 PR 리뷰 반영
+- [x] Step3 PR 리뷰 반영
 - [x] 인수테스트 주도 개발 프로세스에 맞춰 노선의 구간 삭제 기능 구현
     - [x] 성공 케이스 작성
         - [x] 상행선이 제거되는 시나리오
