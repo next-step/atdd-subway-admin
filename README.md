@@ -137,4 +137,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
         - [ ] 중간역이 제거되는 시나리오(노선 재배치 필요)
     - [ ] 예외 케이스 작성
         - [ ] 노선에 등록되지 않은 역을 제거하는 시나리오
-        - [ ] 구간이 하나인 노선을 제거하는 시나리오(삭제 불가)
+        - [x] 구간이 하나인 노선을 제거하는 시나리오(삭제 불가)

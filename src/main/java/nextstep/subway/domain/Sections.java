@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.DuplicatedSectionException;
+import nextstep.subway.exception.InvalidRemoveSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -11,6 +12,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final int MIN = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections;
 
@@ -64,6 +67,8 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        validateMinimumSections();
+
         Section matchedUpStation = this.sections.stream().filter(section -> station.equals(section.getUpStation())).findFirst().orElse(null);
         Section matchedDownStation = this.sections.stream().filter(section -> station.equals(section.getDownStation())).findFirst().orElse(null);
 
@@ -75,6 +80,12 @@ public class Sections {
         if (isDownStationLastStop(matchedUpStation)) {
             this.sections.remove(matchedDownStation);
             return;
+        }
+    }
+
+    private void validateMinimumSections() {
+        if (this.sections.size() <= MIN) {
+            throw new InvalidRemoveSectionException();
         }
     }
 
