@@ -285,6 +285,28 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ResponseAssertTest.요청오류_확인(deleteSection);
     }
 
+    /**
+     * Given 3개의 역이 있는 노선을 생성하고 (수락산역-5-마들역-5-노원역)
+     * When 중간 역을 삭제하면 (마들역 제거)
+     * Then 2개 역이 남아있고, 노선이 재배치되며 거리는 두 구간의 합으로 변경된다. (수락산역-10-노원역)
+     */
+    @DisplayName("중간 역을 제거하면 노선이 재배치된다.")
+    @Test
+    void removeBetweenSection() {
+        // Given
+        ExtractableResponse<Response> createLine = 지하철노선_구간생성_요청("7호선", "green", Arrays.asList("수락산역", "마들역", "노원역"), 5L);
+
+        // When
+        Long lineId = createLine.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteSection = 지하철노선_구간제거_요청(lineId, createLine.jsonPath().getLong("stations[1].id"));
+
+        // Then
+        assertAll(
+            () -> ResponseAssertTest.성공_확인(deleteSection),
+            () -> 지하철노선_삭제후_구간확인(lineId, new String[]{"수락산역", "노원역"})
+        );
+    }
+
     private void 지하철노선_삭제후_구간확인(Long lineId, String[] stations) {
         ExtractableResponse<Response> findLine = 지하철노선_단건조회_요청(lineId);
         assertAll(

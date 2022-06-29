@@ -133,4 +133,9 @@ public class Section extends BaseEntity {
             throw new InvalidDistanceException(target);
         }
     }
+
+    public void merge(Section target) {
+        this.downStation = target.downStation;
+        this.distance = distance.plus(target.distance);
+    }
 }

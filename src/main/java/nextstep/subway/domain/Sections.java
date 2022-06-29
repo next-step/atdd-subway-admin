@@ -81,6 +81,13 @@ public class Sections {
             this.sections.remove(matchedDownStation);
             return;
         }
+
+        removeBetweenStation(matchedUpStation, matchedDownStation);
+    }
+
+    private void removeBetweenStation(Section upSection, Section downSection) {
+        downSection.merge(upSection);
+        this.sections.remove(upSection);
     }
 
     private void validateMinimumSections() {
