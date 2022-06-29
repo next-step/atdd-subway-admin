@@ -9,6 +9,7 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.NotFoundLineException;
+import nextstep.subway.exception.NotFoundSectionException;
 import nextstep.subway.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,7 +79,7 @@ public class LineService {
     }
 
     @Transactional
-    public void removeSection(Long lineId, Long stationId) throws NotFoundStationException {
+    public void removeSection(Long lineId, Long stationId) throws NotFoundStationException, NotFoundSectionException {
         Line line = findLineById(lineId);
         Station station = stationService.findStationById(stationId);
 

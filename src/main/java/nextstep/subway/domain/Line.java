@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.exception.NotFoundSectionException;
 
 import javax.persistence.*;
 import java.util.List;
@@ -71,7 +72,7 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    public void removeSection(Station station) {
+    public void removeSection(Station station) throws NotFoundSectionException {
         this.sections.remove(station);
     }
 }

@@ -6,6 +6,7 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.NotFoundLineException;
+import nextstep.subway.exception.NotFoundSectionException;
 import nextstep.subway.exception.NotFoundStationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -58,7 +59,7 @@ public class LineController {
     }
 
     @DeleteMapping("/{lineId}/sections")
-    public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) throws NotFoundStationException {
+    public ResponseEntity<Void> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) throws NotFoundStationException, NotFoundSectionException {
         lineService.removeSection(lineId, stationId);
         return ResponseEntity.ok().build();
     }

@@ -138,4 +138,8 @@ public class Section extends BaseEntity {
         this.downStation = target.downStation;
         this.distance = distance.plus(target.distance);
     }
+
+    public boolean includeAnySection(Station station) {
+        return getStations().contains(station);
+    }
 }

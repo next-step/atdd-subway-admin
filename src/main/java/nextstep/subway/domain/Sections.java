@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.DuplicatedSectionException;
 import nextstep.subway.exception.InvalidRemoveSectionException;
+import nextstep.subway.exception.NotFoundSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -66,7 +67,8 @@ public class Sections {
             .orElse(null);
     }
 
-    public void remove(Station station) {
+    public void remove(Station station) throws NotFoundSectionException {
+        validateStation(station);
         validateMinimumSections();
 
         Section matchedUpStation = this.sections.stream().filter(section -> station.equals(section.getUpStation())).findFirst().orElse(null);
@@ -83,6 +85,13 @@ public class Sections {
         }
 
         removeBetweenStation(matchedUpStation, matchedDownStation);
+    }
+
+    private void validateStation(Station station) throws NotFoundSectionException {
+        boolean contains = this.sections.stream().anyMatch(section -> section.includeAnySection(station));
+        if (!contains) {
+            throw new NotFoundSectionException();
+        }
     }
 
     private void removeBetweenStation(Section upSection, Section downSection) {

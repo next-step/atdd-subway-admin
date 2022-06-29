@@ -267,25 +267,6 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     /**
-     * Given 2개의 역이 있는 노선을 생성하고 (수락산역-5-마들역)
-     * When 구간이 1개인 노선에 역을 제거하려고 하면 (수락산역 제거)
-     * Then 제거할 수 없다.
-     */
-    @DisplayName("구간이 1개인 노선은 제거할 수 없다.")
-    @Test
-    void invalidRemoveSection() {
-        // Given
-        ExtractableResponse<Response> createLine = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
-
-        // When
-        Long lineId = createLine.jsonPath().getLong("id");
-        ExtractableResponse<Response> deleteSection = 지하철노선_구간제거_요청(lineId, createLine.jsonPath().getLong("stations[0].id"));
-
-        // Then
-        ResponseAssertTest.요청오류_확인(deleteSection);
-    }
-
-    /**
      * Given 3개의 역이 있는 노선을 생성하고 (수락산역-5-마들역-5-노원역)
      * When 중간 역을 삭제하면 (마들역 제거)
      * Then 2개 역이 남아있고, 노선이 재배치되며 거리는 두 구간의 합으로 변경된다. (수락산역-10-노원역)
@@ -305,6 +286,45 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             () -> ResponseAssertTest.성공_확인(deleteSection),
             () -> 지하철노선_삭제후_구간확인(lineId, new String[]{"수락산역", "노원역"})
         );
+    }
+
+    /**
+     * Given 2개의 역이 있는 노선을 생성하고 (수락산역-5-마들역)
+     * When 구간이 1개인 노선에 역을 제거하려고 하면 (수락산역 제거)
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("구간이 1개인 노선은 제거할 수 없다.")
+    @Test
+    void invalidRemoveSection() {
+        // Given
+        ExtractableResponse<Response> createLine = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
+
+        // When
+        Long lineId = createLine.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteSection = 지하철노선_구간제거_요청(lineId, createLine.jsonPath().getLong("stations[0].id"));
+
+        // Then
+        ResponseAssertTest.요청오류_확인(deleteSection);
+    }
+
+    /**
+     * Given 2개의 역이 있는 노선을 생성하고 (수락산역-5-마들역)
+     * When 구간에 포함되지 않은 역을 제거하려고 하면 (노원역 제거)
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("구간에 포함되지 않은 역은 제거할 수 없다.")
+    @Test
+    void RemoveNotExistsSection() {
+        // Given
+        ExtractableResponse<Response> createLine = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
+        Long notIncludeStationId = StationAcceptanceTest.지하철역_생성_요청("노원역").jsonPath().getLong("id");
+
+        // When
+        Long lineId = createLine.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteSection = 지하철노선_구간제거_요청(lineId, notIncludeStationId);
+
+        // Then
+        ResponseAssertTest.요청오류_확인(deleteSection);
     }
 
     private void 지하철노선_삭제후_구간확인(Long lineId, String[] stations) {
