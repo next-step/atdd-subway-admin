@@ -39,7 +39,7 @@ public class Sections {
 
     private void validateUnique(Section newSection) {
         if (sections.contains(newSection)) {
-            throw new DuplicatedSectionException(newSection.getUpStation().getId(), newSection.getDownStation().getId());
+            throw new DuplicatedSectionException(newSection);
         }
     }
 
