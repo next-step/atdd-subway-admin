@@ -120,7 +120,7 @@ class LineServiceTest {
         LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
 
         // when
-        lines.addSection(response.getId(), new SectionRequest(gangnam.getId(), sinchon.getId(), 10L));
+        lines.addSection(response.getId(), new SectionRequest(gangnam.getId(), sinchon.getId(), 5L));
 
         // then
         List<String> names = lines.toLineResponse(response.getId())
