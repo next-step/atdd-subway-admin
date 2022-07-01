@@ -3,6 +3,7 @@ package nextstep.subway.ui;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,24 +27,30 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> getLines() {
-        return ResponseEntity.ok(lineService.getLines());
+        return ResponseEntity.ok(lineService.toLineResponses());
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> getLineById(@PathVariable Long id) {
-        LineResponse response = lineService.getLineById(id);
+    public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
+        LineResponse response = lineService.toLineResponse(id);
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity deleteLineById(@PathVariable Long id) {
-        lineService.deleteLineById(id);
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
+        lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity updateLineById(@PathVariable Long id, @RequestBody LineRequest request) {
-        lineService.updateLineById(id, request.getLine());
+    public ResponseEntity<Void> updateLine(@PathVariable Long id, @RequestBody LineRequest request) {
+        lineService.updateLine(id, request);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<Void> addSection(@PathVariable Long id, @RequestBody SectionRequest request) {
+        lineService.addSection(id, request);
         return ResponseEntity.ok().build();
     }
 }
