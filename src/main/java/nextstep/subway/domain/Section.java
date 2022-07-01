@@ -4,28 +4,26 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Table(name = "section")
 public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "line_id")
     private Line line;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "up_station_id")
     private Station upStation;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private Long distance = 0L;
+    private Long distance;
 
     public Section() {
-    }
-
-    public Section(Line line, Station downStation) {
-        this(line, null, downStation, 0L);
     }
 
     public Section(Line line, Station upStation, Station downStation, Long distance) {
@@ -43,38 +41,40 @@ public class Section {
         return line;
     }
 
-    public void setLine(Line line) {
-        if (this.line != null) {
-            this.line.getSections().remove(this);
-        }
-        this.line = line;
-        if (this.line != null && !this.line.getSections().contains(this)) {
-            this.line.addSection(this);
-        }
-    }
-
     public Station getUpStation() {
         return upStation;
-    }
-
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
     }
 
     public Station getDownStation() {
         return downStation;
     }
 
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
-
     public Long getDistance() {
         return distance;
     }
 
-    public void setDistance(Long distance) {
-        this.distance = distance;
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public void updateUpStationReducedDistance(Section section) {
+        if (this.distance <= section.getDistance()) {
+            throw new IllegalArgumentException("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+        }
+        this.upStation = section.getDownStation();
+        this.distance -= section.getDistance();
+    }
+
+    public void updateDownStationReducedDistance(Section section) {
+        if (this.distance <= section.getDistance()) {
+            throw new IllegalArgumentException("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+        }
+        this.downStation = section.getUpStation();
+        this.distance -= section.getDistance();
     }
 
     @Override
@@ -91,14 +91,13 @@ public class Section {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, line, upStation, downStation, distance);
+        return Objects.hash(id, upStation, downStation, distance);
     }
 
     @Override
     public String toString() {
         return "Section{" +
                 "id=" + id +
-                ", line=" + line +
                 ", upStation=" + upStation +
                 ", downStation=" + downStation +
                 ", distance=" + distance +
