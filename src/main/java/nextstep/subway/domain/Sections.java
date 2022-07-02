@@ -110,9 +110,13 @@ public class Sections {
     }
 
     private void validateMinimumSections() {
-        if (this.sections.size() <= MIN) {
+        if (validateMinimum()) {
             throw new InvalidRemoveSectionException();
         }
+    }
+
+    private boolean validateMinimum() {
+        return this.sections.size() <= MIN;
     }
 
     private boolean isDownStationLastStop(Section matchedUpStation) {
