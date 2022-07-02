@@ -10,6 +10,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -62,7 +63,7 @@ public class Sections {
 
     public void validateDistance(Section newSection) {
         Section connectedSection = findConnectedSection(newSection);
-        if (connectedSection == null) {
+        if (Objects.isNull(connectedSection)) {
             return;
         }
 
@@ -115,10 +116,10 @@ public class Sections {
     }
 
     private boolean isDownStationLastStop(Section matchedUpStation) {
-        return matchedUpStation == null;
+        return Objects.isNull(matchedUpStation);
     }
 
     private boolean isUpStationLastStop(Section matchedDownStation) {
-        return matchedDownStation == null;
+        return Objects.isNull(matchedDownStation);
     }
 }
