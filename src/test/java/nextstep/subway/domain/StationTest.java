@@ -12,6 +12,8 @@ public class StationTest {
     public static final Station 수락산역 = new Station("수락산역");
     public static final Station 마들역 = new Station("마들역");
     public static final Station 노원역 = new Station("노원역");
+    public static final Station 중계역 = new Station("중계역");
+    public static final Station 하계역 = new Station("하계역");
 
     @DisplayName("객체를 생성한다.")
     @Test

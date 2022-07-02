@@ -33,6 +33,14 @@ public class Station extends BaseEntity {
 
         Station that = (Station) o;
 
-        return Objects.equals(id, that.id);
+        return Objects.equals(name, that.name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            '}';
     }
 }

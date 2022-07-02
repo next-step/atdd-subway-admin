@@ -87,20 +87,6 @@ public class Section extends BaseEntity {
         this.distance = distance.minus(newSection.distance);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Section that = (Section) o;
-
-        if (!upStation.equals(that.upStation)) {
-            return false;
-        }
-
-        return downStation.equals(that.downStation);
-    }
-
     public boolean matchUpStationWithStation(Station target) {
         return this.upStation.equals(target);
     }
@@ -139,5 +125,30 @@ public class Section extends BaseEntity {
 
     public boolean includeAnySection(Station station) {
         return getStations().contains(station);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Section that = (Section) o;
+
+        if (!upStation.equals(that.upStation)) {
+            return false;
+        }
+
+        return downStation.equals(that.downStation);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+            "id=" + id +
+            ", line=" + line +
+            ", upStation=" + upStation +
+            ", downStation=" + downStation +
+            ", distance=" + distance +
+            '}';
     }
 }

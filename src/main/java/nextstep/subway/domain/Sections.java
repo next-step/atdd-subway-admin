@@ -24,6 +24,10 @@ public class Sections {
         this.sections = new ArrayList<>();
     }
 
+    public Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
     public List<Section> getSections() {
         return sections;
     }
@@ -133,5 +137,12 @@ public class Sections {
 
     private boolean isUpStationLastStop(Section matchedDownStation) {
         return Objects.isNull(matchedDownStation);
+    }
+
+    @Override
+    public String toString() {
+        return "Sections{" +
+            "sections=" + sections +
+            '}';
     }
 }

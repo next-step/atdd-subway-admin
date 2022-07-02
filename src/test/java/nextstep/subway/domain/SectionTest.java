@@ -9,17 +9,21 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("Section 도메인 객체에 대한 테스트")
 class SectionTest {
-    public static Section 도봉마들;
-    public static Section 수락노원;
-    public static Section 수락마들;
-    public static Section 마들노원;
+    public static Section 도봉수락 = new Section(LineTest.칠호선, StationTest.도봉산역, StationTest.수락산역, new Distance(2L));
+    ;
+    public static Section 수락노원 = new Section(LineTest.칠호선, StationTest.수락산역, StationTest.노원역, new Distance(10L));
+    public static Section 수락마들 = new Section(LineTest.칠호선, StationTest.수락산역, StationTest.마들역, new Distance(6L));
+    ;
+    public static Section 마들노원 = new Section(LineTest.칠호선, StationTest.마들역, StationTest.노원역, new Distance(4L));
+    public static Section 중계하계 = new Section(LineTest.칠호선, StationTest.중계역, StationTest.하계역, new Distance(3L));
 
     @BeforeEach
     void setUp() {
-        도봉마들 = new Section(LineTest.칠호선, StationTest.도봉산역, StationTest.마들역, new Distance(8L));
+        도봉수락 = new Section(LineTest.칠호선, StationTest.도봉산역, StationTest.수락산역, new Distance(8L));
         수락노원 = new Section(LineTest.칠호선, StationTest.수락산역, StationTest.노원역, new Distance(10L));
         수락마들 = new Section(LineTest.칠호선, StationTest.수락산역, StationTest.마들역, new Distance(6L));
         마들노원 = new Section(LineTest.칠호선, StationTest.마들역, StationTest.노원역, new Distance(4L));
+        중계하계 = new Section(LineTest.칠호선, StationTest.중계역, StationTest.하계역, new Distance(3L));
     }
 
     @DisplayName("새로운 구간이 기존 노선 사이에 추가되는 구간인지 확인한다.")
@@ -46,7 +50,7 @@ class SectionTest {
     @DisplayName("(Section)하행역이 동일한지 확인한다.")
     @Test
     void matchDownStation() {
-        assertThat(도봉마들.matchDownStation(수락마들)).isTrue();
+        assertThat(수락노원.matchDownStation(마들노원)).isTrue();
     }
 
     @DisplayName("(Station)상행역이 동일한지 확인한다.")
@@ -58,7 +62,7 @@ class SectionTest {
     @DisplayName("(Station)하행역이 동일한지 확인한다.")
     @Test
     void matchDownStationWithStation() {
-        assertThat(도봉마들.matchDownStationWithStation(StationTest.마들역)).isTrue();
+        assertThat(도봉수락.matchDownStationWithStation(StationTest.수락산역)).isTrue();
     }
 
     @DisplayName("상행역에 신규 구간을 추가하면 역 재배치 및 구간 거리가 수정된다.")
