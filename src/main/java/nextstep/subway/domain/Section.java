@@ -101,11 +101,11 @@ public class Section extends BaseEntity {
         return downStation.equals(that.downStation);
     }
 
-    public boolean sameUpStation(Station target) {
+    public boolean matchUpStationWithStation(Station target) {
         return this.upStation.equals(target);
     }
 
-    public boolean sameDownStation(Station target) {
+    public boolean matchDownStationWithStation(Station target) {
         return this.downStation.equals(target);
     }
 

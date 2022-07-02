@@ -40,4 +40,14 @@ public class Distance {
     public Distance plus(Distance target) {
         return new Distance(distance + target.distance);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Distance that = (Distance) o;
+
+        return distance.equals(that.distance);
+    }
 }

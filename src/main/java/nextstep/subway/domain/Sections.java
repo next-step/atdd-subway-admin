@@ -84,11 +84,11 @@ public class Sections {
         validateMinimumSections();
 
         Section matchedUpStation = this.sections.stream()
-            .filter(section -> section.sameUpStation(station))
+            .filter(section -> section.matchUpStationWithStation(station))
             .findFirst()
             .orElse(null);
         Section matchedDownStation = this.sections.stream()
-            .filter(section -> section.sameDownStation(station))
+            .filter(section -> section.matchDownStationWithStation(station))
             .findFirst()
             .orElse(null);
 
