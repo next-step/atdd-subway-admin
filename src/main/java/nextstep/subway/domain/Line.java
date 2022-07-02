@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.NotFoundSectionException;
 
 import javax.persistence.*;
-import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -47,11 +46,6 @@ public class Line extends BaseEntity {
     public void update(Line newLine) {
         this.name = newLine.name;
         this.color = newLine.color;
-    }
-
-    public boolean includeAnyStation(Station newUpStation, Station newDownStation) {
-        List<Station> stations = this.sections.findStations();
-        return stations.stream().anyMatch(station -> station.equals(newUpStation) || station.equals(newDownStation));
     }
 
     public Long getId() {
