@@ -9,8 +9,6 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.NotFoundLineException;
-import nextstep.subway.exception.NotFoundSectionException;
-import nextstep.subway.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +27,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) throws NotFoundStationException {
+    public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationService.findStationById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());
 
@@ -57,7 +55,7 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) throws NotFoundLineException {
+    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
         line.update(Line.of(lineUpdateRequest.getName(), lineUpdateRequest.getColor(), line.getSections()));
     }
@@ -68,7 +66,7 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) throws NotFoundStationException {
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
@@ -79,7 +77,7 @@ public class LineService {
     }
 
     @Transactional
-    public void removeSection(Long lineId, Long stationId) throws NotFoundStationException, NotFoundSectionException {
+    public void removeSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId);
         Station station = stationService.findStationById(stationId);
 
