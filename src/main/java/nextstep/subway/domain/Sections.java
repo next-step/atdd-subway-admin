@@ -33,7 +33,7 @@ public class Sections {
         while (isSelected.get()) {
             isSelected.set(false);
             sections.stream()
-                    .filter(section -> section.isUpStation(station.get()))
+                    .filter(section -> section.hasUpStation(station.get()))
                     .findFirst()
                     .ifPresent(section -> {
                         station.set(section.getDownStation());
@@ -52,7 +52,7 @@ public class Sections {
         while (isSelected.get()) {
             isSelected.set(false);
             sections.stream()
-                    .filter(section -> section.isDownStation(station.get()))
+                    .filter(section -> section.hasDownStation(station.get()))
                     .findFirst()
                     .ifPresent(section -> {
                         station.set(section.getUpStation());
@@ -85,11 +85,11 @@ public class Sections {
     }
 
     public boolean isUpStationExisted(List<Station> stations, Section section) {
-        return stations.stream().anyMatch(section::isUpStation);
+        return stations.stream().anyMatch(section::hasUpStation);
     }
 
     public boolean isDownStationExisted(List<Station> stations, Section section) {
-        return stations.stream().anyMatch(section::isDownStation);
+        return stations.stream().anyMatch(section::hasDownStation);
     }
 
     public void isRegisteredInLine(boolean isUpStationExisted, boolean isDownStationExisted) {
@@ -100,22 +100,22 @@ public class Sections {
 
     public void canRegisterToLine(List<Station> stations, Section section) {
         if (!stations.isEmpty()
-                && stations.stream().noneMatch(section::isUpStation)
-                && stations.stream().noneMatch(section::isDownStation)) {
+                && stations.stream().noneMatch(section::hasUpStation)
+                && stations.stream().noneMatch(section::hasDownStation)) {
             throw new IllegalArgumentException("등록할 수 없는 구간 입니다.");
         }
     }
 
     public void updateUpStation(Section newSection) {
         sections.stream()
-                .filter(section -> newSection.isUpStation(section.getUpStation()))
+                .filter(section -> newSection.hasUpStation(section.getUpStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateUpStationReducedDistance(newSection));
     }
 
     public void updateDownStation(Section newSection) {
         sections.stream()
-                .filter(section -> newSection.isDownStation(section.getDownStation()))
+                .filter(section -> newSection.hasDownStation(section.getDownStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateDownStationReducedDistance(newSection));
     }
