@@ -42,9 +42,11 @@ public class Sections {
 
     private void validateIncludeAnyStation(Section newSection) {
         boolean contains = findStations().stream().anyMatch(newSection::includeAnySection);
-        if (!contains) {
-            throw new InvalidSectionException();
+        if (contains) {
+            return;
         }
+
+        throw new InvalidSectionException();
     }
 
     private void validateUnique(Section newSection) {
