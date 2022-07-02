@@ -33,10 +33,6 @@ public class Distance {
         return distance;
     }
 
-    public boolean isShort(Distance target) {
-        return distance < target.distance;
-    }
-
     public boolean isLong(Distance target) {
         return distance > target.distance;
     }

@@ -1,6 +1,7 @@
-package nextstep.subway;
+package nextstep.subway.acceptance;
 
 import io.restassured.RestAssured;
+import nextstep.subway.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
