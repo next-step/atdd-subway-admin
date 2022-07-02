@@ -81,8 +81,14 @@ public class Sections {
         validateStation(station);
         validateMinimumSections();
 
-        Section matchedUpStation = this.sections.stream().filter(section -> station.equals(section.getUpStation())).findFirst().orElse(null);
-        Section matchedDownStation = this.sections.stream().filter(section -> station.equals(section.getDownStation())).findFirst().orElse(null);
+        Section matchedUpStation = this.sections.stream()
+            .filter(section -> section.sameUpStation(station))
+            .findFirst()
+            .orElse(null);
+        Section matchedDownStation = this.sections.stream()
+            .filter(section -> section.sameDownStation(station))
+            .findFirst()
+            .orElse(null);
 
         if (isUpStationLastStop(matchedDownStation)) {
             this.sections.remove(matchedUpStation);

@@ -18,6 +18,10 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    public boolean isSame(Station target) {
+        return this.equals(target);
+    }
+
     public Long getId() {
         return id;
     }
