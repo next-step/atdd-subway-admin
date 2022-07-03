@@ -39,7 +39,7 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public Station findStationById(Long id) throws NotFoundStationException {
+    public Station findStationById(Long id) {
         return stationRepository.findById(id).orElseThrow(() -> new NotFoundStationException(id));
     }
 }

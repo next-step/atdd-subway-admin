@@ -1,19 +1,18 @@
-package nextstep.subway.line;
+package nextstep.subway.acceptance;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.ResponseAssertTest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
-import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -221,6 +220,130 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ResponseAssertTest.요청오류_확인(createSection);
     }
 
+    /**
+     * Given 3개의 역이 있는 노선을 생성하고 (수락산역-5-마들역-5-노원역)
+     * When 상행 종점역을 삭제하면 (수락산역 제거)
+     * Then 2개 역이 남아있는 노선을 확인할 수 있다. (마들역-5-노원역)
+     */
+    @DisplayName("상행 종점역을 제거한다.")
+    @Test
+    void removeUpStationSection() {
+        // Given
+        ExtractableResponse<Response> createLine = 지하철노선_구간생성_요청("7호선", "green", Arrays.asList("수락산역", "마들역", "노원역"), 5L);
+
+        // When
+        Long lineId = createLine.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteSection = 지하철노선_구간제거_요청(lineId, createLine.jsonPath().getLong("stations[0].id"));
+
+        // Then
+        assertAll(
+            () -> ResponseAssertTest.성공_확인(deleteSection),
+            () -> 지하철노선_삭제후_구간확인(lineId, new String[]{"마들역", "노원역"})
+        );
+    }
+
+    /**
+     * Given 3개의 역이 있는 노선을 생성하고 (수락산역-5-마들역-5-노원역)
+     * When 하행 종점역을 삭제하면 (노원역 제거)
+     * Then 2개 역이 남아있는 노선을 확인할 수 있다. (수락산역-5-마들역)
+     */
+    @DisplayName("하행 종점역을 제거한다.")
+    @Test
+    void removeDownStationSection() {
+        // Given
+        ExtractableResponse<Response> createLine = 지하철노선_구간생성_요청("7호선", "green", Arrays.asList("수락산역", "마들역", "노원역"), 5L);
+
+        // When
+        Long lineId = createLine.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteSection = 지하철노선_구간제거_요청(lineId, createLine.jsonPath().getLong("stations[2].id"));
+
+        // Then
+        assertAll(
+            () -> ResponseAssertTest.성공_확인(deleteSection),
+            () -> 지하철노선_삭제후_구간확인(lineId, new String[]{"수락산역", "마들역"})
+        );
+    }
+
+    /**
+     * Given 3개의 역이 있는 노선을 생성하고 (수락산역-5-마들역-5-노원역)
+     * When 중간 역을 삭제하면 (마들역 제거)
+     * Then 2개 역이 남아있고, 노선이 재배치되며 거리는 두 구간의 합으로 변경된다. (수락산역-10-노원역)
+     */
+    @DisplayName("중간 역을 제거하면 노선이 재배치된다.")
+    @Test
+    void removeBetweenSection() {
+        // Given
+        ExtractableResponse<Response> createLine = 지하철노선_구간생성_요청("7호선", "green", Arrays.asList("수락산역", "마들역", "노원역"), 5L);
+
+        // When
+        Long lineId = createLine.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteSection = 지하철노선_구간제거_요청(lineId, createLine.jsonPath().getLong("stations[1].id"));
+
+        // Then
+        assertAll(
+            () -> ResponseAssertTest.성공_확인(deleteSection),
+            () -> 지하철노선_삭제후_구간확인(lineId, new String[]{"수락산역", "노원역"})
+        );
+    }
+
+    /**
+     * Given 2개의 역이 있는 노선을 생성하고 (수락산역-5-마들역)
+     * When 구간이 1개인 노선에 역을 제거하려고 하면 (수락산역 제거)
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("구간이 1개인 노선은 제거할 수 없다.")
+    @Test
+    void invalidRemoveSection() {
+        // Given
+        ExtractableResponse<Response> createLine = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
+
+        // When
+        Long lineId = createLine.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteSection = 지하철노선_구간제거_요청(lineId, createLine.jsonPath().getLong("stations[0].id"));
+
+        // Then
+        ResponseAssertTest.요청오류_확인(deleteSection);
+    }
+
+    /**
+     * Given 2개의 역이 있는 노선을 생성하고 (수락산역-5-마들역)
+     * When 구간에 포함되지 않은 역을 제거하려고 하면 (노원역 제거)
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("구간에 포함되지 않은 역은 제거할 수 없다.")
+    @Test
+    void RemoveNotExistsSection() {
+        // Given
+        ExtractableResponse<Response> createLine = 지하철노선_생성_요청("7호선", "green", "수락산역", "마들역", 5L);
+        Long notIncludeStationId = StationAcceptanceTest.지하철역_생성_요청("노원역").jsonPath().getLong("id");
+
+        // When
+        Long lineId = createLine.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteSection = 지하철노선_구간제거_요청(lineId, notIncludeStationId);
+
+        // Then
+        ResponseAssertTest.요청오류_확인(deleteSection);
+    }
+
+    private void 지하철노선_삭제후_구간확인(Long lineId, String[] stations) {
+        ExtractableResponse<Response> findLine = 지하철노선_단건조회_요청(lineId);
+        assertAll(
+            () -> ResponseAssertTest.성공_확인(findLine),
+            () -> assertThat(findLine.jsonPath().getList("stations").size()).isEqualTo(stations.length),
+            () -> {
+                List<String> findStationNames = findLine.jsonPath().getList("stations.name");
+                assertThat(findStationNames).containsExactlyInAnyOrder(stations);
+            }
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철노선_구간생성_요청(String name, String color, List<String> stations, Long distance) {
+        ExtractableResponse<Response> createLineResponse = 지하철노선_생성_요청(name, color, stations.get(0), stations.get(1), distance);
+        Long newDownStationId = StationAcceptanceTest.지하철역_생성_요청(stations.get(2)).jsonPath().getLong("id");
+
+        return 지하철노선_구간추가_요청(createLineResponse.jsonPath().getLong("id"), createLineResponse.jsonPath().getLong("stations[1].id"), newDownStationId, distance);
+    }
+
     private ExtractableResponse<Response> 상행선_사이에_구간추가_요청(Long lineId, Long upStationId, String downStationName, Long distance) {
         Long newDownStationId = StationAcceptanceTest.지하철역_생성_요청(downStationName).jsonPath().getLong("id");
 
@@ -260,6 +383,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
             .body(sectionRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post(rootPath + "/" + lineId + "/sections")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철노선_구간제거_요청(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete(rootPath + "/" + lineId + "/sections?stationId=" + stationId)
             .then().log().all()
             .extract();
     }

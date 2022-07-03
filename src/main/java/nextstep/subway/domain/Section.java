@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.InvalidDistanceException;
-import nextstep.subway.exception.InvalidSectionException;
 
 import javax.persistence.*;
 import java.util.Arrays;
@@ -35,16 +34,7 @@ public class Section extends BaseEntity {
     }
 
     public static Section of(Line line, Station upStation, Station downStation, Long distance) {
-        validateIncludeAnyStation(line, upStation, downStation);
         return new Section(line, upStation, downStation, new Distance(distance));
-    }
-
-    private static void validateIncludeAnyStation(Line line, Station newUpStation, Station newDownStation) {
-        if (line.includeAnyStation(newUpStation, newDownStation)) {
-            return;
-        }
-
-        throw new InvalidSectionException();
     }
 
     public boolean isBetweenStation(Section newSection) {
@@ -97,18 +87,12 @@ public class Section extends BaseEntity {
         this.distance = distance.minus(newSection.distance);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean matchUpStationWithStation(Station target) {
+        return this.upStation.equals(target);
+    }
 
-        Section that = (Section) o;
-
-        if (!upStation.equals(that.upStation)) {
-            return false;
-        }
-
-        return downStation.equals(that.downStation);
+    public boolean matchDownStationWithStation(Station target) {
+        return this.downStation.equals(target);
     }
 
     public void updateSection(Section newSection) {
@@ -132,5 +116,39 @@ public class Section extends BaseEntity {
         if (!distance.isLong(target)) {
             throw new InvalidDistanceException(target);
         }
+    }
+
+    public void merge(Section target) {
+        this.downStation = target.downStation;
+        this.distance = distance.plus(target.distance);
+    }
+
+    public boolean includeAnySection(Station station) {
+        return getStations().contains(station);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Section that = (Section) o;
+
+        if (!upStation.equals(that.upStation)) {
+            return false;
+        }
+
+        return downStation.equals(that.downStation);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+            "id=" + id +
+            ", line=" + line +
+            ", upStation=" + upStation +
+            ", downStation=" + downStation +
+            ", distance=" + distance +
+            '}';
     }
 }
