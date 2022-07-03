@@ -70,4 +70,10 @@ public class LineService {
         Station downStation = findStationById(request.getDownStationId());
         line.addLineStation(new Section(line, upStation, downStation, request.getDistance()));
     }
+
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findById(lineId);
+        Station delStation = findStationById(stationId);
+        line.removeLineStation(delStation);
+    }
 }

@@ -77,6 +77,16 @@ public class Section {
         this.distance -= section.getDistance();
     }
 
+    public void updateUpStationInSection(Section section) {
+        this.upStation = section.getUpStation();
+        this.distance += section.getDistance();
+    }
+
+    public void updateDownStationIncreasedDistance(Section section) {
+        this.downStation = section.getDownStation();
+        this.distance += section.getDistance();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
