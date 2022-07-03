@@ -166,4 +166,44 @@ class LineServiceTest {
                                   .collect(Collectors.toList());
         assertThat(names).containsExactly("강남역", "교대역", "신촌역");
     }
+
+    @DisplayName("구간 내에 존재하는 출발역을 삭제한다.")
+    @Test
+    void removeUpStation() {
+        // given
+        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
+        lines.addSection(response.getId(), new SectionRequest(gyodae.getId(), sinchon.getId(), 10L));
+        lines.addSection(response.getId(), new SectionRequest(sinchon.getId(), sillim.getId(), 10L));
+
+        // when
+        lines.removeSectionByStationId(response.getId(), gyodae.getId());
+
+        // then
+        List<String> names = getStationNames(response.getId());
+        assertThat(names).containsExactly("강남역", "신촌역", "신림역");
+    }
+
+    @DisplayName("구간 내에 존재하는 도착역을 삭제한다.")
+    @Test
+    void removeDownStation() {
+        // given
+        LineResponse response = lines.createLine(new LineRequest("신분당선", "bg-red-600", gangnam.getId(), gyodae.getId(), 10L));
+        lines.addSection(response.getId(), new SectionRequest(gyodae.getId(), sinchon.getId(), 10L));
+        lines.addSection(response.getId(), new SectionRequest(sinchon.getId(), sillim.getId(), 10L));
+
+        // when
+        lines.removeSectionByStationId(response.getId(), sinchon.getId());
+
+        // then
+        List<String> names = getStationNames(response.getId());
+        assertThat(names).containsExactly("강남역", "교대역", "신림역");
+    }
+
+    private List<String> getStationNames(Long id) {
+        return lines.toLineResponse(id)
+                    .getStations()
+                    .stream()
+                    .map(LineResponse.StationDto::getName)
+                    .collect(Collectors.toList());
+    }
 }
