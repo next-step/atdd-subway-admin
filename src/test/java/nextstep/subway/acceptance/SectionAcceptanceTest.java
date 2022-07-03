@@ -94,6 +94,18 @@ public class SectionAcceptanceTest {
         assertThat(getLine(shinbundang.getId()).as(LineResponse[].class)[0].getStations()).hasSize(3);
     }
 
+//    @DisplayName("")
+//    @Test
+//    void removeSection() {
+//
+//    }
+//
+//    @DisplayName("")
+//    @Test
+//    void removeSection() {
+//
+//    }
+
     ExtractableResponse<Response> createStation(StationRequest request) {
         return RestAssured.given().log().all()
                           .body(request)
@@ -123,5 +135,9 @@ public class SectionAcceptanceTest {
                    .when().post("/{lineId}/sections", id)
                    .then().log().all()
                    .extract();
+    }
+
+    void removeSection() {
+
     }
 }
