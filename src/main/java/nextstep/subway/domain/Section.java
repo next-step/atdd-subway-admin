@@ -53,11 +53,11 @@ public class Section {
         return distance;
     }
 
-    public boolean isUpStation(Station station) {
+    public boolean hasUpStation(Station station) {
         return upStation.equals(station);
     }
 
-    public boolean isDownStation(Station station) {
+    public boolean hasDownStation(Station station) {
         return downStation.equals(station);
     }
 
@@ -75,6 +75,16 @@ public class Section {
         }
         this.downStation = section.getUpStation();
         this.distance -= section.getDistance();
+    }
+
+    public void updateUpStationInSection(Section section) {
+        this.upStation = section.getUpStation();
+        this.distance += section.getDistance();
+    }
+
+    public void updateDownStationIncreasedDistance(Section section) {
+        this.downStation = section.getDownStation();
+        this.distance += section.getDistance();
     }
 
     @Override

@@ -17,7 +17,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -94,6 +97,38 @@ public class SectionAcceptanceTest {
         assertThat(getLine(shinbundang.getId()).as(LineResponse[].class)[0].getStations()).hasSize(3);
     }
 
+    @DisplayName("구간 내에 존재하는 출발역을 삭제한다.")
+    @Test
+    void removeUpStation() {
+        // given
+        StationResponse sinchon = createStation(new StationRequest("신촌역")).as(StationResponse.class);
+        createSection(shinbundang.getId(), new SectionRequest(gyodae.getId(), sinchon.getId(), 1L));
+        StationResponse sadang = createStation(new StationRequest("사당역")).as(StationResponse.class);
+        createSection(shinbundang.getId(), new SectionRequest(sinchon.getId(), sadang.getId(), 1L));
+
+        // when
+        removeStation(shinbundang.getId(), gyodae.getId());
+
+        // then
+        checkStationOrder(getStationNames(), Arrays.asList("강남역", "교대역", "사당역"));
+    }
+
+    @DisplayName("구간 내에 존재하는 도착역을 삭제한다.")
+    @Test
+    void removeDownStation() {
+        // given
+        StationResponse sinchon = createStation(new StationRequest("신촌역")).as(StationResponse.class);
+        createSection(shinbundang.getId(), new SectionRequest(gyodae.getId(), sinchon.getId(), 1L));
+        StationResponse sadang = createStation(new StationRequest("사당역")).as(StationResponse.class);
+        createSection(shinbundang.getId(), new SectionRequest(sinchon.getId(), sadang.getId(), 1L));
+
+        // when
+        removeStation(shinbundang.getId(), sinchon.getId());
+
+        // then
+        checkStationOrder(getStationNames(), Arrays.asList("강남역", "교대역", "사당역"));
+    }
+
     ExtractableResponse<Response> createStation(StationRequest request) {
         return RestAssured.given().log().all()
                           .body(request)
@@ -123,5 +158,26 @@ public class SectionAcceptanceTest {
                    .when().post("/{lineId}/sections", id)
                    .then().log().all()
                    .extract();
+    }
+
+    void removeStation(Long lineId, Long stationId) {
+        Map<String, Long> param = new HashMap<>();
+        param.put("stationId", stationId);
+
+        RestAssured.given().queryParams(param).log().all()
+                   .when().delete("/{id}/sections", lineId)
+                   .then().log().all()
+                   .extract();
+    }
+
+    List<String> getStationNames() {
+        return RestAssured.given().log().all()
+                          .when().get("/stations")
+                          .then().log().all()
+                          .extract().jsonPath().getList("name", String.class);
+    }
+
+    void checkStationOrder(List<String> actual, List<String> expected) {
+        assertThat(actual).containsAll(expected);
     }
 }

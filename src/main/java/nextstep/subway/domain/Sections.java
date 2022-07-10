@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -33,7 +34,7 @@ public class Sections {
         while (isSelected.get()) {
             isSelected.set(false);
             sections.stream()
-                    .filter(section -> section.isUpStation(station.get()))
+                    .filter(section -> section.hasUpStation(station.get()))
                     .findFirst()
                     .ifPresent(section -> {
                         station.set(section.getDownStation());
@@ -52,7 +53,7 @@ public class Sections {
         while (isSelected.get()) {
             isSelected.set(false);
             sections.stream()
-                    .filter(section -> section.isDownStation(station.get()))
+                    .filter(section -> section.hasDownStation(station.get()))
                     .findFirst()
                     .ifPresent(section -> {
                         station.set(section.getUpStation());
@@ -85,11 +86,11 @@ public class Sections {
     }
 
     public boolean isUpStationExisted(List<Station> stations, Section section) {
-        return stations.stream().anyMatch(section::isUpStation);
+        return stations.stream().anyMatch(section::hasUpStation);
     }
 
     public boolean isDownStationExisted(List<Station> stations, Section section) {
-        return stations.stream().anyMatch(section::isDownStation);
+        return stations.stream().anyMatch(section::hasDownStation);
     }
 
     public void isRegisteredInLine(boolean isUpStationExisted, boolean isDownStationExisted) {
@@ -100,23 +101,65 @@ public class Sections {
 
     public void canRegisterToLine(List<Station> stations, Section section) {
         if (!stations.isEmpty()
-                && stations.stream().noneMatch(section::isUpStation)
-                && stations.stream().noneMatch(section::isDownStation)) {
+                && stations.stream().noneMatch(section::hasUpStation)
+                && stations.stream().noneMatch(section::hasDownStation)) {
             throw new IllegalArgumentException("등록할 수 없는 구간 입니다.");
         }
     }
 
     public void updateUpStation(Section newSection) {
         sections.stream()
-                .filter(section -> newSection.isUpStation(section.getUpStation()))
+                .filter(section -> newSection.hasUpStation(section.getUpStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateUpStationReducedDistance(newSection));
     }
 
     public void updateDownStation(Section newSection) {
         sections.stream()
-                .filter(section -> newSection.isDownStation(section.getDownStation()))
+                .filter(section -> newSection.hasDownStation(section.getDownStation()))
                 .findFirst()
                 .ifPresent(section -> section.updateDownStationReducedDistance(newSection));
+    }
+
+    public void removeSection(Station station) {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다.");
+        }
+        if (getStations().stream().noneMatch(st -> st.equals(station))) {
+            throw new IllegalArgumentException(String.format("%s 역은 노선에 존재하지 않습니다.", station.getName()));
+        }
+
+        if (isUpStationInSection(station)) {
+            removeUpStationInSection(station);
+            return;
+        }
+        removeDownStationInSection(station);
+    }
+
+    public boolean isUpStationInSection(Station station) {
+        return sections.stream().anyMatch(section -> section.getUpStation().equals(station));
+    }
+
+    public void removeUpStationInSection(Station station) {
+        Section section = sections.stream()
+                                  .filter(sec -> sec.hasUpStation(station))
+                                  .findFirst()
+                                  .orElseThrow(NoSuchElementException::new);
+        sections.stream()
+                .filter(sec -> sec.hasDownStation(station))
+                .findFirst()
+                .ifPresent(sec -> sec.updateDownStationIncreasedDistance(section));
+        sections.remove(section);
+    }
+
+    public void removeDownStationInSection(Station station) {
+        Section section = sections.stream()
+                                  .filter(sec -> sec.hasDownStation(station))
+                                  .findFirst().orElseThrow(NoSuchElementException::new);
+        sections.stream()
+                .filter(sec -> sec.hasUpStation(station))
+                .findFirst()
+                .ifPresent(sec -> sec.updateUpStationInSection(section));
+        sections.remove(section);
     }
 }
