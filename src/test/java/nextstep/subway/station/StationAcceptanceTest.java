@@ -123,6 +123,24 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> insertResponse = createStation("강남역");
+        String id = insertResponse.body().jsonPath().getString("id");
+
+        // when
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+                .when().delete("/stations/" + id)
+                .then().log().all()
+                .extract();
+
+        // then
+        ExtractableResponse<Response> selectResponse = RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+
+        // then
+        assertThat(selectResponse.body().jsonPath().getList("id").contains(id)).isFalse();
     }
 
     private ExtractableResponse<Response> createStation(String name) {
