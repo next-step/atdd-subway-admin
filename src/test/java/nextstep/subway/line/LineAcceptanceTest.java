@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -71,10 +72,15 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
+        ExtractableResponse<Response> createResponse = createLine("1호선", "dark-blue", "인천역", "소요산역", 100);
+        Long lineId = createResponse.body().jsonPath().getLong("id");
 
         // when
+        ExtractableResponse<Response> selectResponse = selectLineById(lineId);
 
         // then
+        assertThat(selectResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectResponse.body().jsonPath().getLong("id")).isEqualTo(lineId);
     }
 
     /**
@@ -137,6 +143,14 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> selectLineById(Long lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/" + lineId)
                 .then().log().all()
                 .extract();
     }

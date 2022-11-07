@@ -40,4 +40,12 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findLine(Long lineId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(
+                () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
+        );
+
+        return LineResponse.of(line);
+    }
 }
