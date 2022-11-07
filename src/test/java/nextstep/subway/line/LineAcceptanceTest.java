@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -92,10 +93,19 @@ public class LineAcceptanceTest {
     @Test
     void modifyLine() {
         // given
+        ExtractableResponse<Response> createResponse = createLine("1호선", "dark-blue", "인천역", "소요산역", 100);
+        Long lineId = createResponse.body().jsonPath().getLong("id");
+        String name = createResponse.body().jsonPath().getString("name");
 
         // when
+        LineUpdateRequest lineUpdateRequest = new LineUpdateRequest("1호선아님", "red");
+        ExtractableResponse<Response> updateResponse = updateLine(lineId, lineUpdateRequest);
+        ExtractableResponse<Response> selectResponse = selectLineById(lineId);
 
         // then
+        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(selectResponse.body().jsonPath().getString("name")).isNotEqualTo(name);
     }
 
     /**
@@ -151,6 +161,15 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
+        return RestAssured.given().log().all()
+                .body(lineUpdateRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + lineId)
                 .then().log().all()
                 .extract();
     }

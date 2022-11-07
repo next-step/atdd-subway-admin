@@ -5,6 +5,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,5 +48,14 @@ public class LineService {
         );
 
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
+        Line line = lineRepository.findById(lineId).orElseThrow(
+                () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
+        );
+
+        line.update(lineUpdateRequest);
     }
 }

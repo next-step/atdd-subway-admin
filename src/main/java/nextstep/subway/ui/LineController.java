@@ -3,6 +3,7 @@ package nextstep.subway.ui;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -34,5 +35,12 @@ public class LineController {
     public ResponseEntity<LineResponse> showLine(@PathVariable Long lineId) {
         LineResponse line = lineService.findLine(lineId);
         return ResponseEntity.ok().body(line);
+    }
+
+    @PutMapping("/{lineId}")
+    public ResponseEntity<LineResponse> modifyLine(@PathVariable Long lineId,
+                                                   @RequestBody LineUpdateRequest lineUpdateRequest) {
+        lineService.updateLine(lineId, lineUpdateRequest);
+        return ResponseEntity.ok().build();
     }
 }
