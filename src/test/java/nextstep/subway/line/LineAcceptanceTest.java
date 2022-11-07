@@ -37,7 +37,10 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
+        createLine("1호선", "dark-blue", "인천역", "소요산역", 100);
+
         // then
+        assertThat(selectAllLine().body().jsonPath().getList("name")).contains("1호선");
     }
 
     /**
