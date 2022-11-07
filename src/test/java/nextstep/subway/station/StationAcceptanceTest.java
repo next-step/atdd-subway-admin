@@ -17,6 +17,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItems;
+import static org.hamcrest.Matchers.not;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -124,7 +125,8 @@ public class StationAcceptanceTest {
                         .get("/stations")
                     .then()
                         .statusCode(200)
-                        .assertThat().body("name", hasItems(station1, station2));
+                        .assertThat().body("name", hasItems(station1, station2))
+                        .log().all();;
 
         //@formatter:on
     }
@@ -137,6 +139,34 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        //@formatter:off
+
+        // given
+        String station1 = "강남역";
+        givenCreateStation(Map.of("name", station1));
+
+        // when
+        RestAssured.given()
+                        .log().all()
+                    .when()
+                        .delete("/stations/1")
+                    .then()
+                        .statusCode(204)
+                        .log().all();;
+
+
+        // then
+        RestAssured.given()
+                       .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .log().all()
+                    .when()
+                        .get("/stations")
+                    .then()
+                        .statusCode(200)
+                        .assertThat().body("name", not(hasItems(station1)))
+                        .log().all();
+
+        //@formatter:on
     }
 
     private void givenCreateStation(final Map<String, String> params) {
