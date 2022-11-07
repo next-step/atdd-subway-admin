@@ -83,7 +83,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = selectAllStation();
 
         // then
-        assertThat(response.body().jsonPath().getList("id")).hasSize(2);
+        assertThat(getIdsByResponse(response)).hasSize(2);
     }
 
     /**
@@ -103,7 +103,7 @@ public class StationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> selectResponse = selectAllStation();
-        assertThat(selectResponse.body().jsonPath().getList("id").contains(id)).isFalse();
+        assertThat(getIdsByResponse(selectResponse).contains(id)).isFalse();
     }
 
     private ExtractableResponse<Response> createStation(String name) {
@@ -130,5 +130,9 @@ public class StationAcceptanceTest {
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    private List getIdsByResponse(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getList("id");
     }
 }
