@@ -74,14 +74,14 @@ public class LineAcceptanceTest {
     void getLine() {
         // given
         ExtractableResponse<Response> createResponse = createLine("1호선", "dark-blue", "인천역", "소요산역", 100);
-        Long lineId = createResponse.body().jsonPath().getLong("id");
+        Long lineId = getIdByResponse(createResponse);
 
         // when
         ExtractableResponse<Response> selectResponse = selectLineById(lineId);
 
         // then
         assertThat(selectResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(selectResponse.body().jsonPath().getLong("id")).isEqualTo(lineId);
+        assertThat(getIdByResponse(selectResponse)).isEqualTo(lineId);
     }
 
     /**
@@ -94,18 +94,17 @@ public class LineAcceptanceTest {
     void modifyLine() {
         // given
         ExtractableResponse<Response> createResponse = createLine("1호선", "dark-blue", "인천역", "소요산역", 100);
-        Long lineId = createResponse.body().jsonPath().getLong("id");
-        String name = createResponse.body().jsonPath().getString("name");
+        Long lineId = getIdByResponse(createResponse);
+        String name = getNameByResponse(createResponse);
 
         // when
-        LineUpdateRequest lineUpdateRequest = new LineUpdateRequest("1호선아님", "red");
-        ExtractableResponse<Response> updateResponse = updateLine(lineId, lineUpdateRequest);
+        ExtractableResponse<Response> updateResponse = updateLine(lineId, "1호선아님", "red");
         ExtractableResponse<Response> selectResponse = selectLineById(lineId);
 
         // then
         assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(selectResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(selectResponse.body().jsonPath().getString("name")).isNotEqualTo(name);
+        assertThat(getNameByResponse(selectResponse)).isNotEqualTo(name);
     }
 
     /**
@@ -118,7 +117,7 @@ public class LineAcceptanceTest {
     void deleteLine() {
         // given
         ExtractableResponse<Response> createResponse = createLine("1호선", "dark-blue", "인천역", "소요산역", 100);
-        Long lineId = createResponse.body().jsonPath().getLong("id");
+        Long lineId = getIdByResponse(createResponse);
 
         // when
         ExtractableResponse<Response> deleteResponse = deleteLine(lineId);
@@ -127,9 +126,10 @@ public class LineAcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> createLine(String name, String color, String upStationName, String downStationName, int distance) {
-        Long upStationId = createStation(upStationName);
-        Long downStationId = createStation(downStationName);
+    private ExtractableResponse<Response> createLine(String name, String color, String upStationName,
+                                                     String downStationName, int distance) {
+        Long upStationId = createStationAndGetId(upStationName);
+        Long downStationId = createStationAndGetId(downStationName);
         LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()
@@ -140,7 +140,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private Long createStation(String name) {
+    private Long createStationAndGetId(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -169,7 +169,9 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
+    private ExtractableResponse<Response> updateLine(Long lineId, String name, String color) {
+        LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(name, color);
+
         return RestAssured.given().log().all()
                 .body(lineUpdateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -184,5 +186,13 @@ public class LineAcceptanceTest {
                 .when().delete("/lines/" + lineId)
                 .then().log().all()
                 .extract();
+    }
+
+    private Long getIdByResponse(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getLong("id");
+    }
+
+    private String getNameByResponse(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getString("name");
     }
 }
