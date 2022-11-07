@@ -3,16 +3,15 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,10 +49,14 @@ public class LineAcceptanceTest {
     @Test
     void getAllLine() {
         // given
+        createLine("1호선", "dark-blue", "인천역", "소요산역", 100);
+        createLine("2호선", "green", "신도림역", "성수역", 50);
 
         // when
+        ExtractableResponse<Response> response = selectAllLine();
 
         // then
+        assertThat(response.body().jsonPath().getList("id")).hasSize(2);
     }
 
     /**
@@ -99,5 +102,39 @@ public class LineAcceptanceTest {
         // when
 
         // then
+    }
+
+    private ExtractableResponse<Response> createLine(String name, String color, String upStationName, String downStationName, int distance) {
+        Long upStationId = createStation(upStationName);
+        Long downStationId = createStation(downStationName);
+        LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
+
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private Long createStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract()
+                .body().jsonPath().getLong("id");
+    }
+
+    private ExtractableResponse<Response> selectAllLine() {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
     }
 }
