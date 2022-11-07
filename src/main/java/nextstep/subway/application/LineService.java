@@ -58,4 +58,13 @@ public class LineService {
 
         line.update(lineUpdateRequest);
     }
+
+    @Transactional
+    public void deleteLine(Long lineId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(
+                () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
+        );
+
+        lineRepository.delete(line);
+    }
 }

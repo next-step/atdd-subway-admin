@@ -117,10 +117,14 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
+        ExtractableResponse<Response> createResponse = createLine("1호선", "dark-blue", "인천역", "소요산역", 100);
+        Long lineId = createResponse.body().jsonPath().getLong("id");
 
         // when
+        ExtractableResponse<Response> deleteResponse = deleteLine(lineId);
 
         // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ExtractableResponse<Response> createLine(String name, String color, String upStationName, String downStationName, int distance) {
@@ -170,6 +174,14 @@ public class LineAcceptanceTest {
                 .body(lineUpdateRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteLine(Long lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + lineId)
                 .then().log().all()
                 .extract();
     }
