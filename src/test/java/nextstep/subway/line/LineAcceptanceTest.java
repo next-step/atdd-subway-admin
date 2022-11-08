@@ -38,7 +38,7 @@ public class LineAcceptanceTest {
     void createLine() {
         createLine(LineRequest.of("신분당선", "bg-red-600", 1L, 2L, 10));
 
-        ExtractableResponse<Response> showLinesResponse = showLines();
+        ExtractableResponse<Response> showLinesResponse = showAllLines();
 
         JsonPath jsonPath = showLinesResponse.body().jsonPath();
         Assertions.assertThat(jsonPath.getList("name")).contains("신분당선");
@@ -78,6 +78,23 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void showLines() {
+        createLine(LineRequest.of("신분당선", "red", 1L, 2L, 10));
+        createLine(LineRequest.of("분당선", "yellow", 1L, 2L, 10));
+
+        ExtractableResponse<Response> showLinesResponse = showAllLines();
+
+        JsonPath jsonPath = showLinesResponse.body().jsonPath();
+        Assertions.assertThat(jsonPath.getList("name")).containsExactlyInAnyOrder("신분당선", "분당선");
+    }
+
     private ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
@@ -87,7 +104,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> showLines() {
+    private ExtractableResponse<Response> showAllLines() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
