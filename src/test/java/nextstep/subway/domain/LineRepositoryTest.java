@@ -93,4 +93,17 @@ class LineRepositoryTest {
                 () -> assertThat(findLine).contains(Line.of(line.getId(), "신분당선2", "bg-red-600"))
         );
     }
+
+    @DisplayName("지하철 노선 삭제")
+    @Test
+    void deleteLine() {
+        Line line = Line.of("신분당선", "bg-red-500");
+        lineRepository.save(line);
+
+        lineRepository.deleteById(line.getId());
+
+        Optional<Line> findLine = lineRepository.findById(line.getId());
+
+        Assertions.assertThat(findLine).isNotPresent();
+    }
 }

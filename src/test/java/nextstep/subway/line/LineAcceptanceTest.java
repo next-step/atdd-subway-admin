@@ -153,6 +153,28 @@ public class LineAcceptanceTest {
         );
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다.
+     */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
+        ExtractableResponse<Response> createLineResponse = createLine(line);
+        long id = createLineResponse.jsonPath().getLong("id");
+
+        deleteLine(id);
+
+        ExtractableResponse<Response> showAllLinesResponse = showAllLines();
+        JsonPath jsonPath = showAllLinesResponse.body().jsonPath();
+        assertAll(
+                () -> assertThat(jsonPath.getList("id")).doesNotContain(id),
+                () -> assertThat(jsonPath.getList("name")).doesNotContain("신분당선")
+        );
+    }
+
     private ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
@@ -183,6 +205,14 @@ public class LineAcceptanceTest {
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/{id}")
+                .then().log().all()
+                .extract();
+    }
+
+    private void deleteLine(long id) {
+        RestAssured.given().log().all()
+                .pathParam("id", id)
+                .when().delete("/lines/{id}")
                 .then().log().all()
                 .extract();
     }
