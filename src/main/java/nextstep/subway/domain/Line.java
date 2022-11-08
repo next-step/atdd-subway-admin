@@ -26,7 +26,7 @@ public class Line extends BaseEntity {
     @Column(name = "distance", nullable = false)
     private int distance;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
