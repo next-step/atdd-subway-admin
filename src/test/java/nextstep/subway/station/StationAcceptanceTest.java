@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -120,6 +121,36 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> createdResponse = whenCreateStation("강남역");
+
+        // when
+        JsonPath jsonPath = createdResponse.jsonPath();
+        whenDeleteStation(jsonPath.getLong("id"));
+
+        // then
+        assertThat(thenGetStation("강남역")).isEmpty();
+    }
+
+    private static ExtractableResponse<Response> whenCreateStation(String name){
+        HashMap<String, String> params = new HashMap<>();
+        params.put("name", name);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private static List<String> thenGetStation(String name) {
+        HashMap<Object, Object> params = new HashMap<>();
+        params.put("name", name);
+        return RestAssured.given().log().all()
+                .body(params)
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
     }
 
     private static List<String> thenGetStations() {
@@ -131,11 +162,8 @@ public class StationAcceptanceTest {
 
     private void whenDeleteStation(long id) {
         RestAssured.given().log().all()
-                .body(id)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("stations/"+id)
-                .then().log().all()
-                .extract();
+                .then().log().all();
     }
 
 }
