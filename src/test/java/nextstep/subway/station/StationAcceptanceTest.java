@@ -13,7 +13,6 @@ import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -101,6 +100,16 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        whenCreateStation("강남역");
+        whenCreateStation("양재역");
+
+        // when
+        List<String> stationNames = thenGetStations();
+
+        // then
+        assertThat(stationNames).containsAnyOf("강남역", "양재역");
+
     }
 
     /**
@@ -112,4 +121,21 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
     }
+
+    private static List<String> thenGetStations() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+    }
+
+    private void whenDeleteStation(long id) {
+        RestAssured.given().log().all()
+                .body(id)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("stations/"+id)
+                .then().log().all()
+                .extract();
+    }
+
 }
