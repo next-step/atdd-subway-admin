@@ -3,9 +3,11 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.DatabaseCleaner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -22,12 +24,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        databaseCleaner.clear();
     }
 
     /**
@@ -83,7 +88,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = selectAllStation();
 
         // then
-        assertThat(response.body().jsonPath().getList("id")).hasSize(2);
+        assertThat(getIdsByResponse(response)).hasSize(2);
     }
 
     /**
@@ -103,7 +108,7 @@ public class StationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> selectResponse = selectAllStation();
-        assertThat(selectResponse.body().jsonPath().getList("id").contains(id)).isFalse();
+        assertThat(getIdsByResponse(selectResponse).contains(id)).isFalse();
     }
 
     private ExtractableResponse<Response> createStation(String name) {
@@ -130,5 +135,9 @@ public class StationAcceptanceTest {
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
+    }
+
+    private List getIdsByResponse(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getList("id");
     }
 }
