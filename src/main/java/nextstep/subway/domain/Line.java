@@ -21,15 +21,20 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(Long id, String name, String color) {
+        this.id = id;
         this.name = name;
         this.color = color;
     }
 
     public static Line of(String name, String color) {
+        return of(null, name, color);
+    }
+
+    public static Line of(Long id, String name, String color) {
         validateNotNullAndNotEmpty(name);
         validateNotNullAndNotEmpty(color);
-        return new Line(name, color);
+        return new Line(id, name, color);
     }
 
     private static void validateNotNullAndNotEmpty(String value) {

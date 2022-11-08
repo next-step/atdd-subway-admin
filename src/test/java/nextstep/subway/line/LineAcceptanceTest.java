@@ -130,6 +130,29 @@ public class LineAcceptanceTest {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다.
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
+        ExtractableResponse<Response> createLineResponse = createLine(line);
+
+        long id = createLineResponse.jsonPath().getLong("id");
+        LineRequest updateLine = LineRequest.of("new분당선", "red", 1L, 2L, 10);
+        ExtractableResponse<Response> updateLineResponse = updateLine(id, updateLine);
+
+        JsonPath jsonPath = updateLineResponse.body().jsonPath();
+        assertAll(
+                () -> assertThat(jsonPath.getLong("id")).isEqualTo(id),
+                () -> assertThat(jsonPath.getString("name")).isEqualTo("new분당선"),
+                () -> assertThat(jsonPath.getString("color")).isEqualTo("red")
+        );
+    }
+
     private ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
@@ -150,6 +173,16 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().get("/lines/{id}")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> updateLine(Long id, LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                .pathParam("id", id)
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}")
                 .then().log().all()
                 .extract();
     }

@@ -41,4 +41,10 @@ public class LineService {
                 .orElseThrow(() -> new DataNotFoundException(ExceptionMessage.NOT_FOUND_LINE));
         return LineResponse.from(line);
     }
+
+    @Transactional
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.save(lineRequest.toLine(id));
+        return LineResponse.from(line);
+    }
 }

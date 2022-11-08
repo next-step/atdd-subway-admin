@@ -77,4 +77,20 @@ class LineRepositoryTest {
 
         Assertions.assertThat(findLine).isPresent();
     }
+
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void updateLine() {
+        Line line = Line.of("신분당선", "bg-red-500");
+        lineRepository.save(line);
+
+        Line updateLine = lineRepository.save(Line.of(line.getId(), "신분당선2", "bg-red-600"));
+
+        Optional<Line> findLine = lineRepository.findById(updateLine.getId());
+
+        assertAll(
+                () -> assertThat(findLine).isPresent(),
+                () -> assertThat(findLine).contains(Line.of(line.getId(), "신분당선2", "bg-red-600"))
+        );
+    }
 }
