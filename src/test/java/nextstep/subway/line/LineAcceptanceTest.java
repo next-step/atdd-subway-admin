@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
+class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -165,11 +165,11 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> createLineResponse = createLine(line);
         long id = createLineResponse.jsonPath().getLong("id");
 
-        deleteLine(id);
+        ExtractableResponse<Response> deleteResponse = deleteLine(id);
 
-        ExtractableResponse<Response> showAllLinesResponse = showAllLines();
-        JsonPath jsonPath = showAllLinesResponse.body().jsonPath();
+        JsonPath jsonPath = showAllLines().body().jsonPath();
         assertAll(
+                () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(jsonPath.getList("id")).doesNotContain(id),
                 () -> assertThat(jsonPath.getList("name")).doesNotContain("신분당선")
         );
@@ -191,7 +191,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> showLine(long id) {
+    private ExtractableResponse<Response> showLine(Long id) {
         return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().get("/lines/{id}")
@@ -209,8 +209,8 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private void deleteLine(long id) {
-        RestAssured.given().log().all()
+    private ExtractableResponse<Response> deleteLine(Long id) {
+        return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().delete("/lines/{id}")
                 .then().log().all()
