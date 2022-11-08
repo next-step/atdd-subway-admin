@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -64,5 +65,16 @@ class LineRepositoryTest {
 
         Assertions.assertThatThrownBy(() -> lineRepository.save(duplicateLine))
                 .isInstanceOf(DataIntegrityViolationException.class);
+    }
+
+    @DisplayName("지하철 노선 조회")
+    @Test
+    void showLine() {
+        Line line = Line.of("신분당선", "bg-red-500");
+        lineRepository.save(line);
+
+        Optional<Line> findLine = lineRepository.findById(line.getId());
+
+        Assertions.assertThat(findLine).isPresent();
     }
 }
