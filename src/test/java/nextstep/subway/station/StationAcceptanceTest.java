@@ -45,9 +45,7 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = thenGetStations();
-
-        assertThat(stationNames).containsAnyOf("강남역");
+        assertThat(thenGetStations()).containsAnyOf("강남역");
     }
 
     /**
@@ -99,11 +97,15 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> createdResponse = givenCreateStation("강남역");
 
         // when
-        JsonPath jsonPath = createdResponse.jsonPath();
-        whenDeleteStation(jsonPath.getLong("id"));
+        whenDeleteStation(getStationId(createdResponse));
 
         // then
         assertThat(thenGetStation("강남역")).isEmpty();
+    }
+
+    private long getStationId(ExtractableResponse<Response> createdResponse) {
+        JsonPath jsonPath = createdResponse.jsonPath();
+        return jsonPath.getLong("id");
     }
 
     private static ExtractableResponse<Response> givenCreateStation(String name){
@@ -122,7 +124,6 @@ public class StationAcceptanceTest {
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
     }
-
 
     private static List<String> thenGetStations() {
         return RestAssured.given().log().all()
