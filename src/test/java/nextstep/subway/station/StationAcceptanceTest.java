@@ -41,7 +41,7 @@ class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> createStationResponse = createStation("강남역");
+        ExtractableResponse<Response> createStationResponse = createStation("논현역");
 
         // then
         assertThat(createStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -49,7 +49,7 @@ class StationAcceptanceTest {
         // then
         ExtractableResponse<Response> showStationsResponse = showStations();
         List<String> stationNames = showStationsResponse.jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        assertThat(stationNames).containsAnyOf("논현역");
     }
 
     /**
