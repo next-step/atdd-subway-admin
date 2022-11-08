@@ -32,9 +32,13 @@ public class Line extends BaseEntity {
     }
 
     public static Line of(Long id, String name, String color) {
+        validate(name, color);
+        return new Line(id, name, color);
+    }
+
+    private static void validate(String name, String color) {
         validateNotNullAndNotEmpty(name);
         validateNotNullAndNotEmpty(color);
-        return new Line(id, name, color);
     }
 
     private static void validateNotNullAndNotEmpty(String value) {
@@ -53,6 +57,12 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public void update(String name, String color) {
+        validate(name, color);
+        this.name = name;
+        this.color = color;
     }
 
     @Override

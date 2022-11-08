@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.exception.DataNotFoundException;
 import nextstep.subway.message.ExceptionMessage;
 import org.springframework.stereotype.Service;
@@ -37,19 +38,23 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException(ExceptionMessage.NOT_FOUND_LINE));
+        Line line = findById(id);
         return LineResponse.from(line);
     }
 
     @Transactional
-    public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.save(lineRequest.toLine(id));
-        return LineResponse.from(line);
+    public void updateLine(Long id, LineUpdateRequest lineRequest) {
+        Line line = findById(id);
+        line.update(lineRequest.getName(), line.getColor());
     }
 
     @Transactional
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException(ExceptionMessage.NOT_FOUND_LINE));
     }
 }

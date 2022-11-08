@@ -5,6 +5,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -39,9 +40,7 @@ public class LineAcceptanceTest {
     void createLine() {
         createLine(LineRequest.of("신분당선", "red", 1L, 2L, 10));
 
-        ExtractableResponse<Response> response = showAllLines();
-
-        JsonPath jsonPath = response.body().jsonPath();
+        JsonPath jsonPath = showAllLines().body().jsonPath();
         Assertions.assertThat(jsonPath.getList("name")).contains("신분당선");
     }
 
@@ -139,15 +138,16 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        ExtractableResponse<Response> createLineResponse = createLine(line);
+        ExtractableResponse<Response> createResponse = createLine(line);
+        long id = createResponse.jsonPath().getLong("id");
 
-        long id = createLineResponse.jsonPath().getLong("id");
-        LineRequest updateLine = LineRequest.of("new분당선", "red", 1L, 2L, 10);
-        ExtractableResponse<Response> updateLineResponse = updateLine(id, updateLine);
+        LineUpdateRequest updateLine = LineUpdateRequest.of("new분당선", "red");
+        ExtractableResponse<Response> updateResponse = updateLine(id, updateLine);
+        ExtractableResponse<Response> showResponse = showLine(id);
 
-        JsonPath jsonPath = updateLineResponse.body().jsonPath();
+        JsonPath jsonPath = showResponse.body().jsonPath();
         assertAll(
-                () -> assertThat(jsonPath.getLong("id")).isEqualTo(id),
+                () -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(jsonPath.getString("name")).isEqualTo("new분당선"),
                 () -> assertThat(jsonPath.getString("color")).isEqualTo("red")
         );
@@ -199,7 +199,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> updateLine(Long id, LineRequest lineRequest) {
+    private ExtractableResponse<Response> updateLine(Long id, LineUpdateRequest lineRequest) {
         return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .body(lineRequest)
