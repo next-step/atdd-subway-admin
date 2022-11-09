@@ -41,6 +41,11 @@ public class LineService {
 		line.update(lineRequest.getName(), lineRequest.getColor());
 	}
 
+	@Transactional
+	public void removeLine(Long id) {
+		lineRepository.deleteById(id);
+	}
+
 	public List<LineResponse> findAllLines() {
 		return LineResponse.ofList(lineRepository.findAll());
 	}
@@ -51,9 +56,8 @@ public class LineService {
 	}
 
 	private Line getLine(Long lineId) {
-		Line line = lineRepository.findById(lineId)
+		return lineRepository.findById(lineId)
 			.orElseThrow(() -> new LineNotFoundException(lineId));
-		return line;
 	}
 
 	private Line getLine(LineRequest lineRequest) {

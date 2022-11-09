@@ -60,6 +60,15 @@ class LineAcceptanceTestAssured {
             .extract();
     }
 
+    static ExtractableResponse<Response> 지하철_노선_삭제(ExtractableResponse<Response> 지하철_노선_생성_응답) {
+        long 지하철_노선_식별자 = 지하철_노선_식별자(지하철_노선_생성_응답);
+
+        return RestAssured.given().log().all()
+            .when().delete(REQUEST_PATH + "/" + 지하철_노선_식별자)
+            .then().log().all()
+            .extract();
+    }
+
     private static Map<String, String> 지하철_노선_파라미터(String 노선_이름, String 노선_색상) {
         return Maps.of(NAME, 노선_이름, COLOR, 노선_색상);
     }
