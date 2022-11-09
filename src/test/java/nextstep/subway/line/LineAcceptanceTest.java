@@ -4,6 +4,7 @@ import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선
 import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선_존재함;
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_목록_조회;
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_생성;
+import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_수정;
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_조회;
 
 import java.util.List;
@@ -78,9 +79,18 @@ class LineAcceptanceTest extends SubwayAcceptanceTest {
 	 * When 생성한 지하철 노선을 수정하면
 	 * Then 해당 지하철 노선 정보는 수정된다
 	 */
-	@Test
-	void 지하철노선_수정() {
+	@ParameterizedTest
+	@CsvSource({"신분당선,가양역,상행역4,하행역4"})
+	void 지하철_노선을_수정한다(String 지하철_노선, String 수정할_지하철_노선_이름, String 상행역, String 하행역) {
+		// given
+		ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성(지하철_노선, 상행역, 하행역);
 
+		// when
+		지하철_노선_수정(지하철_노선_생성_응답, 수정할_지하철_노선_이름);
+
+		// then
+		String 수정된_지하철_노선_이름 = 지하철_노선_조회(지하철_노선_생성_응답);
+		지하철_노선_존재함(수정된_지하철_노선_이름, 수정할_지하철_노선_이름);
 	}
 
 	/**
@@ -89,7 +99,7 @@ class LineAcceptanceTest extends SubwayAcceptanceTest {
 	 * Then 해당 지하철 노선 정보는 삭제된다
 	 */
 	@Test
-	void 지하철노선_삭제() {
+	void 지하철_노선을_삭제한다() {
 
 	}
 }

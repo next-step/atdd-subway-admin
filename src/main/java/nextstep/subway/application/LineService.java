@@ -35,14 +35,25 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
+	@Transactional
+	public void updateLine(Long lineId, LineRequest lineRequest) {
+		Line line = getLine(lineId);
+		line.update(lineRequest.getName(), lineRequest.getColor());
+	}
+
 	public List<LineResponse> findAllLines() {
 		return LineResponse.ofList(lineRepository.findAll());
 	}
 
-	public LineResponse findLine(Long id) {
-		Line line = lineRepository.findById(id)
-			.orElseThrow(() -> new LineNotFoundException(id));
+	public LineResponse findLine(Long lineId) {
+		Line line = getLine(lineId);
 		return LineResponse.of(line);
+	}
+
+	private Line getLine(Long lineId) {
+		Line line = lineRepository.findById(lineId)
+			.orElseThrow(() -> new LineNotFoundException(lineId));
+		return line;
 	}
 
 	private Line getLine(LineRequest lineRequest) {
