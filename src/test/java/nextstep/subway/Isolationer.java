@@ -30,7 +30,7 @@ public class Isolationer implements InitializingBean{
     }
 
     @Transactional
-    public void clear() {
+    public void excute() {
         entityManager.flush();
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();
 
