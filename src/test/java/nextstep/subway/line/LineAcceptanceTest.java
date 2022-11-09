@@ -45,15 +45,17 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        // when
+        // given
+        int distance = 10;
         String expectLine = "3호선";
         Long upStationId = StationAcceptanceTest.지하철_역_생성("연신내역")
                 .jsonPath().getLong("id");
         Long downStationId = StationAcceptanceTest.지하철_역_생성("불광역")
                 .jsonPath().getLong("id");
 
+        // when
         ExtractableResponse<Response> response =
-                지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, 10);
+                지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, distance);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -73,6 +75,7 @@ public class LineAcceptanceTest {
     @Test
     void showLines() {
         // given
+        int distance = 10;
         String expectLine1 = "3호선";
         String expectLine2 = "분당선";
 
@@ -81,8 +84,8 @@ public class LineAcceptanceTest {
         Long downStationId = StationAcceptanceTest.지하철_역_생성("불광역")
                 .jsonPath().getLong("id");
 
-        지하철_노선_생성(expectLine1, "주황색", upStationId, downStationId, 10);
-        지하철_노선_생성(expectLine2, "노랑색", upStationId, downStationId, 10);
+        지하철_노선_생성(expectLine1, "주황색", upStationId, downStationId, distance);
+        지하철_노선_생성(expectLine2, "노랑색", upStationId, downStationId, distance);
 
         // when
         List<String> lineNames = 지하철_노선_전체_조회()
@@ -101,13 +104,14 @@ public class LineAcceptanceTest {
     @Test
     void showLine() {
         // given
+        int distance = 10;
         String expectLine = "3호선";
         Long upStationId = StationAcceptanceTest.지하철_역_생성("연신내역")
                 .jsonPath().getLong("id");
         Long downStationId = StationAcceptanceTest.지하철_역_생성("불광역")
                 .jsonPath().getLong("id");
 
-        Long lineId = 지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, 10)
+        Long lineId = 지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, distance)
                 .jsonPath().getLong("id");
 
         // when
@@ -127,6 +131,7 @@ public class LineAcceptanceTest {
     @Test
     void showStations() {
         // given
+        int distance = 10;
         String stationName1 = "연신내역";
         String stationName2 = "불광역";
 
@@ -135,7 +140,7 @@ public class LineAcceptanceTest {
         Long downStationId = StationAcceptanceTest.지하철_역_생성("불광역")
                 .jsonPath().getLong("id");
 
-        Long lineId = 지하철_노선_생성("3호선", "주황색", upStationId, downStationId, 10)
+        Long lineId = 지하철_노선_생성("3호선", "주황색", upStationId, downStationId, distance)
                 .jsonPath().getLong("id");
 
         // when
@@ -155,13 +160,14 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
+        int distance = 10;
         String expectLineName = "2호선";
         Long upStationId = StationAcceptanceTest.지하철_역_생성("연신내역")
                 .jsonPath().getLong("id");
         Long downStationId = StationAcceptanceTest.지하철_역_생성("불광역")
                 .jsonPath().getLong("id");
 
-        Long lineId = 지하철_노선_생성("3호선", "주황색", upStationId, downStationId, 10)
+        Long lineId = 지하철_노선_생성("3호선", "주황색", upStationId, downStationId, distance)
                 .jsonPath().getLong("id");
 
         // when
@@ -182,11 +188,12 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
+        int distance = 10;
         Long upStationId = StationAcceptanceTest.지하철_역_생성("연신내역")
                 .jsonPath().getLong("id");
         Long downStationId = StationAcceptanceTest.지하철_역_생성("불광역")
                 .jsonPath().getLong("id");
-        Long lineId = 지하철_노선_생성("3호선", "주황색", upStationId, downStationId, 10)
+        Long lineId = 지하철_노선_생성("3호선", "주황색", upStationId, downStationId, distance)
                 .jsonPath().getLong("id");
 
         // when
