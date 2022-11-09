@@ -13,8 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
+import static nextstep.subway.line.LineAcceptanceMethods.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -38,9 +38,9 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        createLine(LineRequest.of("신분당선", "red", 1L, 2L, 10));
+        지하철_노선_생성(LineRequest.of("신분당선", "red", 1L, 2L, 10));
 
-        JsonPath jsonPath = showAllLines().body().jsonPath();
+        JsonPath jsonPath = 지하철_노선_목록_조회().body().jsonPath();
         Assertions.assertThat(jsonPath.getList("name")).contains("신분당선");
     }
 
@@ -53,10 +53,10 @@ class LineAcceptanceTest {
     @Test
     void createDuplicateLine() {
         LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        createLine(line);
+        지하철_노선_생성(line);
 
         LineRequest duplicateLine = LineRequest.of("신분당선", "green", 1L, 2L, 10);
-        ExtractableResponse<Response> response = createLine(duplicateLine);
+        ExtractableResponse<Response> response = 지하철_노선_생성(duplicateLine);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -70,10 +70,10 @@ class LineAcceptanceTest {
     @Test
     void createDuplicateLine2() {
         LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        createLine(line);
+        지하철_노선_생성(line);
 
         LineRequest duplicateLine = LineRequest.of("분당선", "red", 1L, 2L, 10);
-        ExtractableResponse<Response> response = createLine(duplicateLine);
+        ExtractableResponse<Response> response = 지하철_노선_생성(duplicateLine);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -86,10 +86,10 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void showLines() {
-        createLine(LineRequest.of("신분당선", "red", 1L, 2L, 10));
-        createLine(LineRequest.of("분당선", "yellow", 1L, 2L, 10));
+        지하철_노선_생성(LineRequest.of("신분당선", "red", 1L, 2L, 10));
+        지하철_노선_생성(LineRequest.of("분당선", "yellow", 1L, 2L, 10));
 
-        ExtractableResponse<Response> response = showAllLines();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회();
 
         JsonPath jsonPath = response.body().jsonPath();
         Assertions.assertThat(jsonPath.getList("name")).containsExactlyInAnyOrder("신분당선", "분당선");
@@ -104,10 +104,10 @@ class LineAcceptanceTest {
     @Test
     void showLine() {
         LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        ExtractableResponse<Response> response = createLine(line);
+        ExtractableResponse<Response> response = 지하철_노선_생성(line);
         long id = response.jsonPath().getLong("id");
 
-        ExtractableResponse<Response> showLineResponse = showLine(id);
+        ExtractableResponse<Response> showLineResponse = 지하철_노선_조회(id);
 
         JsonPath jsonPath = showLineResponse.body().jsonPath();
         assertAll(
@@ -124,7 +124,7 @@ class LineAcceptanceTest {
     @DisplayName("존재하지 않는 지하철 노선을 조회하면 예외가 발생한다.")
     @Test
     void showNotExistLine() {
-        ExtractableResponse<Response> response = showLine(0L);
+        ExtractableResponse<Response> response = 지하철_노선_조회(0L);
 
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -138,12 +138,12 @@ class LineAcceptanceTest {
     @Test
     void updateLine() {
         LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        ExtractableResponse<Response> createResponse = createLine(line);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성(line);
         long id = createResponse.jsonPath().getLong("id");
 
         LineUpdateRequest updateLine = LineUpdateRequest.of("new분당선", "red");
-        ExtractableResponse<Response> updateResponse = updateLine(id, updateLine);
-        ExtractableResponse<Response> showResponse = showLine(id);
+        ExtractableResponse<Response> updateResponse = 지하철_노선_수정(id, updateLine);
+        ExtractableResponse<Response> showResponse = 지하철_노선_조회(id);
 
         JsonPath jsonPath = showResponse.body().jsonPath();
         assertAll(
@@ -162,58 +162,16 @@ class LineAcceptanceTest {
     @Test
     void deleteLine() {
         LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        ExtractableResponse<Response> createLineResponse = createLine(line);
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성(line);
         long id = createLineResponse.jsonPath().getLong("id");
 
-        ExtractableResponse<Response> deleteResponse = deleteLine(id);
+        ExtractableResponse<Response> deleteResponse = 지하철_노선_삭제(id);
 
-        JsonPath jsonPath = showAllLines().body().jsonPath();
+        JsonPath jsonPath = 지하철_노선_목록_조회().body().jsonPath();
         assertAll(
                 () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(jsonPath.getList("id")).doesNotContain(id),
                 () -> assertThat(jsonPath.getList("name")).doesNotContain("신분당선")
         );
-    }
-
-    private ExtractableResponse<Response> createLine(LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> showAllLines() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> showLine(Long id) {
-        return RestAssured.given().log().all()
-                .pathParam("id", id)
-                .when().get("/lines/{id}")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> updateLine(Long id, LineUpdateRequest lineRequest) {
-        return RestAssured.given().log().all()
-                .pathParam("id", id)
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{id}")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> deleteLine(Long id) {
-        return RestAssured.given().log().all()
-                .pathParam("id", id)
-                .when().delete("/lines/{id}")
-                .then().log().all()
-                .extract();
     }
 }
