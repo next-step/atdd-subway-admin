@@ -4,6 +4,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.CannotFindStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +32,12 @@ public class StationService {
         return stations.stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
+    }
+
+    public StationResponse findStationById(Long id) {
+        Station stations = stationRepository.findById(id)
+            .orElseThrow(() -> new CannotFindStationException("해당 지하철을 찾을 수 없습니다."));
+        return StationResponse.of(stations);
     }
 
     @Transactional
