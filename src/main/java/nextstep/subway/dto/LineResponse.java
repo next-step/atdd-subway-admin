@@ -22,7 +22,7 @@ public class LineResponse {
         );
     }
 
-    public LineResponse() {
+    private LineResponse() {
     }
 
     public LineResponse(Long id, String name, String color, Station upStation, Station downStation) {
@@ -38,13 +38,5 @@ public class LineResponse {
 
     public String getName() {
         return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-        public List<StationResponse> getStations() {
-        return this.stations;
     }
 }

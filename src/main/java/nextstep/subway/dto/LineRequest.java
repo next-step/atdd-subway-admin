@@ -17,10 +17,6 @@ public class LineRequest {
         return color;
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
     public Long getUpStationId() {
         return upStationId;
     }
