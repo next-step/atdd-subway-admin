@@ -47,6 +47,14 @@ public class StationAcceptanceTest {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철역_삭제(final Long id) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete("/stations/" + id)
+            .then().log().all()
+            .extract();
+    }
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
@@ -105,7 +113,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_목록_조회();
 
         //then
-        assertThat(response.jsonPath().getList("$").size()).isEqualTo(2);
+        assertThat(response.jsonPath().getList("")).hasSize(2);
     }
 
     /**
@@ -114,5 +122,13 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        //given
+        ExtractableResponse<Response> 강남역 = 지하철역_생성("강남역");
+
+        //when
+        지하철역_삭제(강남역.jsonPath().getLong("id"));
+
+        //then
+        assertThat(지하철역_목록_조회().jsonPath().getList("")).isEmpty();
     }
 }
