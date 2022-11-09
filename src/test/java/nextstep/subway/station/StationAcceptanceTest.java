@@ -113,11 +113,11 @@ public class StationAcceptanceTest {
         params.put("name", name);
 
         return RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
     }
 
     ExtractableResponse<Response> 지하철역_목록_조회_요청() {
