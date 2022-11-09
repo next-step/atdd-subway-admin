@@ -108,34 +108,31 @@ public class StationAcceptanceTest {
 		String firstStationName = "강남역";
 		firstStationParams.put(parameterName, firstStationName);
 
-		Response firstStationResponse = RestAssured.given().log().all()
+		ExtractableResponse<Response> firstStationResponse = RestAssured.given().log().all()
 			.body(firstStationParams)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when().post("/stations")
 			.then().log().all()
-			.extract()
-			.response();
+			.extract();
 		assertThat(firstStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
 		Map<String, String> secondStationParams = new HashMap<>();
 		String secondStationName = "역삼역";
 		secondStationParams.put(parameterName, secondStationName);
 
-		Response secondStationResponse = RestAssured.given().log().all()
+		ExtractableResponse<Response> secondStationResponse = RestAssured.given().log().all()
 			.body(secondStationParams)
 			.contentType(MediaType.APPLICATION_JSON_VALUE)
 			.when().post("/stations")
 			.then().log().all()
-			.extract()
-			.response();
+			.extract();
 		assertThat(secondStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
 		// when
-		Response inquiryStationsResponse = RestAssured.given().log().all()
+		ExtractableResponse<Response> inquiryStationsResponse = RestAssured.given().log().all()
 			.when().get("/stations")
 			.then().log().all()
-			.extract()
-			.response();
+			.extract();
 
 		// then
 		assertThat(inquiryStationsResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -153,5 +150,27 @@ public class StationAcceptanceTest {
 	@DisplayName("지하철역을 제거한다.")
 	@Test
 	void deleteStation() {
+		// given
+		final String parameterName = "name";
+		Map<String, String> firstStationParams = new HashMap<>();
+		String firstStationName = "강남역";
+		firstStationParams.put(parameterName, firstStationName);
+
+		ExtractableResponse<Response> firstStationResponse = RestAssured.given().log().all()
+			.body(firstStationParams)
+			.contentType(MediaType.APPLICATION_JSON_VALUE)
+			.when().post("/stations")
+			.then().log().all()
+			.extract();
+		assertThat(firstStationResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+		// when
+		ExtractableResponse<Response> deleteStationResponse = RestAssured.given().log().all()
+			.when().delete("/stations/" + firstStationResponse.jsonPath().getLong("id"))
+			.then().log().all()
+			.extract();
+
+		// then
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 }
