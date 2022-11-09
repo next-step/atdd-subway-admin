@@ -38,26 +38,13 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 지하철역_신규_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = 지하철역_목록_조회_요청();
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -70,23 +57,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        지하철역_신규_생성_요청("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 지하철역_신규_생성_요청("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -101,35 +75,17 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        String gangnam = "강남역";
-        String seocho = "서초역";
+        String 강남역 = "강남역";
+        String 서초역 = "서초역";
 
-        Map<String, String> params = new HashMap<>();
-        params.put("name", gangnam);
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
-
-        params.put("name", seocho);
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        지하철역_신규_생성_요청(강남역);
+        지하철역_신규_생성_요청(서초역);
 
         // when
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = 지하철역_목록_조회_요청();
 
         // then
-        assertThat(stationNames).containsExactlyInAnyOrder(gangnam, seocho);
+        assertThat(stationNames).containsExactlyInAnyOrder(강남역, 서초역);
     }
 
     /**
@@ -141,31 +97,39 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        String gangnam = "강남역";
+        String 강남역 = "강남역";
+        String id = 지하철역_신규_생성_요청(강남역).jsonPath().getString("id");
 
+        // when
+        지하철역_삭제_요청(id);
+
+        // then
+        List<String> stationNames = 지하철역_목록_조회_요청();
+        assertThat(stationNames).doesNotContain(강남역);
+    }
+
+    private static ExtractableResponse<Response> 지하철역_신규_생성_요청(String name) {
         Map<String, String> params = new HashMap<>();
-        params.put("name", gangnam);
+        params.put("name", name);
 
-        String id = RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
-                .extract().jsonPath().getString("id");
+                .extract();
+    }
 
-        // when
+    private static List<String> 지하철역_목록_조회_요청() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+    }
+
+    private static void 지하철역_삭제_요청(String id) {
         RestAssured.given().log().all()
                 .when().delete("/stations/" + id)
                 .then().log().all();
-
-        // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-
-
-        assertThat(stationNames).doesNotContain(gangnam);
     }
 }
