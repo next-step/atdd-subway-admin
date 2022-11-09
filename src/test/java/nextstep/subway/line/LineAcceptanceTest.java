@@ -57,6 +57,34 @@ public class LineAcceptanceTest {
         assertThat(lineNames).containsAnyOf(expectLine);
     }
 
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void showLines() {
+        // given
+        String expectLine1 = "3호선";
+        String expectLine2 = "분당선";
+
+        Long upStationId = StationAcceptanceTest.createStation("연신내역")
+                .jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTest.createStation("불광역")
+                .jsonPath().getLong("id");
+
+        createLine(expectLine1, "주황색", upStationId, downStationId, 10);
+        createLine(expectLine2, "노랑색", upStationId, downStationId, 10);
+
+        // when
+        List<String> lineNames = readLines()
+                .jsonPath().getList("name", String.class);
+
+        // then
+        assertThat(lineNames).contains(expectLine1, expectLine2);
+    }
+
     private ExtractableResponse<Response> createLine(
             String name,
             String color,
