@@ -29,7 +29,10 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = Arrays.asList(StationResponse.of(upStation), StationResponse.of(downStation));
+        this.stations = Arrays.asList(
+                StationResponse.of(upStation),
+                StationResponse.of(downStation)
+        );
     }
 
     public Long getId() {
