@@ -107,6 +107,19 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> gangNamResponse = createStation("강남역");
+        assertThat(gangNamResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long id = gangNamResponse.jsonPath().getLong("id");
+
+        //when
+        ExtractableResponse<Response> deleteResponse = deleteById(id);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        //when
+        ExtractableResponse<Response> findResponse = findAllStation();
+        assertThat(covertResponseToStationNames(findResponse)).doesNotContain("강남역");
+
     }
 
     private ExtractableResponse<Response> createStation(String name) {
@@ -129,5 +142,12 @@ public class StationAcceptanceTest {
 
     private List<String> covertResponseToStationNames(ExtractableResponse<Response> response) {
         return response.jsonPath().getList(STATION_NAME, String.class);
+    }
+
+    private ExtractableResponse<Response> deleteById(Long id) {
+        return RestAssured.given().log().all()
+                .when().delete(STATION_MAIN_PATH + "/" + id)
+                .then().log().all()
+                .extract();
     }
 }
