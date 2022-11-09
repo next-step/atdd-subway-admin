@@ -1,8 +1,12 @@
 package nextstep.subway.line;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class LineAcceptanceTest {
+import nextstep.subway.SubwayAcceptanceTest;
+
+@DisplayName("지하철 노선 관련 기능 ")
+class LineAcceptanceTest extends SubwayAcceptanceTest {
 
 	/**
 	 * When 지하철 노선을 생성하면
