@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class StationAcceptanceStep {
-    public static ExtractableResponse<Response> 등록된_지하철역_요청(String name) {
+    public static ExtractableResponse<Response> 등록된_지하철역(String name) {
         return 지하철역_생성_요청(name);
     }
 

@@ -1,4 +1,4 @@
-package nextstep.subway.station;
+package nextstep.subway;
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
