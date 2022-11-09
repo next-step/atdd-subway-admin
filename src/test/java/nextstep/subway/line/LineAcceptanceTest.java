@@ -1,12 +1,19 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.Isolationer;
+import nextstep.subway.dto.LineDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.MediaType;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class LineAcceptanceTest {
 
@@ -31,6 +38,12 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
+        LineDto.Request lineRequest = new LineDto.Request()
+                .setName("신분당선")
+                .setColor("bg-red-600")
+                .setUpStationId(1)
+                .setDownStationId(2)
+                .setDistance(10);
 
 
         // then
@@ -108,7 +121,67 @@ public class LineAcceptanceTest {
 
     }
 
+    public static ExtractableResponse<Response> 지하철_노선을_생성한다(LineDto.Request line) {
 
+        return RestAssured.given()
+                .body(line).log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then()
+                .log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 모든_노선을_조회한다() {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 모든_노선을_조회한다(int lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/"+lineId)
+                .then().log().all()
+                .extract();
+    }
+
+
+    public static void 노선_2개를_생성한다() {
+
+        지하철_노선을_생성한다(new LineDto.Request()
+                .setName("신분당선")
+                .setColor("bg-red-600")
+                .setUpStationId(1)
+                .setDownStationId(2)
+                .setDistance(10));
+
+        지하철_노선을_생성한다(new LineDto.Request()
+                .setName("분당선")
+                .setColor("bg-green-600")
+                .setUpStationId(1)
+                .setDownStationId(3)
+                .setDistance(10));
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선을_수정한다(LineDto.Request line, int lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/"+lineId)
+                .then().log().all()
+                .extract();
+
+    }
+
+    public ExtractableResponse<Response> 해당_노선을_제거한다(int stationId) {
+        return RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + stationId)
+                .then().log().all()
+                .extract();
+    }
 
 
 
