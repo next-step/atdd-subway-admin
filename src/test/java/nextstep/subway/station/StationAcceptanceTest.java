@@ -7,11 +7,8 @@ import static nextstep.subway.station.StationAcceptanceTestAssertions.지하철�
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_목록_조회;
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_삭제;
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_생성;
-import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_식별자;
-import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_요청_파라미터;
 
 import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -54,11 +51,10 @@ class StationAcceptanceTest extends SubwayAcceptanceTest {
     @ValueSource(strings = "여의도역")
     void 기존에_존재하는_지하철역_이름으로_지하철역을_생성한다(String 지하철역_이름) {
         // given
-        Map<String, String> 지하철역_생성_파라미터 = 지하철역_요청_파라미터(지하철역_이름);
-        지하철역_생성(지하철역_생성_파라미터);
+        지하철역_생성(지하철역_이름);
 
         // when
-        ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성(지하철역_생성_파라미터);
+        ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성(지하철역_이름);
 
         // then
         지하철역_생성_실패함(지하철역_생성_응답);
@@ -95,8 +91,7 @@ class StationAcceptanceTest extends SubwayAcceptanceTest {
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성(지하철역_이름);
 
         // when
-        Long 지하철역_식별자_아이디 = 지하철역_식별자(지하철역_생성_응답);
-        지하철역_삭제(지하철역_식별자_아이디);
+        지하철역_삭제(지하철역_생성_응답);
 
         // then
         List<String> 지하철역_목록 = 지하철역_목록_조회();
