@@ -137,6 +137,31 @@ public class LineAcceptanceTest {
         assertThat(result).isEqualTo(expectLineName);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다.
+     */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        Long upStationId = StationAcceptanceTest.createStation("연신내역")
+                .jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTest.createStation("불광역")
+                .jsonPath().getLong("id");
+        Long lineId = createLine("3호선", "주황색", upStationId, downStationId, 10)
+                .jsonPath().getLong("id");
+
+        // when
+        deleteLine(lineId);
+
+        // then
+        List<String> lineIds = readLines()
+                .jsonPath().getList("id", String.class);
+        assertThat(lineIds).isEmpty();
+    }
+
     private ExtractableResponse<Response> createLine(
             String name,
             String color,
