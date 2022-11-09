@@ -17,6 +17,20 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * REST Assured 특징
+ * given-when-them 패턴을 이용한 코드를 작성합니다.
+ *
+ * given : Test setup (테스트시 필요한 데이터, 및 파라미터를 셋팅합니다.)
+ * when : Test action (Method type을 정의해줍니다.)
+ * then : Test verification (Response Data를 검증합니다.)
+ *
+ * GET type인 경우에는, query parameters로
+ * POST type인 경우에는 form parameters로 인식합니다.
+ * PUT, POST type에서 query parameter와 form parameter를 함께 사용할 때는 정확하게 명시해주어야 합니다.
+ *
+ */
+
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
