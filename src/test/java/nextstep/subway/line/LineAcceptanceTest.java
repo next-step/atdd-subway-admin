@@ -165,10 +165,11 @@ public class LineAcceptanceTest {
                 .jsonPath().getLong("id");
 
         // when
-        String result = 지하철_노선_수정(lineId, expectLineName, "주황색")
-                .jsonPath().getString("name");
+        지하철_노선_수정(lineId, expectLineName, "주황색");
 
         // then
+        String result = 지하철_노선_조회(lineId)
+                .jsonPath().getString("name");
         assertThat(result).isEqualTo(expectLineName);
     }
 

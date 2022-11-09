@@ -27,8 +27,9 @@ public class LineController {
     }
 
     @PatchMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest request) {
-        return ResponseEntity.ok().body(lineService.updateLine(id, request));
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineUpdateRequest request) {
+        lineService.updateLine(id, request);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)

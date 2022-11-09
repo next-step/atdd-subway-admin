@@ -34,12 +34,10 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse updateLine(Long id, LineUpdateRequest request) {
+    public void updateLine(Long id, LineUpdateRequest request) {
         Line line = findLineById(id);
         line.update(request.getName(), request.getColor());
-        Line updatedLine = lineRepository.save(line);
-
-        return LineResponse.of(updatedLine);
+        lineRepository.save(line);
     }
 
     public List<LineResponse> findAllLines() {
