@@ -1,5 +1,7 @@
 package nextstep.subway.application;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,11 +38,14 @@ public class LineService {
 		Station upStation = getStation(lineRequest.getUpStationId());
 		Station downStation = getStation(lineRequest.getDownStationId());
 
-		Line line = lineRequest.toLine(upStation, downStation);
-		return line;
+		return lineRequest.toLine(upStation, downStation);
 	}
 
 	private Station getStation(Long upStationId) {
 		return stationRepository.findById(upStationId).orElseThrow(() -> new StationNotFoundException(upStationId));
+	}
+
+	public List<LineResponse> findAllLines() {
+		return LineResponse.ofList(lineRepository.findAll());
 	}
 }

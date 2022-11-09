@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.groovy.util.Maps;
@@ -30,5 +31,12 @@ public class LineAcceptanceTestAssured {
 
     public static Map<String, String> 지하철_노선_파라미터(String 노선_이름, String 노선_색상, Long 상행역_아이디, Long 하행역_아이디) {
         return Maps.of(NAME, 노선_이름, COLOR, 노선_색상, UP_STATION_ID, 상행역_아이디 + "", DOWN_STATION_ID, 하행역_아이디 + "");
+    }
+
+    public static List<String> 지하철_노선_목록_조회() {
+        return RestAssured.given().log().all()
+            .when().get(REQUEST_PATH)
+            .then().log().all()
+            .extract().jsonPath().getList(NAME, String.class);
     }
 }

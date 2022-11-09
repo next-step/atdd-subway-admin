@@ -1,12 +1,18 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선_생성됨;
+import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선_존재함;
+import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_목록_조회;
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_생성;
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_생성;
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_식별자;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -38,8 +44,20 @@ class LineAcceptanceTest extends SubwayAcceptanceTest {
 	 * When 지하철 노선 목록을 조회하면
 	 * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다
 	 */
-	@Test
-	void 지하철노선_목록을_조회한다() {
+	@ParameterizedTest
+	@CsvSource({"신분당선,1호선,상행역1,하행역1"})
+	void 지하철노선_목록을_조회한다(String 지하철_노선1, String 지하철_노선2, String 상행역, String 하행역) {
+		// given
+		Long 상행역_아이디 = 지하철역_식별자(지하철역_생성(상행역));
+		Long 하행역_아이디 = 지하철역_식별자(지하철역_생성(하행역));
+		지하철_노선_생성(지하철_노선1, 상행역_아이디, 하행역_아이디);
+		지하철_노선_생성(지하철_노선2, 상행역_아이디, 하행역_아이디);
+
+		// when
+		List<String> 지하철_노선_목록 = 지하철_노선_목록_조회();
+
+		// then
+		지하철_노선_존재함(지하철_노선_목록, 지하철_노선1, 지하철_노선2);
 
 	}
 
