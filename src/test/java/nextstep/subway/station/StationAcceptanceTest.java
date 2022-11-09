@@ -81,10 +81,10 @@ public class StationAcceptanceTest {
         지하철역_등록_요청("역삼역");
 
         // when
-        List<String> stationNames = 지하철역_목록_조회_요청().jsonPath().getList("name", String.class);
+        ExtractableResponse<Response> response = 지하철역_목록_조회_요청();
 
         // then
-        assertThat(stationNames).hasSize(2);
+        assertThat(response.jsonPath().getList("name", String.class)).hasSize(2);
     }
 
     /**
