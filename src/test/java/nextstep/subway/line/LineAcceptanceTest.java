@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,7 +37,7 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
-        지하철_노선_생성(LineRequest.of("신분당선", "red", 1L, 2L, 10));
+        지하철_노선_생성("신분당선", "red", "신사역", "광교역", 10);
 
         JsonPath jsonPath = 지하철_노선_목록_조회().body().jsonPath();
         Assertions.assertThat(jsonPath.getList("name")).contains("신분당선");
@@ -52,11 +51,10 @@ class LineAcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createDuplicateLine() {
-        LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        지하철_노선_생성(line);
+        지하철_노선_생성("신분당선", "red", "신사역", "광교역", 10);
 
-        LineRequest duplicateLine = LineRequest.of("신분당선", "green", 1L, 2L, 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성(duplicateLine);
+        ExtractableResponse<Response> response =
+                지하철_노선_생성("신분당선", "green", "강남역", "판교역", 10);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -69,11 +67,11 @@ class LineAcceptanceTest {
     @DisplayName("기존에 존재하는 지하철 노선 색상으로 지하철 노선을 생성한다.")
     @Test
     void createDuplicateLine2() {
-        LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        지하철_노선_생성(line);
+        지하철_노선_생성("신분당선", "red", "신사역", "광교역", 10);
 
-        LineRequest duplicateLine = LineRequest.of("분당선", "red", 1L, 2L, 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성(duplicateLine);
+        ExtractableResponse<Response> response =
+                지하철_노선_생성("분당선", "red", "서현역", "수원역", 10);
+
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -86,8 +84,8 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void showLines() {
-        지하철_노선_생성(LineRequest.of("신분당선", "red", 1L, 2L, 10));
-        지하철_노선_생성(LineRequest.of("분당선", "yellow", 1L, 2L, 10));
+        지하철_노선_생성("신분당선", "red", "신사역", "광교역", 10);
+        지하철_노선_생성("분당선", "yellow", "청량리역", "인천역", 10);
 
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
 
@@ -103,8 +101,8 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void showLine() {
-        LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        ExtractableResponse<Response> response = 지하철_노선_생성(line);
+        ExtractableResponse<Response> response =
+                지하철_노선_생성("신분당선", "red", "신사역", "광교역", 10);
         long id = response.jsonPath().getLong("id");
 
         ExtractableResponse<Response> showLineResponse = 지하철_노선_조회(id);
@@ -137,8 +135,8 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
-        LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성(line);
+        ExtractableResponse<Response> createResponse =
+                지하철_노선_생성("신분당선", "red", "신사역", "광교역", 10);
         long id = createResponse.jsonPath().getLong("id");
 
         LineUpdateRequest updateLine = LineUpdateRequest.of("new분당선", "red");
@@ -161,8 +159,8 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
-        LineRequest line = LineRequest.of("신분당선", "red", 1L, 2L, 10);
-        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성(line);
+        ExtractableResponse<Response> createLineResponse =
+                지하철_노선_생성("신분당선", "red", "신사역", "광교역", 10);
         long id = createLineResponse.jsonPath().getLong("id");
 
         ExtractableResponse<Response> deleteResponse = 지하철_노선_삭제(id);

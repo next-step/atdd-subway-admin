@@ -28,10 +28,6 @@ public class LineRequest {
         return Line.of(name, color);
     }
 
-    public Line toLine(Long id) {
-        return Line.of(id, name, color);
-    }
-
     public String getName() {
         return name;
     }

@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -11,35 +12,52 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
 
+    private static final int UPWARD_LINE = 0;
+    private static final int DOWNWARD_LINE = 1;
     private final LineRepository lineRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line line = lineRepository.save(lineRequest.toLine());
-        return LineResponse.from(line);
+
+        Station upStation = stationService.addToLine(lineRequest.getUpStationId(), line);
+        Station downStation = stationService.addToLine(lineRequest.getDownStationId(), line);
+
+        return LineResponse.from(line, upStation, downStation);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
+        Map<Long, List<Station>> stationsByLine = stationService.findStationsByLine(toLineIds(lines));
 
         return lines.stream()
-                .map(LineResponse::from)
+                .map(line ->
+                        LineResponse.from(
+                                line,
+                                stationsByLine.get(line.getId()).get(UPWARD_LINE),
+                                stationsByLine.get(line.getId()).get(DOWNWARD_LINE)
+                        )
+                )
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
         Line line = findById(id);
-        return LineResponse.from(line);
+        List<Station> stations = stationService.findByLineId(id);
+        return LineResponse.from(line, stations.get(UPWARD_LINE), stations.get(DOWNWARD_LINE));
     }
 
     @Transactional
@@ -50,11 +68,18 @@ public class LineService {
 
     @Transactional
     public void deleteLine(Long id) {
+        stationService.removeFromLine(id);
         lineRepository.deleteById(id);
     }
 
     private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException(ExceptionMessage.NOT_FOUND_LINE));
+    }
+
+    private static List<Long> toLineIds(List<Line> lines) {
+        return lines.stream()
+                .map(Line::getId)
+                .collect(Collectors.toList());
     }
 }
