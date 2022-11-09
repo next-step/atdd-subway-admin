@@ -29,4 +29,11 @@ public class StationAcceptanceTestFixture {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> removeStation(int stationId) {
+        return RestAssured.given().log().all()
+                .when().delete(String.format("/stations/%d", stationId))
+                .then().log().all()
+                .extract();
+    }
 }
