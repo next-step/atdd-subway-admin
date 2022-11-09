@@ -111,6 +111,32 @@ public class LineAcceptanceTest {
         assertThat(result).isEqualTo(expectLine);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다.
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        String expectLineName = "2호선";
+        Long upStationId = StationAcceptanceTest.createStation("연신내역")
+                .jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTest.createStation("불광역")
+                .jsonPath().getLong("id");
+
+        Long lineId = createLine("3호선", "주황색", upStationId, downStationId, 10)
+                .jsonPath().getLong("id");
+
+        // when
+        String result = updateLine(lineId, expectLineName, "주황색")
+                .jsonPath().getString("name");
+
+        // then
+        assertThat(result).isEqualTo(expectLineName);
+    }
+
     private ExtractableResponse<Response> createLine(
             String name,
             String color,
