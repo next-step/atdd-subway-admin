@@ -11,6 +11,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.LineNotFoundException;
 import nextstep.subway.exception.StationNotFoundException;
 
 @Service
@@ -34,6 +35,16 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
+	public List<LineResponse> findAllLines() {
+		return LineResponse.ofList(lineRepository.findAll());
+	}
+
+	public LineResponse findLine(Long id) {
+		Line line = lineRepository.findById(id)
+			.orElseThrow(() -> new LineNotFoundException(id));
+		return LineResponse.of(line);
+	}
+
 	private Line getLine(LineRequest lineRequest) {
 		Station upStation = getStation(lineRequest.getUpStationId());
 		Station downStation = getStation(lineRequest.getDownStationId());
@@ -41,11 +52,7 @@ public class LineService {
 		return lineRequest.toLine(upStation, downStation);
 	}
 
-	private Station getStation(Long upStationId) {
-		return stationRepository.findById(upStationId).orElseThrow(() -> new StationNotFoundException(upStationId));
-	}
-
-	public List<LineResponse> findAllLines() {
-		return LineResponse.ofList(lineRepository.findAll());
+	private Station getStation(Long stationId) {
+		return stationRepository.findById(stationId).orElseThrow(() -> new StationNotFoundException(stationId));
 	}
 }

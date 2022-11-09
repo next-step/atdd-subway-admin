@@ -4,8 +4,7 @@ import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선
 import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선_존재함;
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_목록_조회;
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_생성;
-import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_생성;
-import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_식별자;
+import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_조회;
 
 import java.util.List;
 
@@ -27,12 +26,9 @@ class LineAcceptanceTest extends SubwayAcceptanceTest {
 	 */
 	@Test
 	void 지하철노선을_생성한다() {
-		// given
-		Long 상행역_아이디 = 지하철역_식별자(지하철역_생성("상행역"));
-		Long 하행역_아이디 = 지하철역_식별자(지하철역_생성("하행역"));
 
 		// when
-		ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성("신분당선", 상행역_아이디, 하행역_아이디);
+		ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성("신분당선", "상행역", "하행역");
 
 		// then
 		지하철_노선_생성됨(지하철_노선_생성_응답);
@@ -45,13 +41,11 @@ class LineAcceptanceTest extends SubwayAcceptanceTest {
 	 * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다
 	 */
 	@ParameterizedTest
-	@CsvSource({"신분당선,1호선,상행역1,하행역1"})
-	void 지하철노선_목록을_조회한다(String 지하철_노선1, String 지하철_노선2, String 상행역, String 하행역) {
+	@CsvSource({"신분당선,1호선"})
+	void 지하철노선_목록을_조회한다(String 지하철_노선1, String 지하철_노선2) {
 		// given
-		Long 상행역_아이디 = 지하철역_식별자(지하철역_생성(상행역));
-		Long 하행역_아이디 = 지하철역_식별자(지하철역_생성(하행역));
-		지하철_노선_생성(지하철_노선1, 상행역_아이디, 하행역_아이디);
-		지하철_노선_생성(지하철_노선2, 상행역_아이디, 하행역_아이디);
+		지하철_노선_생성(지하철_노선1, "상행역1", "하행역1");
+		지하철_노선_생성(지하철_노선2, "상행역2", "하행역2");
 
 		// when
 		List<String> 지하철_노선_목록 = 지하철_노선_목록_조회();
@@ -66,9 +60,17 @@ class LineAcceptanceTest extends SubwayAcceptanceTest {
 	 * When 생성한 지하철 노선을 조회하면
 	 * Then 생성한 지하철 노선의 정보를 응답받을 수 있다
 	 */
-	@Test
-	void 지하철_노선_조회() {
+	@ParameterizedTest
+	@CsvSource({"신분당선,상행역3,하행역3"})
+	void 지하철_노선_조회을_조회한다(String 지하철_노선, String 상행역, String 하행역) {
+		// given
+		ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성(지하철_노선, 상행역, 하행역);
 
+		// when
+		String 생성된_지하철_노선_이름 = 지하철_노선_조회(지하철_노선_생성_응답);
+
+		// then
+		지하철_노선_존재함(생성된_지하철_노선_이름, 지하철_노선);
 	}
 
 	/**
