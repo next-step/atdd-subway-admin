@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.apache.groovy.util.Maps;
 
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.RestAssuredUtils;
@@ -34,8 +33,7 @@ public class StationAcceptanceTestAssured {
     }
 
     public static Long 지하철역_식별자(ExtractableResponse<Response> 지하철역_생성_응답) {
-        String 응답본문 = 지하철역_생성_응답.response().getBody().print();
-        return JsonPath.from(응답본문).getLong(ID);
+        return 지하철역_생성_응답.response().getBody().jsonPath().getLong(ID);
     }
 
 }

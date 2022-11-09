@@ -82,7 +82,7 @@ class LineAcceptanceTest extends SubwayAcceptanceTest {
 	 * Then 해당 지하철 노선 정보는 수정된다
 	 */
 	@ParameterizedTest
-	@CsvSource({"신분당선,가양역,상행역4,하행역4"})
+	@CsvSource({"신분당선,가양역,상행역,하행역"})
 	void 지하철_노선을_수정한다(String 지하철_노선, String 수정할_지하철_노선_이름, String 상행역, String 하행역) {
 		// given
 		ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성(지하철_노선, 상행역, 하행역);
@@ -101,7 +101,7 @@ class LineAcceptanceTest extends SubwayAcceptanceTest {
 	 * Then 해당 지하철 노선 정보는 삭제된다
 	 */
 	@ParameterizedTest
-	@CsvSource({"신분당선,상행역5,하행역5"})
+	@CsvSource({"신분당선,상행역,하행역"})
 	void 지하철_노선을_삭제한다(String 지하철_노선, String 상행역, String 하행역) {
 		// given
 		ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성(지하철_노선, 상행역, 하행역);
