@@ -47,13 +47,13 @@ public class StationAcceptanceTest {
     void createStation() {
         // when
         String expectStationName = "강남역";
-        ExtractableResponse<Response> response = createStation(expectStationName);
+        ExtractableResponse<Response> response = 지하철_역_생성(expectStationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = readStations()
+        List<String> stationNames = 지하철_역_전체_조회()
                 .jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf(expectStationName);
     }
@@ -68,10 +68,10 @@ public class StationAcceptanceTest {
     void createStationWithDuplicateName() {
         // given
         String duplicateStationName = "강남역";
-        createStation("강남역");
+        지하철_역_생성("강남역");
 
         // when
-        ExtractableResponse<Response> response = createStation(duplicateStationName);
+        ExtractableResponse<Response> response = 지하철_역_생성(duplicateStationName);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -88,11 +88,11 @@ public class StationAcceptanceTest {
         // given
         String expectStationName1 = "강남역";
         String expectStationName2 = "연신내역";
-        createStation(expectStationName1);
-        createStation(expectStationName2);
+        지하철_역_생성(expectStationName1);
+        지하철_역_생성(expectStationName2);
 
         // when
-        List<String> stationNames = readStations()
+        List<String> stationNames = 지하철_역_전체_조회()
                 .jsonPath().getList("name", String.class);
 
         // then
@@ -108,19 +108,19 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        long stationId = createStation("불광동불주먹역")
+        long stationId = 지하철_역_생성("불광동불주먹역")
                 .jsonPath().getLong("id");
 
         // when
-        deleteStation(stationId);
+        지하철_역_삭제(stationId);
 
         // then
-        List<String> resultIds = readStations()
+        List<String> resultIds = 지하철_역_전체_조회()
                 .jsonPath().getList("id", String.class);
         assertThat(resultIds).isEmpty();
     }
 
-    public static ExtractableResponse<Response> createStation(String name) {
+    public static ExtractableResponse<Response> 지하철_역_생성(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -132,14 +132,14 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> readStations() {
+    private ExtractableResponse<Response> 지하철_역_전체_조회() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> deleteStation(Long stationId) {
+    private ExtractableResponse<Response> 지하철_역_삭제(Long stationId) {
         return RestAssured.given().log().all()
                 .when().delete("/stations/" + stationId)
                 .then().log().all()
