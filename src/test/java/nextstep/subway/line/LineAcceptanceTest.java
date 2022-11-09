@@ -120,6 +120,34 @@ public class LineAcceptanceTest {
 
     /**
      * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 노선에 포함된 역 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 노선을 조회하면, 노선에 포함된 지하철 역도 조회된다.")
+    @Test
+    void showStations() {
+        // given
+        String stationName1 = "연신내역";
+        String stationName2 = "불광역";
+
+        Long upStationId = StationAcceptanceTest.createStation("연신내역")
+                .jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTest.createStation("불광역")
+                .jsonPath().getLong("id");
+
+        Long lineId = createLine("3호선", "주황색", upStationId, downStationId, 10)
+                .jsonPath().getLong("id");
+
+        // when
+        List<String> stationNames = readLine(lineId)
+                .jsonPath().getList("stations.name", String.class);
+
+        // then
+        assertThat(stationNames).contains(stationName1, stationName2);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다.
      */
