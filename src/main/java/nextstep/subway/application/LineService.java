@@ -5,6 +5,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +30,15 @@ public class LineService {
         Station downStation = stationService.findStation(lineRequest.getDownStationId());
 
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        return LineResponse.of(persistLine);
+    }
+
+    @Transactional
+    public LineResponse updateLine(Long id, LineUpdateRequest request) {
+        Line line = findLineById(id);
+        line.update(request.getName(), request.getColor());
+        Line persistLine = lineRepository.save(line);
+
         return LineResponse.of(persistLine);
     }
 
