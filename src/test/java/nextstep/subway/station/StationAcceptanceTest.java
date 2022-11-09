@@ -73,7 +73,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        //given
+        지하철역_생성("강남역");
+        지하철역_생성("역삼역");
 
+        //when
+        ExtractableResponse<Response> response = 지하철역_목록_조회();
+
+        //then
+        assertThat(response.jsonPath().getList("$").size()).isEqualTo(2);
     }
 
     /**
@@ -84,9 +92,17 @@ public class StationAcceptanceTest {
     void deleteStation() {
     }
 
+    private ExtractableResponse<Response> 지하철역_목록_조회() {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/stations")
+            .then().log().all()
+            .extract();
+    }
+
     private ExtractableResponse<Response> 지하철역_생성(final String name) {
         Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        params.put("name", name);
 
         return 지하철역_생성(params);
     }
