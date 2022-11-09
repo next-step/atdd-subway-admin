@@ -113,7 +113,7 @@ public class StationAcceptanceTest {
         assertThat(resultIds).isEmpty();
     }
 
-    private ExtractableResponse<Response> createStation(String name) {
+    public static ExtractableResponse<Response> createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
