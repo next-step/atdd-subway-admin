@@ -4,11 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -19,16 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
+public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -108,7 +98,7 @@ public class StationAcceptanceTest {
         return jsonPath.getLong("id");
     }
 
-    private static ExtractableResponse<Response> givenCreateStation(String name){
+    public static ExtractableResponse<Response> givenCreateStation(String name){
         return RestAssured.given().log().all()
                 .body(createParam(name))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -142,6 +132,14 @@ public class StationAcceptanceTest {
         HashMap<Object, Object> params = new HashMap<>();
         params.put("name", name);
         return params;
+    }
+
+
+    /// TODO: common으로 이동
+    public static Long getResponseId(ExtractableResponse<Response> response) {
+        return response.body()
+                .jsonPath()
+                .getLong("id");
     }
 
 }
