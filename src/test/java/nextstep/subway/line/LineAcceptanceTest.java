@@ -1,8 +1,9 @@
-package nextstep.subway.station;
+package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,19 +41,13 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-        params.put("upStationName", "강남역");
-        params.put("downStationName", "논현역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/lines")
-                        .then().log().all()
-                        .extract();
+        LineRequest lineRequest = LineRequest.builder()
+                .name("2호선")
+                .color("green")
+                .upStationName("강남역")
+                .downStationName("논현역")
+                .build();
+        ExtractableResponse<Response> response = createLine(lineRequest);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -73,5 +68,38 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선을 조회한다.")
     @Test
     void getLines() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "green");
+        params.put("upStationName", "강남역");
+        params.put("downStationName", "논현역");
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get("/lines")
+                        .then().log().all()
+                        .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        List<Map> lines = RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract().jsonPath().get();
+        assertAll(
+                () -> assertThat(lines.stream().map(map -> map.get("name"))).containsAnyOf("2호선"),
+                () -> assertThat(lines.stream().map(map -> map.get("color"))).containsAnyOf("green"));
+    }
+
+    ExtractableResponse<Response> createLine(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
     }
 }
