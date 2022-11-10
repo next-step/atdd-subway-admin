@@ -43,6 +43,9 @@ public class LineAcceptanceTest {
         Map<String, String> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "green");
+        params.put("upStationName", "강남역");
+        params.put("downStationName", "논현역");
+
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
                         .body(params)
