@@ -51,10 +51,7 @@ public class LineAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        List<Map> lines = RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().get();
+        List<Map> lines = getAllLine().jsonPath().get();
         assertAll(
                 () -> assertThat(lines.stream().map(map -> map.get("name"))).containsAnyOf("2호선"),
                 () -> assertThat(lines.stream().map(map -> map.get("color"))).containsAnyOf("green"));
@@ -69,29 +66,25 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "2호선");
-        params.put("color", "green");
-        params.put("upStationName", "강남역");
-        params.put("downStationName", "논현역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().get("/lines")
-                        .then().log().all()
-                        .extract();
+        createLine(LineRequest.builder()
+                .name("2호선")
+                .color("green")
+                .upStationName("강남역")
+                .downStationName("논현역")
+                .build());
+        createLine(LineRequest.builder()
+                .name("1호선")
+                .color("blue")
+                .upStationName("철산역")
+                .downStationName("김포역")
+                .build());
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        List<Map> lines = RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().get();
+        List<Map> lines = getAllLine().jsonPath().get();
         assertAll(
-                () -> assertThat(lines.stream().map(map -> map.get("name"))).containsAnyOf("2호선"),
-                () -> assertThat(lines.stream().map(map -> map.get("color"))).containsAnyOf("green"));
+                () -> assertThat(lines.stream().map(map -> map.get("name"))).containsAnyOf("2호선","1호선"),
+                () -> assertThat(lines.stream().map(map -> map.get("color"))).containsAnyOf("green","blue"));
+
     }
 
     ExtractableResponse<Response> createLine(LineRequest lineRequest) {
@@ -102,4 +95,12 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+    ExtractableResponse<Response> getAllLine() {
+        return  RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
 }
