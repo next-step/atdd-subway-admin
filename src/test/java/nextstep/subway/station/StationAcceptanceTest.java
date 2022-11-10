@@ -3,13 +3,14 @@ package nextstep.subway.station;
 import static nextstep.subway.utils.StationAcceptanceTestUtils.*;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -29,18 +30,20 @@ class StationAcceptanceTest {
      * Then 지하철역이 생성된다
      * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
-    @DisplayName("지하철역을 생성한다.")
     @Test
+    @DisplayName("지하철역을 생성한다.")
     void createStation() {
         // when
-        // then
-        String stationName = "삼성역";
-        지하철_역명을_입력하면_지하철역을_생성한다(stationName, HttpStatus.CREATED);
+        String 삼성역 = "삼성역";
+        ExtractableResponse<Response> 저장된_삼성역 = 지하철역을_생성한다(삼성역);
 
         // then
-        List<String> returnStationNames = 지하철_목록을_조회하여_지하철_역명_리스트를_반환한다(HttpStatus.OK);
+        지하철역_생성을_확인한다(저장된_삼성역);
+
+        // then
+        List<String> 조회된_지하철역_목록 = 지하철_목록을_조회한다();
         // 첫 번째 변수는 실제 반환된 리스트, 두번째 부터는 검증할 지하철 역명을 입력한다.
-        지하철_목록_검증_입력된_지하철역이_존재(returnStationNames, stationName);
+        지하철_목록_검증_입력된_지하철역이_존재(조회된_지하철역_목록, 삼성역);
     }
 
     /**
@@ -48,16 +51,18 @@ class StationAcceptanceTest {
      * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
      * Then 지하철역 생성이 안된다
      */
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
+    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     void createStationWithDuplicateName() {
         // given
-        String stationName = "강남역";
-        지하철_역명을_입력하면_지하철역을_생성한다(stationName, HttpStatus.CREATED);
+        String 강남역 = "강남역";
+        지하철역을_생성한다(강남역);
 
         // when
-        // 생성이 실패하였기 때문에 예측하는 응답 상태가 잘못된 요청이다.
-        지하철_역명을_입력하면_지하철역을_생성한다(stationName, HttpStatus.BAD_REQUEST);
+        ExtractableResponse<Response> 저장된_강남역 = 지하철역을_생성한다(강남역);
+
+        // then
+        지하철역_생성_실패를_확인한다(저장된_강남역);
     }
 
     /**
@@ -65,20 +70,20 @@ class StationAcceptanceTest {
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
     @Test
+    @DisplayName("지하철역을 조회한다.")
     void getStations() {
         // given
-        String stationName = "잠실역";
-        String stationName2 = "몽촌토성역";
-        지하철_역명을_입력하면_지하철역을_생성한다(stationName, HttpStatus.CREATED);
-        지하철_역명을_입력하면_지하철역을_생성한다(stationName2, HttpStatus.CREATED);
+        String 잠실역 = "잠실역";
+        String 몽촌토성역 = "몽촌토성역";
+        지하철역을_생성한다(잠실역);
+        지하철역을_생성한다(몽촌토성역);
 
         // when
-        List<String> returnStationNames = 지하철_목록을_조회하여_지하철_역명_리스트를_반환한다(HttpStatus.OK);
+        List<String> 조회된_지하철역_목록 = 지하철_목록을_조회한다();
 
         // then
-        지하철_목록_검증_입력된_지하철역이_존재(returnStationNames, stationName, stationName2);
+        지하철_목록_검증_입력된_지하철역이_존재(조회된_지하철역_목록, 잠실역, 몽촌토성역);
     }
 
     /**
@@ -86,18 +91,18 @@ class StationAcceptanceTest {
      * When 그 지하철역을 삭제하면
      * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
-    @DisplayName("지하철역을 제거한다.")
     @Test
+    @DisplayName("지하철역을 제거한다.")
     void deleteStation() {
         // given
-        String stationName = "잠실역";
-        Long stationId = 지하철_역명을_입력하면_지하철역을_생성하고_해당_지하철_ID를_반환한다(stationName, HttpStatus.CREATED);
+        String 잠실역 = "잠실역";
+        ExtractableResponse<Response> 저장된_잠실역 = 지하철역을_생성한다(잠실역);
 
         // when
-        지하철_역을_제거한다(stationId, HttpStatus.NO_CONTENT);
+        지하철_역을_제거한다(저장된_잠실역);
 
         // then
-        List<String> returnStationNames = 지하철_목록을_조회하여_지하철_역명_리스트를_반환한다(HttpStatus.OK);
-        지하철_목록_검증_입력된_지하철역이_존재하지_않음(returnStationNames, stationName);
+        List<String> 조회된_지하철역_목록 = 지하철_목록을_조회한다();
+        지하철_목록_검증_입력된_지하철역이_존재하지_않음(조회된_지하철역_목록, 잠실역);
     }
 }
