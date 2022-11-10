@@ -9,12 +9,15 @@ public class Line extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
+    @Column
+    private String color;
 
     public Line() {
     }
 
-    public Line(String name) {
+    public Line(String name,String color) {
         this.name = name;
+        this.color = color;
     }
 
     public Long getId() {
@@ -23,5 +26,9 @@ public class Line extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public String getColor() {
+        return color;
     }
 }
