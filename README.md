@@ -1,54 +1,47 @@
-<p align="center">
-    <img width="200px;" src="https://raw.githubusercontent.com/woowacourse/atdd-subway-admin-frontend/master/images/main_logo.png"/>
-</p>
-<p align="center">
-  <img alt="npm" src="https://img.shields.io/badge/npm-6.14.15-blue">
-  <img alt="node" src="https://img.shields.io/badge/node-14.18.2-blue">
-  <a href="https://edu.nextstep.camp/c/R89PYi5H" alt="nextstep atdd">
-    <img alt="Website" src="https://img.shields.io/website?url=https%3A%2F%2Fedu.nextstep.camp%2Fc%2FR89PYi5H">
-  </a>
-  <img alt="GitHub" src="https://img.shields.io/github/license/next-step/atdd-subway-admin">
-</p>
-
-<br>
-
 # 지하철 노선도 미션
 [ATDD 강의](https://edu.nextstep.camp/c/R89PYi5H) 실습을 위한 지하철 노선도 애플리케이션
 
-<br>
+---
 
-## 🚀 Getting Started
+# 1단계 - 지하철역 인수 테스트 작성
 
-### Install
-#### npm 설치
-```
-cd frontend
-npm install
-```
-> `frontend` 디렉토리에서 수행해야 합니다.
+## 미션 소개
+- 구현된 기능을 대상으로 인수 테스트를 작성하는 단계입니다.
+- RestAssured를 활용하여 인수 테스트를 만들어 보세요
 
-### Usage
-#### webpack server 구동
-```
-npm run dev
-```
-#### application 구동
-```
-./gradlew bootRun
-```
-<br>
+## 요구사항
 
-## ✏️ Code Review Process
-[텍스트와 이미지로 살펴보는 온라인 코드 리뷰 과정](https://github.com/next-step/nextstep-docs/tree/master/codereview)
+### 기능 요구사항
+- 지하철역 관련 인수 테스트를 완성하세요.
+    - 지하철역 등록 인수 테스트 작성하기
+    - 지하철역 목록 조회 인수 테스트 작성하기
+    - 지하철역 삭제 인수 테스트 작성하기
+    
+### 프로그래밍 요구사항
+인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링 하세요.
 
-<br>
+### API 명세
+![img.png](img.png)
 
-## 🐞 Bug Report
+## 인수테스트 조건명세
 
-버그를 발견한다면, [Issues](https://github.com/next-step/atdd-subway-admin/issues) 에 등록해주세요 :)
+### 지하철역 등록
+- Feature: 지하철역을 등록한다.
+- Scenario: 새로운 지하철역 등록
+- Given: 등록하고자 하는 지하철역이 미등록 상태이다.
+- When: 사용자는 등록하고자 하는 지하철역의 정보를 입력하고 등록을 요청한다. 
+- Then: 등록이 정상적으로 됐다는 응답을 받는다.
 
-<br>
+### 지하철역 목록 조회
+- Feature: 지하철역의 목록 리스트를 조회한다.
+- Scenario: 등록되어 있는 지하철역 리스트 조회
+- Given: 지하철역이 등록되어 있다.
+- When: 사용자는 지하철역의 리스트 정보를 조회한다.
+- Then: 등록되어있는 모든 지하철역의 리스트 정보를 응답 받는다.
 
-## 📝 License
-
-This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+### 지하철역 삭제
+- Feature: 지하철역을 삭제한다.
+- Scenario: 기존 지하철역 삭제
+- Given: 삭제하고자 하는 지하철역이 등록 상태이다.
+- When: 사용자는 삭제하고자 하는 지하철역의 정보를 입력하고 삭제를 요청한다.
+- Then: 삭제가 정상적으로 됐다는 응답을받는다.
