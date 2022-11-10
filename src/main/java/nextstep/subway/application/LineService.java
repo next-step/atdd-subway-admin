@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,21 +17,25 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private final StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.stationService = stationService;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest request) {
-        Station upStation = stationService.findStation(request.getUpStationId());
-        Station downStation = stationService.findStation(request.getDownStationId());
+        Station upStation = findStation(request.getUpStationId());
+        Station downStation = findStation(request.getDownStationId());
 
         Line savedLine = lineRepository.save(request.toLine(upStation, downStation));
         return LineResponse.of(savedLine);
+    }
+
+    private Station findStation(Long id) {
+        return stationRepository.findById(id).orElseThrow(NoResultException::new);
     }
 
     @Transactional
