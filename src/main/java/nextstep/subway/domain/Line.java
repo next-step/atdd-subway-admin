@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.Objects;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -10,21 +11,26 @@ import javax.persistence.Id;
 @Entity
 public class Line extends BaseEntity {
 
+    @Embedded
+    private final Sections sections = new Sections();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(unique = true)
     private String name;
-
     private String color;
 
     protected Line() {
     }
 
-    public Line(String name, String color) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
+        this.sections.addSection(new Section(this, upStation, downStation, distance));
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 
     public Long getId() {
