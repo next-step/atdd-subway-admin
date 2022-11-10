@@ -20,8 +20,10 @@ public class Line extends BaseEntity{
     private int distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name="fk_line_up_station_to_station"))
     private Station upStation;
 
+    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name="fk_line_down_station_to_station"))
     @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
