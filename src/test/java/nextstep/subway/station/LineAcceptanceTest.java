@@ -33,28 +33,38 @@ public class LineAcceptanceTest {
     /**
      * Given 두개의 지하철 역이 등록되어 있을 때
      * When 지하철 노선을 생성하면
-     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+     * Then 응답에 요청했던 정보가 모두 포함되어 있다.
      */
     @Test
     public void 지하철노선_생성() {
         List<Long> stationIds = 두개의_지하철_역이_등록되어_있음();
 
-        지하철_노선을_생성한다("노선이름", "bg-red-600", 10, stationIds);
+        ExtractableResponse<Response> response = 지하철_노선을_생성한다("노선이름", "bg-red-600", 10L, stationIds);
 
-        지하철_노선_목록_조회시_생성한_노선을_찾을_수_있다("노선이름");
+        응답에_요청했던_정보가_모두_포함되어_있다(response,"노선이름","bg-red-600",10L,stationIds);
     }
 
-    private void 지하철_노선_목록_조회시_생성한_노선을_찾을_수_있다(String name) {
+    private void 응답에_요청했던_정보가_모두_포함되어_있다(ExtractableResponse<Response> response, String 노선이름, String color, long l, List<Long> stationIds) {
+        assertThat(response.jsonPath().getLong("id")).isPositive();
+        assertThat(response.jsonPath().getString("name")).isEqualTo(노선이름);
+        assertThat(response.jsonPath().getString("color")).isEqualTo(color);
+        assertThat(response.jsonPath().getLong("distance")).isEqualTo(l);
+        assertThat(response.jsonPath().getList("stations.id")).contains(stationIds.get(0).intValue(),stationIds.get(1).intValue());
+
+    }
+
+    private void 응답에_요청했던_정보가_모두_포함되어_있다(String name) {
         ExtractableResponse<Response> request = RequestUtil.getRequest("/lines");
         assertThat(request.jsonPath().getString("name")).isEqualTo(name);
     }
 
-    private void 지하철_노선을_생성한다(String lineName, String lineColor, int distance, List<Long> stationIds) {
+    private ExtractableResponse<Response> 지하철_노선을_생성한다(String lineName, String lineColor, Long distance, List<Long> stationIds) {
         Long upStationId = stationIds.get(0);
         Long downStationId = stationIds.get(1);
         LineRequest request = new LineRequest(lineName, lineColor, distance, upStationId, downStationId);
         ExtractableResponse<Response> response = RequestUtil.postRequest("/lines", request);
         assertStatus(response, HttpStatus.CREATED);
+        return response;
     }
 
     private List<Long> 두개의_지하철_역이_등록되어_있음() {

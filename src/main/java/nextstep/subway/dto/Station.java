@@ -13,11 +13,15 @@ public class Station {
         this.name = name;
     }
 
-    protected Long getId() {
+    public static Station of(nextstep.subway.domain.Station entity) {
+        return new Station(entity.getId(),entity.getName());
+    }
+
+    public Long getId() {
         return this.id;
     }
 
-    protected String getName() {
+    public String getName() {
         return this.name;
     }
 }
