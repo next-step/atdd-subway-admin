@@ -26,6 +26,9 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private Long distance;
 
+    protected Line() {
+    }
+
     public Line(String name, String color, Long distance) {
         this.name = name;
         this.color = color;

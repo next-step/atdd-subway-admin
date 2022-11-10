@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class LineController {
@@ -24,5 +25,10 @@ public class LineController {
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest request){
         LineResponse response = lineService.createLine(request);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
+    }
+
+    @GetMapping("/lines")
+    public ResponseEntity<List<LineResponse>> queryLines(){
+        return ResponseEntity.ok().body(lineService.findAllLines());
     }
 }

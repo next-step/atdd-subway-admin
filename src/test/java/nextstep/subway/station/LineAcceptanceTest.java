@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static nextstep.subway.station.StationAcceptanceTest.*;
@@ -69,9 +70,9 @@ public class LineAcceptanceTest {
 
     private void 지하철_노선_2개를_생성한다() {
         List<Long> ids = 두개의_지하철_역이_등록되어_있음("강남역", "부산역");
-        지하철_노선을_생성한다("노선1", "color", 100L, ids);
-        ids = 두개의_지하철_역이_등록되어_있음("서울역", "강릉역");
-        지하철_노선을_생성한다("노선2", "color", 100L, ids);
+        지하철_노선을_생성한다("노선1", "color1", 100L, ids);
+        List<Long> ids2 = 두개의_지하철_역이_등록되어_있음("서울역", "강릉역");
+        지하철_노선을_생성한다("노선2", "color2", 100L, ids2);
     }
 
     private void 응답에_요청했던_정보가_모두_포함되어_있다(ExtractableResponse<Response> response, String 노선이름, String color, long l, List<Long> stationIds) {
@@ -98,9 +99,8 @@ public class LineAcceptanceTest {
     }
 
     private List<Long> 두개의_지하철_역이_등록되어_있음(String upStationName, String downStationName) {
-        지하철역을_생성한다(upStationName);
-        지하철역을_생성한다(downStationName);
-        ExtractableResponse<Response> allStations = 모든_지하철역을_조회한다();
-        return allStations.jsonPath().getList("id", Long.class);
+        ExtractableResponse<Response> station1 = 지하철역을_생성한다(upStationName);
+        ExtractableResponse<Response> station2 = 지하철역을_생성한다(downStationName);
+        return Arrays.asList(station1.jsonPath().getLong("id"),station2.jsonPath().getLong("id"));
     }
 }

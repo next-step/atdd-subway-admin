@@ -9,6 +9,9 @@ import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class LineService {
 
@@ -29,5 +32,12 @@ public class LineService {
         line.setStations(upStationProxy,downStationProxy);
         Line save = lineRepository.save(line);
         return LineResponse.of(save);
+    }
+
+    public List<LineResponse> findAllLines() {
+        return lineRepository.findAll()
+                .stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 }
