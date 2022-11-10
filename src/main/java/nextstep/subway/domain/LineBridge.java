@@ -7,7 +7,7 @@ import java.util.Objects;
 
 
 @Embeddable
-class LineEnd {
+class LineBridge {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
