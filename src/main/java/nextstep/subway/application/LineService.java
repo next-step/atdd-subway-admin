@@ -1,28 +1,25 @@
 package nextstep.subway.application;
 
-import java.util.List;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.LineNotFoundException;
-import nextstep.subway.exception.StationNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
 
-	private final StationRepository stationRepository;
+	private final StationService stationService;
 	private final LineRepository lineRepository;
 
-	public LineService(StationRepository stationRepository, LineRepository lineRepository) {
-		this.stationRepository = stationRepository;
+	public LineService(StationService stationService, LineRepository lineRepository) {
+		this.stationService = stationService;
 		this.lineRepository = lineRepository;
 	}
 
@@ -68,6 +65,6 @@ public class LineService {
 	}
 
 	private Station getStation(Long stationId) {
-		return stationRepository.findById(stationId).orElseThrow(() -> new StationNotFoundException(stationId));
+		return stationService.getStation(stationId);
 	}
 }
