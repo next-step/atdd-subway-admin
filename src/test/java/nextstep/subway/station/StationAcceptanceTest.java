@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.util.RequestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -133,20 +134,14 @@ public class StationAcceptanceTest {
         return response.jsonPath().getList(path, mappingType);
     }
 
-    private static void assertStatus(ExtractableResponse<Response> response, HttpStatus status) {
+    public static void assertStatus(ExtractableResponse<Response> response, HttpStatus status) {
         assertThat(response.statusCode()).isEqualTo(status.value());
     }
 
-    private static ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
+    public static ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
+        return RequestUtil.postRequest("/stations",params);
     }
 
     private static void 지하철역_생성이_안된다(ExtractableResponse<Response> response) {
@@ -170,11 +165,7 @@ public class StationAcceptanceTest {
         assertThat(getList(response, "id", Integer.class).size()).isEqualTo(stationCount);
     }
 
-    private static ExtractableResponse<Response> 모든_지하철역을_조회한다() {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
+    public static ExtractableResponse<Response> 모든_지하철역을_조회한다() {
+        return RequestUtil.getRequest("/stations");
     }
 }
