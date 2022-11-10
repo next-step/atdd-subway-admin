@@ -131,7 +131,7 @@ public class StationAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.body().jsonPath().getList("name")).hasSize(2);
+        assertThat(response.body().jsonPath().getList("$")).hasSize(2);
         assertThat(response.body().jsonPath().getList("name")).containsExactly("강남역", "분당역");
     }
 
@@ -143,5 +143,35 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+
+        ExtractableResponse<Response> givenResponse =
+            RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+        Integer id = givenResponse.body().jsonPath().get("id");
+
+        // when
+        RestAssured.given().log().all()
+            .body(params1)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete("/stations/" + id)
+            .then().log().all();
+
+        // then
+        ExtractableResponse<Response> response =
+            RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.body().jsonPath().getList("$")).hasSize(0);
     }
 }
