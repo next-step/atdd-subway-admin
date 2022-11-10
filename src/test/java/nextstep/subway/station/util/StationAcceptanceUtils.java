@@ -10,6 +10,7 @@ public class StationAcceptanceUtils {
 	private static final String STATION_URL = "/stations";
 
 	private StationAcceptanceUtils() {
+		throw new AssertionError("Utility class cannot be instantiated");
 	}
 
 	public static ExtractableResponse<Response> 지하철역_생성_요청(final String name) {

@@ -12,6 +12,10 @@ public class RestAssuredUtils {
 
 	private static final RequestSpecification requestSpecification;
 
+	private RestAssuredUtils() {
+		throw new AssertionError("Utility class cannot be instantiated");
+	}
+
 	static {
 		requestSpecification = RestAssured.given().log().all()
 			.contentType(MediaType.APPLICATION_JSON_VALUE);

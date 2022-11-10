@@ -10,6 +10,7 @@ import io.restassured.response.Response;
 public class AssertionsUtils {
 
 	private AssertionsUtils() {
+		throw new AssertionError("Utility class cannot be instantiated");
 	}
 
 	public static void assertStatusCode(final ExtractableResponse<Response> response, final HttpStatus status) {
