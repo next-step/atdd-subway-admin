@@ -3,33 +3,36 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 
-import java.util.List;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.jdbc.Sql;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.util.PreDataUtil;
 
-@Sql("/truncate.sql")
 @DisplayName("지하철노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
+    @Autowired
+    PreDataUtil preDataUtil;
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        preDataUtil.truncate();
+        preDataUtil.station(1L, "역1", null);
+        preDataUtil.station(2L, "역2", null);
     }
 
     /**
@@ -41,22 +44,49 @@ public class LineAcceptanceTest {
     void createLine() {
         // when
         LineRequestDto lineRequestDto = new LineRequestDto("신분당선", "bg-red-600", 1L, 2L, 10L);
-        ExtractableResponse<Response> createResponse = RestAssured.given().log().all()
+        ExtractableResponse<Response> createResponse = createLine(lineRequestDto);
+        checkCreateResponse(lineRequestDto, createResponse);
+
+        // then
+        ExtractableResponse<Response> fetchResponse = fetchLines();
+        checkFetchResponse(lineRequestDto, fetchResponse);
+    }
+
+    private void checkFetchResponse(LineRequestDto lineRequestDto, ExtractableResponse<Response> fetchResponse) {
+        assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
+        assertThat(fetchResponse.jsonPath().getList(".")).hasSize(1);
+        assertThat(fetchResponse.jsonPath().getLong("[0].id")).isNotNull();
+        assertThat(fetchResponse.jsonPath().getString("[0].name")).isEqualTo(lineRequestDto.getName());
+        assertThat(fetchResponse.jsonPath().getString("[0].color")).isEqualTo(lineRequestDto.getColor());
+        assertThat(fetchResponse.jsonPath().getList("[0].stations")).hasSize(2);
+        assertThat(fetchResponse.jsonPath().getList("[0].stations.id", Long.class)).containsExactly(1L, 2L);
+        assertThat(fetchResponse.jsonPath().getList("[0].stations.name", String.class)).containsExactly("역1", "역2");
+    }
+
+    private void checkCreateResponse(LineRequestDto lineRequestDto, ExtractableResponse<Response> createResponse) {
+        assertThat(HttpStatus.valueOf(createResponse.statusCode())).isEqualTo(CREATED);
+        assertThat(createResponse.jsonPath().getLong("id")).isNotNull();
+        assertThat(createResponse.jsonPath().getString("name")).isEqualTo(lineRequestDto.getName());
+        assertThat(createResponse.jsonPath().getList("stations.id", Long.class))
+            .containsExactly(lineRequestDto.getUpStationId(), lineRequestDto.getDownStationId());
+        assertThat(createResponse.jsonPath().getList("stations.name", String.class)).hasSize(2);
+    }
+
+    private ExtractableResponse<Response> fetchLines() {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> createLine(LineRequestDto lineRequestDto) {
+        return RestAssured.given().log().all()
             .body(lineRequestDto)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines")
             .then().log().all()
             .extract();
-
-        ExtractableResponse<Response> listResponse = RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().get("/lines")
-            .then().log().all()
-            .extract();
-
-        // then
-        assertThat(HttpStatus.valueOf(createResponse.statusCode())).isEqualTo(CREATED);
-        assertThat(HttpStatus.valueOf(listResponse.statusCode())).isEqualTo(OK);
     }
 
     static class LineRequestDto {
@@ -93,15 +123,6 @@ public class LineAcceptanceTest {
             this.downStationId = downStationId;
             this.distance = distance;
         }
-    }
-
-    static class LineResponseDto {
-        private Long id;
-        private String name;
-        List<StationDto> stations;
-    }
-
-    private static class StationDto {
     }
 
     /**
