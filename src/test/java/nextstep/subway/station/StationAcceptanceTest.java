@@ -1,6 +1,5 @@
 package nextstep.subway.station;
 
-import static java.util.stream.Collectors.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Arrays;
@@ -11,7 +10,6 @@ import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -22,8 +20,6 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 
 @Sql("/truncate.sql")
 @DisplayName("지하철역 관련 기능")
@@ -31,9 +27,6 @@ import nextstep.subway.domain.StationRepository;
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
-
-    @Autowired
-    StationRepository stationRepository;
 
     @BeforeEach
     public void setUp() {
@@ -102,11 +95,6 @@ public class StationAcceptanceTest {
         assertThat(responseJson.getList("id", Long.class)).hasSize(2);
         assertThat(responseJson.getList("createdDate", String.class)).hasSize(2);
         assertThat(responseJson.getList("modifiedDate", String.class)).hasSize(2);
-
-        List<Station> savedStations = stationRepository.findAll();
-        assertThat(savedStations).hasSize(2);
-        List<String> responseStations = savedStations.stream().map(Station::getName).collect(toList());
-        assertThat(responseStations).containsAll(names);
     }
 
     /**
@@ -132,9 +120,6 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         List<String> stationsNames = fetchStations().jsonPath().getList("name", String.class);
         assertThat(stationsNames).doesNotContain(deletedName);
-        List<String> savedStationsNames = stationRepository.findAll()
-            .stream().map(Station::getName).collect(toList());
-        assertThat(savedStationsNames).doesNotContain(deletedName);
     }
 
     private ExtractableResponse<Response> deleteStations(Long id) {
