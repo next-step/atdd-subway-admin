@@ -45,7 +45,7 @@ public class StationAcceptanceTest {
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        assertThat(get_station_list()).containsAnyOf("강남역");
+        assertThat(get_station_name_list()).containsAnyOf("강남역");
     }
 
     /**
@@ -79,7 +79,7 @@ public class StationAcceptanceTest {
         create_station("강남역");
 
         // when
-        List<String> station_list = get_station_list();
+        List<String> station_list = get_station_name_list();
 
         // then
         assertThat(station_list.size()).isEqualTo(2);
@@ -101,7 +101,7 @@ public class StationAcceptanceTest {
         delete_station(stationId);
 
         // then
-        assertThat(get_station_list().size()).isEqualTo(0);
+        assertThat(get_station_name_list().size()).isEqualTo(0);
     }
 
     @DisplayName("지하철 역 생성 인수 테스트")
@@ -114,11 +114,10 @@ public class StationAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all();
-//                .statusCode(HttpStatus.CREATED.value());
     }
 
     @DisplayName("지하철 역 목록 조회 인수 테스트")
-    private static List<String> get_station_list() {
+    private static List<String> get_station_name_list() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
