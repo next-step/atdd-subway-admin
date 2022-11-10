@@ -41,26 +41,13 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = getAllStation().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -73,23 +60,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        createStation("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createStation("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -123,6 +97,17 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        createStation("강남역");
+        long removeStationId = createStation("논현역").jsonPath().getLong("id");
+
+        removeStation(removeStationId);
+        ExtractableResponse<Response> response = getAllStation();
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("name")).hasSize(1),
+                () -> assertThat(response.jsonPath().getList("name")).containsExactlyInAnyOrder("강남역")
+        );
     }
 
     ExtractableResponse<Response> createStation(String stationName) {
@@ -139,6 +124,14 @@ public class StationAcceptanceTest {
     ExtractableResponse<Response> getAllStation() {
         return  RestAssured.given().log().all()
                 .when().get("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    void removeStation(long id) {
+        RestAssured.given().log().all()
+                .pathParam("id", id)
+                .when().delete("/stations/{id}")
                 .then().log().all()
                 .extract();
     }
