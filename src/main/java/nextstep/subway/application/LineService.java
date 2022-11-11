@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.LineModifyRequest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class LineService {
         Station upStationProxy = stationRepository.getById(request.getUpStationId());
         Station downStationProxy = stationRepository.getById(request.getDownStationId());
         Line line = request.toLine();
-        line.setStations(upStationProxy,downStationProxy);
+        line.setStations(upStationProxy, downStationProxy);
         Line save = lineRepository.save(line);
         return LineResponse.of(save);
     }
@@ -44,9 +45,18 @@ public class LineService {
 
     public LineResponse findLine(Long lineId) {
         Optional<Line> byId = lineRepository.findById(lineId);
-        if(!byId.isPresent()){
+        if (!byId.isPresent()) {
             throw new IllegalArgumentException("존재하지 않는 노선입니다");
         }
         return LineResponse.of(byId.get());
+    }
+
+    @Transactional
+    public void modifyLine(Long lineId, LineModifyRequest request) {
+        Optional<Line> byId = lineRepository.findById(lineId);
+        if (!byId.isPresent()) {
+            throw new IllegalArgumentException("존재하지 않는 노선입니다");
+        }
+        byId.get().modifyLine(request.getName(),request.getColor());
     }
 }

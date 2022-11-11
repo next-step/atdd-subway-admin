@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -65,5 +67,14 @@ public class Line extends BaseEntity {
 
     public Long getDistance() {
         return this.distance;
+    }
+
+    public void modifyLine(String name, String color) {
+        if(StringUtils.hasText(name) && !this.name.equals(name)){
+            this.name = name;
+        }
+        if(StringUtils.hasText(color) && !this.color.equals(color)){
+            this.color = color;
+        }
     }
 }
