@@ -39,7 +39,7 @@ public class StationAcceptanceTestUtils {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    public static ExtractableResponse<Response> 지하철_역을_제거한다(ExtractableResponse<Response> response) {
+    public static ExtractableResponse<Response> 지하철역을_제거한다(ExtractableResponse<Response> response) {
         return given().log().all()
                 .pathParam(ID, response.jsonPath().getLong(ID))
                 .when().delete(STATION_BASE_PATH + PATH_VARIABLE_ID)

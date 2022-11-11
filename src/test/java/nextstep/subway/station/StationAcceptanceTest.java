@@ -80,7 +80,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 저장된_잠실역 = 지하철역을_생성한다(잠실역);
 
         // when
-        지하철_역을_제거한다(저장된_잠실역);
+        지하철역을_제거한다(저장된_잠실역);
 
         // then
         List<String> 조회된_지하철역_목록 = 지하철_목록을_조회한다();

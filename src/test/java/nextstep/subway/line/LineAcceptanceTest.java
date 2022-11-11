@@ -1,16 +1,10 @@
 package nextstep.subway.line;
 
-import static io.restassured.RestAssured.given;
-import static nextstep.subway.utils.CommonTestFixture.ID;
-import static nextstep.subway.utils.CommonTestFixture.LINE_BASE_PATH;
-import static nextstep.subway.utils.CommonTestFixture.PATH_VARIABLE_ID;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.*;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.StationResponse;
@@ -18,8 +12,6 @@ import nextstep.subway.utils.StationAcceptanceTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -107,22 +99,11 @@ class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 저장된_경춘선 = 지하철노선을_생성한다(경춘선_생성_요청);
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "수인분당선");
-        params.put("color", "bg-yellow-500");
-
-        given().log().all()
-                .pathParam(ID, 저장된_경춘선.jsonPath().getLong(ID))
-                .params(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(LINE_BASE_PATH + PATH_VARIABLE_ID)
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+        지하철노선을_수정한다(저장된_경춘선, 수인분당선, "bg-yellow-500");
 
         // then
         ExtractableResponse<Response> 조회된_지하철노선 = 지하철노선을_조회한다(저장된_경춘선);
-        지하철노선_검증_입력된_지하철노선이_존재(조회된_지하철노선, "수인분당선");
+        지하철노선_검증_입력된_지하철노선이_존재(조회된_지하철노선, 수인분당선);
     }
 
     /**
