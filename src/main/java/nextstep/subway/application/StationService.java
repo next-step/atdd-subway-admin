@@ -37,4 +37,9 @@ public class StationService {
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
+
+    public Station findById(final Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException(stationId + "번 역을 찾을 수 없습니다."));
+    }
 }

@@ -1,25 +1,35 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineRequest;
-
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
     @Id
+    @Column(name = "line_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     private String name;
     @Column
     private String color;
+    @OneToMany(mappedBy = "line")
+    private final List<Station> stations = new ArrayList<>();
 
     protected Line() {
     }
 
-    public Line(final String name, final String color) {
+    public Line(String name, String color, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
+        this.stations.add(upStation);
+        this.stations.add(downStation);
+    }
+
+    public static Line of(final String name, final String color,
+                          final Station upStation, final Station downStation) {
+        return new Line(name, color, upStation, downStation);
     }
 
     public Long getId() {
@@ -40,5 +50,9 @@ public class Line extends BaseEntity {
 
     public void changeColor(final String color) {
         this.color = color;
+    }
+
+    public List<Station> getStations() {
+        return stations;
     }
 }

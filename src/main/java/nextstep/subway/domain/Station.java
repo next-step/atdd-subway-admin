@@ -10,7 +10,11 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id")
+    private Line line;
+
+    protected Station() {
     }
 
     public Station(String name) {
