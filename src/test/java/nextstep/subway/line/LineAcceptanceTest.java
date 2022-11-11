@@ -71,13 +71,13 @@ public class LineAcceptanceTest {
         long nonhyunStationId = createStation("논현역").jsonPath().getLong("id");
         long kildongStationId = createStation("길동역").jsonPath().getLong("id");
         long sinlimStationId = createStation("신림역").jsonPath().getLong("id");
-        createLine(LineRequest.builder()
+        지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
                 .upStationId(gangnamStationId)
                 .downStationId(nonhyunStationId)
                 .build());
-        createLine(LineRequest.builder()
+        지하철_노선_등록(LineRequest.builder()
                 .name("1호선")
                 .color("blue")
                 .upStationId(kildongStationId)
@@ -108,7 +108,7 @@ public class LineAcceptanceTest {
         //given
         long upStationId = createStation("강남역").jsonPath().getLong("id");
         long downStationId = createStation("논현역").jsonPath().getLong("id");
-        long lineId = createLine(LineRequest.builder()
+        long lineId = 지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
                 .upStationId(upStationId)
@@ -141,7 +141,7 @@ public class LineAcceptanceTest {
         //given
         long upStationId = createStation("강남역").jsonPath().getLong("id");
         long downStationId = createStation("논현역").jsonPath().getLong("id");
-        createLine(LineRequest.builder()
+        지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
                 .upStationId(upStationId)
@@ -168,13 +168,13 @@ public class LineAcceptanceTest {
         long nonhyunStationId = createStation("논현역").jsonPath().getLong("id");
         long kildongStationId = createStation("길동역").jsonPath().getLong("id");
         long sinlimStationId = createStation("신림역").jsonPath().getLong("id");
-        createLine(LineRequest.builder()
+        지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
                 .upStationId(gangnamStationId)
                 .downStationId(nonhyunStationId)
                 .build());
-        long lineId = createLine(LineRequest.builder()
+        long lineId = 지하철_노선_등록(LineRequest.builder()
                 .name("1호선")
                 .color("blue")
                 .upStationId(kildongStationId)
@@ -199,7 +199,7 @@ public class LineAcceptanceTest {
         //given
         long upStationId = createStation("강남역").jsonPath().getLong("id");
         long downStationId = createStation("논현역").jsonPath().getLong("id");
-        long lineId = createLine(LineRequest.builder()
+        long lineId = 지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
                 .upStationId(upStationId)
@@ -219,7 +219,7 @@ public class LineAcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> createLine(LineRequest lineRequest) {
+    private ExtractableResponse<Response> 지하철_노선_등록(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
