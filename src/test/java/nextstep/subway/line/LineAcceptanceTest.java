@@ -146,6 +146,17 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선을 삭제한다")
     @Test
     void deleteLine() {
+        // given
+        LineRequestDto lineRequest = new LineRequestDto("신분당선", "bg-red-600", 1L, 2L, 10L);
+        ExtractableResponse<Response> createResponse = createLine(lineRequest);
+        long lineId = createResponse.jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> removeResponse = removeLine(lineId);
+        assertThat(HttpStatus.valueOf(removeResponse.statusCode())).isEqualTo(NO_CONTENT);
+
+        // then
+        assertThat(HttpStatus.valueOf(fetchLine(lineId).statusCode())).isEqualTo(NOT_FOUND);
     }
 
     private void checkFetchedLines(ExtractableResponse<Response> fetchResponse, LineRequestDto... lineRequests) {
@@ -195,6 +206,13 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> removeLine(long lineId) {
+        return RestAssured.given().log().all()
+            .when().delete("/lines/" + lineId)
             .then().log().all()
             .extract();
     }
