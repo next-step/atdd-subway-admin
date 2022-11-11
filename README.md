@@ -105,11 +105,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 - 도메인
   - 지하철 역
-  - 지하철 구간
-    - 상행 방향
-    - 하행 방향
-    - 길이
-    - 지하철 노선
   - 지하철 노선
     - 노선 이름
     - 노선 색
