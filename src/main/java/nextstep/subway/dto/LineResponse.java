@@ -24,4 +24,19 @@ public class LineResponse {
         stations = Arrays.asList(StationResponse.of(upStation), StationResponse.of(downStation));
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
+    }
 }

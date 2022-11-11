@@ -22,4 +22,17 @@ public class LineRequest {
     public Long getDownStationId() {
         return downStationId;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Integer getDistance() {
+        return distance;
+    }
+
 }
