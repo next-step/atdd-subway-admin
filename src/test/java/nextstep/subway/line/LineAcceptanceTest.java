@@ -62,7 +62,7 @@ public class LineAcceptanceTest {
      * When 지하철노선 목록을 조회하면
      * Then 2개의 지하철노선을 응답 받는다
      */
-    @DisplayName("지하철노선을 조회한다.")
+    @DisplayName("지하철노선을 전부조회한다.")
     @Test
     void getLines() {
         // given
@@ -86,6 +86,39 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(lines.stream().map(map -> map.get("name"))).containsAnyOf("2호선","1호선"),
                 () -> assertThat(lines.stream().map(map -> map.get("color"))).containsAnyOf("green","blue"));
+
+    }
+
+    /**
+     * Given 지하철노선을 생성하고
+     * When 지하철노선을 조회하면
+     * Then 지하철노선의 정보를 응답받는다
+     */
+    @DisplayName("지하철노선을 조회한다.")
+    @Test
+    void getLine() {
+        // given
+        long lineId = createLine(LineRequest.builder()
+                .name("2호선")
+                .color("green")
+                .upStationName("강남역")
+                .downStationName("논현역")
+                .build()).jsonPath().getLong("id");
+
+        // then
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("id", lineId)
+                .when().get("/lines/{id}")
+                .then().log().all()
+                .extract();
+
+        //then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getString("name")).isEqualTo("2호선"),
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("green")
+        );
+
 
     }
 
