@@ -1,8 +1,6 @@
 package nextstep.subway.line;
 
-import static io.restassured.RestAssured.given;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.*;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -14,8 +12,6 @@ import nextstep.subway.utils.StationAcceptanceTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -60,7 +56,7 @@ class LineAcceptanceTest extends AcceptanceTest {
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
      */
     @Test
-    @DisplayName("지하철노선 목록을 조회한다")
+    @DisplayName("지하철노선 목록을 조회한다.")
     void getLines() {
         // given
         지하철노선을_생성한다(신분당선_생성_요청);
@@ -79,24 +75,17 @@ class LineAcceptanceTest extends AcceptanceTest {
      * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
      */
     @Test
-    @DisplayName("지하철노선을 조회한다")
+    @DisplayName("지하철노선을 조회한다.")
     void getLine() {
         // given
-        지하철노선을_생성한다(신분당선_생성_요청);
+        ExtractableResponse<Response> 저장된_신분당선 = 지하철노선을_생성한다(신분당선_생성_요청);
 
         // when
-        ExtractableResponse<Response> 조회된_지하철노선 = given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/{id}", 1)
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+        ExtractableResponse<Response> 조회된_지하철노선 = 지하철노선을_조회한다(저장된_신분당선);
 
         // then
-        assertThat(조회된_지하철노선.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(조회된_지하철노선.jsonPath().getString("name")).isEqualTo(신분당선);
+        지하철노선_검증_입력된_지하철노선이_존재(조회된_지하철노선, 신분당선);
     }
-
 
     /**
      * Given 지하철 노선을 생성하고

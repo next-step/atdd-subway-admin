@@ -2,6 +2,7 @@ package nextstep.subway.utils;
 
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.utils.CommonTestFixture.*;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -17,13 +18,12 @@ public class LineAcceptanceTestUtils {
     public static final String 신논현역 = "신논현역";
     public static final String 대성리역 = "대성리역";
     public static final String 가평역 = "가평역";
-    private static final String BASE_PATH = "/lines";
 
     public static ExtractableResponse<Response> 지하철노선을_생성한다(LineRequest lineRequest) {
          return given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(BASE_PATH)
+                .when().post(LINE_BASE_PATH)
                 .then().log().all()
                 .extract();
     }
@@ -31,13 +31,28 @@ public class LineAcceptanceTestUtils {
     public static List<String> 지하철노선_목록을_조회한다() {
         return given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(BASE_PATH)
+                .when().get(LINE_BASE_PATH)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .extract().jsonPath().getList("name", String.class);
+                .extract().jsonPath().getList(NAME, String.class);
     }
 
-    public static void 지하철노선_목록_검증_입력된_지하철노선이_존재(List<String> lineNames, String... lineName) {
-        assertThat(lineNames).contains(lineName);
+    public static ExtractableResponse<Response> 지하철노선을_조회한다(ExtractableResponse<Response> response) {
+        return given().log().all()
+                .pathParam(ID, response.jsonPath().getLong(ID))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get(LINE_BASE_PATH + PATH_VARIABLE_ID)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
+    public static void 지하철노선_목록_검증_입력된_지하철노선이_존재(List<String> actualNames, String... lineNames) {
+        assertThat(actualNames).contains(lineNames);
+    }
+
+    public static void 지하철노선_검증_입력된_지하철노선이_존재(ExtractableResponse<Response> response, String lineName){
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getString(NAME)).isEqualTo(lineName);
     }
 }
