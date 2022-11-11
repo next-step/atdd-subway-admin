@@ -46,21 +46,15 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         //when
-        long upStationId = createStation("강남역").jsonPath().getLong("id");
-        long downStationId = createStation("논현역").jsonPath().getLong("id");
-        ExtractableResponse<Response> response = createLine(LineRequest.builder()
-                .name("2호선")
-                .color("green")
-                .upStationId(upStationId)
-                .downStationId(downStationId)
-                .build());
+        createStation("강남역").jsonPath().getLong("id");
+        createStation("논현역").jsonPath().getLong("id");
 
         //then
         List<LineResponse> lines = getAllLine().jsonPath().getList(".", LineResponse.class).stream().collect(Collectors.toList());
         assertAll(
                 () -> assertThat(lines.stream().map(LineResponse::getName).collect(Collectors.toList())).containsAnyOf("2호선"),
                 () -> assertThat(lines.stream().map(LineResponse::getColor).collect(Collectors.toList())).containsAnyOf("green"),
-                () -> assertThat(lines.stream().flatMap(lineResponse -> lineResponse.getStations().stream().map(stationResponse -> stationResponse.getName()))
+                () -> assertThat(lines.stream().flatMap(lineResponse -> lineResponse.getStations().stream().map(StationResponse::getName))
                         .collect(Collectors.toList())).containsAnyOf("강남역", "논현역"));
     }
 
@@ -98,7 +92,7 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(lines.stream().map(LineResponse::getName).collect(Collectors.toList())).containsAnyOf("2호선", "1호선"),
                 () -> assertThat(lines.stream().map(LineResponse::getColor).collect(Collectors.toList())).containsAnyOf("green", "blue"),
-                () -> assertThat(lines.stream().flatMap(lineResponse -> lineResponse.getStations().stream().map(stationResponse -> stationResponse.getName()))
+                () -> assertThat(lines.stream().flatMap(lineResponse -> lineResponse.getStations().stream().map(StationResponse::getName))
                         .collect(Collectors.toList())).containsAnyOf("강남역", "논현역", "길동역", "심림역"));
     }
 
@@ -155,7 +149,7 @@ public class LineAcceptanceTest {
                 .build()).jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = getLine(-1l);
+        ExtractableResponse<Response> response = getLine(-1L);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
