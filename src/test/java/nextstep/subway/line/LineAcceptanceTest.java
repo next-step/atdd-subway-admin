@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.station.StationAcceptanceTest.지하철_역_등록;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -46,9 +47,14 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         //when
-        createStation("강남역").jsonPath().getLong("id");
-        createStation("논현역").jsonPath().getLong("id");
-
+        long gangnamStationId = 지하철_역_등록("강남역").jsonPath().getLong("id");
+        long nonhyunStationId = 지하철_역_등록("논현역").jsonPath().getLong("id");
+        지하철_노선_등록(LineRequest.builder()
+                .name("2호선")
+                .color("green")
+                .upStationId(gangnamStationId)
+                .downStationId(nonhyunStationId)
+                .build());
         //then
         List<LineResponse> lines = 지하철_노선_전체조회().jsonPath().getList(".", LineResponse.class).stream().collect(Collectors.toList());
         assertAll(
@@ -67,10 +73,10 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         //given
-        long gangnamStationId = createStation("강남역").jsonPath().getLong("id");
-        long nonhyunStationId = createStation("논현역").jsonPath().getLong("id");
-        long kildongStationId = createStation("길동역").jsonPath().getLong("id");
-        long sinlimStationId = createStation("신림역").jsonPath().getLong("id");
+        long gangnamStationId = 지하철_역_등록("강남역").jsonPath().getLong("id");
+        long nonhyunStationId = 지하철_역_등록("논현역").jsonPath().getLong("id");
+        long kildongStationId = 지하철_역_등록("길동역").jsonPath().getLong("id");
+        long sinlimStationId = 지하철_역_등록("신림역").jsonPath().getLong("id");
         지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
@@ -106,8 +112,8 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         //given
-        long upStationId = createStation("강남역").jsonPath().getLong("id");
-        long downStationId = createStation("논현역").jsonPath().getLong("id");
+        long upStationId = 지하철_역_등록("강남역").jsonPath().getLong("id");
+        long downStationId = 지하철_역_등록("논현역").jsonPath().getLong("id");
         long lineId = 지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
@@ -124,7 +130,7 @@ public class LineAcceptanceTest {
                 () -> assertThat(response.jsonPath().getString("name")).isEqualTo("2호선"),
                 () -> assertThat(response.jsonPath().getString("color")).isEqualTo("green"),
                 () -> assertThat(response.jsonPath()
-                        .getList("stations", StationResponse.class).stream().map(stationResponse -> stationResponse.getName())
+                        .getList("stations", StationResponse.class).stream().map(StationResponse::getName)
                         .collect(Collectors.toList())).containsAnyOf("강남역", "논현역"));
     }
 
@@ -137,8 +143,8 @@ public class LineAcceptanceTest {
     @Test
     void getLineWithNoExistsId() {
         //given
-        long upStationId = createStation("강남역").jsonPath().getLong("id");
-        long downStationId = createStation("논현역").jsonPath().getLong("id");
+        long upStationId = 지하철_역_등록("강남역").jsonPath().getLong("id");
+        long downStationId = 지하철_역_등록("논현역").jsonPath().getLong("id");
         지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
@@ -162,10 +168,10 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         //given
-        long gangnamStationId = createStation("강남역").jsonPath().getLong("id");
-        long nonhyunStationId = createStation("논현역").jsonPath().getLong("id");
-        long kildongStationId = createStation("길동역").jsonPath().getLong("id");
-        long sinlimStationId = createStation("신림역").jsonPath().getLong("id");
+        long gangnamStationId = 지하철_역_등록("강남역").jsonPath().getLong("id");
+        long nonhyunStationId = 지하철_역_등록("논현역").jsonPath().getLong("id");
+        long kildongStationId = 지하철_역_등록("길동역").jsonPath().getLong("id");
+        long sinlimStationId = 지하철_역_등록("신림역").jsonPath().getLong("id");
         지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
@@ -195,8 +201,8 @@ public class LineAcceptanceTest {
     @Test
     void modifyLine() {
         //given
-        long upStationId = createStation("강남역").jsonPath().getLong("id");
-        long downStationId = createStation("논현역").jsonPath().getLong("id");
+        long upStationId = 지하철_역_등록("강남역").jsonPath().getLong("id");
+        long downStationId = 지하철_역_등록("논현역").jsonPath().getLong("id");
         long lineId = 지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
@@ -258,17 +264,5 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .extract();
     }
-
-    private ExtractableResponse<Response> createStation(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-
 }
+
