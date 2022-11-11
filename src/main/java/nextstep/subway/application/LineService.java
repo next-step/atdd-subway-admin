@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -39,5 +40,13 @@ public class LineService {
                 .stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long lineId) {
+        Optional<Line> byId = lineRepository.findById(lineId);
+        if(!byId.isPresent()){
+            throw new IllegalArgumentException("존재하지 않는 노선입니다");
+        }
+        return LineResponse.of(byId.get());
     }
 }
