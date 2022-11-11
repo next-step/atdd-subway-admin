@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,7 +37,13 @@ public class LineController {
 
     @GetMapping("/lines/{id}")
     public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(lineService.findLineById(id));
+        return ResponseEntity.ok().body(lineService.findLine(id));
+    }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity updateLine(@PathVariable Long id,@RequestBody LineRequest lineRequest) {
+        lineService.updateNameAndColor(id, lineRequest);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

@@ -10,6 +10,7 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class LineService {
@@ -22,6 +23,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse save(LineRequest lineRequest) {
         Line line = lineRequest.toLine(
                 findStationById(lineRequest.getUpStationId()),
@@ -42,8 +44,20 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id)
-                .orElseThrow(NoResultException::new));
+    public LineResponse findLine(Long id) {
+        return LineResponse.of(findLineById(id));
+    }
+
+    @Transactional
+    public void updateNameAndColor(Long id, LineRequest lineRequest) {
+        Line originLine = findLineById(id);
+        originLine.changeNameAndColor(lineRequest.getName(), lineRequest.getColor());
+        lineRepository.save(originLine);
+
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(NoResultException::new);
     }
 }
