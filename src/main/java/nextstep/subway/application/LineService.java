@@ -39,5 +39,10 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
 

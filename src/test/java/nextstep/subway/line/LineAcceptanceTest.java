@@ -41,13 +41,12 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        LineRequest lineRequest = LineRequest.builder()
+        ExtractableResponse<Response> response = createLine(LineRequest.builder()
                 .name("2호선")
                 .color("green")
                 .upStationName("강남역")
                 .downStationName("논현역")
-                .build();
-        ExtractableResponse<Response> response = createLine(lineRequest);
+                .build());
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -105,11 +104,7 @@ public class LineAcceptanceTest {
                 .build()).jsonPath().getLong("id");
 
         // then
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("id", lineId)
-                .when().get("/lines/{id}")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = getLine(lineId);
 
         //then
         assertAll(
@@ -129,16 +124,47 @@ public class LineAcceptanceTest {
     @Test
     void getLineWithNoExistsId() {
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("id", -1)
-                .when().get("/lines/{id}")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = getLine(-1l);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철노선을 생성하고
+     * When 그 지하철노선을 삭제하면
+     * Then 그 지하철노선 목록 조회 시 생성한 노선을 찾을 수 없다
+     */
+    @DisplayName("지하철노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        //given
+        // given
+        createLine(LineRequest.builder()
+                .name("2호선")
+                .color("green")
+                .upStationName("강남역")
+                .downStationName("논현역")
+                .build());
+        long lineId = createLine(LineRequest.builder()
+                .name("1호선")
+                .color("blue")
+                .upStationName("철산역")
+                .downStationName("김포역")
+                .build()).jsonPath().getLong("id");;
+
+        //when
+        removeLine(lineId);
+        ExtractableResponse<Response> response = getAllLine();
+
+        //then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getList("name")).hasSize(1),
+                () -> assertThat(response.jsonPath().getList("name")).containsExactlyInAnyOrder("2호선")
+        );
+    }
+    
     private ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
@@ -151,6 +177,22 @@ public class LineAcceptanceTest {
     private ExtractableResponse<Response> getAllLine() {
         return  RestAssured.given().log().all()
                 .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> getLine(long id) {
+        return RestAssured.given().log().all()
+                .pathParam("id", id)
+                .when().get("/lines/{id}")
+                .then().log().all()
+                .extract();
+    }
+
+    private void removeLine(long id) {
+        RestAssured.given().log().all()
+                .pathParam("id", id)
+                .when().delete("/lines/{id}")
                 .then().log().all()
                 .extract();
     }
