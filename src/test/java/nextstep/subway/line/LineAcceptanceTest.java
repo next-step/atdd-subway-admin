@@ -5,7 +5,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseInitializer;
-import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
