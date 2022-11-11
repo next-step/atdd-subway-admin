@@ -27,16 +27,13 @@ public class Line extends BaseEntity{
     @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
-    Line (Builder builder){
+    public Line (Builder builder){
         this.id = builder.id;
         this.name = builder.name;
         this.color = builder.color;
         this.distance = builder.distance;
         this.upStation = builder.upStation;
         this.downStation = builder.downStation;
-    }
-
-    protected Line() {
     }
 
     public Line setUpStation(Station upStation) {

@@ -1,13 +1,10 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.station.StationAcceptanceTest.*;
-
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.Isolationer;
 import nextstep.subway.dto.LineDto;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +16,7 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
+import static nextstep.subway.common.Common.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 

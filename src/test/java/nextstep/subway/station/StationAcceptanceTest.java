@@ -1,13 +1,8 @@
 package nextstep.subway.station;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import nextstep.subway.Isolationer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -17,6 +12,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.List;
+
+import static nextstep.subway.common.Common.지하철역을_생성한다;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * REST Assured 특징
@@ -137,21 +137,6 @@ public class StationAcceptanceTest {
             .then().log().all()
             .extract();
     }
-
-
-    public static ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
-
-        return RestAssured.given()
-            .body(params).log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/stations")
-            .then()
-            .log().all()
-            .extract();
-    }
-
 
     public static void 지하철역을_2개_생성한다() {
         지하철역을_생성한다("강남역");
