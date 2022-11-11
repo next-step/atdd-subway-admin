@@ -163,9 +163,9 @@ public class LineAcceptanceTest {
         int id = 지하철_노선_신규_생성_요청("신분당선", "red", stationId1, stationId2).jsonPath().get("id");
 
         //when
-        JsonPath response = 지하철_노선_정보_수정_요청(id, newName, newColor);
-
+        지하철_노선_정보_수정_요청(id, newName, newColor);
         //then
+        JsonPath response = 지하철_노선_단일_조회(id);
         assertThat(response.getString("name")).isEqualTo(newName);
         assertThat(response.getString("color")).isEqualTo(newColor);
     }
@@ -235,7 +235,7 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(paramMap)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/" + lineId)
+                .when().put("/lines/" + lineId)
                 .then().log().all()
                 .extract().jsonPath();
     }
