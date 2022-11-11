@@ -9,6 +9,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,6 +32,11 @@ public class LineController {
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> findAll() {
         return ResponseEntity.ok().body(lineService.findAllLines());
+    }
+
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
