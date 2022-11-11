@@ -50,7 +50,7 @@ public class LineAcceptanceTest {
         createStation("논현역").jsonPath().getLong("id");
 
         //then
-        List<LineResponse> lines = getAllLine().jsonPath().getList(".", LineResponse.class).stream().collect(Collectors.toList());
+        List<LineResponse> lines = 지하철_노선_전체조회().jsonPath().getList(".", LineResponse.class).stream().collect(Collectors.toList());
         assertAll(
                 () -> assertThat(lines.stream().map(LineResponse::getName).collect(Collectors.toList())).containsAnyOf("2호선"),
                 () -> assertThat(lines.stream().map(LineResponse::getColor).collect(Collectors.toList())).containsAnyOf("green"),
@@ -85,7 +85,7 @@ public class LineAcceptanceTest {
                 .build());
 
         //when
-        List<LineResponse> lines = getAllLine().jsonPath().getList(".", LineResponse.class)
+        List<LineResponse> lines = 지하철_노선_전체조회().jsonPath().getList(".", LineResponse.class)
                 .stream().collect(Collectors.toList());
 
         //then
@@ -116,9 +116,7 @@ public class LineAcceptanceTest {
                 .build()).jsonPath().getLong("id");
 
         //then
-        ExtractableResponse<Response> response = getLine(lineId);
-        List<StationResponse> SEA = response.jsonPath().getList("stations", StationResponse.class);
-
+        ExtractableResponse<Response> response = 지하철_노선_조회(lineId);
 
         //then
         assertAll(
@@ -149,7 +147,7 @@ public class LineAcceptanceTest {
                 .build()).jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = getLine(-1L);
+        ExtractableResponse<Response> response = 지하철_노선_조회(-1L);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -228,14 +226,14 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> getAllLine() {
+    private ExtractableResponse<Response> 지하철_노선_전체조회() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> getLine(long id) {
+    private ExtractableResponse<Response> 지하철_노선_조회(long id) {
         return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().get("/lines/{id}")
