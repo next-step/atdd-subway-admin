@@ -1,7 +1,11 @@
 package nextstep.subway.line;
 
+import static io.restassured.RestAssured.given;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineRequest;
@@ -10,6 +14,8 @@ import nextstep.subway.utils.StationAcceptanceTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 @DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -72,6 +78,24 @@ class LineAcceptanceTest extends AcceptanceTest {
      * When 생성한 지하철 노선을 조회하면
      * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
      */
+    @Test
+    @DisplayName("지하철노선을 조회한다")
+    void getLine() {
+        // given
+        지하철노선을_생성한다(신분당선_생성_요청);
+
+        // when
+        ExtractableResponse<Response> 조회된_지하철노선 = given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/{id}", 1)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+
+        // then
+        assertThat(조회된_지하철노선.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(조회된_지하철노선.jsonPath().getString("name")).isEqualTo(신분당선);
+    }
 
 
     /**
