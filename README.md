@@ -114,7 +114,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [ ] 노선을 생성할 수 있다.
     - [ ] 노선 목록을 조회할 수 있다.
     - [ ] 노선을 조회할 수 있다.
-    - [ ] 노선의 이름과 색을 수정할 수 있다.
+    - [x] 노선의 이름과 색을 수정할 수 있다.
     - [ ] 노선을 삭제할 수 있다.
 
 
