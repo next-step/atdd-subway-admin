@@ -11,10 +11,10 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "up_station_id", nullable = false)
     private Station upStation;
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
@@ -29,11 +29,6 @@ public class Line extends BaseEntity {
         this.downStation = downStation;
     }
 
-    public Line(Long id, String name, String color, Station upStation, Station downStation) {
-        this(name,color,upStation,downStation);
-        this.id = id;
-    }
-
     public Long getId() {
         return id;
     }
@@ -46,11 +41,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public String getUpStationName() {
-        return downStation.getName();
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public String getDownStationName() {
-        return downStation.getName();
+    public Station getDownStation() {
+        return downStation;
     }
 }

@@ -7,8 +7,8 @@ public class LineRequest {
     private Long id;
     private String name;
     private String color;
-    private String upStationName;
-    private String downStationName;
+    private long upStationId;
+    private long downStationId;
 
     public LineRequest() {
 
@@ -18,8 +18,8 @@ public class LineRequest {
         this.id = builder.id;
         this.name = builder.name;
         this.color = builder.color;
-        this.upStationName = builder.upStationName;
-        this.downStationName = builder.downStationName;
+        this.upStationId = builder.upStationId;
+        this.downStationId = builder.downStationId;
     }
 
     public Long getId() {
@@ -34,19 +34,16 @@ public class LineRequest {
         return color;
     }
 
-    public String getUpStationName() {
-        return upStationName;
+    public long getUpStationId() {
+        return upStationId;
     }
 
-    public String getDownStationName() {
-        return downStationName;
+    public long getDownStationId() {
+        return downStationId;
     }
 
-    public Line toLine() {
-        if (id == null) {
-            return new Line(name, color, new Station(upStationName), new Station(downStationName));
-        }
-        return new Line(id,name, color, new Station(upStationName), new Station(downStationName));
+    public Line toLine(Station upStation, Station downStation) {
+        return new Line(name, color, upStation, downStation);
     }
 
     public static LineRequest.LineRequestBuilder builder() {
@@ -57,8 +54,8 @@ public class LineRequest {
         private Long id;
         private String name;
         private String color;
-        private String upStationName;
-        private String downStationName;
+        private Long upStationId;
+        private Long downStationId;
 
         public LineRequestBuilder id(Long id) {
             this.id = id;
@@ -75,13 +72,13 @@ public class LineRequest {
             return this;
         }
 
-        public LineRequestBuilder upStationName(String upStationName) {
-            this.upStationName = upStationName;
+        public LineRequestBuilder upStationId(Long upStationId) {
+            this.upStationId = upStationId;
             return this;
         }
 
-        public LineRequestBuilder downStationName(String downStationName) {
-            this.downStationName = downStationName;
+        public LineRequestBuilder downStationId(Long downStationId) {
+            this.downStationId = downStationId;
             return this;
         }
 
