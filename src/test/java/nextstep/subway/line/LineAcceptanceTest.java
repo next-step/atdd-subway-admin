@@ -55,7 +55,7 @@ public class LineAcceptanceTest {
 
         // then
         ExtractableResponse<Response> fetchResponse = fetchLines();
-        checkFetchResponse(fetchResponse, lineRequest);
+        checkFetchedLines(fetchResponse, lineRequest);
     }
 
     /**
@@ -76,7 +76,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> fetchResponse = fetchLines();
 
         // then
-        checkFetchResponse(fetchResponse, lineRequest1, lineRequest2);
+        checkFetchedLines(fetchResponse, lineRequest1, lineRequest2);
     }
 
     /**
@@ -87,7 +87,15 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선을 조회한다")
     @Test
     void getLine() {
+        // given
+        LineRequestDto lineRequest = new LineRequestDto("신분당선", "bg-red-600", 1L, 2L, 10L);
+        ExtractableResponse<Response> createResponse = createLine(lineRequest);
 
+        // when
+        ExtractableResponse<Response> fetchResponse = fetchLine(createResponse.jsonPath().getLong("id"));
+
+        // then
+        checkFetchedLines(fetchResponse, lineRequest);
     }
 
     /**
@@ -110,7 +118,7 @@ public class LineAcceptanceTest {
     void deleteLine() {
     }
 
-    private void checkFetchResponse(ExtractableResponse<Response> fetchResponse, LineRequestDto... lineRequests) {
+    private void checkFetchedLines(ExtractableResponse<Response> fetchResponse, LineRequestDto... lineRequests) {
         assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
         JsonPath jsonPath = fetchResponse.jsonPath();
         assertThat(jsonPath.getList(".")).hasSize(lineRequests.length);
@@ -186,6 +194,14 @@ public class LineAcceptanceTest {
             this.downStationId = downStationId;
             this.distance = distance;
         }
+    }
+
+    private ExtractableResponse<Response> fetchLine(Long id) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines/" + id)
+            .then().log().all()
+            .extract();
     }
 
 }
