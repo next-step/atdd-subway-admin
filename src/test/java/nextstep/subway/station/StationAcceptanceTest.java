@@ -18,6 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.station.StationAcceptanceFixture.지하철_생성_결과에서_지하철역_번호를_조회한다;
+import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_삭제한다;
+import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_생성한다;
+import static nextstep.subway.station.StationAcceptanceFixture.지하철역_목록을_조회한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -112,39 +116,6 @@ public class StationAcceptanceTest {
         // then
         List<String> 지하철역_목록 = 지하철역_목록을_조회한다();
         지하철역_목록중_해당_지하철을_찾을_수_없다(지하철_역명, 지하철역_목록);
-    }
-
-    private ExtractableResponse<Response> 지하철_역을_생성한다(String 지하철_역명) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", 지하철_역명);
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
-        return response;
-    }
-
-    private List<String> 지하철역_목록을_조회한다() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
-    }
-    private void 지하철_역을_삭제한다(String 지하철역_번호) {
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations/" + 지하철역_번호)
-                .then().log().all()
-                .extract();
-    }
-
-    private String 지하철_생성_결과에서_지하철역_번호를_조회한다(ExtractableResponse<Response> 지하철_생성_결과) {
-        return 지하철_생성_결과.jsonPath()
-                .getString("id");
     }
 
     private AbstractIntegerAssert<?> 지하철역_생성상태가_정상임을_확인할_수_있다(ExtractableResponse<Response> 지하철역_생성결과) {
