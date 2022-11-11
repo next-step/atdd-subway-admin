@@ -55,4 +55,8 @@ public class LineService {
         line.updateInfo(line.of(lineRequest));
     }
 
+    @Transactional
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
 }

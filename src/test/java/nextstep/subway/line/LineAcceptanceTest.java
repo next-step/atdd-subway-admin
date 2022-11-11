@@ -106,6 +106,21 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 삭제")
     @Test
     void deleteLine() {
+        // Given
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("1호선", "bg-red-600", "강남역", "역삼역", 2);
+        ResponseAssertTest.생성_확인(createResponse);
+
+        // When
+        ExtractableResponse<Response> deleteResponse = 지하철노선_삭제_요청(getResponseId(createResponse));
+
+        // Then
+        지하철노선_삭제_확인(getResponseId(createResponse), deleteResponse);
+    }
+
+    private void 지하철노선_삭제_확인(Long id, ExtractableResponse<Response> response) {
+        ResponseAssertTest.응답_컨텐츠가_없는_성공_확인(response);
+        ExtractableResponse<Response> getResponse = 지하철노선_목록조회_요청();
+        assertThat(getResponse.jsonPath().getList("id")).doesNotContain(id);
     }
 
     private ExtractableResponse<Response> 지하철노선_생성_요청(String lineName, String color, String upStationName, String downStationName, int distance) {
@@ -177,11 +192,17 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         params.put("name", name);
         params.put("color", color);
 
-        assertAll(
-                () -> ResponseAssertTest.성공_확인(updateResponse)
-        );
+        ResponseAssertTest.성공_확인(updateResponse);
         ExtractableResponse<Response> response = 지하철노선_조회_요청(id);
         assertThat(response.jsonPath().getString("name")).isEqualTo(name);
         assertThat(response.jsonPath().getString("color")).isEqualTo(color);
+    }
+
+    private ExtractableResponse<Response> 지하철노선_삭제_요청(Long id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(PathConstant.LINE_ROOT_PATH + PathConstant.PATH_SEPARATOR + id)
+                .then().log().all()
+                .extract();
     }
 }
