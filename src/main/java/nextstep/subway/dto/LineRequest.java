@@ -1,5 +1,7 @@
 package nextstep.subway.dto;
 
+import java.util.Objects;
+
 public class LineRequest {
     private String name;
     private String color;
@@ -25,5 +27,9 @@ public class LineRequest {
 
     public Long getDistance() {
         return distance;
+    }
+
+    public boolean isSameStations() {
+        return Objects.equals(this.downStationId, this.upStationId);
     }
 }

@@ -18,7 +18,7 @@ import nextstep.subway.dto.ErrorResponse;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.AlreadyDeletedException;
-import nextstep.subway.exception.NoStationException;
+import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.exception.NotFoundException;
 
 @RestController
@@ -62,13 +62,13 @@ public class LineController {
         return ResponseEntity.notFound().build();
     }
 
-    @ExceptionHandler
-    public ResponseEntity<?> handleNoStationException(NoStationException e) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
-    }
-
     @ExceptionHandler(AlreadyDeletedException.class)
     public ResponseEntity<?> handleAlreadyDeletedException() {
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<?> handleBadRequestException(BadRequestException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
     }
 }

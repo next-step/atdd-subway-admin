@@ -192,6 +192,22 @@ public class LineAcceptanceTest {
         assertThat(createResponse.jsonPath().getString("message")).contains("존재하지 않는 역입니다.");
     }
 
+    /**
+     * When 같은 역으로 노선을 생성하면
+     * Then Bad Request 응답을 받는
+     */
+    @DisplayName("같은 역으로 노선을 생성한다")
+    @Test
+    void sameStationCreateLine() {
+        // when
+        LineRequestDto lineRequest = new LineRequestDto("신분당선", "bg-red-600", 1L, 1L, 10L);
+        ExtractableResponse<Response> createResponse = createLine(lineRequest);
+
+        // then
+        assertThat(HttpStatus.valueOf(createResponse.statusCode())).isEqualTo(BAD_REQUEST);
+        assertThat(createResponse.jsonPath().getString("message")).contains("같은 역으로 노선을 생성할 수 없습니다.");
+    }
+
     private ExtractableResponse<Response> createLine(LineRequestDto lineRequestDto) {
         return RestAssured.given().log().all()
             .body(lineRequestDto)

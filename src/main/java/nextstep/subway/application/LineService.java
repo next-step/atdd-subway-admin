@@ -15,6 +15,7 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.AlreadyDeletedException;
 import nextstep.subway.exception.NoStationException;
 import nextstep.subway.exception.NotFoundException;
+import nextstep.subway.exception.SameStationException;
 
 @Service
 @Transactional(readOnly = true)
@@ -29,6 +30,10 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
+        if (lineRequest.isSameStations()) {
+            throw new SameStationException();
+        }
+
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
             .orElseThrow(() -> new NoStationException(lineRequest.getUpStationId()));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
