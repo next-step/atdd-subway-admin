@@ -1,0 +1,36 @@
+package nextstep.subway.application;
+
+import javax.persistence.NoResultException;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.repository.LineRepository;
+import nextstep.subway.repository.StationRepository;
+import org.springframework.stereotype.Service;
+
+@Service
+public class LineService {
+
+    private LineRepository lineRepository;
+    private StationRepository stationRepository;
+
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+        this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
+    }
+
+    public LineResponse save(LineRequest lineRequest) {
+        Line line = lineRequest.toLine(
+                findStationById(lineRequest.getUpStationId()),
+                findStationById(lineRequest.getDownStationId()));
+
+        return LineResponse.of(lineRepository.save(line));
+    }
+
+    private Station findStationById(Long lineRequest) {
+        return stationRepository.findById(lineRequest)
+                .orElseThrow(NoResultException::new);
+    }
+
+}
