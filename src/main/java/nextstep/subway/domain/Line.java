@@ -10,6 +10,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.springframework.util.StringUtils;
+
 import nextstep.subway.dto.LineRequest;
 
 @Entity
@@ -37,6 +39,21 @@ public class Line extends BaseEntity {
         return line;
     }
 
+    public void addStation(Station station) {
+        if (!stations.contains(station)) {
+            stations.add(station);
+        }
+    }
+
+    public void update(LineRequest lineRequest) {
+        if (StringUtils.hasText(lineRequest.getName())) {
+            this.name = lineRequest.getName();
+        }
+        if (StringUtils.hasText(lineRequest.getColor())) {
+            this.color = lineRequest.getColor();
+        }
+    }
+
     public Long getId() {
         return id;
     }
@@ -57,9 +74,4 @@ public class Line extends BaseEntity {
         return stations.get(1);
     }
 
-    public void addStation(Station station) {
-        if (!stations.contains(station)) {
-            stations.add(station);
-        }
-    }
 }
