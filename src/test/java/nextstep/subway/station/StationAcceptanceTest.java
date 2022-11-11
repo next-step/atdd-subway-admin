@@ -3,6 +3,8 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Station;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -102,6 +104,24 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
+
+        // when
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/" + response.body().jsonPath().get("id"))
+                .then().log().all()
+                .extract();
+
+        // then
+        List<StationResponse> stations = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("", StationResponse.class);
+
+        assertThat(stations).isEmpty();
     }
 
     private ExtractableResponse<Response> 지하철역_생성(String name) {
