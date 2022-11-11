@@ -10,6 +10,7 @@ import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -46,7 +47,7 @@ public class LineService {
     public LineResponse findLine(Long lineId) {
         Optional<Line> byId = lineRepository.findById(lineId);
         if (!byId.isPresent()) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다");
+            throw new EntityNotFoundException();
         }
         return LineResponse.of(byId.get());
     }
@@ -55,8 +56,12 @@ public class LineService {
     public void modifyLine(Long lineId, LineModifyRequest request) {
         Optional<Line> byId = lineRepository.findById(lineId);
         if (!byId.isPresent()) {
-            throw new IllegalArgumentException("존재하지 않는 노선입니다");
+            throw new EntityNotFoundException();
         }
         byId.get().modifyLine(request.getName(),request.getColor());
+    }
+
+    public void deleteLine(Long lineId) {
+        lineRepository.deleteById(lineId);
     }
 }

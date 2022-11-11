@@ -4,9 +4,11 @@ import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineModifyRequest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.EntityNotFoundException;
 import java.net.URI;
 import java.util.List;
 
@@ -40,5 +42,18 @@ public class LineController {
                                      @RequestBody LineModifyRequest request) {
         lineService.modifyLine(lineId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{lineId}")
+    public ResponseEntity deleteLine(@PathVariable("lineId") Long lineId) {
+        lineService.deleteLine(lineId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity EntityNotFoundException() {return ResponseEntity.noContent().build();}
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity handleIllegalArgsException() {
+        return ResponseEntity.badRequest().build();
     }
 }
