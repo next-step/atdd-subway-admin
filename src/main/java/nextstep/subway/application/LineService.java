@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -37,5 +38,13 @@ public class LineService {
                         StationResponse.of(stationService.findById(line.getUpStationId())),
                         StationResponse.of(stationService.findById(line.getDownStationId()))))
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findLineById(Long id) {
+        Optional<Line> findLine = lineRepository.findById(id);
+        return findLine.map(line -> LineResponse.of(line,
+                        StationResponse.of(stationService.findById(line.getUpStationId())),
+                        StationResponse.of(stationService.findById(line.getDownStationId()))))
+                .orElseThrow(IllegalArgumentException::new);
     }
 }

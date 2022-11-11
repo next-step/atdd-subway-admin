@@ -8,6 +8,7 @@ import nextstep.subway.dto.LineResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,4 +33,10 @@ public class LineController {
     public ResponseEntity<List<LineResponse>> findLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
+
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLineById(id));
+    }
+
 }

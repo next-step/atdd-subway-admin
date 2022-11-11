@@ -11,4 +11,9 @@ public class ExceptionAdvice {
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgumentException() {
+        return ResponseEntity.badRequest().build();
+    }
 }
