@@ -68,6 +68,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 조회")
     @Test
     void getLine() {
+        // Given
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("1호선", "bg-red-600", "강남역", "역삼역", 2);
+        ResponseAssertTest.생성_확인(createResponse);
+
+        // When
+        ExtractableResponse<Response> lineResponse = 지하철노선_조회_요청(getResponseId(createResponse));
+
+        // Then
+        노선_정보_확인(lineResponse);
     }
 
     /**
@@ -117,6 +126,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> 지하철노선_조회_요청(Long lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get(PathConstant.LINE_ROOT_PATH + PathConstant.PATH_SEPARATOR + lineId)
+                .then().log().all()
+                .extract();
+    }
+
     private void 노선_포함_확인(ExtractableResponse<Response> linesResponse, String[] lineNames) {
         assertAll(
                 () -> {
@@ -124,5 +141,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                     assertThat(responseLineNames).containsExactlyInAnyOrder(lineNames);
                 }
         );
+    }
+
+    private void 노선_정보_확인(ExtractableResponse<Response> lineResponse) {
+        long id = lineResponse.jsonPath().getLong("id");
+        String name = lineResponse.jsonPath().getString("name");
+        String color = lineResponse.jsonPath().getString("color");
+
+        // TODO: 나머지 값 검증
+        // 필드하나씩 비요하지 않고 object를 비교하는 방법이 없을까?
+
     }
 }
