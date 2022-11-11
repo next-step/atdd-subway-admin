@@ -56,4 +56,9 @@ public class LineService {
         updateLineRequest.updateLine(findLine);
         lineRepository.save(findLine);
     }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }

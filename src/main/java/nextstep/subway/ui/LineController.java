@@ -9,6 +9,7 @@ import nextstep.subway.dto.UpdateLineRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -47,7 +48,13 @@ public class LineController {
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody UpdateLineRequest updateLineRequest) {
         lineService.updateLine(id, updateLineRequest);
-        return ResponseEntity.ok(null);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteLineById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
