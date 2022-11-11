@@ -36,6 +36,9 @@ public class Line extends BaseEntity{
         this.downStation = builder.downStation;
     }
 
+    protected Line() {
+    }
+
     public Line setUpStation(Station upStation) {
         this.upStation = upStation;
         return this;
@@ -70,10 +73,6 @@ public class Line extends BaseEntity{
 
     public int getDistance() {
         return distance;
-    }
-
-    public Station getUpStation() {
-        return upStation;
     }
 
     public Station getDownStation() {
