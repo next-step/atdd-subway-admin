@@ -50,6 +50,6 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException(id + "번 노선을 찾을 수 없습니다."));
         persistLine.changeName(lineRequest.getName());
         persistLine.changeColor(lineRequest.getColor());
-        return LineResponse.of(lineRepository.save(persistLine));
+        return LineResponse.of(persistLine);
     }
 }
