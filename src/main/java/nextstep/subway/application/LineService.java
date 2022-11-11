@@ -60,4 +60,9 @@ public class LineService {
         return lineRepository.findById(id)
                 .orElseThrow(NoResultException::new);
     }
+
+    @Transactional
+    public void deleteById(Long id) {
+        lineRepository.delete(findLineById(id));
+    }
 }
