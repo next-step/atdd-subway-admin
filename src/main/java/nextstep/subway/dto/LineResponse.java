@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 
 public class LineResponse {
     private Long id;
@@ -12,13 +11,13 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations = new ArrayList<>();
 
-    public static LineResponse of(Line line, Station upStation, Station downStation) {
+    public static LineResponse of(Line line) {
         LineResponse response = new LineResponse();
         response.id = line.getId();
         response.name = line.getName();
         response.color = line.getColor();
-        response.stations.add(new StationResponse(upStation.getId(), upStation.getName()));
-        response.stations.add(new StationResponse(downStation.getId(), downStation.getName()));
+        response.stations.add(new StationResponse(line.getUpStation().getId(), line.getUpStation().getName()));
+        response.stations.add(new StationResponse(line.getDownStation().getId(), line.getDownStation().getName()));
         return response;
     }
 

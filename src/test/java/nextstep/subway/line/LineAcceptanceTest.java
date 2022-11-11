@@ -90,12 +90,27 @@ public class LineAcceptanceTest {
         // given
         LineRequestDto lineRequest = new LineRequestDto("신분당선", "bg-red-600", 1L, 2L, 10L);
         ExtractableResponse<Response> createResponse = createLine(lineRequest);
+        long lineId = createResponse.jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> fetchResponse = fetchLine(createResponse.jsonPath().getLong("id"));
+        ExtractableResponse<Response> fetchResponse = fetchLine(lineId);
 
         // then
-        checkFetchedLines(fetchResponse, lineRequest);
+        checkFetchedLine(fetchResponse, lineId);
+    }
+
+    /**
+     * When 존재하지 않는 노선을 조회하면
+     * Then 404 응답코드를 받는다
+     */
+    @DisplayName("지하철노선을 조회한다")
+    @Test
+    void notFoundLine() {
+        // when
+        ExtractableResponse<Response> fetchResponse = fetchLine(1L);
+
+        // then
+        assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(NOT_FOUND);
     }
 
     /**
@@ -132,6 +147,15 @@ public class LineAcceptanceTest {
                 lineRequests[i].getUpStationId().intValue(), lineRequests[i].getDownStationId().intValue());
             assertThat(jsonPath.getList(String.format("[%d].stations.name", i), String.class)).hasSize(2);
         }
+    }
+
+    private void checkFetchedLine(ExtractableResponse<Response> fetchResponse, Long id) {
+        assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
+        JsonPath jsonPath = fetchResponse.jsonPath();
+        assertThat(jsonPath.getLong("id")).isEqualTo(id);
+        assertThat(jsonPath.getString("name")).isNotBlank();
+        assertThat(jsonPath.getString("color")).isNotBlank();
+        assertThat(jsonPath.getList("stations")).isNotNull();
     }
 
     private void checkCreateResponse(LineRequestDto lineRequestDto, ExtractableResponse<Response> createResponse) {
