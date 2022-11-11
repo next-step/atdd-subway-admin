@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+
     @LocalServerPort
     int port;
 
@@ -32,20 +33,17 @@ public class StationAcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
-     * Then 지하철역이 생성된다
-     * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
+     * Then 지하철역이 생성된다. 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         // when
-        ValidatableResponse response = create_station("강남역");
+        ValidatableResponse response = 지하철역_생성("강남역");
 
         // then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
-        assertThat(get_station_name_list()).containsAnyOf("강남역");
+        assertThat(지하철역_이름_조회()).containsAnyOf("강남역");
     }
 
     /**
@@ -57,10 +55,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        create_station("강남역");
+        지하철역_생성("강남역");
 
         // when
-        ValidatableResponse response = create_station("강남역");
+        ValidatableResponse response = 지하철역_생성("강남역");
 
         // then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -75,14 +73,12 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        create_station("잠실역");
-        create_station("강남역");
-
-        // when
-        List<String> station_list = get_station_name_list();
+        지하철역_생성("잠실역");
+        지하철역_생성("강남역");
 
         // then
-        assertThat(station_list.size()).isEqualTo(2);
+        assertThat(지하철역_이름_조회().size()).isEqualTo(2);
+        assertThat(지하철역_이름_조회()).containsExactly("잠실역", "강남역");
     }
 
     /**
@@ -94,18 +90,17 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ValidatableResponse response = create_station("강남역");
-        Long stationId = get_json_path(response).getLong("id");
+        ValidatableResponse response = 지하철역_생성("강남역");
+        Long stationId = 제이슨_경로_얻기(response).getLong("id");
 
         // when
-        delete_station(stationId);
+        지하철역_삭제(stationId);
 
         // then
-        assertThat(get_station_name_list().size()).isEqualTo(0);
+        assertThat(지하철역_이름_조회().size()).isEqualTo(0);
     }
 
-    @DisplayName("지하철 역 생성 인수 테스트")
-    private static ValidatableResponse create_station(String name) {
+    private static ValidatableResponse 지하철역_생성(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -116,24 +111,21 @@ public class StationAcceptanceTest {
                 .then().log().all();
     }
 
-    @DisplayName("지하철 역 목록 조회 인수 테스트")
-    private static List<String> get_station_name_list() {
+    private static List<String> 지하철역_이름_조회() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
     }
 
-    @DisplayName("지하철 삭제 인수 테스트")
-    private static void delete_station(Long stationId) {
+    private static void 지하철역_삭제(Long stationId) {
         RestAssured.given().log().all()
                 .pathParam("id", stationId)
                 .when().delete("/stations/{id}")
                 .then().log().all();
     }
 
-    @DisplayName("Json Path")
-    private JsonPath get_json_path(ValidatableResponse validatableResponse) {
+    private JsonPath 제이슨_경로_얻기(ValidatableResponse validatableResponse) {
         return validatableResponse.extract().jsonPath();
     }
 

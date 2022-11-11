@@ -69,3 +69,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [x] 지하철역 관련 인수 테스트를 완성
         - [x] 지하철역 목록 조회 인수 테스트 작성하기
         - [x] 지하철역 삭제 인수 테스트 작성하기
+
+2. 설정관련
+    - Non-ASCII characters 설정 해제
