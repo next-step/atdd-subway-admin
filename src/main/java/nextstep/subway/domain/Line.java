@@ -27,12 +27,26 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public void updateLine(Line line) {
+        this.name = line.name;
+        this.color = line.color;
+    }
+
+    public LineResponse toLineResponse() {
+        return new LineResponse(id, name, color);
     }
 
     public Long getUpStationId() {
@@ -60,9 +74,5 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(name, color, upStationId, downStationId, distance);
-    }
-
-    public LineResponse toLineResponse() {
-        return new LineResponse(id, name, color);
     }
 }
