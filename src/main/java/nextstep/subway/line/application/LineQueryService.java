@@ -14,8 +14,6 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class LineQueryService {
-
-
     private final LineRepository lineRepository;
 
     public LineQueryService(LineRepository lineRepository) {

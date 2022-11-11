@@ -37,7 +37,7 @@ public class LineCommandService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException(ExceptionMessage.NOT_FOUND_LINE));
 
-        line.update(lineRequest.getName(), line.getColor());
+        line.update(lineRequest.getName(), lineRequest.getColor());
     }
 
     public void deleteLine(Long id) {
