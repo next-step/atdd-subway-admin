@@ -50,8 +50,13 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+    public void updateLineById(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         line.updateLine(new Line(lineUpdateRequest.getName(), lineUpdateRequest.getColor()));
+    }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
     }
 }
