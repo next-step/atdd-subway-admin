@@ -44,5 +44,11 @@ public class LineService {
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
+
+    @Transactional
+    public LineResponse modifyLine(LineRequest lineRequest) {
+        lineRepository.findById(lineRequest.getId()).orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
+        return LineResponse.of(lineRequest.toLine());
+    }
 }
 

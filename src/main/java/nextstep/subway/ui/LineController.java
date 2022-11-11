@@ -36,6 +36,11 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
+    @PutMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> modifyLine(@RequestBody LineRequest lineRequest) {
+        return ResponseEntity.ok().body(lineService.modifyLine(lineRequest));
+    }
+
     @DeleteMapping("/lines/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         lineService.deleteLineById(id);

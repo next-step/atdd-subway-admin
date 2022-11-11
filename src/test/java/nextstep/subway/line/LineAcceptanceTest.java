@@ -151,7 +151,7 @@ public class LineAcceptanceTest {
                 .color("blue")
                 .upStationName("철산역")
                 .downStationName("김포역")
-                .build()).jsonPath().getLong("id");;
+                .build()).jsonPath().getLong("id");
 
         //when
         removeLine(lineId);
@@ -164,7 +164,41 @@ public class LineAcceptanceTest {
                 () -> assertThat(response.jsonPath().getList("name")).containsExactlyInAnyOrder("2호선")
         );
     }
-    
+
+    /**
+     * Given 지하철노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철노선을 수정한다.")
+    @Test
+    void modifyLine() {
+        // given
+        long lineId = createLine(LineRequest.builder()
+                .name("1호선")
+                .color("blue")
+                .upStationName("철산역")
+                .downStationName("김포역")
+                .build()).jsonPath().getLong("id");
+
+        //when
+        ExtractableResponse<Response> response = modifyLine(LineRequest.builder()
+                .id(lineId)
+                .name("1호선")
+                .color("black")
+                .upStationName("마산역")
+                .downStationName("김포역")
+                .build());
+
+        //then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getString("name")).isEqualTo("1호선"),
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("black"),
+                () -> assertThat(response.jsonPath().getString("upStationName")).isEqualTo("마산역"),
+                () -> assertThat(response.jsonPath().getString("downStationName")).isEqualTo("김포역"));
+    }
+
     private ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
@@ -189,6 +223,15 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> modifyLine(LineRequest lineRequest) {
+        return RestAssured.given().log().all()
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines")
+                .then().log().all()
+                .extract();
+    }
+
     private void removeLine(long id) {
         RestAssured.given().log().all()
                 .pathParam("id", id)
@@ -196,5 +239,7 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
+
 
 }
