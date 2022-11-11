@@ -33,9 +33,9 @@ public class LineAcceptanceTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
-    private int stationId1;
-    private int stationId2;
-    private int stationId3;
+    private Long stationId1;
+    private Long stationId2;
+    private Long stationId3;
 
     @BeforeEach
     public void setUp() {
@@ -189,12 +189,12 @@ public class LineAcceptanceTest {
 
     }
 
-    private static int 지하철역_신규_생성_및_아이디_요청(String name) {
-        return Integer.parseInt(지하철역_신규_생성_요청(name).jsonPath().getString("id"));
+    private static Long 지하철역_신규_생성_및_아이디_요청(String name) {
+        return Long.parseLong(지하철역_신규_생성_요청(name).jsonPath().getString("id"));
     }
 
-    private static ExtractableResponse<Response> 지하철_노선_신규_생성_요청(String name, String color, int upStationId,
-                                                                 int downStationId) {
+    private static ExtractableResponse<Response> 지하철_노선_신규_생성_요청(String name, String color, Long upStationId,
+                                                                 Long downStationId) {
 
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
