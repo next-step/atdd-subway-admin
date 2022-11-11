@@ -28,7 +28,8 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        return ResponseEntity.ok().body(lineService.findAllLines());
+        List<LineResponse> lineResponses = lineService.findAllLines();
+        return ResponseEntity.ok().body(lineResponses);
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -36,9 +37,10 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
-    @PutMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> modifyLine(@RequestBody LineRequest lineRequest) {
-        return ResponseEntity.ok().body(lineService.modifyLine(lineRequest));
+    @PutMapping(value = "/lines/{id}")
+    public ResponseEntity<LineResponse> modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        lineService.modifyLine(id,lineRequest);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")

@@ -11,10 +11,10 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", nullable = false)
     private Station upStation;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
@@ -47,5 +47,10 @@ public class Line extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public void modifyLine(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }

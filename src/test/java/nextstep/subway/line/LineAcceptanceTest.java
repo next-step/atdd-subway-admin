@@ -3,8 +3,9 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,15 +13,18 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 기능")
+@Sql(scripts = "classpath:truncateTables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     @LocalServerPort
@@ -41,7 +45,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선을 생성한다.")
     @Test
     void createLine() {
-        // when
+        //when
         long upStationId = createStation("강남역").jsonPath().getLong("id");
         long downStationId = createStation("논현역").jsonPath().getLong("id");
         ExtractableResponse<Response> response = createLine(LineRequest.builder()
@@ -51,28 +55,29 @@ public class LineAcceptanceTest {
                 .downStationId(downStationId)
                 .build());
 
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        List<Map> lines = getAllLine().jsonPath().get();
+        //then
+        List<LineResponse> lines = getAllLine().jsonPath().getList(".", LineResponse.class).stream().collect(Collectors.toList());
         assertAll(
-                () -> assertThat(lines.stream().map(map -> map.get("name"))).containsAnyOf("2호선"),
-                () -> assertThat(lines.stream().map(map -> map.get("color"))).containsAnyOf("green"));
+                () -> assertThat(lines.stream().map(LineResponse::getName).collect(Collectors.toList())).containsAnyOf("2호선"),
+                () -> assertThat(lines.stream().map(LineResponse::getColor).collect(Collectors.toList())).containsAnyOf("green"),
+                () -> assertThat(lines.stream().flatMap(lineResponse -> lineResponse.getStations().stream().map(stationResponse -> stationResponse.getName()))
+                        .collect(Collectors.toList())).containsAnyOf("강남역", "논현역"));
     }
 
-  /**
+    /**
      * Given 2개의 지하철노선을 생성하고
      * When 지하철노선 목록을 조회하면
      * Then 2개의 지하철노선을 응답 받는다
      */
-   @DisplayName("지하철노선을 전부조회한다.")
+    @DisplayName("지하철노선을 전부조회한다.")
     @Test
     void getLines() {
-        // given
-       long gangnamStationId = createStation("강남역").jsonPath().getLong("id");
-       long nonhyunStationId = createStation("논현역").jsonPath().getLong("id");
-       long kildongStationId = createStation("길동역").jsonPath().getLong("id");
-       long sinlimStationId = createStation("신림역").jsonPath().getLong("id");
-       createLine(LineRequest.builder()
+        //given
+        long gangnamStationId = createStation("강남역").jsonPath().getLong("id");
+        long nonhyunStationId = createStation("논현역").jsonPath().getLong("id");
+        long kildongStationId = createStation("길동역").jsonPath().getLong("id");
+        long sinlimStationId = createStation("신림역").jsonPath().getLong("id");
+        createLine(LineRequest.builder()
                 .name("2호선")
                 .color("green")
                 .upStationId(gangnamStationId)
@@ -85,13 +90,16 @@ public class LineAcceptanceTest {
                 .downStationId(sinlimStationId)
                 .build());
 
-        // then
-        List<Map> lines = getAllLine().jsonPath().get();
+        //when
+        List<LineResponse> lines = getAllLine().jsonPath().getList(".", LineResponse.class)
+                .stream().collect(Collectors.toList());
 
-        // then
+        //then
         assertAll(
-                () -> assertThat(lines.stream().map(map -> map.get("name"))).containsAnyOf("2호선","1호선"),
-                () -> assertThat(lines.stream().map(map -> map.get("color"))).containsAnyOf("green","blue"));
+                () -> assertThat(lines.stream().map(LineResponse::getName).collect(Collectors.toList())).containsAnyOf("2호선", "1호선"),
+                () -> assertThat(lines.stream().map(LineResponse::getColor).collect(Collectors.toList())).containsAnyOf("green", "blue"),
+                () -> assertThat(lines.stream().flatMap(lineResponse -> lineResponse.getStations().stream().map(stationResponse -> stationResponse.getName()))
+                        .collect(Collectors.toList())).containsAnyOf("강남역", "논현역", "길동역", "심림역"));
     }
 
 
@@ -103,7 +111,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선을 조회한다.")
     @Test
     void getLine() {
-        // given
+        //given
         long upStationId = createStation("강남역").jsonPath().getLong("id");
         long downStationId = createStation("논현역").jsonPath().getLong("id");
         long lineId = createLine(LineRequest.builder()
@@ -113,16 +121,19 @@ public class LineAcceptanceTest {
                 .downStationId(downStationId)
                 .build()).jsonPath().getLong("id");
 
-        // then
+        //then
         ExtractableResponse<Response> response = getLine(lineId);
+        List<StationResponse> SEA = response.jsonPath().getList("stations", StationResponse.class);
+
 
         //then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getString("name")).isEqualTo("2호선"),
                 () -> assertThat(response.jsonPath().getString("color")).isEqualTo("green"),
-                () -> assertThat(response.jsonPath().getString("upStationName")).isEqualTo("강남역"),
-                () -> assertThat(response.jsonPath().getString("downStationName")).isEqualTo("논현역"));
+                () -> assertThat(response.jsonPath()
+                        .getList("stations", StationResponse.class).stream().map(stationResponse -> stationResponse.getName())
+                        .collect(Collectors.toList())).containsAnyOf("강남역", "논현역"));
     }
 
     /**
@@ -133,6 +144,16 @@ public class LineAcceptanceTest {
     @DisplayName("존재하지않는 아이디로 지하철노선을 조회한다.")
     @Test
     void getLineWithNoExistsId() {
+        //given
+        long upStationId = createStation("강남역").jsonPath().getLong("id");
+        long downStationId = createStation("논현역").jsonPath().getLong("id");
+        createLine(LineRequest.builder()
+                .name("2호선")
+                .color("green")
+                .upStationId(upStationId)
+                .downStationId(downStationId)
+                .build()).jsonPath().getLong("id");
+
         // when
         ExtractableResponse<Response> response = getLine(-1l);
 
@@ -142,76 +163,67 @@ public class LineAcceptanceTest {
 
     /**
      * Given 지하철노선을 생성하고
-     * When 그 지하철노선을 삭제하면
-     * Then 그 지하철노선 목록 조회 시 생성한 노선을 찾을 수 없다
+     * When 생성한 지하철노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
      */
-/*
     @DisplayName("지하철노선을 제거한다.")
     @Test
     void deleteLine() {
         //given
-        // given
+        long gangnamStationId = createStation("강남역").jsonPath().getLong("id");
+        long nonhyunStationId = createStation("논현역").jsonPath().getLong("id");
+        long kildongStationId = createStation("길동역").jsonPath().getLong("id");
+        long sinlimStationId = createStation("신림역").jsonPath().getLong("id");
         createLine(LineRequest.builder()
                 .name("2호선")
                 .color("green")
-                .upStationName("강남역")
-                .downStationName("논현역")
+                .upStationId(gangnamStationId)
+                .downStationId(nonhyunStationId)
                 .build());
         long lineId = createLine(LineRequest.builder()
                 .name("1호선")
                 .color("blue")
-                .upStationName("철산역")
-                .downStationName("김포역")
+                .upStationId(kildongStationId)
+                .downStationId(sinlimStationId)
                 .build()).jsonPath().getLong("id");
 
         //when
-        removeLine(lineId);
-        ExtractableResponse<Response> response = getAllLine();
+        ExtractableResponse<Response> response = removeLine(lineId);
 
         //then
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getList("name")).hasSize(1),
-                () -> assertThat(response.jsonPath().getList("name")).containsExactlyInAnyOrder("2호선")
-        );
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
-*/
 
     /**
      * Given 지하철노선을 생성하고
      * When 생성한 지하철 노선을 수정하면
      * Then 해당 지하철 노선 정보는 수정된다
      */
-/*
     @DisplayName("지하철노선을 수정한다.")
     @Test
     void modifyLine() {
-        // given
+        //given
+        long upStationId = createStation("강남역").jsonPath().getLong("id");
+        long downStationId = createStation("논현역").jsonPath().getLong("id");
         long lineId = createLine(LineRequest.builder()
-                .name("1호선")
-                .color("blue")
-                .upStationName("철산역")
-                .downStationName("김포역")
+                .name("2호선")
+                .color("green")
+                .upStationId(upStationId)
+                .downStationId(downStationId)
                 .build()).jsonPath().getLong("id");
 
         //when
-        ExtractableResponse<Response> response = modifyLine(LineRequest.builder()
-                .id(lineId)
+        ExtractableResponse<Response> response = modifyLine(lineId, LineRequest.builder()
                 .name("1호선")
                 .color("black")
-                .upStationName("마산역")
-                .downStationName("김포역")
+                .upStationId(upStationId)
+                .downStationId(downStationId)
                 .build());
 
         //then
-        assertAll(
-                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(response.jsonPath().getString("name")).isEqualTo("1호선"),
-                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("black"),
-                () -> assertThat(response.jsonPath().getString("upStationName")).isEqualTo("마산역"),
-                () -> assertThat(response.jsonPath().getString("downStationName")).isEqualTo("김포역"));
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
     }
-*/
 
     private ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         return RestAssured.given().log().all()
@@ -223,7 +235,7 @@ public class LineAcceptanceTest {
     }
 
     private ExtractableResponse<Response> getAllLine() {
-        return  RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
                 .extract();
@@ -237,22 +249,24 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> modifyLine(LineRequest lineRequest) {
+    private ExtractableResponse<Response> modifyLine(long id, LineRequest lineRequest) {
         return RestAssured.given().log().all()
+                .pathParam("id", id)
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines")
+                .when().put("/lines/{id}")
                 .then().log().all()
                 .extract();
     }
 
-    private void removeLine(long id) {
-        RestAssured.given().log().all()
+    private ExtractableResponse<Response> removeLine(long id) {
+        return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().delete("/lines/{id}")
                 .then().log().all()
                 .extract();
     }
+
     private ExtractableResponse<Response> createStation(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
