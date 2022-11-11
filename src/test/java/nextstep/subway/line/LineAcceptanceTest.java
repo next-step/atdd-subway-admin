@@ -8,17 +8,17 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.fixtures.TestFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class LineAcceptanceTest {
+class LineAcceptanceTest extends TestFixtures {
     @LocalServerPort
     int port;
 
@@ -38,10 +38,10 @@ class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
+        생성(노선("신분당선", "bg-red-600", "1", "2", "10"), "/lines");
 
         //then
-        List<String> lineNames = 노선_목록조회("name");
+        List<String> lineNames = 목록조회("name", "/lines");
 
         //then
         assertThat(lineNames).contains("신분당선");
@@ -58,11 +58,11 @@ class LineAcceptanceTest {
     @Test
     void getLines() {
         //given
-        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
-        노선_생성("분당선", "bg-green-600", "1", "3", "10");
+        생성(노선("신분당선", "bg-red-600", "1", "2", "10"), "/lines");
+        생성(노선("분당선", "bg-green-600", "1", "3", "10"), "/lines");
 
         //when
-        List<String> lineNames = 노선_목록조회("name");
+        List<String> lineNames = 목록조회("name", "/lines");
 
         //then
         assertThat(lineNames).contains("신분당선", "분당선");
@@ -79,10 +79,10 @@ class LineAcceptanceTest {
     @Test
     void getLineByName() {
         //given
-        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
+        생성(노선("신분당선", "bg-red-600", "1", "2", "10"), "/lines");
 
         //when
-        String lineName = 노선_조회("신분당선", "name");
+        String lineName = 조회("/lines/{name}", "신분당선", "name");
 
         //then
         assertThat(lineName).isEqualTo("신분당선");
@@ -99,10 +99,11 @@ class LineAcceptanceTest {
     @Test
     void modifyLine() {
         //given
-        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
+        생성(노선("신분당선", "bg-red-600", "1", "2", "10"), "/lines");
 
         //when
-        ExtractableResponse<Response> response = 노선_수정("신분당선", "bg-green-600", "1", "2", "10");
+        ExtractableResponse<Response> response =
+                수정(노선("신분당선", "bg-green-600", "1", "2", "10"), "/lines/{name}", "신분당선");
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -119,67 +120,17 @@ class LineAcceptanceTest {
     @Test
     void deleteLine() {
         //given
-        String id = 노선_생성_값_리턴("신분당선", "bg-red-600", "1", "2", "10", "id");
+        String id = 생성_값_리턴(노선("신분당선", "bg-red-600", "1", "2", "10"), "/lines", "id");
 
         //when
-        ExtractableResponse<Response> response = 노선_삭제(id);
+        ExtractableResponse<Response> response = 삭제("/lines/{id}", id);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 노선_생성(String name, String color, String upStationId, String downStationId,
-                                                String distance) {
-        Map<String, String> params = createLineMap(name, color, upStationId, downStationId, distance);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private String 노선_생성_값_리턴(String name, String color, String upStationId, String downStationId,
-                              String distance, String value) {
-        return 노선_생성(name, color, upStationId, downStationId, distance).jsonPath().getString(value);
-    }
-
-    private List<String> 노선_목록조회(String information) {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList(information, String.class);
-    }
-
-    private String 노선_조회(String name, String information) {
-        return RestAssured.given().log().all()
-                .when().get("/lines/{name}", name)
-                .then().log().all()
-                .extract().jsonPath().getString(information);
-    }
-
-    private ExtractableResponse<Response> 노선_수정(String name, String color, String upStationId, String downStationId,
-                                                String distance) {
-        Map<String, String> params = createLineMap(name, color, upStationId, downStationId, distance);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{name}", name)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 노선_삭제(String id) {
-        return RestAssured.given().log().all()
-                .when().delete("/lines/{id}", id)
-                .then().log().all()
-                .extract();
-    }
-
-    private Map<String, String> createLineMap(String name, String color, String upStationId, String downStationId,
-                                              String distance) {
+    private Map<String, String> 노선(String name, String color, String upStationId, String downStationId,
+                                   String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
