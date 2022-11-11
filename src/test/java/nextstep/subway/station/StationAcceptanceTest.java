@@ -3,9 +3,12 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.api.AbstractIntegerAssert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -36,30 +39,18 @@ public class StationAcceptanceTest {
      * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
     @DisplayName("지하철역을 생성한다.")
-    @Test
-    void createStation() {
+    @ParameterizedTest
+    @ValueSource(strings = {"화정역", "시청역"})
+    void createStation(String 지하철_역명) {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> 지하철역_생성결과 = 지하철_역을_생성한다(지하철_역명);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        지하철역_생성상태가_정상임을_확인할_수_있다(지하철역_생성결과);
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        List<String> 지하철_목록 = 지하철역_목록을_조회한다();
+        지하철역_목록중_해당_지하철을_찾을_수_있다(지하철_역명, 지하철_목록);
     }
 
     /**
@@ -68,29 +59,17 @@ public class StationAcceptanceTest {
      * Then 지하철역 생성이 안된다
      */
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
-    @Test
-    void createStationWithDuplicateName() {
+    @ParameterizedTest
+    @ValueSource(strings = {"서울역", "행신역", "DMC역"})
+    void createStationWithDuplicateName(String 지하철_역명) {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        지하철_역을_생성한다(지하철_역명);
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> 지하철_생성_결과 = 지하철_역을_생성한다(지하철_역명);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철역_생성_상태가_잘못된_요청_상태임을_확인_한다(지하철_생성_결과);
     }
 
     /**
@@ -99,8 +78,19 @@ public class StationAcceptanceTest {
      * Then 2개의 지하철역을 응답 받는다
      */
     @DisplayName("지하철역을 조회한다.")
-    @Test
-    void getStations() {
+    @ParameterizedTest
+    @CsvSource(value = {("화곡역, 마곡역"), ("목동역, 오목교역")})
+    void getStations(String 지하철_역명1, String 지하철_역명2) {
+        // given
+        지하철_역을_생성한다(지하철_역명1);
+        지하철_역을_생성한다(지하철_역명2);
+
+        // when
+        List<String> 지하철_목록 = 지하철역_목록을_조회한다();
+
+        // then
+        지하철역_목록중_해당_지하철을_찾을_수_있다(지하철_역명1, 지하철_목록);
+        지하철역_목록중_해당_지하철을_찾을_수_있다(지하철_역명2, 지하철_목록);
     }
 
     /**
@@ -109,7 +99,67 @@ public class StationAcceptanceTest {
      * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
     @DisplayName("지하철역을 제거한다.")
-    @Test
-    void deleteStation() {
+    @ParameterizedTest
+    @ValueSource(strings = {"선정릉역", "마두역", "반포역"})
+    void deleteStation(String 지하철_역명) {
+        // given
+        ExtractableResponse<Response> 지하철_생성_결과 = 지하철_역을_생성한다(지하철_역명);
+        String 지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(지하철_생성_결과);
+
+        // when
+        지하철_역을_삭제한다(지하철역_번호);
+
+        // then
+        List<String> 지하철역_목록 = 지하철역_목록을_조회한다();
+        지하철역_목록중_해당_지하철을_찾을_수_없다(지하철_역명, 지하철역_목록);
+    }
+
+    private ExtractableResponse<Response> 지하철_역을_생성한다(String 지하철_역명) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", 지하철_역명);
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().post("/stations")
+                        .then().log().all()
+                        .extract();
+        return response;
+    }
+
+    private List<String> 지하철역_목록을_조회한다() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+    }
+    private void 지하철_역을_삭제한다(String 지하철역_번호) {
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/" + 지하철역_번호)
+                .then().log().all()
+                .extract();
+    }
+
+    private String 지하철_생성_결과에서_지하철역_번호를_조회한다(ExtractableResponse<Response> 지하철_생성_결과) {
+        return 지하철_생성_결과.jsonPath()
+                .getString("id");
+    }
+
+    private AbstractIntegerAssert<?> 지하철역_생성상태가_정상임을_확인할_수_있다(ExtractableResponse<Response> 지하철역_생성결과) {
+        return assertThat(지하철역_생성결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철역_목록중_해당_지하철을_찾을_수_있다(String 지하철_역명, List<String> 지하철_목록) {
+        assertThat(지하철_목록).containsAnyOf(지하철_역명);
+    }
+
+    private void 지하철역_목록중_해당_지하철을_찾을_수_없다(String 지하철_역명, List<String> 지하철_목록) {
+        assertThat(지하철_목록).doesNotContain(지하철_역명);
+    }
+
+    private void 지하철역_생성_상태가_잘못된_요청_상태임을_확인_한다(ExtractableResponse<Response> 지하철_생성_결과) {
+        assertThat(지하철_생성_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
