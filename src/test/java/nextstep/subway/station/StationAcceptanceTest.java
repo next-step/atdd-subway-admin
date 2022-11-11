@@ -134,12 +134,4 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         return params;
     }
 
-
-    /// TODO: common으로 이동
-    public static Long getResponseId(ExtractableResponse<Response> response) {
-        return response.body()
-                .jsonPath()
-                .getLong("id");
-    }
-
 }
