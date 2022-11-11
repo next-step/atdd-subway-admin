@@ -137,6 +137,28 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         );
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선을 제거한다.")
+    @Test
+    void deleteLine() {
+        // given
+        Long upStationId = 지하철역_등록_요청("구파발역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_등록_요청("안국역").jsonPath().getLong("id");
+        ExtractableResponse<Response> createResponse = 지하철노선_등록_요청("3호선", "bg-orange", upStationId, downStationId, 15L);
+        Long id = createResponse.jsonPath().getLong("id");
+
+        // when
+        지하철노선_삭제_요청(id);
+
+        // then
+        List<String> lineNames = 지하철노선_목록_조회_요청().jsonPath().getList("name", String.class);
+        assertThat(lineNames).doesNotContain("3호선");
+    }
+
     ExtractableResponse<Response> 지하철노선_등록_요청(String name, String color, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -178,6 +200,14 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("id", id)
                 .when().put("/lines/{id}")
+                .then().log().all()
+                .extract();
+    }
+
+    ExtractableResponse<Response> 지하철노선_삭제_요청(Long id) {
+        return  RestAssured.given().log().all()
+                .pathParam("id", id)
+                .when().delete("/lines/{id}")
                 .then().log().all()
                 .extract();
     }
