@@ -95,7 +95,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(stationNames).doesNotContain(stationName);
     }
 
-    ExtractableResponse<Response> 지하철역_등록_요청(String name) {
+    private ExtractableResponse<Response> 지하철역_등록_요청(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -107,14 +107,14 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
                 .extract();
     }
 
-    ExtractableResponse<Response> 지하철역_목록_조회_요청() {
+    private ExtractableResponse<Response> 지하철역_목록_조회_요청() {
         return  RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
     }
 
-    ExtractableResponse<Response> 지하철역_삭제_요청(Long id) {
+    private ExtractableResponse<Response> 지하철역_삭제_요청(Long id) {
         return  RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().delete("/stations/{id}")
