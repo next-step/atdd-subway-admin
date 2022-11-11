@@ -6,6 +6,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -14,17 +15,24 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.station.StationAcceptanceStep.등록된_지하철역;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceStep extends AcceptanceTest {
-    public static ExtractableResponse<Response> 등록된_지하철노선(String name, String color) {
-        return 지하철노선_생성_요청(name, color);
+    public static ExtractableResponse<Response> 등록된_지하철노선(String name, String color, int distance, final String stationId1, final String stationId2) {
+        StationResponse station1 = 등록된_지하철역(stationId1).as(StationResponse.class);
+        StationResponse station2 = 등록된_지하철역(stationId2).as(StationResponse.class);
+        return 지하철노선_생성_요청(name, color, station1.getId(), station2.getId(), distance);
     }
 
-    public static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color) {
-        Map<String, String> params = new HashMap<>();
+    public static ExtractableResponse<Response> 지하철노선_생성_요청(String name, String color,
+                                                            Long upStationId, Long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
         //@formatter:off
         return RestAssured.given()
