@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class StationAcceptanceTestUtils {
+    public static final String 잠실역 = "잠실역";
+    public static final String 몽촌토성역 = "몽촌토성역";
     private static final String BASE_PATH = "/stations";
     private static final String NAME = "name";
     private static final String ID = "id";

@@ -11,9 +11,6 @@ import org.junit.jupiter.api.Test;
 
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends AcceptanceTest {
-    private static final String 잠실역 = "잠실역";
-    private static final String 몽촌토성역 = "몽촌토성역";
-
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -43,7 +40,6 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     void createStationWithDuplicateName() {
         // given
-        String 잠실역 = StationAcceptanceTest.잠실역;
         지하철역을_생성한다(잠실역);
 
         // when

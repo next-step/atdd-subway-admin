@@ -1,24 +1,31 @@
 package nextstep.subway.line;
 
-import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.utils.LineAcceptanceTestUtils.*;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.StationResponse;
+import nextstep.subway.utils.StationAcceptanceTestUtils;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
-    private static final String 신분당선 = "신분당선";
-    private static final String 신논현역 = "신논현역";
-    private static final String 강남역 = "강남역";
+    private StationResponse 저장된_강남역;
+    private StationResponse 저장된_신논현역;
+    private LineRequest 신분당선_생성_요청;
+
+    @BeforeEach
+    public void setUp() {
+        super.setUp();
+
+        저장된_강남역 = StationAcceptanceTestUtils.지하철역을_생성한다(강남역).as(StationResponse.class);
+        저장된_신논현역 = StationAcceptanceTestUtils.지하철역을_생성한다(신논현역).as(StationResponse.class);
+
+        신분당선_생성_요청 = new LineRequest(신분당선, "bg-red-600", 저장된_강남역.getId(), 저장된_신논현역.getId(), 10);
+    }
 
     /**
      * When 지하철 노선을 생성하면
@@ -28,29 +35,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     void createLine() {
         // when
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", 신분당선);
-        params.put("color", "bg-red-600");
-        params.put("upStationId", 1);
-        params.put("downStationId", 2);
-        params.put("distance", 10);
-
-        ExtractableResponse<Response> 저장된_신분당선 = given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        지하철노선을_생성한다(신분당선_생성_요청);
 
         // then
-        List<String> 조회된_지하철노선_목록 = given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract().jsonPath().getList("name", String.class);
-
-        assertThat(조회된_지하철노선_목록).contains(신분당선);
+        List<String> 조회된_지하철노선_목록 = 지하철노선_목록을_조회한다();
+        지하철노선_목록_검증_입력된_지하철노선이_존재(조회된_지하철노선_목록, 신분당선);
     }
 
     /**
