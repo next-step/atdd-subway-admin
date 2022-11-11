@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.station.StationAcceptanceTest.getResponseId;
 import static nextstep.subway.station.StationAcceptanceTest.givenCreateStation;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -76,7 +75,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> lineResponse = 지하철노선_조회_요청(getResponseId(createResponse));
 
         // Then
-        노선_정보_확인(lineResponse);
+        노선_정보_확인(lineResponse, getResponseId(createResponse));
     }
 
     /**
@@ -87,6 +86,16 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 수정")
     @Test
     void updateLine() {
+        // Given
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("1호선", "bg-red-600", "강남역", "역삼역", 2);
+        ResponseAssertTest.생성_확인(createResponse);
+
+        // When
+        Long id = getResponseId(createResponse);
+        ExtractableResponse<Response> updateResponse = 지하철노선_수정_요청(id, "다른 분당선", "bg-blue-600");
+
+        // Then
+        지하철노선_수정_확인(id, updateResponse, "다른 분당선", "bg-blue-600");
     }
 
     /**
@@ -143,13 +152,36 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         );
     }
 
-    private void 노선_정보_확인(ExtractableResponse<Response> lineResponse) {
-        long id = lineResponse.jsonPath().getLong("id");
-        String name = lineResponse.jsonPath().getString("name");
-        String color = lineResponse.jsonPath().getString("color");
+    private void 노선_정보_확인(ExtractableResponse<Response> lineResponse, Long id) {
+        assertAll(
+                () -> ResponseAssertTest.성공_확인(lineResponse),
+                () -> assertThat(lineResponse.jsonPath().getLong("id")).isEqualTo(id)
+        );
+    }
 
-        // TODO: 나머지 값 검증
-        // 필드하나씩 비요하지 않고 object를 비교하는 방법이 없을까?
+    private ExtractableResponse<Response> 지하철노선_수정_요청(Long lindId, String name, String color) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
 
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().patch(PathConstant.LINE_ROOT_PATH + PathConstant.PATH_SEPARATOR + lindId)
+                .then().log().all()
+                .extract();
+    }
+
+    private void 지하철노선_수정_확인(Long id, ExtractableResponse<Response> updateResponse, String name, String color) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        assertAll(
+                () -> ResponseAssertTest.성공_확인(updateResponse)
+        );
+        ExtractableResponse<Response> response = 지하철노선_조회_요청(id);
+        assertThat(response.jsonPath().getString("name")).isEqualTo(name);
+        assertThat(response.jsonPath().getString("color")).isEqualTo(color);
     }
 }

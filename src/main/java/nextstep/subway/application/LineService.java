@@ -1,8 +1,8 @@
 package nextstep.subway.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
+import javassist.NotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -36,6 +36,7 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
+    @Transactional
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -47,4 +48,11 @@ public class LineService {
     public LineResponse findLine(Long id) {
         return LineResponse.of(lineRepository.findById(id).get());
     }
+
+    @Transactional
+    public void updateLine(Long id, LineRequest lineRequest) throws NotFoundException {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundException("지하철 노선이 존재하지 않습니다.")); // TODO: error messge 추출
+        line.updateInfo(line.of(lineRequest));
+    }
+
 }

@@ -7,6 +7,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.dto.LineRequest;
 
 @Entity
 public class Line {
@@ -33,6 +34,20 @@ public class Line {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void updateInfo(Line updateLine) {
+        this.name = updateLine.name;
+        this.color = updateLine.color;
+    }
+
+    public Line of(LineRequest lineRequest) {
+        return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
     public Long getId() {
