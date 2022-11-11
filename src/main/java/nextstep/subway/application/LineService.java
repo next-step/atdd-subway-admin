@@ -53,11 +53,9 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse modifyLine(LineRequest lineRequest) {
-        lineRepository.findById(lineRequest.getId()).orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
-        Station upStation = findStation(lineRequest.getUpStationId());
-        Station downStation = findStation(lineRequest.getDownStationId());
-        return LineResponse.of(lineRequest.toLine(upStation,downStation));
+    public void modifyLine(Long id,LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
+        line.modifyLine(lineRequest.getName(),lineRequest.getColor());
     }
 
     private Station findStation(Long id){
