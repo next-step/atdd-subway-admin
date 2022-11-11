@@ -52,4 +52,12 @@ public class Line extends BaseEntity {
     public String getDownStationId() {
         return downStationId;
     }
+
+    public void changeInformation(String name, String color, int distance, String upStationId, String downStationId) {
+        this.name = name;
+        this.color = color;
+        this.distance = distance;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+    }
 }

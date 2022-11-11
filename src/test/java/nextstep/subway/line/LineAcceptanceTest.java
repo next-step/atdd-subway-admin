@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철노선 관련 기능")
@@ -87,14 +88,29 @@ class LineAcceptanceTest {
         assertThat(lineName).isEqualTo("신분당선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * <p>
+     * When 생성한 지하철 노선을 수정하면
+     * <p>
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선 정보를 수정한다.")
+    @Test
+    void modifyLine() {
+        //given
+        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
+
+        //when
+        ExtractableResponse<Response> response = 노선_수정("신분당선", "bg-green-600", "1", "2", "10");
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
     private ExtractableResponse<Response> 노선_생성(String name, String color, String upStationId, String downStationId,
                                                 String distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
+        Map<String, String> params = createLineMap(name, color, upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()
                 .body(params)
@@ -116,5 +132,28 @@ class LineAcceptanceTest {
                 .when().get("/lines/{name}", name)
                 .then().log().all()
                 .extract().jsonPath().getString(information);
+    }
+
+    private ExtractableResponse<Response> 노선_수정(String name, String color, String upStationId, String downStationId,
+                                                String distance) {
+        Map<String, String> params = createLineMap(name, color, upStationId, downStationId, distance);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{name}", name)
+                .then().log().all()
+                .extract();
+    }
+
+    private Map<String, String> createLineMap(String name, String color, String upStationId, String downStationId,
+                                              String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+        return params;
     }
 }

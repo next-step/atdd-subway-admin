@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,6 +39,12 @@ public class LineController {
     @GetMapping(value = "/lines/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLineByName(@PathVariable("name") String name) {
         return ResponseEntity.ok().body(lineService.findByName(name));
+    }
+
+    @PutMapping(value = "/lines/{name}")
+    public ResponseEntity modifyLine(@PathVariable("name") String name, @RequestBody LineRequest lineRequest) {
+        lineService.updateLine(name, lineRequest);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(PersistenceException.class)

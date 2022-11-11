@@ -38,4 +38,11 @@ public class LineService {
     public LineResponse findByName(String name) {
         return LineResponse.of(lineRepository.findByName(name).orElseThrow(EntityNotFoundException::new));
     }
+
+    @Transactional
+    public void updateLine(String name, LineRequest lineRequest) {
+        Line line = lineRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
+        line.changeInformation(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance(),
+                lineRequest.getUpStationId(), lineRequest.getDownStationId());
+    }
 }
