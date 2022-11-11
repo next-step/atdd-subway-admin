@@ -65,7 +65,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선을 조회한다.")
     @Test
     void getLines() {
-        // when
+        // given
         createLine(LineRequest.builder()
                 .name("2호선")
                 .color("green")
@@ -81,13 +81,15 @@ public class LineAcceptanceTest {
 
         // then
         List<Map> lines = getAllLine().jsonPath().get();
+
+        // then
         assertAll(
                 () -> assertThat(lines.stream().map(map -> map.get("name"))).containsAnyOf("2호선","1호선"),
                 () -> assertThat(lines.stream().map(map -> map.get("color"))).containsAnyOf("green","blue"));
 
     }
 
-    ExtractableResponse<Response> createLine(LineRequest lineRequest) {
+    private ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -96,7 +98,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    ExtractableResponse<Response> getAllLine() {
+    private ExtractableResponse<Response> getAllLine() {
         return  RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
