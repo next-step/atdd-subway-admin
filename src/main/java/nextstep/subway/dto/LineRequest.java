@@ -4,7 +4,6 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
 public class LineRequest {
-    private Long id;
     private String name;
     private String color;
     private long upStationId;
@@ -15,15 +14,10 @@ public class LineRequest {
     }
 
     public LineRequest(LineRequestBuilder builder) {
-        this.id = builder.id;
         this.name = builder.name;
         this.color = builder.color;
         this.upStationId = builder.upStationId;
         this.downStationId = builder.downStationId;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public String getName() {
@@ -51,16 +45,10 @@ public class LineRequest {
     }
 
     public static class LineRequestBuilder {
-        private Long id;
         private String name;
         private String color;
         private Long upStationId;
         private Long downStationId;
-
-        public LineRequestBuilder id(Long id) {
-            this.id = id;
-            return this;
-        }
 
         public LineRequestBuilder name(String name) {
             this.name = name;
