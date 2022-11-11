@@ -1,5 +1,7 @@
 package nextstep.subway.application;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
@@ -33,4 +35,10 @@ public class LineService {
                 .orElseThrow(NoResultException::new);
     }
 
+    public List<LineResponse> findAllLines() {
+        return lineRepository.findAll()
+                .stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
+    }
 }
