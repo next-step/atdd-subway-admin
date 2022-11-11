@@ -60,7 +60,7 @@ public class LineAcceptanceTest {
         노선을_생성한다(lineCreateRequest);
 
         // then
-        List<String> lineNames = 모든_노선을_조회한다().jsonPath().getList("name", String.class);
+        List<String> lineNames = 노선을_조회한다_노선아이디가_없으면_모든_노선이_조회된다("").jsonPath().getList("name", String.class);
         생성한_노선을_찾을_수_있다(lineNames, lineName);
     }
 
@@ -76,7 +76,7 @@ public class LineAcceptanceTest {
         노선_2개를_생성한다();
 
         // then
-        List<String> lineNames = 모든_노선을_조회한다().jsonPath().getList("name", String.class);
+        List<String> lineNames = 노선을_조회한다_노선아이디가_없으면_모든_노선이_조회된다("").jsonPath().getList("name", String.class);
 
         // then
         생성한_2개의_노선을_찾을_수_있다(lineNames);
@@ -178,22 +178,13 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 모든_노선을_조회한다() {
+    public static ExtractableResponse<Response> 노선을_조회한다_노선아이디가_없으면_모든_노선이_조회된다(String lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
+                .when().get("/lines"+lineId)
                 .then().log().all()
                 .extract();
     }
-
-    public static ExtractableResponse<Response> 특정_노선을_조회한다(int lineId) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/"+lineId)
-                .then().log().all()
-                .extract();
-    }
-
 
     public static void 노선_2개를_생성한다() {
         int upStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
@@ -255,8 +246,8 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    public void 지하철_노선의_정보가_삭제된다(int stationId){
-        ExtractableResponse<Response> response = 특정_노선을_조회한다(stationId);
+    public void 지하철_노선의_정보가_삭제된다(int lineId){
+        ExtractableResponse<Response> response = 노선을_조회한다_노선아이디가_없으면_모든_노선이_조회된다("/"+lineId);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
