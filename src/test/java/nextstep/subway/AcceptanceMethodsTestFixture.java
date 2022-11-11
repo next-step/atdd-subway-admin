@@ -5,10 +5,10 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.MediaType;
 
-public class AcceptanceMethods {
+public class AcceptanceMethodsTestFixture {
     protected static final String SLASH = "/";
 
-    protected AcceptanceMethods() {
+    protected AcceptanceMethodsTestFixture() {
     }
 
     public static <T> ExtractableResponse<Response> post(String path, T requestBody) {

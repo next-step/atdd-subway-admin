@@ -2,13 +2,13 @@ package nextstep.subway.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.AcceptanceMethods;
+import nextstep.subway.AcceptanceMethodsTestFixture;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineUpdateRequest;
 
 import static nextstep.subway.station.StationAcceptanceMethods.지하철역_생성;
 
-public class LineAcceptanceMethods extends AcceptanceMethods {
+public class LineAcceptanceMethods extends AcceptanceMethodsTestFixture {
 
     private static final String LINE_PATH = "/lines";
 

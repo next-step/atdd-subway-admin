@@ -2,12 +2,12 @@ package nextstep.subway.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.AcceptanceMethods;
+import nextstep.subway.AcceptanceMethodsTestFixture;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class StationAcceptanceMethods extends AcceptanceMethods {
+public class StationAcceptanceMethods extends AcceptanceMethodsTestFixture {
     private static final String STATIONS_PATH = "/stations";
 
     private StationAcceptanceMethods() {
