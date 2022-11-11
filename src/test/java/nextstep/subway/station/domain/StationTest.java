@@ -22,4 +22,20 @@ class StationTest {
         Station station = Station.from("신사역");
         Assertions.assertThat(station).isNotNull();
     }
+
+    @Test
+    @DisplayName("지하철역 동등성 성공 테스트")
+    void equalsSuccess() {
+        Station actual = Station.from("신사역");
+        Station expected = Station.from("신사역");
+        Assertions.assertThat(actual).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("지하철역 동등성 실패 테스트")
+    void equalsFail() {
+        Station actual = Station.from("신사역");
+        Station expected = Station.from("강남역");
+        Assertions.assertThat(actual).isNotEqualTo(expected);
+    }
 }

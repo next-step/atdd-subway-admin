@@ -1,10 +1,10 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.common.message.ExceptionMessage;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Station extends BaseEntity {
@@ -14,10 +14,6 @@ public class Station extends BaseEntity {
 
     @Column(unique = true, nullable = false)
     private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "line_id")
-    private Line line;
 
     protected Station() {
     }
@@ -45,15 +41,16 @@ public class Station extends BaseEntity {
         return name;
     }
 
-    public void addTo(Line line) {
-        this.line = line;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Station station = (Station) o;
+        return name.equals(station.name);
     }
 
-    public void removeFromLine() {
-        this.line = null;
-    }
-
-    public Long getLineId() {
-        return line.getId();
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
     }
 }

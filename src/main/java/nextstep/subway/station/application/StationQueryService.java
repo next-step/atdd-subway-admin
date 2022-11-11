@@ -1,5 +1,7 @@
 package nextstep.subway.station.application;
 
+import nextstep.subway.common.exception.DataNotFoundException;
+import nextstep.subway.common.message.ExceptionMessage;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
@@ -7,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,13 +28,8 @@ public class StationQueryService {
                 .collect(Collectors.toList());
     }
 
-    public List<Station> findByLineId(Long lineId) {
-        return stationRepository.findByLine_Id(lineId);
-    }
-
-    public Map<Long, List<Station>> findStationsByLine(List<Long> lineIds) {
-        return stationRepository.findByLine_Id_In(lineIds)
-                .stream()
-                .collect(Collectors.groupingBy(Station::getLineId, Collectors.toList()));
+    public Station findById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException(ExceptionMessage.NOT_FOUND_STATION));
     }
 }

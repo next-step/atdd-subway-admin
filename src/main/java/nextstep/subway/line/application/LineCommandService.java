@@ -7,7 +7,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
-import nextstep.subway.station.application.StationCommandService;
+import nextstep.subway.station.application.StationQueryService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,20 +16,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class LineCommandService {
     private final LineRepository lineRepository;
-    private final StationCommandService stationCommandService;
+    private final StationQueryService stationQueryService;
 
-    public LineCommandService(LineRepository lineRepository, StationCommandService stationCommandService) {
+    public LineCommandService(LineRepository lineRepository, StationQueryService stationQueryService) {
         this.lineRepository = lineRepository;
-        this.stationCommandService = stationCommandService;
+        this.stationQueryService = stationQueryService;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line line = lineRepository.save(lineRequest.toLine());
+        Station upStation = stationQueryService.findById(lineRequest.getUpStationId());
+        Station downStation = stationQueryService.findById(lineRequest.getDownStationId());
 
-        Station upStation = stationCommandService.addToLine(lineRequest.getUpStationId(), line);
-        Station downStation = stationCommandService.addToLine(lineRequest.getDownStationId(), line);
+        Line line = Line.of(lineRequest.getName(), lineRequest.getColor(), upStation, downStation);
+        lineRepository.save(line);
 
-        return LineResponse.of(line, upStation, downStation);
+        return LineResponse.from(line);
     }
 
     public void updateLine(Long id, LineUpdateRequest lineRequest) {
@@ -40,7 +41,6 @@ public class LineCommandService {
     }
 
     public void deleteLine(Long id) {
-        stationCommandService.removeFromLine(id);
         lineRepository.deleteById(id);
     }
 }

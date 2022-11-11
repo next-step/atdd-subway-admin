@@ -19,7 +19,10 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse of(Line line, Station upStation, Station downStation) {
+    public static LineResponse from(Line line) {
+        Station upStation = line.getUpStation();
+        Station downStation = line.getDownStation();
+
         return new LineResponse(
                 line.getId(),
                 line.getName(),
