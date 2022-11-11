@@ -98,7 +98,7 @@ public class StationAcceptanceTest {
         // given
         String stationName = "선릉역";
         ExtractableResponse<Response> createStationResponse = 지하철역_등록_요청(stationName);
-        long id = createStationResponse.jsonPath().getLong("id");
+        Long id = createStationResponse.jsonPath().getLong("id");
 
         // when
         지하철역_삭제_요청(id);
@@ -127,7 +127,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    ExtractableResponse<Response> 지하철역_삭제_요청(long id) {
+    ExtractableResponse<Response> 지하철역_삭제_요청(Long id) {
         return  RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().delete("/stations/{id}")
