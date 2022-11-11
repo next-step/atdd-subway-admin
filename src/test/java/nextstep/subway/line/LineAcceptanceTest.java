@@ -1,7 +1,10 @@
 package nextstep.subway.line;
 
+import static java.util.Arrays.stream;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
+
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.util.PreDataUtil;
@@ -33,6 +37,7 @@ public class LineAcceptanceTest {
         preDataUtil.truncate();
         preDataUtil.station(1L, "역1", null);
         preDataUtil.station(2L, "역2", null);
+        preDataUtil.station(3L, "역3", null);
     }
 
     /**
@@ -43,24 +48,81 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        LineRequestDto lineRequestDto = new LineRequestDto("신분당선", "bg-red-600", 1L, 2L, 10L);
-        ExtractableResponse<Response> createResponse = createLine(lineRequestDto);
-        checkCreateResponse(lineRequestDto, createResponse);
+        LineRequestDto lineRequest = new LineRequestDto("신분당선", "bg-red-600", 1L, 2L, 10L);
+        ExtractableResponse<Response> createResponse = createLine(lineRequest);
+        checkCreateResponse(lineRequest, createResponse);
 
         // then
         ExtractableResponse<Response> fetchResponse = fetchLines();
-        checkFetchResponse(lineRequestDto, fetchResponse);
+        checkFetchResponse(fetchResponse, lineRequest);
     }
 
-    private void checkFetchResponse(LineRequestDto lineRequestDto, ExtractableResponse<Response> fetchResponse) {
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철노선 목록을 조회한다")
+    @Test
+    void getLines() {
+        // given
+        LineRequestDto lineRequest1 = new LineRequestDto("신분당선", "bg-red-600", 1L, 2L, 10L);
+        createLine(lineRequest1);
+        LineRequestDto lineRequest2 = new LineRequestDto("2호선", "bg-blue-600", 2L, 3L, 20L);
+        createLine(lineRequest2);
+
+        // when
+        ExtractableResponse<Response> fetchResponse = fetchLines();
+
+        // then
+        checkFetchResponse(fetchResponse, lineRequest1, lineRequest2);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철노선을 조회한다")
+    @Test
+    void getLine() {
+
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철노선을 수정한다")
+    @Test
+    void updateLine() {
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선을 삭제한다")
+    @Test
+    void deleteLine() {
+    }
+
+    private void checkFetchResponse(ExtractableResponse<Response> fetchResponse, LineRequestDto... lineRequests) {
         assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
-        assertThat(fetchResponse.jsonPath().getList(".")).hasSize(1);
-        assertThat(fetchResponse.jsonPath().getLong("[0].id")).isNotNull();
-        assertThat(fetchResponse.jsonPath().getString("[0].name")).isEqualTo(lineRequestDto.getName());
-        assertThat(fetchResponse.jsonPath().getString("[0].color")).isEqualTo(lineRequestDto.getColor());
-        assertThat(fetchResponse.jsonPath().getList("[0].stations")).hasSize(2);
-        assertThat(fetchResponse.jsonPath().getList("[0].stations.id", Long.class)).containsExactly(1L, 2L);
-        assertThat(fetchResponse.jsonPath().getList("[0].stations.name", String.class)).containsExactly("역1", "역2");
+        JsonPath jsonPath = fetchResponse.jsonPath();
+        assertThat(jsonPath.getList(".")).hasSize(lineRequests.length);
+        assertThat(jsonPath.getList("id", Long.class)).hasSize(lineRequests.length);
+        assertThat(jsonPath.getList("name", String.class))
+            .containsAll(stream(lineRequests).map(LineRequestDto::getName).collect(Collectors.toList()));
+        assertThat(jsonPath.getList("color", String.class))
+            .containsAll(stream(lineRequests).map(LineRequestDto::getColor).collect(Collectors.toList()));
+        for (int i = 0; i < lineRequests.length; i++) {
+            assertThat(jsonPath.getList(String.format("[%d].stations.id", i))).containsExactly(
+                lineRequests[i].getUpStationId().intValue(), lineRequests[i].getDownStationId().intValue());
+            assertThat(jsonPath.getList(String.format("[%d].stations.name", i), String.class)).hasSize(2);
+        }
     }
 
     private void checkCreateResponse(LineRequestDto lineRequestDto, ExtractableResponse<Response> createResponse) {
@@ -123,46 +185,6 @@ public class LineAcceptanceTest {
             this.downStationId = downStationId;
             this.distance = distance;
         }
-    }
-
-    /**
-     * Given 2개의 지하철 노선을 생성하고
-     * When 지하철 노선 목록을 조회하면
-     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
-     */
-    @DisplayName("지하철노선 목록을 조회한다")
-    @Test
-    void getLines() {
-    }
-
-    /**
-     * Given 지하철 노선을 생성하고
-     * When 생성한 지하철 노선을 조회하면
-     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
-     */
-    @DisplayName("지하철노선을 조회한다")
-    @Test
-    void getLine() {
-    }
-
-    /**
-     * Given 지하철 노선을 생성하고
-     * When 생성한 지하철 노선을 수정하면
-     * Then 해당 지하철 노선 정보는 수정된다
-     */
-    @DisplayName("지하철노선을 수정한")
-    @Test
-    void updateLine() {
-    }
-
-    /**
-     * Given 지하철 노선을 생성하고
-     * When 생성한 지하철 노선을 삭제하면
-     * Then 해당 지하철 노선 정보는 삭제된다
-     */
-    @DisplayName("지하철노선을 삭제한다")
-    @Test
-    void deleteLine() {
     }
 
 }
