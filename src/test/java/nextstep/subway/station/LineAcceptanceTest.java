@@ -44,6 +44,29 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     /**
+     * Given 지하철노선을 생성하고
+     * When 기존에 존재하는 지하철노선 이름으로 지하철노선을 생성하면
+     * Then 지하철노선 생성이 안된다
+     */
+    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
+    @Test
+    void createLineWithDuplicateName() {
+        // given
+        Long upStationId = 지하철역_등록_요청("강남역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_등록_요청("역삼역").jsonPath().getLong("id");
+        Long distance = 6L;
+        String lineName = "2호선";
+        String lineColor = "bg-green";
+        지하철노선_등록_요청(lineName, lineColor, upStationId, downStationId, distance);
+
+        // when
+        ExtractableResponse<Response> response = 지하철노선_등록_요청(lineName, lineColor, upStationId, downStationId, distance);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
      * Given 2개의 지하철 노선을 생성하고
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다
