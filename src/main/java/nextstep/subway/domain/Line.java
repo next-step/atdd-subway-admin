@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import nextstep.subway.constant.ErrorCode;
+import nextstep.subway.utils.StringUtils;
 
 @Entity
 public class Line extends BaseEntity {
@@ -45,14 +46,23 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
+    public void updateLineNameAndColor(String name, String color) {
+        if(!StringUtils.isNullOrEmpty(name)) {
+            this.name = name;
+        }
+        if(!StringUtils.isNullOrEmpty(color)) {
+            this.color = color;
+        }
+    }
+
     private void validateLineName(String name) {
-        if(name == null || name.trim().isEmpty()) {
+        if(StringUtils.isNullOrEmpty(name)) {
             throw new IllegalArgumentException(ErrorCode.노선명은_비어있을_수_없음.getErrorMessage());
         }
     }
 
     private void validateLineColor(String color) {
-        if(color == null || color.trim().isEmpty()) {
+        if(StringUtils.isNullOrEmpty(color)) {
             throw new IllegalArgumentException(ErrorCode.노선색상은_비어있을_수_없음.getErrorMessage());
         }
     }

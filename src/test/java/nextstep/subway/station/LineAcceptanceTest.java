@@ -126,10 +126,11 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         Long id = createResponse.jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> getResponse = 지하철노선_수정_요청(id, "다른1호선","bg-darkblue-100");
-
+        ExtractableResponse<Response> updateResponse = 지하철노선_수정_요청(id, "다른1호선","bg-darkblue-100");
+        ExtractableResponse<Response> getResponse = 지하철노선_조회_요청(id);
         // then
         assertAll(
+                () -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(getResponse.jsonPath().getLong("id")).isEqualTo(id),
                 () -> assertThat(getResponse.jsonPath().getString("name")).isEqualTo("다른1호선"),
                 () -> assertThat(getResponse.jsonPath().getString("color")).isEqualTo("bg-darkblue-100")
