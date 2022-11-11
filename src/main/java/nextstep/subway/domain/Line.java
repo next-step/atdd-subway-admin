@@ -12,25 +12,25 @@ public class Line extends BaseEntity {
     @Column
     private String color;
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "upstream_station_id", nullable = false)
-    private Station upstreamStation;
+    @JoinColumn(name = "up_station_id", nullable = false)
+    private Station upStation;
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "downstream_station_id", nullable = false)
-    private Station downstreamStation;
+    @JoinColumn(name = "down_station_id", nullable = false)
+    private Station downStation;
 
 
     public Line() {
     }
 
-    public Line(String name, String color, Station upstreamStation, Station downstreamStation) {
+    public Line(String name, String color, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
-        this.upstreamStation = upstreamStation;
-        this.downstreamStation = downstreamStation;
+        this.upStation = upStation;
+        this.downStation = downStation;
     }
 
-    public Line(Long id, String name, String color, Station upstreamStation, Station downstreamStation) {
-        this(name,color,upstreamStation,downstreamStation);
+    public Line(Long id, String name, String color, Station upStation, Station downStation) {
+        this(name,color,upStation,downStation);
         this.id = id;
     }
 
@@ -47,10 +47,10 @@ public class Line extends BaseEntity {
     }
 
     public String getUpStationName() {
-        return upstreamStation.getName();
+        return downStation.getName();
     }
 
     public String getDownStationName() {
-        return downstreamStation.getName();
+        return downStation.getName();
     }
 }
