@@ -81,7 +81,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = StationAcceptanceTestFixture.findAllStations();
 
         //then
-        assertThat(response.body().jsonPath().getInt("size()")).isEqualTo(2);
+        assertThat(StationAcceptanceTestFixture.getTotalJsonArraySize(response)).isEqualTo(2);
     }
 
     /**
@@ -101,6 +101,6 @@ public class StationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> findAllResponse = StationAcceptanceTestFixture.findAllStations();
-        assertThat(findAllResponse.body().jsonPath().getInt("size()")).isEqualTo(0);
+        assertThat(StationAcceptanceTestFixture.getTotalJsonArraySize(findAllResponse)).isEqualTo(0);
     }
 }
