@@ -14,8 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.application.LineService;
+import nextstep.subway.dto.ErrorResponse;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.AlreadyDeletedException;
+import nextstep.subway.exception.NoStationException;
 import nextstep.subway.exception.NotFoundException;
 
 @RestController
@@ -29,7 +32,7 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines" + lineResponse.getId())).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
     @GetMapping(value = "/lines")
@@ -55,7 +58,17 @@ public class LineController {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<?> handleIllegalArgsException() {
+    public ResponseEntity<?> handleNotFoundException() {
         return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<?> handleNoStationException(NoStationException e) {
+        return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(AlreadyDeletedException.class)
+    public ResponseEntity<?> handleAlreadyDeletedException() {
+        return ResponseEntity.noContent().build();
     }
 }

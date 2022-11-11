@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -175,6 +176,66 @@ public class LineAcceptanceTest {
         assertThat(HttpStatus.valueOf(fetchLine(notExistsId).statusCode())).isEqualTo(NOT_FOUND);
     }
 
+    /**
+     * When 존재하지 않는 역으로 노선을 생성하려고하면
+     * Then 400 에러 받는다
+     */
+    @DisplayName("존재하지 않는 역으로 노선을 생성한다")
+    @Test
+    void createLineWithNotFoundStations() {
+        // when
+        LineRequestDto lineRequest = new LineRequestDto("신분당선", "bg-red-600", 997L, 998L, 10L);
+        ExtractableResponse<Response> createResponse = createLine(lineRequest);
+
+        // then
+        assertThat(HttpStatus.valueOf(createResponse.statusCode())).isEqualTo(BAD_REQUEST);
+        assertThat(createResponse.jsonPath().getString("message")).contains("존재하지 않는 역입니다.");
+    }
+
+    private ExtractableResponse<Response> createLine(LineRequestDto lineRequestDto) {
+        return RestAssured.given().log().all()
+            .body(lineRequestDto)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> fetchLines() {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> fetchLine(Long id) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> changeLine(long lineId, String name, String color) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name", name);
+        map.put("color", color);
+        return RestAssured.given().log().all()
+            .body(map)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put("/lines/" + lineId)
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> removeLine(long lineId) {
+        return RestAssured.given().log().all()
+            .when().delete("/lines/" + lineId)
+            .then().log().all()
+            .extract();
+    }
+
     private void checkFetchedLines(ExtractableResponse<Response> fetchResponse, LineRequestDto... lineRequests) {
         assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
         JsonPath jsonPath = fetchResponse.jsonPath();
@@ -211,47 +272,13 @@ public class LineAcceptanceTest {
 
     private void checkCreateResponse(LineRequestDto lineRequestDto, ExtractableResponse<Response> createResponse) {
         assertThat(HttpStatus.valueOf(createResponse.statusCode())).isEqualTo(CREATED);
-        assertThat(createResponse.jsonPath().getLong("id")).isNotNull();
+        long id = createResponse.jsonPath().getLong("id");
+        assertThat(id).isNotNull();
+        assertThat(createResponse.header(HttpHeaders.LOCATION)).isEqualTo("/lines/" + id);
         assertThat(createResponse.jsonPath().getString("name")).isEqualTo(lineRequestDto.getName());
         assertThat(createResponse.jsonPath().getList("stations.id", Long.class))
             .containsExactly(lineRequestDto.getUpStationId(), lineRequestDto.getDownStationId());
         assertThat(createResponse.jsonPath().getList("stations.name", String.class)).hasSize(2);
-    }
-
-    private ExtractableResponse<Response> fetchLines() {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().get("/lines")
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> removeLine(long lineId) {
-        return RestAssured.given().log().all()
-            .when().delete("/lines/" + lineId)
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> changeLine(long lineId, String name, String color) {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("name", name);
-        map.put("color", color);
-        return RestAssured.given().log().all()
-            .body(map)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().put("/lines/" + lineId)
-            .then().log().all()
-            .extract();
-    }
-
-    private ExtractableResponse<Response> createLine(LineRequestDto lineRequestDto) {
-        return RestAssured.given().log().all()
-            .body(lineRequestDto)
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/lines")
-            .then().log().all()
-            .extract();
     }
 
     static class LineRequestDto {
@@ -288,14 +315,6 @@ public class LineAcceptanceTest {
             this.downStationId = downStationId;
             this.distance = distance;
         }
-    }
-
-    private ExtractableResponse<Response> fetchLine(Long id) {
-        return RestAssured.given().log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().get("/lines/" + id)
-            .then().log().all()
-            .extract();
     }
 
 }

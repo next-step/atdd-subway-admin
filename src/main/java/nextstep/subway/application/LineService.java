@@ -12,6 +12,8 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.AlreadyDeletedException;
+import nextstep.subway.exception.NoStationException;
 import nextstep.subway.exception.NotFoundException;
 
 @Service
@@ -27,13 +29,15 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line persistLine = lineRepository.save(Line.of(lineRequest));
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-            .orElseThrow(RuntimeException::new);
-        upStation.updateLine(persistLine);
+            .orElseThrow(() -> new NoStationException(lineRequest.getUpStationId()));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-            .orElseThrow(RuntimeException::new);
+            .orElseThrow(() -> new NoStationException(lineRequest.getDownStationId()));
+
+        Line persistLine = lineRepository.save(Line.of(lineRequest));
+        upStation.updateLine(persistLine);
         downStation.updateLine(persistLine);
+
         return LineResponse.of(persistLine);
     }
 
@@ -44,8 +48,7 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findLine(id)
-            .orElseThrow(NotFoundException::new);
+        Line line = lineRepository.findLine(id).orElseThrow(NotFoundException::new);
         return LineResponse.of(line);
     }
 
@@ -57,10 +60,8 @@ public class LineService {
 
     @Transactional
     public void removeLine(Long id) {
-        if (lineRepository.existsById(id)) {
-            Line line = lineRepository.findLine(id).orElseThrow(RuntimeException::new);
-            line.removeStations();
-            lineRepository.delete(line);
-        }
+        Line line = lineRepository.findLine(id).orElseThrow(AlreadyDeletedException::new);
+        line.removeStations();
+        lineRepository.delete(line);
     }
 }
