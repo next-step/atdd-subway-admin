@@ -5,23 +5,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-
-    @LocalServerPort
-    int port;
+public class StationAcceptanceTest extends AcceptanceTest {
 
     public static ExtractableResponse<Response> 지하철역_목록_조회() {
         return RestAssured.given().log().all()
@@ -53,13 +49,6 @@ public class StationAcceptanceTest {
             .when().delete("/stations/" + id)
             .then().log().all()
             .extract();
-    }
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
     }
 
     /**
