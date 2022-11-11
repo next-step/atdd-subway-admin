@@ -102,28 +102,32 @@ public class LineAcceptanceStep extends AcceptanceTest {
     }
 
     public static void 지하철노선_생성_응답상태_201_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        응답상태_검증(response, HttpStatus.CREATED);
         assertThat(response.header("Location")).isNotBlank();
     }
 
     public static void 지하철노선_생성_응답상태_400_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        응답상태_검증(response, HttpStatus.BAD_REQUEST);
     }
 
     public static void 지하철노선_목록_조회_응답상태_200_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답상태_검증(response, HttpStatus.OK);
     }
 
     public static void 지하철노선_조회_응답상태_200_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답상태_검증(response, HttpStatus.OK);
     }
 
     public static void 지하철노선_수정_응답상태_200_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        응답상태_검증(response, HttpStatus.OK);
     }
 
     public static void 지하철_노선_삭제_응답상태_204_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        응답상태_검증(response, HttpStatus.NO_CONTENT);
+    }
+
+    private static void 응답상태_검증(final ExtractableResponse<Response> response, final HttpStatus ok) {
+        assertThat(response.statusCode()).isEqualTo(ok.value());
     }
 
     public static void 지하철노선_목록_검증(ExtractableResponse<Response> response, List<ExtractableResponse<Response>> createdResponses) {
