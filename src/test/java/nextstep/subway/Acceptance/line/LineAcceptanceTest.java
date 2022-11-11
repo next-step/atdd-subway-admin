@@ -154,7 +154,7 @@ public class LineAcceptanceTest {
      * when 생성한 지하철 노선 하나를 수정하고
      * then 생성한 지하철 노선을 조회하면 수정된 지하철 노선 하나가 조회된다.
      */
-    @DisplayName("지하철 노선 수정")
+    @DisplayName("등록된 지하철 노선의 이름과 색깔을 변경할 수 있다.")
     @Test
     void update_line() {
         //given
@@ -175,7 +175,7 @@ public class LineAcceptanceTest {
      * when 지하철 노선을 삭제하면
      * then 지하철 노선 목록 조회시 생성한 노선을 확인할 수 없다.
      */
-    @DisplayName("지하철 노선 삭제")
+    @DisplayName("등록된 지하철 노선을 삭제할 수 있다.")
     @Test
     void deleteLine() {
         //given
