@@ -45,20 +45,14 @@ public class LineService {
     }
 
     public LineResponse findLine(Long lineId) {
-        Optional<Line> byId = lineRepository.findById(lineId);
-        if (!byId.isPresent()) {
-            throw new EntityNotFoundException();
-        }
-        return LineResponse.of(byId.get());
+        Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        return LineResponse.of(line);
     }
 
     @Transactional
     public void modifyLine(Long lineId, LineModifyRequest request) {
-        Optional<Line> byId = lineRepository.findById(lineId);
-        if (!byId.isPresent()) {
-            throw new EntityNotFoundException();
-        }
-        byId.get().modifyLine(request.getName(),request.getColor());
+        Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        line.modifyLine(request.getName(),request.getColor());
     }
 
     public void deleteLine(Long lineId) {
