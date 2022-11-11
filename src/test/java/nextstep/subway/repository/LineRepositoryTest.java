@@ -4,13 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import java.util.Optional;
+import javax.persistence.NoResultException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 
 @DataJpaTest
 class LineRepositoryTest {
@@ -58,8 +58,8 @@ class LineRepositoryTest {
         Optional<Line> expect = lineRepository.findById(actual.getId());
 
         assertAll(
-                () -> assertThat(expect.orElseThrow(NotFoundException::new).getName()).isEqualTo(newName),
-                () -> assertThat(expect.orElseThrow(NotFoundException::new).getColor()).isEqualTo(newColor)
+                () -> assertThat(expect.orElseThrow(NoResultException::new).getName()).isEqualTo(newName),
+                () -> assertThat(expect.orElseThrow(NoResultException::new).getColor()).isEqualTo(newColor)
         );
     }
 
