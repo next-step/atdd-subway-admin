@@ -86,7 +86,6 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(lines.stream().map(map -> map.get("name"))).containsAnyOf("2호선","1호선"),
                 () -> assertThat(lines.stream().map(map -> map.get("color"))).containsAnyOf("green","blue"));
-
     }
 
     /**
@@ -119,8 +118,25 @@ public class LineAcceptanceTest {
                 () -> assertThat(response.jsonPath().getString("color")).isEqualTo("green"),
                 () -> assertThat(response.jsonPath().getString("upStationName")).isEqualTo("강남역"),
                 () -> assertThat(response.jsonPath().getString("downStationName")).isEqualTo("논현역"));
+    }
 
+    /**
+     * Given 지하철노선을 생성하고
+     * When 존재하지않는 아이디로 지하철노선을 조회하면
+     * Then 지하철노선의 정보를 조회할수 없다
+     */
+    @DisplayName("존재하지않는 아이디로 지하철노선을 조회한다.")
+    @Test
+    void getLineWithNoExistsId() {
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("id", -1)
+                .when().get("/lines/{id}")
+                .then().log().all()
+                .extract();
 
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> createLine(LineRequest lineRequest) {
