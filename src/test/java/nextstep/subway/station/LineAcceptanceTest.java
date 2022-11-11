@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.LineModifyRequest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.util.RequestUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -72,6 +73,32 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선을_조회한다(노선_식별자);
 
         생성한_지하철_노선의_정보를_응답받을_수_있다(response,"신규노선", "노선색생", 1000L, "상행역", "하행역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @Test
+    void 지하철노선_수정() {
+        Long 노선_식별자 = 지하철_노선을_생성한다("지하철노선", "노선색생", 1000L, "상행역", "하행역");
+
+        ExtractableResponse<Response> response = 지하철_노선을_수정한다(노선_식별자,"신규노선명","신규노선색상");
+
+        해당_지하철_노선_정보는_수정된다(response, 노선_식별자,"신규노선명","신규노선색상");
+    }
+
+    private void 해당_지하철_노선_정보는_수정된다(ExtractableResponse<Response> response, Long 노선_식별자,String 노선명,String 색상) {
+        assertStatus(response,HttpStatus.OK);
+        ExtractableResponse<Response> queryResponse = 지하철_노선을_조회한다(노선_식별자);
+        assertThat(queryResponse.jsonPath().getString("name")).isEqualTo(노선명);
+        assertThat(queryResponse.jsonPath().getString("color")).isEqualTo(색상);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선을_수정한다(Long 노선_식별자, String 신규노선명, String 신규노선색상) {
+        LineModifyRequest body = LineModifyRequest.of(신규노선명,신규노선색상);
+        return RequestUtil.putRequest("/lines/"+노선_식별자,body);
     }
 
     private void 생성한_지하철_노선의_정보를_응답받을_수_있다(ExtractableResponse<Response> response, String 신규노선, String 노선색생, long 거리 , String 상행역, String 하행역) {
