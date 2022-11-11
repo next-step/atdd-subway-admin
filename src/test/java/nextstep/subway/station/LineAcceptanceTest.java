@@ -45,11 +45,11 @@ public class LineAcceptanceTest {
      */
     @Test
     public void 지하철노선_생성() {
-        List<Long> stationIds = 두개의_지하철_역이_등록되어_있음("강남역", "부산역");
+        List<Long> stationIds = 두개의_지하철_역이_등록되어_있음("상행역", "하행역");
 
-        ExtractableResponse<Response> response = 지하철_노선을_생성한다("노선이름", "bg-red-600", 10L, stationIds);
+        ExtractableResponse<Response> response = 지하철_노선을_생성한다("이름", "bg-red-600", 10L, stationIds);
 
-        응답에_요청했던_정보가_모두_포함되어_있다(response, "노선이름", "bg-red-600", 10L, stationIds);
+        응답에_요청했던_정보가_모두_포함되어_있다(response, "이름", "bg-red-600", 10L, stationIds);
     }
 
     /**
@@ -74,12 +74,14 @@ public class LineAcceptanceTest {
      */
     @Test
     void 지하철_노선_조회() {
-        Long 노선_식별자 = 지하철_노선을_생성한다("신규노선", "노선색생", 1000L, "상행역", "하행역");
+        Long 노선_식별자 = 지하철_노선을_생성한다();
 
         ExtractableResponse<Response> response = 지하철_노선을_조회한다(노선_식별자);
 
-        생성한_지하철_노선의_정보를_응답받을_수_있다(response, "신규노선", "노선색생", 1000L, "상행역", "하행역");
+        생성한_지하철_노선의_정보를_응답받을_수_있다(response, "노선", "색생", 1000L, "상행역", "하행역");
     }
+
+
 
     /**
      * Given 지하철 노선을 생성하고
@@ -88,7 +90,7 @@ public class LineAcceptanceTest {
      */
     @Test
     void 지하철노선_수정() {
-        Long 노선_식별자 = 지하철_노선을_생성한다("지하철노선", "노선색생", 1000L, "상행역", "하행역");
+        Long 노선_식별자 = 지하철_노선을_생성한다();
 
         ExtractableResponse<Response> response = 지하철_노선을_수정한다(노선_식별자, "신규노선명", "신규노선색상");
 
@@ -102,11 +104,15 @@ public class LineAcceptanceTest {
      */
     @Test
     void 지하철노선_삭제() {
-        Long 노선_식별자 = 지하철_노선을_생성한다("지하철노선", "노선색생", 1000L, "상행역", "하행역");
+        Long 노선_식별자 = 지하철_노선을_생성한다();
 
         지하철_노선을_삭제한다(노선_식별자);
 
         해당_지하철_노선_정보는_삭제된다(노선_식별자);
+    }
+
+    private Long 지하철_노선을_생성한다() {
+        return 지하철_노선을_생성한다("노선", "색생", 1000L, "상행역", "하행역");
     }
 
     private void 지하철_노선을_삭제한다(Long 노선_식별자) {
@@ -131,10 +137,10 @@ public class LineAcceptanceTest {
         return RequestUtil.putRequest("/lines/" + 노선_식별자, body);
     }
 
-    private void 생성한_지하철_노선의_정보를_응답받을_수_있다(ExtractableResponse<Response> response, String 신규노선, String 노선색생, long 거리, String 상행역, String 하행역) {
+    private void 생성한_지하철_노선의_정보를_응답받을_수_있다(ExtractableResponse<Response> response, String 신규노선, String 노선색상, long 거리, String 상행역, String 하행역) {
         assertThat(response.jsonPath().getLong("id")).isPositive();
         assertThat(response.jsonPath().getString("name")).isEqualTo(신규노선);
-        assertThat(response.jsonPath().getString("color")).isEqualTo(노선색생);
+        assertThat(response.jsonPath().getString("color")).isEqualTo(노선색상);
         assertThat(response.jsonPath().getLong("distance")).isEqualTo(거리);
         assertThat(response.jsonPath().getList("stations.name")).contains(상행역, 하행역);
     }
@@ -158,9 +164,9 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철_노선_2개를_생성한다() {
-        List<Long> ids = 두개의_지하철_역이_등록되어_있음("강남역", "부산역");
+        List<Long> ids = 두개의_지하철_역이_등록되어_있음("상행역1", "하행역1");
         지하철_노선을_생성한다("노선1", "color1", 100L, ids);
-        List<Long> ids2 = 두개의_지하철_역이_등록되어_있음("서울역", "강릉역");
+        List<Long> ids2 = 두개의_지하철_역이_등록되어_있음("상행역2", "하행역2");
         지하철_노선을_생성한다("노선2", "color2", 100L, ids2);
     }
 
@@ -171,11 +177,6 @@ public class LineAcceptanceTest {
         assertThat(response.jsonPath().getLong("distance")).isEqualTo(l);
         assertThat(response.jsonPath().getList("stations.id")).contains(stationIds.get(0).intValue(), stationIds.get(1).intValue());
 
-    }
-
-    private void 응답에_요청했던_정보가_모두_포함되어_있다(String name) {
-        ExtractableResponse<Response> request = RequestUtil.getRequest("/lines");
-        assertThat(request.jsonPath().getString("name")).isEqualTo(name);
     }
 
     private ExtractableResponse<Response> 지하철_노선을_생성한다(String lineName, String lineColor, Long distance, List<Long> stationIds) {
