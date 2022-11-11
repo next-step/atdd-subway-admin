@@ -25,8 +25,10 @@ public class LineService {
 
     @Transactional
     public LineDto.Response saveLine(LineDto.CreateRequest lineCreateRequest) {
-        Station upStation = stationRepository.findById((long) lineCreateRequest.getUpStationId()).get();
-        Station downStation = stationRepository.findById((long) lineCreateRequest.getDownStationId()).get();
+        Station upStation = stationRepository.findById((long) lineCreateRequest.getUpStationId())
+                .orElseThrow(()-> new IllegalArgumentException("상행종점역을 찾을 수 없습니다."));
+        Station downStation = stationRepository.findById((long) lineCreateRequest.getDownStationId())
+                .orElseThrow(()-> new IllegalArgumentException("하행종점역을 찾을 수 없습니다."));
         Line persistLine = lineRepository.save(lineCreateRequest.of(upStation, downStation));
         return LineDto.Response.of(persistLine);
     }
