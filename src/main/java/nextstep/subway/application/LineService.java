@@ -37,8 +37,7 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLines() {
-        List<Line> allLines = lineRepository.findAllLines();
-        return allLines.stream()
+        return lineRepository.findAllLines().stream()
             .map(line -> LineResponse.of(line, line.getUpStation(), line.getDownStation()))
             .collect(Collectors.toList());
     }

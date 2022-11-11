@@ -38,6 +38,7 @@ public class LineAcceptanceTest {
         preDataUtil.station(1L, "역1", null);
         preDataUtil.station(2L, "역2", null);
         preDataUtil.station(3L, "역3", null);
+        preDataUtil.station(4L, "역4", null);
     }
 
     /**
@@ -68,7 +69,7 @@ public class LineAcceptanceTest {
         // given
         LineRequestDto lineRequest1 = new LineRequestDto("신분당선", "bg-red-600", 1L, 2L, 10L);
         createLine(lineRequest1);
-        LineRequestDto lineRequest2 = new LineRequestDto("2호선", "bg-blue-600", 2L, 3L, 20L);
+        LineRequestDto lineRequest2 = new LineRequestDto("2호선", "bg-blue-600", 3L, 4L, 20L);
         createLine(lineRequest2);
 
         // when
