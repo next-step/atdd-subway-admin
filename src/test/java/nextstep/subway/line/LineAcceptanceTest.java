@@ -180,7 +180,7 @@ public class LineAcceptanceTest {
                 .build()).jsonPath().getLong("id");
 
         //when
-        ExtractableResponse<Response> response = removeLine(lineId);
+        ExtractableResponse<Response> response = 지하철_노선_삭제(lineId);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -205,7 +205,7 @@ public class LineAcceptanceTest {
                 .build()).jsonPath().getLong("id");
 
         //when
-        ExtractableResponse<Response> response = modifyLine(lineId, LineRequest.builder()
+        ExtractableResponse<Response> response = 지하철_노선_수정(lineId, LineRequest.builder()
                 .name("1호선")
                 .color("black")
                 .upStationId(upStationId)
@@ -241,7 +241,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> modifyLine(long id, LineRequest lineRequest) {
+    private ExtractableResponse<Response> 지하철_노선_수정(long id, LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .body(lineRequest)
@@ -251,7 +251,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> removeLine(long id) {
+    private ExtractableResponse<Response> 지하철_노선_삭제(long id) {
         return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().delete("/lines/{id}")
