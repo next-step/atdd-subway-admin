@@ -15,7 +15,7 @@ public class Line extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String name;
     @Column(nullable = false)
     private String color;
@@ -25,20 +25,24 @@ public class Line extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_line_to_downstation"), nullable = false)
     private Station downStation;    // 하행종점역
+    @Column(nullable = false)
+    private Long distance;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
         validateLineName(name);
         validateLineColor(color);
         validateUpStation(upStation);
         validateDownStation(downStation);
+        validateDistance(distance);
 
         this.name = name;
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
     }
 
     private void validateLineName(String name) {
@@ -62,6 +66,15 @@ public class Line extends BaseEntity {
     private void validateDownStation(Station downStation) {
         if(downStation == null) {
             throw new IllegalArgumentException(ErrorCode.하행종착역은_비어있을_수_없음.getErrorMessage());
+        }
+    }
+
+    private void validateDistance(Long distance) {
+        if(distance == null) {
+            throw new IllegalArgumentException(ErrorCode.노선거리는_비어있을_수_없음.getErrorMessage());
+        }
+        if(distance < 0) {
+            throw new IllegalArgumentException(ErrorCode.노선거리는_음수일_수_없음.getErrorMessage());
         }
     }
 
