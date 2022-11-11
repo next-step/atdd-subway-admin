@@ -4,6 +4,7 @@ import static java.util.Arrays.stream;
 import static org.assertj.core.api.Assertions.*;
 import static org.springframework.http.HttpStatus.*;
 
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -121,6 +122,20 @@ public class LineAcceptanceTest {
     @DisplayName("지하철노선을 수정한다")
     @Test
     void updateLine() {
+        // given
+        LineRequestDto lineRequest = new LineRequestDto("신분당선", "bg-red-600", 1L, 2L, 10L);
+        ExtractableResponse<Response> createResponse = createLine(lineRequest);
+        long lineId = createResponse.jsonPath().getLong("id");
+
+        // when
+        String name = "다른분당선";
+        String color = "bg-red-100";
+        ExtractableResponse<Response> changeResponse = changeLine(lineId, name, color);
+        assertThat(HttpStatus.valueOf(changeResponse.statusCode())).isEqualTo(OK);
+
+        // then
+        ExtractableResponse<Response> fetchResponse = fetchLine(lineId);
+        checkFetchedLine(fetchResponse, lineId, name, color);
     }
 
     /**
@@ -158,6 +173,15 @@ public class LineAcceptanceTest {
         assertThat(jsonPath.getList("stations")).isNotNull();
     }
 
+    private void checkFetchedLine(ExtractableResponse<Response> fetchResponse, long id, String name, String color) {
+        assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
+        JsonPath jsonPath = fetchResponse.jsonPath();
+        assertThat(jsonPath.getLong("id")).isEqualTo(id);
+        assertThat(jsonPath.getString("name")).isEqualTo(name);
+        assertThat(jsonPath.getString("color")).isEqualTo(color);
+        assertThat(jsonPath.getList("stations")).isNotNull();
+    }
+
     private void checkCreateResponse(LineRequestDto lineRequestDto, ExtractableResponse<Response> createResponse) {
         assertThat(HttpStatus.valueOf(createResponse.statusCode())).isEqualTo(CREATED);
         assertThat(createResponse.jsonPath().getLong("id")).isNotNull();
@@ -171,6 +195,18 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/lines")
+            .then().log().all()
+            .extract();
+    }
+
+    private ExtractableResponse<Response> changeLine(long lineId, String name, String color) {
+        HashMap<String, String> map = new HashMap<>();
+        map.put("name", name);
+        map.put("color", color);
+        return RestAssured.given().log().all()
+            .body(map)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put("/lines/" + lineId)
             .then().log().all()
             .extract();
     }
