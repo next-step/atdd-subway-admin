@@ -1,7 +1,6 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,11 +76,14 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
         createStation("강남역");
         createStation("논현역");
 
+        //when
         ExtractableResponse<Response> response = getAllStation();
 
+        //then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("name")).hasSize(2),
@@ -97,12 +99,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        //given
         createStation("강남역");
         long removeStationId = createStation("논현역").jsonPath().getLong("id");
 
+        //when
         removeStation(removeStationId);
         ExtractableResponse<Response> response = getAllStation();
 
+        //then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("name")).hasSize(1),
@@ -110,7 +115,7 @@ public class StationAcceptanceTest {
         );
     }
 
-    ExtractableResponse<Response> createStation(String stationName) {
+    private ExtractableResponse<Response> createStation(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
         return RestAssured.given().log().all()
@@ -121,14 +126,14 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    ExtractableResponse<Response> getAllStation() {
-        return  RestAssured.given().log().all()
+    private ExtractableResponse<Response> getAllStation() {
+        return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
     }
 
-    void removeStation(long id) {
+    private void removeStation(long id) {
         RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().delete("/stations/{id}")
