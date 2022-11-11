@@ -12,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.ResponseAssertTest;
-import nextstep.subway.domain.LineConstant;
+import nextstep.subway.domain.PathConstant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,7 +49,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("지하철노선 목록 조회")
     @Test
     void getLines() {
+        // Given
         지하철노선_생성_요청("1호선", "bg-red-600","강남역", "역삼역",  2);
+        지하철노선_생성_요청("2호선", "bg-red-600","신촌역", "이대역",  2);
+
+        // When
+        ExtractableResponse<Response> linesResponse = 지하철노선_목록조회_요청();
+
+        // When
+        노선_포함_확인(linesResponse, new String[]{"1호선", "2호선"});
     }
 
     /**
@@ -96,7 +104,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(lineMap)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(LineConstant.ROOT_PATH)
+                .when().post(PathConstant.LINE_ROOT_PATH)
                 .then().log().all()
                 .extract();
     }
@@ -104,7 +112,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     private ExtractableResponse<Response> 지하철노선_목록조회_요청() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(LineConstant.ROOT_PATH)
+                .when().get(PathConstant.LINE_ROOT_PATH)
                 .then().log().all()
                 .extract();
     }
