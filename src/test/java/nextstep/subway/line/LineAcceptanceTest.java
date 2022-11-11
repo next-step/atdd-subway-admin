@@ -1,6 +1,8 @@
 package nextstep.subway.line;
 
+import static io.restassured.RestAssured.given;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -12,6 +14,7 @@ import nextstep.subway.utils.StationAcceptanceTestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
@@ -111,4 +114,22 @@ class LineAcceptanceTest extends AcceptanceTest {
      * When 생성한 지하철 노선을 삭제하면
      * Then 해당 지하철 노선 정보는 삭제된다
      */
+    @Test
+    @DisplayName("지하철노선을 제거한다.")
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> 저장된_신분당선 = 지하철노선을_생성한다(신분당선_생성_요청);
+
+        // when
+        given().log().all()
+                .pathParam("id", 저장된_신분당선.jsonPath().getLong("id"))
+                .when().delete("lines/{id}")
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+        // then
+        List<String> 조회된_지하철노선_목록 = 지하철노선_목록을_조회한다();
+        assertThat(조회된_지하철노선_목록).doesNotContain(신분당선);
+    }
 }
