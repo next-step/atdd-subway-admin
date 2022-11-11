@@ -18,12 +18,12 @@ import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
     @BeforeEach
-    public void setUp() {
+    void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
