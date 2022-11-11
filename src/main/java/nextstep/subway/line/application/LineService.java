@@ -37,7 +37,7 @@ public class LineService {
         Station upStation = stationService.addToLine(lineRequest.getUpStationId(), line);
         Station downStation = stationService.addToLine(lineRequest.getDownStationId(), line);
 
-        return LineResponse.from(line, upStation, downStation);
+        return LineResponse.of(line, upStation, downStation);
     }
 
     public List<LineResponse> findAllLines() {
@@ -46,7 +46,7 @@ public class LineService {
 
         return lines.stream()
                 .map(line ->
-                        LineResponse.from(
+                        LineResponse.of(
                                 line,
                                 stationsByLine.get(line.getId()).get(UPWARD_LINE),
                                 stationsByLine.get(line.getId()).get(DOWNWARD_LINE)
@@ -58,7 +58,7 @@ public class LineService {
     public LineResponse findLine(Long id) {
         Line line = findById(id);
         List<Station> stations = stationService.findByLineId(id);
-        return LineResponse.from(line, stations.get(UPWARD_LINE), stations.get(DOWNWARD_LINE));
+        return LineResponse.of(line, stations.get(UPWARD_LINE), stations.get(DOWNWARD_LINE));
     }
 
     @Transactional
