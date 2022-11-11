@@ -111,6 +111,31 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         );
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철노선 이름과 색상을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        Long upStationId = 지하철역_등록_요청("시청역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_등록_요청("인천역").jsonPath().getLong("id");
+        ExtractableResponse<Response> createResponse = 지하철노선_등록_요청("1호선", "bg-darkblue", upStationId, downStationId, 10L);
+        Long id = createResponse.jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> getResponse = 지하철노선_수정_요청(id, "다른1호선","bg-darkblue-100");
+
+        // then
+        assertAll(
+                () -> assertThat(getResponse.jsonPath().getLong("id")).isEqualTo(id),
+                () -> assertThat(getResponse.jsonPath().getString("name")).isEqualTo("다른1호선"),
+                () -> assertThat(getResponse.jsonPath().getString("color")).isEqualTo("bg-darkblue-100")
+        );
+    }
+
     ExtractableResponse<Response> 지하철노선_등록_요청(String name, String color, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
@@ -138,6 +163,20 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().get("/lines/{id}")
+                .then().log().all()
+                .extract();
+    }
+
+    ExtractableResponse<Response> 지하철노선_수정_요청(Long id, String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", id)
+                .when().put("/lines/{id}")
                 .then().log().all()
                 .extract();
     }
