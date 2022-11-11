@@ -9,6 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 public class Line extends BaseEntity {
@@ -16,9 +17,9 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String name;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String color;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_line_up_station"))
@@ -28,11 +29,19 @@ public class Line extends BaseEntity {
     private Station downStation;
     private Integer distance;
 
+    public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
+        return new Line(name, color, upStation, downStation, distance);
+    }
+
     protected Line() {
 
     }
 
     private Line(String name, String color, Station upStation, Station downStation, Integer distance) {
+
+        validName(name);
+        validColor(color);
+
         this.name = name;
         this.color = color;
         this.upStation = upStation;
@@ -40,8 +49,16 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
-    public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
-        return new Line(name, color, upStation, downStation, distance);
+    private static void validColor(String color) {
+        if (StringUtils.isBlank(color)) {
+            throw new IllegalArgumentException("노선의 색을 입력하세요.");
+        }
+    }
+
+    private static void validName(String name) {
+        if (StringUtils.isBlank(name)) {
+            throw new IllegalArgumentException("노선의 이름을 입력하세요.");
+        }
     }
 
     public Long getId() {
