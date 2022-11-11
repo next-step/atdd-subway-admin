@@ -65,8 +65,21 @@ public class LineAcceptanceTestUtils {
                 .extract();
     }
 
+    public static void 지하철노선을_삭제한다(ExtractableResponse<Response> response) {
+        given().log().all()
+                .pathParam(ID, response.jsonPath().getLong(ID))
+                .when().delete(LINE_BASE_PATH + PATH_VARIABLE_ID)
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+    }
+
     public static void 지하철노선_목록_검증_입력된_지하철노선이_존재(List<String> actualNames, String... lineNames) {
         assertThat(actualNames).contains(lineNames);
+    }
+
+    public static void 지하철노선_목록_검증_입력된_지하철노선이_존재하지_않음(List<String> actualNames, String... lineNames) {
+        assertThat(actualNames).doesNotContain(lineNames);
     }
 
     public static void 지하철노선_검증_입력된_지하철노선이_존재(ExtractableResponse<Response> response, String lineName){
