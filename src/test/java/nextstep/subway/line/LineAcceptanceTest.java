@@ -104,7 +104,7 @@ public class LineAcceptanceTest {
      * When 존재하지 않는 노선을 조회하면
      * Then 404 응답코드를 받는다
      */
-    @DisplayName("지하철노선을 조회한다")
+    @DisplayName("존재하지 않는 노선을 조회한")
     @Test
     void notFoundLine() {
         // when
@@ -157,6 +157,22 @@ public class LineAcceptanceTest {
 
         // then
         assertThat(HttpStatus.valueOf(fetchLine(lineId).statusCode())).isEqualTo(NOT_FOUND);
+    }
+
+    /**
+     * When 존재하지 않는 노선을 삭제해도
+     * Then 존재하는 노선 삭제와 같은 응답을 받는다
+     */
+    @DisplayName("존재하지 않는 노선을 삭제한다")
+    @Test
+    void deleteNotExistsLine() {
+        // when
+        long notExistsId = 33L;
+        ExtractableResponse<Response> removeResponse = removeLine(notExistsId);
+        assertThat(HttpStatus.valueOf(removeResponse.statusCode())).isEqualTo(NO_CONTENT);
+
+        // then
+        assertThat(HttpStatus.valueOf(fetchLine(notExistsId).statusCode())).isEqualTo(NOT_FOUND);
     }
 
     private void checkFetchedLines(ExtractableResponse<Response> fetchResponse, LineRequestDto... lineRequests) {

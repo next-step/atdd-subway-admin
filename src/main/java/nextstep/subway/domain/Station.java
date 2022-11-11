@@ -44,4 +44,8 @@ public class Station extends BaseEntity {
             line.addStation(this);
         }
     }
+
+    public void resetLine() {
+        this.line = null;
+    }
 }
