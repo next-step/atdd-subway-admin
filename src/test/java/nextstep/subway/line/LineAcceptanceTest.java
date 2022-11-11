@@ -116,8 +116,9 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getString("name")).isEqualTo("2호선"),
-                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("green")
-        );
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("green"),
+                () -> assertThat(response.jsonPath().getString("upStationName")).isEqualTo("강남역"),
+                () -> assertThat(response.jsonPath().getString("downStationName")).isEqualTo("논현역"));
 
 
     }

@@ -40,4 +40,12 @@ public class Line extends BaseEntity {
     public String getColor() {
         return color;
     }
+
+    public String getUpStationName() {
+        return upstreamStation.getName();
+    }
+
+    public String getDownStationName() {
+        return downstreamStation.getName();
+    }
 }

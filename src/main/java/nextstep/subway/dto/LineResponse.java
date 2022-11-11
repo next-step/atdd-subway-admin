@@ -8,22 +8,26 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    private String upStationName;
+    private String downStationName;
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line);
     }
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, LocalDateTime createdDate, LocalDateTime modifiedDate) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.createdDate = createdDate;
-        this.modifiedDate = modifiedDate;
+    public LineResponse(Line line) {
+        this.id = line.getId();;
+        this.name = line.getName();
+        this.color = line.getColor();
+        this.upStationName = line.getUpStationName();
+        this.downStationName = line.getDownStationName();
+        this.createdDate = line.getCreatedDate();
+        this.modifiedDate = line.getModifiedDate();
     }
 
     public Long getId() {
@@ -44,5 +48,13 @@ public class LineResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
+    }
+
+    public String getUpStationName() {
+        return upStationName;
+    }
+
+    public String getDownStationName() {
+        return downStationName;
     }
 }
