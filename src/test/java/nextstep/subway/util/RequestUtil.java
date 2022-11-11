@@ -34,4 +34,12 @@ public class RequestUtil {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> deleteRequest(String url) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(url)
+                .then().log().all()
+                .extract();
+    }
 }
