@@ -1,5 +1,6 @@
 package nextstep.subway.station;
 
+import com.jayway.jsonpath.JsonPath;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -101,6 +102,36 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        //given
+        Map<String, String> param = new HashMap<>();
+        param.put("name", "교대역");
+        지하철역_1개_생성(param);
+
+        Map<String, String> param2 = new HashMap<>();
+        param2.put("name", "선릉역");
+        지하철역_1개_생성(param2);
+
+        //when
+        List<String> names = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+
+        //then
+        assertThat(names).containsExactly(
+                "교대역", "선릉역"
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철역_1개_생성(Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
+                .extract();
     }
 
     /**
@@ -111,5 +142,27 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        Map<String, String> map = new HashMap<>();
+        map.put("name", "잠실역");
+        ExtractableResponse<Response> response = 지하철역_1개_생성(map);
+
+        // when
+        RestAssured.given().log().all()
+                .when().delete("/stations/{id}", (Object) response.jsonPath().get("id"))
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+
+        // then
+        List<String> names = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/stations")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+
+        assertThat(names).doesNotContain(
+                "잠실역"
+        );
     }
 }
