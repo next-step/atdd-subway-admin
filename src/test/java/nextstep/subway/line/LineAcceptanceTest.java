@@ -205,7 +205,7 @@ public class LineAcceptanceTest {
         assertThat(lineIds).isEmpty();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성(
+    public static ExtractableResponse<Response> 지하철_노선_생성(
             String name,
             String color,
             Long upStationId,
