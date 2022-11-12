@@ -57,7 +57,7 @@ public class LineAcceptanceTestUtils {
 
         given().log().all()
                 .pathParam(ID, response.jsonPath().getLong(ID))
-                .params(params)
+                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put(LINE_BASE_PATH + PATH_VARIABLE_ID)
                 .then().log().all()
