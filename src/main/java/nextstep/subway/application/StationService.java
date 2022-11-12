@@ -36,7 +36,7 @@ public class StationService {
 
     public StationResponse findStationById(Long id) {
         Station stations = stationRepository.findById(id)
-            .orElseThrow(() -> new CannotFindStationException("해당 지하철을 찾을 수 없습니다."));
+            .orElseThrow(() -> new IllegalArgumentException("해당 지하철을 찾을 수 없습니다."));
         return StationResponse.of(stations);
     }
 

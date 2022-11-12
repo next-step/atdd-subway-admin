@@ -1,20 +1,22 @@
 package nextstep.subway.station;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import nextstep.subway.Isolationer;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+
+import java.util.List;
+
+import static nextstep.subway.common.Common.지하철역을_생성한다;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * REST Assured 특징
@@ -36,11 +38,16 @@ public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private Isolationer dbIsolation;
+
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        dbIsolation.excute();
     }
 
     /**
@@ -123,7 +130,7 @@ public class StationAcceptanceTest {
     }
 
 
-    private ExtractableResponse<Response> 해당_지하철역을_제거한다(int stationId) {
+    public ExtractableResponse<Response> 해당_지하철역을_제거한다(int stationId) {
         return RestAssured.given()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().delete("/stations/" + stationId)
@@ -131,28 +138,13 @@ public class StationAcceptanceTest {
             .extract();
     }
 
-
-    private static ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
-
-        return RestAssured.given()
-            .body(params).log().all()
-            .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .when().post("/stations")
-            .then()
-            .log().all()
-            .extract();
-    }
-
-
-    private static void 지하철역을_2개_생성한다() {
+    public static void 지하철역을_2개_생성한다() {
         지하철역을_생성한다("강남역");
         지하철역을_생성한다("역삼역");
     }
 
 
-    private static ExtractableResponse<Response> 모든_지하철역을_조회한다() {
+    public static ExtractableResponse<Response> 모든_지하철역을_조회한다() {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/stations")
@@ -160,7 +152,7 @@ public class StationAcceptanceTest {
             .extract();
     }
 
-    private static void 두개의_지하철역을_응답_받는다(ExtractableResponse<Response> result) {
+    public static void 두개의_지하철역을_응답_받는다(ExtractableResponse<Response> result) {
         assertThat(result.jsonPath().getList("name", String.class)).hasSize(2);
     }
 
@@ -172,17 +164,17 @@ public class StationAcceptanceTest {
             .extract();
     }
 
-    private static void 해당_지하철을_찾을_수_없다(int stationId) {
+    public static void 해당_지하철을_찾을_수_없다(int stationId) {
         assertThat(특정_지하철역을_조회한다(stationId).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 
     }
 
-    private static void 지하철역이_생성된다(ExtractableResponse<Response> result) {
+    public static void 지하철역이_생성된다(ExtractableResponse<Response> result) {
         assertThat(result.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
     }
 
-    private static void 조회목록에서_해당_지하철을_찾을_수_있다(List<String> actual, String expect) {
+    public static void 조회목록에서_해당_지하철을_찾을_수_있다(List<String> actual, String expect) {
         assertThat(actual).containsAnyOf(expect);
     }
 

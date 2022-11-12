@@ -13,8 +13,8 @@ class ExceptionController {
 
     private final Logger log = LoggerFactory.getLogger(this.getClass().getSimpleName());
 
-    @ExceptionHandler(CannotFindStationException.class)
-    public ResponseEntity cannotFoundException(CannotFindStationException e){
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity illegalArgumentException(IllegalArgumentException e){
         log.info(e.getMessage());
         return ResponseEntity.notFound().build();
     }
