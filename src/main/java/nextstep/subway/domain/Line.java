@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -27,8 +28,8 @@ public class Line extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_line_to_downstation"), nullable = false)
     private Station downStation;
-    @Column(nullable = false)
-    private Long distance;
+    @Embedded
+    private Distance distance;
 
     protected Line() {
     }
@@ -38,13 +39,12 @@ public class Line extends BaseEntity {
         validateLineColor(color);
         validateUpStation(upStation);
         validateDownStation(downStation);
-        validateDistance(distance);
 
         this.name = name;
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = Distance.of(distance);
     }
 
     public void updateLineNameAndColor(String name, String color) {
@@ -77,15 +77,6 @@ public class Line extends BaseEntity {
     private void validateDownStation(Station downStation) {
         if(downStation == null) {
             throw new IllegalArgumentException(ErrorCode.하행종착역은_비어있을_수_없음.getErrorMessage());
-        }
-    }
-
-    private void validateDistance(Long distance) {
-        if(distance == null) {
-            throw new IllegalArgumentException(ErrorCode.노선거리는_비어있을_수_없음.getErrorMessage());
-        }
-        if(distance < 0) {
-            throw new IllegalArgumentException(ErrorCode.노선거리는_음수일_수_없음.getErrorMessage());
         }
     }
 
