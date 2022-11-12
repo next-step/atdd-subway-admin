@@ -91,4 +91,26 @@ class SectionAcceptanceTest {
                         LineStationResponse.from(광교역)
                 );
     }
+
+    /**
+     * Given 새로운 역 A를 생성한다.
+     * When 새로운 역 A을 하행 종점으로 지하철 노선(B역 - C역)에 등록한다.
+     * Then 지하철 노선 조회 시 새로운 역 A가 하행 종점인 것을 확인할 수 있다. (B역 - C역 - A역)
+     */
+    @DisplayName("새로운 역을 하행 종점을 등록한다.")
+    @Test
+    void createSectionOfDownStation() {
+        StationResponse 호매실역 = 지하철역_생성("호매실역").as(StationResponse.class);
+        SectionRequest 광교역_호매실역_구간 = SectionRequest.of(광교역.getId(), 호매실역.getId(), 5);
+
+        SectionAcceptanceMethods.지하철_노선에_지하철역_등록(this.신분당선.getId(), 광교역_호매실역_구간);
+
+        LineResponse 신분당선 = 지하철_노선_조회(this.신분당선.getId()).as(LineResponse.class);
+        Assertions.assertThat(신분당선.getStations())
+                .containsExactly(
+                        LineStationResponse.from(신사역),
+                        LineStationResponse.from(광교역),
+                        LineStationResponse.from(호매실역)
+                );
+    }
 }
