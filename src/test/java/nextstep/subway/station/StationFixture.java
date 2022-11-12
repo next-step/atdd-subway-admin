@@ -1,10 +1,13 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.util.FixtureUtil.getIdFromLocation;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
 public class StationFixture {
@@ -39,6 +42,11 @@ public class StationFixture {
             .when().delete("/stations/" + id)
             .then().log().all()
             .extract();
+    }
+
+    public static Long 지하철역_생성후_아이디_반환(final String name) {
+        ExtractableResponse<Response> response = 지하철역_생성(name);
+        return getIdFromLocation(response.header(HttpHeaders.LOCATION));
     }
 
 }
