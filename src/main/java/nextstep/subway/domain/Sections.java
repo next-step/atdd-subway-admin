@@ -90,8 +90,8 @@ public class Sections {
     public List<StationResponse> toResponse() {
         return sections.stream()
                 .flatMap(o -> o.getStations().stream())
-                .map(o -> new StationResponse(o.getId(), o.getName(), o.getCreatedDate(), o.getModifiedDate()))
                 .distinct()
+                .map(o -> new StationResponse(o.getId(), o.getName(), o.getCreatedDate(), o.getModifiedDate()))
                 .collect(Collectors.toList());
     }
 }
