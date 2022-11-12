@@ -2,9 +2,12 @@ package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.common.message.ExceptionMessage;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -20,52 +23,32 @@ public class Line extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String color;
 
-    @ManyToOne
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
+    @Embedded
+    private Sections sections = Sections.createEmpty();
 
     protected Line() {
     }
 
-    public Line(Long id, String name, String color, Station upStation, Station downStation) {
+    private Line(Long id, String name, String color, Section section) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.addSection(section);
     }
 
-    public static Line of(Long id, String name, String color, Station upStation, Station downStation) {
+    public static Line of(String name, String color, Section section) {
+        return of(null, name, color, section);
+    }
+
+    public static Line of(Long id, String name, String color, Section section) {
         validateNotNullAndNotEmpty(name);
         validateNotNullAndNotEmpty(color);
-        validateStationsNotNull(upStation, downStation);
-        validateStationsNotEqual(upStation, downStation);
-        return new Line(id, name, color, upStation, downStation);
-    }
-
-    public static Line of(String name, String color, Station upStation, Station downStation) {
-        return of(null, name, color, upStation, downStation);
+        return new Line(id, name, color, section);
     }
 
     private static void validateNotNullAndNotEmpty(String value) {
         if (value == null || value.isEmpty()) {
             throw new IllegalArgumentException(ExceptionMessage.REQUIRED);
-        }
-    }
-
-    private static void validateStationsNotNull(Station upStation, Station downStation) {
-        if (upStation == null || downStation == null) {
-            throw new IllegalArgumentException(ExceptionMessage.REQUIRED);
-        }
-    }
-
-    private static void validateStationsNotEqual(Station upStation, Station downStation) {
-        if (upStation.equals(downStation)) {
-            throw new IllegalArgumentException(ExceptionMessage.UP_STATION_EQUALS_DOWN_STATION);
         }
     }
 
@@ -81,19 +64,20 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public void update(String name, String color) {
         validateNotNullAndNotEmpty(name);
         validateNotNullAndNotEmpty(color);
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+        section.addTo(this);
+    }
+
+    public List<Station> getStationsInOrder() {
+        return this.sections.getStationsInOrder();
     }
 
     @Override

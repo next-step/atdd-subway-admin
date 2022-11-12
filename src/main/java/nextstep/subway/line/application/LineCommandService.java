@@ -7,6 +7,7 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.application.StationQueryService;
 import nextstep.subway.station.domain.Station;
 import org.springframework.stereotype.Service;
@@ -24,10 +25,7 @@ public class LineCommandService {
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationQueryService.findById(lineRequest.getUpStationId());
-        Station downStation = stationQueryService.findById(lineRequest.getDownStationId());
-
-        Line line = Line.of(lineRequest.getName(), lineRequest.getColor(), upStation, downStation);
+        Line line = Line.of(lineRequest.getName(), lineRequest.getColor(), toSection(lineRequest));
         lineRepository.save(line);
 
         return LineResponse.from(line);
@@ -42,5 +40,12 @@ public class LineCommandService {
 
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Section toSection(LineRequest lineRequest) {
+        Station upStation = stationQueryService.findById(lineRequest.getUpStationId());
+        Station downStation = stationQueryService.findById(lineRequest.getDownStationId());
+
+        return Section.of(upStation, downStation, lineRequest.getDistance());
     }
 }

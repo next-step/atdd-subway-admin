@@ -10,7 +10,7 @@ import static nextstep.subway.station.StationAcceptanceMethods.지하철역_생�
 
 public class LineAcceptanceMethods extends AcceptanceMethodsTestFixture {
 
-    private static final String LINE_PATH = "/lines";
+    public static final String LINE_PATH = "/lines";
 
     private LineAcceptanceMethods() {
     }
@@ -23,6 +23,14 @@ public class LineAcceptanceMethods extends AcceptanceMethodsTestFixture {
         long upStationId = 지하철역_생성(upStationName).body().jsonPath().getLong("id");
         long downStationId = 지하철역_생성(downStationName).body().jsonPath().getLong("id");
 
+        return post(LINE_PATH, LineRequest.of(name, color, upStationId, downStationId, distance));
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_생성(String name,
+                                                          String color,
+                                                          Long upStationId,
+                                                          Long downStationId,
+                                                          int distance) {
         return post(LINE_PATH, LineRequest.of(name, color, upStationId, downStationId, distance));
     }
 
