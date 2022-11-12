@@ -1,7 +1,8 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
-import io.restassured.response.ValidatableResponse;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,10 +35,10 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ValidatableResponse response = 지하철역_생성("강남역");
+        ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청("강남역");
 
         // then
-        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(지하철역_이름_조회()).containsAnyOf("강남역");
     }
 
@@ -50,13 +51,13 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철역_생성("강남역");
+        지하철역_생성_요청("강남역");
 
         // when
-        ValidatableResponse response = 지하철역_생성("강남역");
+        ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청("강남역");
 
         // then
-        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -68,8 +69,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        지하철역_생성("잠실역");
-        지하철역_생성("강남역");
+        지하철역_생성_요청("잠실역");
+        지하철역_생성_요청("강남역");
 
         // then
         assertThat(지하철역_이름_조회().size()).isEqualTo(2);
@@ -85,8 +86,8 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ValidatableResponse response = 지하철역_생성("강남역");
-        Long stationId = 제이슨_경로_얻기(response).getLong("id");
+        ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청("강남역");
+        Long stationId = 제이슨_경로_얻기(지하철역_생성_응답).getLong("id");
 
         // when
         지하철역_삭제(stationId);
@@ -94,6 +95,5 @@ public class StationAcceptanceTest {
         // then
         assertThat(지하철역_이름_조회().size()).isEqualTo(0);
     }
-
 
 }

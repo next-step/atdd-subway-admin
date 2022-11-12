@@ -2,6 +2,8 @@ package nextstep.subway.station;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import org.springframework.http.MediaType;
 
@@ -11,7 +13,7 @@ import java.util.Map;
 
 public class StationAcceptanceFixture {
 
-    public static ValidatableResponse 지하철역_생성(String name) {
+    public static ExtractableResponse<Response> 지하철역_생성_요청(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -19,7 +21,7 @@ public class StationAcceptanceFixture {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
-                .then().log().all();
+                .then().log().all().extract();
     }
 
     public static List<String> 지하철역_이름_조회() {
@@ -36,11 +38,11 @@ public class StationAcceptanceFixture {
                 .then().log().all();
     }
 
-    public static JsonPath 제이슨_경로_얻기(ValidatableResponse validatableResponse) {
-        return validatableResponse.extract().jsonPath();
+    public static JsonPath 제이슨_경로_얻기(ExtractableResponse<Response> response) {
+        return response.jsonPath();
     }
 
-    public static long 지하철역_아이디_조회(ValidatableResponse response) {
-        return Long.parseLong(response.extract().jsonPath().get("id").toString());
+    public static long 지하철역_아이디_조회(ExtractableResponse<Response> response) {
+        return Long.parseLong(response.jsonPath().get("id").toString());
     }
 }
