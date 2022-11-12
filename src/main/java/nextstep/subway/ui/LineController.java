@@ -32,7 +32,7 @@ public class LineController {
         return ResponseEntity.created(URI.create(PathConstant.LINE_ROOT_PATH +"/" + line.getId())).body(line);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }

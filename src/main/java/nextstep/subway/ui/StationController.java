@@ -27,7 +27,7 @@ public class StationController {
         return ResponseEntity.created(URI.create(PathConstant.STATION_ROOT_PATH + PathConstant.PATH_SEPARATOR + station.getId())).body(station);
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping()
     public ResponseEntity<List<StationResponse>> showStations() {
         return ResponseEntity.ok().body(stationService.findAllStations());
     }
