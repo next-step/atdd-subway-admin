@@ -157,7 +157,7 @@ Then 해당 지하철 노선 정보는 삭제된다
 
 ### 기능 구현 목록
 - [x] Section 도메인 추가
-- [ ] Line 도메인 수정 (sections 임베디드 컬럼과 기존 upStation, downStation 제거)
+- [x] Line 도메인 수정 (sections 임베디드 컬럼과 기존 upStation, downStation 제거)
 - [ ] 역 사이에 새로운 역을 등록 인수 조건 정의 및 테스트 작성
 - [ ] 역 사이에 새로운 역을 등록 기능 구현
 - [ ] 새로운 역을 상행 종점으로 등록할 경우 인수 조건 정의 및 테스트 작성
