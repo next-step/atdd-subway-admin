@@ -15,6 +15,6 @@ class StationTest {
     @ValueSource(strings = {"", " "})
     @ParameterizedTest
     void valid_name(String name) {
-        assertThatThrownBy(() -> Station.from(name)).isInstanceOf(IllegalArgumentException.class);
+        assertThatThrownBy(() -> new Station(name)).isInstanceOf(IllegalArgumentException.class);
     }
 }

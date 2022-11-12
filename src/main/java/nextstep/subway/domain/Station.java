@@ -16,13 +16,9 @@ public class Station extends BaseEntity {
     protected Station() {
     }
 
-    private Station(String name) {
+    public Station(String name) {
         validName(name);
         this.name = name;
-    }
-
-    public static Station from(String name) {
-        return new Station(name);
     }
 
     private void validName(String name) {

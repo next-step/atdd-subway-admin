@@ -10,6 +10,6 @@ public class StationRequest {
     }
 
     public Station toStation() {
-        return Station.from(name);
+        return new Station(name);
     }
 }
