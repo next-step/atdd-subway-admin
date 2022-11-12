@@ -3,9 +3,11 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -20,6 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+
+    @Autowired
+    DatabaseCleanup databaseCleanup;
     @LocalServerPort
     int port;
 
@@ -28,6 +33,9 @@ public class StationAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+
+        // db 초기화
+        databaseCleanup.execute();
     }
 
     /**
@@ -111,8 +119,10 @@ public class StationAcceptanceTest {
 
     }
 
+
     /**
      * 특정 지하철역 조회
+     *
      * @param id
      * @return
      */
@@ -126,6 +136,7 @@ public class StationAcceptanceTest {
 
     /**
      * 아이디로 지하철역 제거
+     *
      * @param id
      * @return
      */
@@ -159,6 +170,7 @@ public class StationAcceptanceTest {
 
     /**
      * 지하철역 전체 조회
+     *
      * @return
      */
     private ExtractableResponse<Response> findAllStations() {
