@@ -98,6 +98,38 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        String name = "강남역";
+        ExtractableResponse<Response> response = createStationWithName(name);
+        int id = response.jsonPath().getInt("id");
+
+        // when
+        deleteStationById(id);
+
+        // then
+        assertThat(getStationById(id).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+
+    }
+
+    private ExtractableResponse<Response> getStationById(int id) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/stations/" + id)
+                .then().log().all()
+                .extract();
+    }
+
+    /**
+     * 아이디로 지하철역 제거
+     * @param id
+     * @return
+     */
+    private ExtractableResponse<Response> deleteStationById(int id) {
+        return RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/" + id)
+                .then().log().all()
+                .extract();
     }
 
 
