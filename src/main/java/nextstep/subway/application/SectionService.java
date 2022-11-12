@@ -4,7 +4,6 @@ import nextstep.subway.constant.ErrorCode;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineResponse;
@@ -18,12 +17,10 @@ public class SectionService {
 
     private final StationRepository stationRepository;
     private final LineRepository lineRepository;
-    private final SectionRepository sectionRepository;
 
-    public SectionService(StationRepository stationRepository, LineRepository lineRepository, SectionRepository sectionRepository) {
+    public SectionService(StationRepository stationRepository, LineRepository lineRepository) {
         this.stationRepository = stationRepository;
         this.lineRepository = lineRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
