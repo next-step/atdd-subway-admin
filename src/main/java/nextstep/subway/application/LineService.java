@@ -3,7 +3,7 @@ package nextstep.subway.application;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -15,7 +15,7 @@ import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
 
@@ -26,6 +26,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line line = lineRepository.save(toLineBy(lineRequest));
         return getLineResponseBy(line);
@@ -44,12 +45,14 @@ public class LineService {
         return getLineResponseBy(line);
     }
 
+    @Transactional
     public void updateLine(Long lineId, LineUpdateRequest lineRequest) {
         Line line = getLineBy(lineId);
         line.update(lineRequest.getName(), lineRequest.getColor());
         lineRepository.save(line);
     }
 
+    @Transactional
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
     }
