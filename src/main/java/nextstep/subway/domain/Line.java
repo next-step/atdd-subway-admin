@@ -38,11 +38,10 @@ public class Line extends BaseEntity {
         validateUpStation(upStation);
         validateDownStation(downStation);
 
-        this.name = Name.of(name);
-        this.color = Color.of(color);
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = Distance.of(distance);
+        this.name = Name.from(name);
+        this.color = Color.from(color);
+        this.sections = Sections.from(Collections.singletonList(section));
+        this.distance = Distance.from(distance);
     }
 
     public void updateLineNameAndColor(String name, String color) {
@@ -55,11 +54,11 @@ public class Line extends BaseEntity {
     }
 
     private void updateLineName(String name) {
-        this.name = Name.of(name);
+        this.name = Name.from(name);
     }
 
     private void updateLineColor(String color) {
-        this.color = Color.of(color);
+        this.color = Color.from(color);
     }
 
     private void validateUpStation(Station upstation) {

@@ -18,7 +18,7 @@ public class Station extends BaseEntity {
     }
 
     public Station(String name) {
-        this.name = Name.of(name);
+        this.name = Name.from(name);
     }
 
     public Long getId() {

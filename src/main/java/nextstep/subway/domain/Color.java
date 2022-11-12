@@ -20,7 +20,7 @@ public class Color {
         this.color = color;
     }
 
-    public static Color of(String color) {
+    public static Color from(String color) {
         return new Color(color);
     }
 

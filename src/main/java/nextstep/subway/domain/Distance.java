@@ -18,7 +18,7 @@ public class Distance {
         this.distance = distance;
     }
 
-    public static Distance of(Long distance) {
+    public static Distance from(Long distance) {
         return new Distance(distance);
     }
 
