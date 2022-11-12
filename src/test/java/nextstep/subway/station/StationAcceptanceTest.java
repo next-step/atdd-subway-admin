@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
@@ -77,7 +78,17 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        createStationWithName("강남역");
+        createStationWithName("역삼역");
+
+        // when
+        ExtractableResponse<Response> response = getAllStations();
+
+        // then
+        assertThat(response.jsonPath().getList("name", String.class)).hasSize(2);
     }
+
 
     /**
      * Given 지하철역을 생성하고
@@ -90,10 +101,9 @@ public class StationAcceptanceTest {
     }
 
 
-
-
     /**
      * 지하철역 생성
+     *
      * @param stationName
      * @return
      */
@@ -111,7 +121,20 @@ public class StationAcceptanceTest {
     }
 
     /**
+     * 지하철역 전체 조회
+     * @return
+     */
+    private ExtractableResponse<Response> getAllStations() {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    /**
      * 상태 코드 체크
+     *
      * @param statusCode
      * @param value
      */
@@ -121,6 +144,7 @@ public class StationAcceptanceTest {
 
     /**
      * 모든 역 이름으로 조회
+     *
      * @param target
      * @return
      */
@@ -134,6 +158,7 @@ public class StationAcceptanceTest {
 
     /**
      * 역 이름이 존재하는가
+     *
      * @param allStationNames
      * @param stationName
      */
