@@ -111,6 +111,11 @@ public class StationAcceptanceTest {
 
     }
 
+    /**
+     * 특정 지하철역 조회
+     * @param id
+     * @return
+     */
     private ExtractableResponse<Response> getStationById(int id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
