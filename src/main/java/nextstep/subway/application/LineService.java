@@ -10,6 +10,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 
@@ -39,14 +40,24 @@ public class LineService {
     }
 
     public LineResponse findLine(Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new EntityNotFoundException("지하철 노선 아이디 [ " + lineId + " ]를 찾을 수 없습니다."));
+        Line line = getLineBy(lineId);
         return getLineResponseBy(line);
+    }
+
+    public void updateLine(Long lineId, LineUpdateRequest lineRequest) {
+        Line line = getLineBy(lineId);
+        line.update(lineRequest.getName(), lineRequest.getColor());
+        lineRepository.save(line);
+    }
+
+    private Line getLineBy(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new EntityNotFoundException("지하철 노선 아이디 [ " + lineId + " ]를 찾을 수 없습니다."));
     }
 
     private Station getLastStation(Long stationId) {
         return stationRepository.findById(stationId)
-                .orElseThrow(() -> new EntityNotFoundException("지하철 아이디 [ " + stationId + " ]를 찾을 수 없습니다."));
+                .orElseThrow(() -> new EntityNotFoundException("지하철 역 아이디 [ " + stationId + " ]를 찾을 수 없습니다."));
     }
 
 

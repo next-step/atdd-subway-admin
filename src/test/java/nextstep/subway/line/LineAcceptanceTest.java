@@ -9,6 +9,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,7 +87,29 @@ public class LineAcceptanceTest {
         Long 노선_아이디 = 노선_결과에서_노선_아이디를_조회한다(특정_노선_결과);
         두_노선_결과는_동일해야_한다(노선_생성_이름, 노선_이름);
         두_노선_결과는_동일해야_한다(노선_생성_아이디, 노선_아이디);
+    }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철노선 수정")
+    @Test
+    void updateLineAndVerifyLine() {
+        // given
+        ExtractableResponse<Response> 노선_생성_결과_5 = 노선을_생성한다(노선_요청("5호선", "Sky", "당산역"));
+        Long 노선_생성_아이디 = 노선_결과에서_노선_아이디를_조회한다(노선_생성_결과_5);
+
+        // when
+        노선을_수정한다(노선_생성_아이디, 노선_수정_요청("55호선", "Gray"));
+
+        // then
+        ExtractableResponse<Response> 특정_노선_결과 = 특정_노선을_조회한다(노선_생성_아이디);
+        String 노선_이름 = 노선_결과에서_노선_이름을_조회한다(특정_노선_결과);
+        String 노선_색깔 = 노선_결과에서_노선_색깔을_조회한다(특정_노선_결과);
+        두_노선_결과는_동일해야_한다( "55호선", 노선_이름);
+        두_노선_결과는_동일해야_한다( "Gray", 노선_색깔);
     }
 
     private void 두_노선_결과는_동일해야_한다(Object 노선_생성_이름, Object 노선_이름) {
@@ -104,6 +127,11 @@ public class LineAcceptanceTest {
         return new LineRequest(노선명, 노션_색깔, 지하철역_번호, 지하철역_번호, 30L);
     }
 
+    private LineUpdateRequest 노선_수정_요청(String 노선명, String 노션_색깔) {
+        return new LineUpdateRequest(노선명, 노션_색깔);
+    }
+
+
     public static String 노선_결과에서_노선_이름을_조회한다(ExtractableResponse<Response> 노선_생성_결과) {
         return 노선_생성_결과.jsonPath()
                 .getString("name");
@@ -112,6 +140,11 @@ public class LineAcceptanceTest {
     public static Long 노선_결과에서_노선_아이디를_조회한다(ExtractableResponse<Response> 노선_생성_결과) {
         return 노선_생성_결과.jsonPath()
                 .getLong("id");
+    }
+
+    public static String 노선_결과에서_노선_색깔을_조회한다(ExtractableResponse<Response> 노선_생성_결과) {
+        return 노선_생성_결과.jsonPath()
+                .getString("color");
     }
 
     private List<String> 노선_목록을_조회한다() {
@@ -134,6 +167,15 @@ public class LineAcceptanceTest {
                 .body(노선_요청_정보)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 노선을_수정한다(Long 노선_아이디, LineUpdateRequest 노선_수정_정보) {
+        return RestAssured.given().log().all()
+                .body(노선_수정_정보)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + 노선_아이디)
                 .then().log().all()
                 .extract();
     }
