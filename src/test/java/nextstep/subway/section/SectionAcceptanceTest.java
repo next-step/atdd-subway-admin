@@ -1,8 +1,14 @@
 package nextstep.subway.section;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.SubwayAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_생성;
+import static nextstep.subway.section.SectionAcceptanceTestAssertions.구간_거리_등록됨;
+import static nextstep.subway.section.SectionAcceptanceTestAssertions.구간_등록됨;
 
 @DisplayName("구간 관련 기능")
 class SectionAcceptanceTest extends SubwayAcceptanceTest {
@@ -14,7 +20,12 @@ class SectionAcceptanceTest extends SubwayAcceptanceTest {
      */
     @Test
     void 노선_등록시_구간이_함께_등록된다() {
+        int 거리 = 10;
+        ExtractableResponse<Response> 생성_응답 =
+                지하철_노선_생성("2호선", "당산", "합정", 거리);
 
+        구간_등록됨(생성_응답);
+        구간_거리_등록됨(생성_응답, 거리);
     }
 
     /**
