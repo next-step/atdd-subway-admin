@@ -38,6 +38,14 @@ public class Line {
         this.downStation = builder.downStation;
     }
 
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changeColor(String color) {
+        this.color = color;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
