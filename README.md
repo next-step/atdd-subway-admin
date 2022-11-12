@@ -225,7 +225,7 @@ Then 해당 지하철 노선 정보는 삭제된다
 #### 프로그래밍 요구사항
 * 인수 테스트 주도 개발 프로세스에 맞추어 기능 구현할 것
   * [x] 요구사항 설명을 참고해 인수 조건 정의
-  * [ ] 인수 조건을 검증하는 인수 테스트 작성
+  * [x] 인수 조건을 검증하는 인수 테스트 작성
   * [ ] 인수 테스트를 충족하는 기능 구현
 * [ ] 인수 조건은 인수 테스트 메소드 상단에 주석 작성
   * 뼈대 코드의 인수 테스트 참고
@@ -252,5 +252,30 @@ host: localhost:52165
     "downStationId": "4",
     "upStationId": "2",
     "distance": 10
+}
+```
+[ HTTP response ]
+```json
+HTTP/1.1 201 Created
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+Content-Length: 230
+
+{
+    "id": 1,
+    "name": "신분당선",
+    "color": "bg-red-600",
+    "stations": [ {
+        "id": 1,
+        "name": "지하철역"
+    },  {
+        "id": 3,
+        "name": "기존지하철역"
+    },  {
+        "id": 4,
+        "name": "새로운지하철역"
+    } ]
 }
 ```
