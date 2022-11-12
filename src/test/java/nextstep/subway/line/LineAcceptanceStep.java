@@ -134,7 +134,7 @@ public class LineAcceptanceStep extends AcceptanceTest {
         응답상태_검증(response, HttpStatus.NO_CONTENT);
     }
 
-    private static void 응답상태_검증(final ExtractableResponse<Response> response, final HttpStatus ok) {
+    static void 응답상태_검증(final ExtractableResponse<Response> response, final HttpStatus ok) {
         assertThat(response.statusCode()).isEqualTo(ok.value());
     }
 
