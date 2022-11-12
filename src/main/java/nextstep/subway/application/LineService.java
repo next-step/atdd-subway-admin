@@ -9,7 +9,6 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,23 +28,19 @@ public class LineService {
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
         Line saveLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(saveLine, StationResponse.of(upStation), StationResponse.of(downStation));
+        return LineResponse.of(saveLine);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(line -> LineResponse.of(line,
-                        StationResponse.of(line.getUpStation()),
-                        StationResponse.of(line.getDownStation())))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineById(Long id) {
         Optional<Line> findLine = lineRepository.findById(id);
-        return findLine.map(line -> LineResponse.of(line,
-                        StationResponse.of(line.getUpStation()),
-                        StationResponse.of(line.getDownStation())))
+        return findLine.map(LineResponse::of)
                 .orElseThrow(IllegalArgumentException::new);
     }
 

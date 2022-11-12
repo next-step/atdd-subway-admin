@@ -8,7 +8,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import nextstep.subway.dto.LineResponse;
 
 @Entity
 public class Line extends BaseEntity {
@@ -49,8 +48,20 @@ public class Line extends BaseEntity {
         this.color = line.color;
     }
 
-    public LineResponse toLineResponse() {
-        return new LineResponse(id, name, color);
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     public Station getUpStation() {
