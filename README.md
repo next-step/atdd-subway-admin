@@ -52,3 +52,66 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+***
+
+## 미션 설명
+<details open>
+<summary> </summary>
+
+* 미션 수행 방법 문서를 참고하여 실습 환경을 구축한다.
+    * 저장소: https://github.com/next-step/atdd-subway-admin
+* 지하철 노선도를 관리할 수 있는 어드민 서비스를 단계별로 구현하세요.
+* 인수 테스트 주도 개발 프로세스를 단계별로 경험하세요.
+
+***
+
+### 도메인 설명
+
+**지하철 역(station)**
+* 지하철 역 속성:
+    * 이름(name)
+
+**지하철 구간(section)**
+* 지하철 (상행 방향)역과 (하행 방향)역 사이의 연결 정보
+* 지하철 구간 속성:
+    * 길이(distance)
+
+**지하철 노선(line)**
+* 지하철 구간의 모음으로 구간에 포함된 지하철 역의 연결 정보
+* 지하철 노선 속성:
+    * 노선 이름(name)
+    * 노선 색(color)
+</details>
+    
+***
+
+# 🚀 1단계 - 지하철역 인수 테스트 작성
+
+## 미션 소개
+<details open>
+<summary> </summary>
+
+* 구현된 기능을 대상으로 인수 테스트를 작성하는 단계입니다.
+* RestAssured를 활용하여 인수 테스트를 만들어 보세요
+</details>
+
+## 요구사항
+<details open>
+<summary> </summary>
+
+### 기능 요구사항
+* 지하철역 관련 인수 테스트를 완성하세요.
+  * 지하철역 목록 조회 인수 테스트 작성하기
+  * 지하철역 삭제 인수 테스트 작성하기
+</details>
+
+## 구현 기능
+<details open>
+<summary> </summary>
+
+* [x] 지하철역 목록 조회 인수 테스트 작성
+* [x] 지하철역 삭제 인수 테스트 작성
+* [x] 지하철역 인수 테스트 리펙토링
+</details>
+
