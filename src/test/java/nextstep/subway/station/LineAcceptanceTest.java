@@ -1,5 +1,6 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.station.CreateFactory.지하철노선_등록_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -150,22 +151,6 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         // then
         List<String> lineNames = 지하철노선_목록_조회_요청().jsonPath().getList("name", String.class);
         assertThat(lineNames).doesNotContain("3호선");
-    }
-
-    ExtractableResponse<Response> 지하철노선_등록_요청(String name, String color, Long upStationId, Long downStationId, Long distance) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
     }
 
     private void setUpStationData(String upStationName, String downStationName) {

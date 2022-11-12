@@ -1,17 +1,15 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.station.CreateFactory.지하철역_등록_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AbstractAcceptanceTest {
@@ -93,18 +91,6 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
         // then
         List<String> stationNames = 지하철역_목록_조회_요청().jsonPath().getList("name", String.class);
         assertThat(stationNames).doesNotContain(stationName);
-    }
-
-    private ExtractableResponse<Response> 지하철역_등록_요청(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
     }
 
     private ExtractableResponse<Response> 지하철역_목록_조회_요청() {
