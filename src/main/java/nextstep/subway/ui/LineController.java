@@ -2,7 +2,6 @@ package nextstep.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import javassist.NotFoundException;
 import nextstep.subway.application.LineService;
 import nextstep.subway.domain.PathConstant;
 import nextstep.subway.dto.LineRequest;
@@ -45,7 +44,7 @@ public class LineController {
 
     @PatchMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest)
-            throws NotFoundException {
+            throws RuntimeException {
         lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().build();
     }
