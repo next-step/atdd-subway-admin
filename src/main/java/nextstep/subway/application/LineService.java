@@ -38,14 +38,21 @@ public class LineService {
         return lineResponses;
     }
 
-    private Station getLastUpStation(Long stationId) {
-        return stationRepository.findById(stationId)
-                .orElseThrow(() -> new EntityNotFoundException("지하철 [ " + stationId + " ]를 찾을 수 없습니다."));
+    public LineResponse findLine(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new EntityNotFoundException("지하철 노선 아이디 [ " + lineId + " ]를 찾을 수 없습니다."));
+        return getLineResponseBy(line);
     }
 
+    private Station getLastStation(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(() -> new EntityNotFoundException("지하철 아이디 [ " + stationId + " ]를 찾을 수 없습니다."));
+    }
+
+
     private Line toLineBy(LineRequest lineRequest) {
-        Station lastUpStation = getLastUpStation(lineRequest.getUpStationId());
-        Station lastDownStation = getLastUpStation(lineRequest.getDownStationId());
+        Station lastUpStation = getLastStation(lineRequest.getUpStationId());
+        Station lastDownStation = getLastStation(lineRequest.getDownStationId());
         return new Line(lineRequest.getName(),
                 lineRequest.getColor(),
                 lastUpStation,
