@@ -121,6 +121,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         // when
         ExtractableResponse<Response> updateResponse = 지하철노선_수정_요청(id, "다른1호선","bg-darkblue-100");
         ExtractableResponse<Response> getResponse = 지하철노선_조회_요청(id);
+
         // then
         assertAll(
                 () -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -176,6 +177,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
     }
 
@@ -184,6 +186,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
                 .pathParam("id", id)
                 .when().get("/lines/{id}")
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
     }
 
@@ -198,6 +201,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
                 .pathParam("id", id)
                 .when().put("/lines/{id}")
                 .then().log().all()
+                .statusCode(HttpStatus.OK.value())
                 .extract();
     }
 
@@ -206,6 +210,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
                 .pathParam("id", id)
                 .when().delete("/lines/{id}")
                 .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
                 .extract();
     }
 
@@ -218,6 +223,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
+                .statusCode(HttpStatus.CREATED.value())
                 .extract();
     }
 }
