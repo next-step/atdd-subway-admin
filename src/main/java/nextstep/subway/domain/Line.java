@@ -34,15 +34,11 @@ public class Line extends BaseEntity {
 
     private Integer distance;
 
-    public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
-        return new Line(name, color, upStation, downStation, distance);
-    }
-
     protected Line() {
 
     }
 
-    private Line(String name, String color, Station upStation, Station downStation, Integer distance) {
+    public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
 
         validName(name);
         validColor(color);

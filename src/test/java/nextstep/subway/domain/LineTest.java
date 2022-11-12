@@ -17,7 +17,7 @@ class LineTest {
     void change() {
         String newName = "다른분당선";
         String newColor = "blue";
-        Line line = Line.of("name", "red", null, null, 10);
+        Line line = new Line("name", "red", null, null, 10);
 
         line.changeNameAndColor(newName, newColor);
 
@@ -33,7 +33,7 @@ class LineTest {
     @ParameterizedTest
     void name(String name) {
 
-        assertThatThrownBy(() -> Line.of(name, "color", null, null, 10))
+        assertThatThrownBy(() -> new Line(name, "color", null, null, 10))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -43,7 +43,7 @@ class LineTest {
     @ParameterizedTest
     void color(String color) {
 
-        assertThatThrownBy(() -> Line.of("name", color, null, null, 10))
+        assertThatThrownBy(() -> new Line("name", color, null, null, 10))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

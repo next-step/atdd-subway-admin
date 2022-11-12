@@ -24,7 +24,7 @@ class LineRepositoryTest {
     @DisplayName("노선을 신규 등록할 수 있다.")
     @Test
     void create() {
-        Line line = Line.of("신분당선", "red", Station.from("강남역"), Station.from("양재역"), 10);
+        Line line = new Line("신분당선", "red", Station.from("강남역"), Station.from("양재역"), 10);
 
         Line actual = lineRepository.save(line);
 
@@ -40,7 +40,7 @@ class LineRepositoryTest {
     @DisplayName("노선을 조회할 수 있다.")
     @Test
     void read() {
-        Line actual = lineRepository.save(Line.of("신분당선", "red", Station.from("강남역"), Station.from("양재역"), 10));
+        Line actual = lineRepository.save(new Line("신분당선", "red", Station.from("강남역"), Station.from("양재역"), 10));
 
         Optional<Line> expect = lineRepository.findById(actual.getId());
 
@@ -52,7 +52,7 @@ class LineRepositoryTest {
     void update() {
         String newName = "다른분당선";
         String newColor = "blue";
-        Line actual = lineRepository.save(Line.of("신분당선", "red", Station.from("강남역"), Station.from("양재역"), 10));
+        Line actual = lineRepository.save(new Line("신분당선", "red", Station.from("강남역"), Station.from("양재역"), 10));
 
         actual.changeNameAndColor(newName, newColor);
         Optional<Line> expect = lineRepository.findById(actual.getId());
@@ -66,7 +66,7 @@ class LineRepositoryTest {
     @DisplayName("노선을 삭제할 수 있다.")
     @Test
     void delete() {
-        Line line = lineRepository.save(Line.of("신분당선", "red", Station.from("강남역"), Station.from("양재역"), 10));
+        Line line = lineRepository.save(new Line("신분당선", "red", Station.from("강남역"), Station.from("양재역"), 10));
 
         lineRepository.delete(line);
         Optional<Line> actual = lineRepository.findById(line.getId());
