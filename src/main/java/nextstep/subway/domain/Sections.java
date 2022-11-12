@@ -24,16 +24,12 @@ public class Sections {
     }
 
     public void add(final Section newSection) {
-        Section section = validate(newSection);
-        reArrange(section, newSection);
+        Section section = validateIfConnectableSectionWith(newSection);
+        reArrangeSection(section, newSection);
         this.sections.add(newSection);
     }
 
-    private void reArrange(final Section section, final Section newSection) {
-        changeSection(section, newSection);
-    }
-
-    private void changeSection(final Section section, final Section newSection) {
+    private void reArrangeSection(final Section section, final Section newSection) {
         if (isSameUpStation(section, newSection)) {
             section.changeUpStation(newSection.getDownStation());
             reArrangeDistance(section, newSection);
@@ -55,8 +51,8 @@ public class Sections {
         return section.getUpStation().equals(newSection.getUpStation());
     }
 
-    private Section validate(final Section newSection) {
-        Section section = isPossibleToConnect(newSection);
+    private Section validateIfConnectableSectionWith(final Section newSection) {
+        Section section = findConnectableSectionWith(newSection);
         if (isIncludedBetweenStations(newSection, section)) {
             validateDistance(newSection, section);
         }
@@ -73,9 +69,9 @@ public class Sections {
         }
     }
 
-    private Section isPossibleToConnect(final Section newSection) {
+    private Section findConnectableSectionWith(final Section newSection) {
         return sections.stream()
-                .filter(s -> isInsertable(s, newSection))
+                .filter(section -> isInsertable(section, newSection))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException("새 구간을 연결할 수 있는 구간이 없습니다."));
     }
