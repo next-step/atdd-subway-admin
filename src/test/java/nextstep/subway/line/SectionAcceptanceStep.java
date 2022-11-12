@@ -53,5 +53,9 @@ public class SectionAcceptanceStep extends AcceptanceTest {
         응답상태_검증(response, HttpStatus.CREATED);
         assertThat(response.header("Location")).isNotBlank();
     }
+
+    public static void 지하철구간_생성_응답상태_400_검증(ExtractableResponse<Response> response) {
+        응답상태_검증(response, HttpStatus.BAD_REQUEST);
+    }
 }
 

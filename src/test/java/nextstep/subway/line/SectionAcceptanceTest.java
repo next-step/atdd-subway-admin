@@ -74,4 +74,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철구간_생성_응답상태_201_검증(response);
         지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
     }
+
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 응답상태 400을 반환한다.")
+    @Test
+    void createSection_distanceExcess() {
+        // when
+        ExtractableResponse<Response> response = 지하철노선에_구간_등록_요청(lineId, registeredStationId1, stationId1, 11);
+
+        // then
+        지하철구간_생성_응답상태_400_검증(response);
+    }
 }
