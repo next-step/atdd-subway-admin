@@ -13,20 +13,22 @@ public class Line extends BaseEntity {
 
     @Embedded
     private final Sections sections = new Sections();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.sections.addSection(new Section(this, upStation, downStation, distance));
     }
 
     public Sections getSections() {
@@ -48,6 +50,10 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public void addSection(Section section) {
+        this.sections.addSection(section);
     }
 
 
