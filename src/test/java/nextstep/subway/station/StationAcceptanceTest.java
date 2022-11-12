@@ -1,25 +1,20 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static nextstep.subway.utils.StationAcceptanceTestUtil.*;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -39,27 +34,14 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        // then
+        String 지하철역 = "삼성역";
+        지하철역_생성(지하철역, HttpStatus.CREATED);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        List<String> returnStationNames = 지하철목록을_조회후_지하철_역명_리스트_반환(HttpStatus.OK);
+        // 첫 번째 변수는 실제 반환된 리스트, 두번째 부터는 검증할 지하철 역명을 입력한다.
+        지하철_목록_검증_입력된_지하철역이_존재(returnStationNames, 지하철역);
     }
 
     /**
@@ -71,26 +53,12 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        String 지하철역 = "강남역";
+        지하철역_생성(지하철역, HttpStatus.CREATED);
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
-
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철역_생성(지하철역, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -101,6 +69,17 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        String 지하철역 = "잠실역";
+        String 지하철역2 = "몽촌토성역";
+        지하철역_생성(지하철역, HttpStatus.CREATED);
+        지하철역_생성(지하철역2, HttpStatus.CREATED);
+
+        // when
+        List<String> returnStationNames = 지하철목록을_조회후_지하철_역명_리스트_반환(HttpStatus.OK);
+
+        // then
+        지하철_목록_검증_입력된_지하철역이_존재(returnStationNames, 지하철역, 지하철역2);
     }
 
     /**
@@ -111,5 +90,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        String 지하철역 = "잠실역";
+        Long stationId = 지하철역을_생성후_지하철_ID를_반환(지하철역, HttpStatus.CREATED);
+
+        // when
+        지하철역_제거(stationId, HttpStatus.NO_CONTENT);
+
+        // then
+        List<String> returnStationNames = 지하철목록을_조회후_지하철_역명_리스트_반환(HttpStatus.OK);
+        지하철_목록_검증_입력된_지하철역이_존재하지_않음(returnStationNames, 지하철역);
     }
 }
