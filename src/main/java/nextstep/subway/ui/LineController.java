@@ -58,6 +58,11 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + section.getId() + "/sections")).body(section);
     }
 
+    @GetMapping(value = "/lines/{lineId}/sections")
+    public ResponseEntity<List<SectionResponse>> showSections(@PathVariable final Long lineId) {
+        return ResponseEntity.ok(sectionService.findAllSections(lineId));
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Void> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();

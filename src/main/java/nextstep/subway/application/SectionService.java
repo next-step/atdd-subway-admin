@@ -9,6 +9,9 @@ import nextstep.subway.dto.SectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(readOnly = true)
 public class SectionService {
@@ -30,8 +33,15 @@ public class SectionService {
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
 
         Line line = lineService.findById(lineId);
-
         line.addSection(section);
-        return SectionResponse.of(sectionRepository.save(section));
+        lineService.flush();
+        return SectionResponse.of(section);
+    }
+
+    public List<SectionResponse> findAllSections(final Long lineId) {
+        return sectionRepository.findByLineId(lineId)
+                .stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
     }
 }

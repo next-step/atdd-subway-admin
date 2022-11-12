@@ -83,7 +83,7 @@ public class Line extends BaseEntity {
     }
 
     private void reArrangeDistance(final Section section, final Section newSection) {
-        section.changeDistance(newSection.getDistance() - section.getDistance());
+        section.changeDistance(section.getDistance() - newSection.getDistance());
     }
 
     private boolean isSameDownStation(final Section section, final Section newSection) {

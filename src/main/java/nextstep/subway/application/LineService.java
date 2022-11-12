@@ -64,4 +64,8 @@ public class LineService {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(lineId + "번 노선을 찾을 수 없습니다."));
     }
+
+    public void flush() {
+        lineRepository.flush();
+    }
 }
