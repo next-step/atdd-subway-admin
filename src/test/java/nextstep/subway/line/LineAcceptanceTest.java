@@ -15,10 +15,6 @@ import org.junit.jupiter.api.Test;
 
 @DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
-    private StationResponse 저장된_강남역;
-    private StationResponse 저장된_신논현역;
-    private StationResponse 저장된_대성리역;
-    private StationResponse 저장된_가평역;
     private LineRequest 신분당선_생성_요청;
     private LineRequest 경춘선_생성_요청;
 
@@ -26,10 +22,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
 
-        저장된_강남역 = StationAcceptanceTestUtils.지하철역을_생성한다(강남역).as(StationResponse.class);
-        저장된_신논현역 = StationAcceptanceTestUtils.지하철역을_생성한다(신논현역).as(StationResponse.class);
-        저장된_대성리역 = StationAcceptanceTestUtils.지하철역을_생성한다(대성리역).as(StationResponse.class);
-        저장된_가평역 = StationAcceptanceTestUtils.지하철역을_생성한다(가평역).as(StationResponse.class);
+        StationResponse 저장된_강남역 = StationAcceptanceTestUtils.지하철역을_생성한다(강남역).as(StationResponse.class);
+        StationResponse 저장된_신논현역 = StationAcceptanceTestUtils.지하철역을_생성한다(신논현역).as(StationResponse.class);
+        StationResponse 저장된_대성리역 = StationAcceptanceTestUtils.지하철역을_생성한다(대성리역).as(StationResponse.class);
+        StationResponse 저장된_가평역 = StationAcceptanceTestUtils.지하철역을_생성한다(가평역).as(StationResponse.class);
 
         신분당선_생성_요청 = new LineRequest(신분당선, "bg-red-600", 저장된_강남역.getId(), 저장된_신논현역.getId(), 10);
         경춘선_생성_요청 = new LineRequest(경춘선, "bg-emerald-600", 저장된_대성리역.getId(), 저장된_가평역.getId(), 30);

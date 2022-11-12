@@ -1,7 +1,6 @@
 package nextstep.subway.utils;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 import static nextstep.subway.utils.CommonTestFixture.*;
 
 import io.restassured.response.ExtractableResponse;
@@ -31,17 +30,9 @@ public class StationAcceptanceTestUtils {
                 .extract();
     }
 
-    public static void 지하철역_생성을_확인한다(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-    }
-
-    public static void 지하철역_생성_실패를_확인한다(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
     public static ExtractableResponse<Response> 지하철역을_제거한다(ExtractableResponse<Response> response) {
         return given().log().all()
-                .pathParam(ID, response.jsonPath().getLong(ID))
+                .pathParam(ID, 응답_ID_추출(response))
                 .when().delete(STATION_BASE_PATH + PATH_VARIABLE_ID)
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value())
@@ -57,11 +48,19 @@ public class StationAcceptanceTestUtils {
                 .extract().jsonPath().getList(NAME, String.class);
     }
 
+    public static void 지하철역_생성을_확인한다(ExtractableResponse<Response> response) {
+        HTTP_상태코드_검증(response.statusCode(), HttpStatus.CREATED);
+    }
+
+    public static void 지하철역_생성_실패를_확인한다(ExtractableResponse<Response> response) {
+        HTTP_상태코드_검증(response.statusCode(), HttpStatus.BAD_REQUEST);
+    }
+
     public static void 지하철_목록_검증_입력된_지하철역이_존재(List<String> actualNames, String... expectNames) {
-        assertThat(actualNames).contains(expectNames);
+        목록_검증_존재함(actualNames, expectNames);
     }
 
     public static void 지하철_목록_검증_입력된_지하철역이_존재하지_않음(List<String> actualNames, String... stationNames) {
-        assertThat(actualNames).doesNotContain(stationNames);
+        목록_검증_존재하지_않음(actualNames, stationNames);
     }
 }

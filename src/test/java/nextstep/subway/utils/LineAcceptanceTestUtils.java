@@ -1,8 +1,8 @@
 package nextstep.subway.utils;
 
 import static io.restassured.RestAssured.given;
-import static org.assertj.core.api.Assertions.assertThat;
 import static nextstep.subway.utils.CommonTestFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -42,7 +42,7 @@ public class LineAcceptanceTestUtils {
 
     public static ExtractableResponse<Response> 지하철노선을_조회한다(ExtractableResponse<Response> response) {
         return given().log().all()
-                .pathParam(ID, response.jsonPath().getLong(ID))
+                .pathParam(ID, 응답_ID_추출(response))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get(LINE_BASE_PATH + PATH_VARIABLE_ID)
                 .then().log().all()
@@ -56,7 +56,7 @@ public class LineAcceptanceTestUtils {
         params.put("color", updateColor);
 
         given().log().all()
-                .pathParam(ID, response.jsonPath().getLong(ID))
+                .pathParam(ID, 응답_ID_추출(response))
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put(LINE_BASE_PATH + PATH_VARIABLE_ID)
@@ -67,7 +67,7 @@ public class LineAcceptanceTestUtils {
 
     public static void 지하철노선을_삭제한다(ExtractableResponse<Response> response) {
         given().log().all()
-                .pathParam(ID, response.jsonPath().getLong(ID))
+                .pathParam(ID, 응답_ID_추출(response))
                 .when().delete(LINE_BASE_PATH + PATH_VARIABLE_ID)
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value())
@@ -75,11 +75,11 @@ public class LineAcceptanceTestUtils {
     }
 
     public static void 지하철노선_목록_검증_입력된_지하철노선이_존재(List<String> actualNames, String... lineNames) {
-        assertThat(actualNames).contains(lineNames);
+        목록_검증_존재함(actualNames, lineNames);
     }
 
     public static void 지하철노선_목록_검증_입력된_지하철노선이_존재하지_않음(List<String> actualNames, String... lineNames) {
-        assertThat(actualNames).doesNotContain(lineNames);
+        목록_검증_존재하지_않음(actualNames, lineNames);
     }
 
     public static void 지하철노선_검증_입력된_지하철노선이_존재(ExtractableResponse<Response> response, String lineName){
