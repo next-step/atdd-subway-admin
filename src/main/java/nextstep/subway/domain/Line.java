@@ -18,10 +18,10 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, unique = true)
-    private String name;
-    @Column(nullable = false)
-    private String color;
+    @Embedded
+    private Name name;
+    @Embedded
+    private Color color;
     @ManyToOne
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_line_to_upstation"), nullable = false)
     private Station upStation;
@@ -35,13 +35,11 @@ public class Line extends BaseEntity {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, Long distance) {
-        validateLineName(name);
-        validateLineColor(color);
         validateUpStation(upStation);
         validateDownStation(downStation);
 
-        this.name = name;
-        this.color = color;
+        this.name = Name.of(name);
+        this.color = Color.of(color);
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = Distance.of(distance);
@@ -49,23 +47,19 @@ public class Line extends BaseEntity {
 
     public void updateLineNameAndColor(String name, String color) {
         if(!StringUtils.isNullOrEmpty(name)) {
-            this.name = name;
+            updateLineName(name);
         }
         if(!StringUtils.isNullOrEmpty(color)) {
-            this.color = color;
+            updateLineColor(color);
         }
     }
 
-    private void validateLineName(String name) {
-        if(StringUtils.isNullOrEmpty(name)) {
-            throw new IllegalArgumentException(ErrorCode.노선명은_비어있을_수_없음.getErrorMessage());
-        }
+    private void updateLineName(String name) {
+        this.name = Name.of(name);
     }
 
-    private void validateLineColor(String color) {
-        if(StringUtils.isNullOrEmpty(color)) {
-            throw new IllegalArgumentException(ErrorCode.노선색상은_비어있을_수_없음.getErrorMessage());
-        }
+    private void updateLineColor(String color) {
+        this.color = Color.of(color);
     }
 
     private void validateUpStation(Station upstation) {
@@ -84,11 +78,11 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 
