@@ -1,11 +1,14 @@
 package nextstep.subway.line;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -86,12 +89,35 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(지하철_노선_이름).isEqualTo("1번지하철노선");
     }
 
-
-
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
     @DisplayName("지하철노선 수정")
     @Test
     void update_line() {
+        ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
+        ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청(
+                "1번지하철노선", "red", 지하철역_아이디_조회(강남역), 지하철역_아이디_조회(잠실역), 10
+        );
 
+
+        Long 지하철역_아이디 = 식별_아이디_조회(지하철_노선_생성_응답);
+        LineRequest lineRequest = new LineRequest("지하철노선수정", "blue");
+        ExtractableResponse<Response> 지하철_노선_수정_응답 = RestAssured.given().log().all()
+                .pathParam("id", 지하철역_아이디)
+                .body(lineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}")
+                .then().log().all()
+                .extract();
+
+        String 수정된_지하철_노선_이름 = 이름_조회(지하철_노선_수정_응답);
+
+        assertThat(지하철_노선_수정_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(수정된_지하철_노선_이름).isEqualTo("지하철노선수정");
     }
 
     @DisplayName("지하철노선 삭제")

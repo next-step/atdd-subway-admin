@@ -46,4 +46,10 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철노선 입니다."));
         return LineResponse.of(line);
     }
+
+    public LineResponse updateLine(Long id, LineRequest request) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+        line.update(request.toLine());
+        return LineResponse.of(line);
+    }
 }
