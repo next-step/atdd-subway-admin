@@ -1,9 +1,9 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.line.LineAcceptanceTestFixture.지하철_노선_목록_조회;
-import static nextstep.subway.line.LineAcceptanceTestFixture.지하철_노선_생성;
+import static nextstep.subway.line.LineAcceptanceTestFixture.*;
 import static nextstep.subway.station.StationAcceptanceTestFixture.지하철역_생성;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -81,5 +81,29 @@ public class LineAcceptanceTest {
         // then
         assertThat(lineNames).hasSize(2)
             .contains("5호선", "9호선");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void showLine() {
+        // given
+        Long upStationId = 지하철역_생성("김포공항역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_생성("여의도역").jsonPath().getLong("id");
+
+        ExtractableResponse<Response> response = 지하철_노선_생성("5호선", "보라색", upStationId, downStationId, 13);
+
+        // when
+        String lineName = 지하철_노선_조회(response.jsonPath().getLong("id")).jsonPath().getString("name");
+
+        // then
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> assertThat(lineName).isEqualTo("5호선")
+        );
     }
 }

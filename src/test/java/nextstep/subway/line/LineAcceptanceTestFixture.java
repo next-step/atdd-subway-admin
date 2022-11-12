@@ -27,4 +27,11 @@ public class LineAcceptanceTestFixture {
             .then().log().all()
             .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회(Long id) {
+        return RestAssured.given().log().all()
+            .when().get("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
 }
