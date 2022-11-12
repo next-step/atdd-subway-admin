@@ -11,8 +11,7 @@ import org.springframework.http.MediaType;
 public class LineAcceptanceTestFixture {
     public static final String LINE_API_MAIN_PATH = "/lines";
 
-    public static ExtractableResponse<Response> createLine(String name, String color, int distance, Long upStationId,
-                                                           Long downStationId) {
+    public static ExtractableResponse<Response> createLine(String name, String color, int distance, Long upStationId, Long downStationId) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -24,21 +23,34 @@ public class LineAcceptanceTestFixture {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(LINE_API_MAIN_PATH)
-                .then().assertThat().statusCode(HttpStatus.CREATED.value()).log().all()
+                .then().statusCode(HttpStatus.CREATED.value()).log().all()
                 .extract();
     }
 
     public static ExtractableResponse<Response> findAllLines() {
         return RestAssured.given().log().all()
                 .when().get(LINE_API_MAIN_PATH)
-                .then().assertThat().statusCode(HttpStatus.OK.value()).log().all()
+                .then().statusCode(HttpStatus.OK.value()).log().all()
                 .extract();
     }
 
     public static ExtractableResponse<Response> findLine(Long id) {
         return RestAssured.given().log().all()
                 .when().get(LINE_API_MAIN_PATH + "/{id}", id)
-                .then().assertThat().statusCode(HttpStatus.OK.value()).log().all()
+                .then().statusCode(HttpStatus.OK.value()).log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> updateLine(Long id, String name, String color) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(LINE_API_MAIN_PATH + "/{id}", id)
+                .then().statusCode(HttpStatus.OK.value()).log().all()
                 .extract();
     }
 }

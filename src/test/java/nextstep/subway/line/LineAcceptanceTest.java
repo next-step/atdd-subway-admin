@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import static nextstep.subway.line.LineAcceptanceTestFixture.createLine;
 import static nextstep.subway.line.LineAcceptanceTestFixture.findAllLines;
 import static nextstep.subway.line.LineAcceptanceTestFixture.findLine;
+import static nextstep.subway.line.LineAcceptanceTestFixture.updateLine;
 import static nextstep.subway.station.StationAcceptanceTestFixture.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -83,7 +84,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
-        //given
+        // given
         long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
         long downStationId = JsonPathExtractor.getId(createStation("새로운지하철역"));
         ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
@@ -95,5 +96,28 @@ public class LineAcceptanceTest {
         // then
         assertThat(JsonPathExtractor.getId(findLineResponse)).isEqualTo(1);
         assertThat(JsonPathExtractor.getName(findLineResponse)).isEqualTo("신분당선");
+    }
+
+    /**
+     *  Given 지하철 노선을 생성하고
+     *  When 생성한 지하철 노선을 수정하면
+     *  Then 해당 지하철 노선 정보는 수정된다.
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLineTest() {
+        // given
+        long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
+        long downStationId = JsonPathExtractor.getId(createStation("새로운지하철역"));
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
+
+        // when
+        Long lineId = JsonPathExtractor.getId(createResponse);
+        updateLine(lineId, "다른분당선", "bg-red-700");
+
+        // then
+        ExtractableResponse<Response> findLineResponse = findLine(lineId);
+        assertThat(JsonPathExtractor.getName(findLineResponse)).isEqualTo("다른분당선");
+        assertThat(findLineResponse.jsonPath().getString("color")).isEqualTo("bg-red-700");
     }
 }
