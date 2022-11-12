@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -26,7 +27,8 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
-        Line line = Line.of(lineRequest.getName(), lineRequest.getColor(), upStation, downStation);
+        Section section = new Section(upStation, downStation, lineRequest.getDistance());
+        Line line = Line.of(lineRequest.getName(), lineRequest.getColor(), section);
         return LineResponse.of(lineRepository.save(line));
     }
 
@@ -56,5 +58,10 @@ public class LineService {
         persistLine.changeName(lineRequest.getName());
         persistLine.changeColor(lineRequest.getColor());
         return LineResponse.of(persistLine);
+    }
+
+    public Line findById(final Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException(lineId + "번 노선을 찾을 수 없습니다."));
     }
 }
