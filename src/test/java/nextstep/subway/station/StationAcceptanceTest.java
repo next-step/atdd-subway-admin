@@ -118,8 +118,8 @@ public class StationAcceptanceTest {
         지하철역_목록중_해당_지하철을_찾을_수_없다(지하철_역명, 지하철역_목록);
     }
 
-    private AbstractIntegerAssert<?> 지하철역_생성상태가_정상임을_확인할_수_있다(ExtractableResponse<Response> 지하철역_생성결과) {
-        return assertThat(지하철역_생성결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    private void 지하철역_생성상태가_정상임을_확인할_수_있다(ExtractableResponse<Response> 지하철역_생성결과) {
+        assertThat(지하철역_생성결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     private void 지하철역_목록중_해당_지하철을_찾을_수_있다(String 지하철_역명, List<String> 지하철_목록) {
