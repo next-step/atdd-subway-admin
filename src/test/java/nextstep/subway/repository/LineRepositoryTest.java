@@ -30,7 +30,6 @@ class LineRepositoryTest {
 
         assertAll(
                 () -> assertThat(actual.getId()).isNotNull(),
-                () -> assertThat(actual.getDistance()).isEqualTo(line.getDistance()),
                 () -> assertThat(actual.getColor()).isEqualTo(line.getColor()),
                 () -> assertThat(actual.getUpStation()).isEqualTo(강남역),
                 () -> assertThat(actual.getDownStation()).isEqualTo(양재역)

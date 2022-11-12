@@ -82,10 +82,6 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-    public Integer getDistance() {
-        return distance;
-    }
-
     public void changeNameAndColor(String newName, String newColor) {
         this.name = newName;
         this.color = newColor;
