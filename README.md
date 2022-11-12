@@ -65,4 +65,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [ ] 지하철 노선 조회
   - [ ] 지하철 노선 수정
   - [ ] 지하철 노선 삭제
-- [ ] 인수 테스트 격리
+- [X] 인수 테스트 격리
