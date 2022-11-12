@@ -5,9 +5,6 @@ import javax.persistence.*;
 @Entity
 public class Line extends BaseEntity {
 
-    protected Line() {
-    }
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,9 +15,27 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    public Line(String name, String color) {
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id", nullable = false)
+    private Station upStation;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id", nullable = false)
+    private Station downStation;
+
+    @Column
+    private int distance;
+
+    protected Line() {
+    }
+
+    public Line(Long id, String name, String color, Station upStation, Station downStation, int distance) {
+        this.id = id;
         this.name = name;
         this.color = color;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -35,6 +50,4 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    // TODO: 노선 생성 시 상행종점역과 하행종점역을 등록함
-    // TODO: 지하철 노선에 역을 맵핑하는 기능은 없지만 노선 조회시 포함된 역 목록이 함께 응답
 }

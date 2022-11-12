@@ -21,9 +21,15 @@ public class LineAcceptanceTest {
         }
     }
 
+    /**
+     * - When 지하철 노선을 생성하면
+     * - Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+     */
     @DisplayName("지하철노선 생성")
     @Test
     void create_line() {
+        // given
+        String 지하철노선 = "분당선";
 
     }
 
