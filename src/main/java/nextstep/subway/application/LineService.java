@@ -30,19 +30,19 @@ public class LineService {
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
                 .orElseThrow(EntityNotFoundException::new);
         Line line = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(LineResponse::of)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse getLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     @Transactional
