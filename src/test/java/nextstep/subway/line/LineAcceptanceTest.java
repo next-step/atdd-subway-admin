@@ -40,9 +40,9 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        StationAcceptanceTestFixture.createStation("지하철역");
-        StationAcceptanceTestFixture.createStation("새로운지하철역");
-        LineAcceptanceTestFixture.createLine("신분당선", "bg-red-600", 10, 1, 2);
+        Long upStationId = StationAcceptanceTestFixture.createStation("지하철역").jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTestFixture.createStation("새로운지하철역").jsonPath().getLong("id");
+        LineAcceptanceTestFixture.createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
 
         // then
         ExtractableResponse<Response> findAllResponse = LineAcceptanceTestFixture.findAllLines();
