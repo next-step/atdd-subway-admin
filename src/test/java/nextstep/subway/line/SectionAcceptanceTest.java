@@ -46,7 +46,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         // when
-        ExtractableResponse<Response> response = 지하철노선에_구간_등록_요청(lineId, registeredStationId1, stationId1, 5);
+        ExtractableResponse<Response> response = 지하철노선에_구간_등록_요청(lineId, registeredStationId1, stationId1, 3);
+
+        // then
+        지하철구간_생성_응답상태_201_검증(response);
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우 응답상태 201을 반환한다.")
+    @Test
+    void createSectionToAscentEndpoint() {
+        // when
+        ExtractableResponse<Response> response = 지하철노선에_구간_등록_요청(lineId, stationId1, registeredStationId1, 3);
 
         // then
         지하철구간_생성_응답상태_201_검증(response);
