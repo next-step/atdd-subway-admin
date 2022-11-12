@@ -30,7 +30,7 @@ public class LineAcceptanceTestFixture {
 
     public static ExtractableResponse<Response> 지하철_노선_조회(Long id) {
         return RestAssured.given().log().all()
-            .when().get("/lines/" + id)
+            .when().get("/lines/{id}", id)
             .then().log().all()
             .extract();
     }
@@ -42,6 +42,14 @@ public class LineAcceptanceTestFixture {
             .body(lineRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().put("/lines/{id}", id)
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_삭제(Long id) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete("/lines/{id}", id)
             .then().log().all()
             .extract();
     }
