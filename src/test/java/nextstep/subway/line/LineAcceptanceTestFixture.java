@@ -11,7 +11,8 @@ import org.springframework.http.MediaType;
 public class LineAcceptanceTestFixture {
     public static final String LINE_API_MAIN_PATH = "/lines";
 
-    public static ExtractableResponse<Response> createLine(String name, String color, int distance, Long upStationId, Long downStationId) {
+    public static ExtractableResponse<Response> createLine(String name, String color, int distance, Long upStationId,
+                                                           Long downStationId) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
@@ -30,7 +31,14 @@ public class LineAcceptanceTestFixture {
     public static ExtractableResponse<Response> findAllLines() {
         return RestAssured.given().log().all()
                 .when().get(LINE_API_MAIN_PATH)
-                .then().log().all()
+                .then().assertThat().statusCode(HttpStatus.OK.value()).log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> findLine(Long id) {
+        return RestAssured.given().log().all()
+                .when().get(LINE_API_MAIN_PATH + "/{id}", id)
+                .then().assertThat().statusCode(HttpStatus.OK.value()).log().all()
                 .extract();
     }
 }

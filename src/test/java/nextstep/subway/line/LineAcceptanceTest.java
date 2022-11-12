@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceTestFixture.createLine;
 import static nextstep.subway.line.LineAcceptanceTestFixture.findAllLines;
+import static nextstep.subway.line.LineAcceptanceTestFixture.findLine;
 import static nextstep.subway.station.StationAcceptanceTestFixture.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -83,19 +84,16 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         //given
-        long upStationId = createStation("지하철역").jsonPath().getLong("id");
-        long downStationId = createStation("새로운지하철역").jsonPath().getLong("id");
+        long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
+        long downStationId = JsonPathExtractor.getId(createStation("새로운지하철역"));
         ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
 
         // when
-        Long createStationId = createResponse.jsonPath().getLong("id");
-        ExtractableResponse<Response> findLineResponse = RestAssured.given().log().all()
-                .when().get("/lines/{id}", createStationId)
-                .then().log().all()
-                .extract();
+        Long lineId = JsonPathExtractor.getId(createResponse);
+        ExtractableResponse<Response> findLineResponse = findLine(lineId);
 
         // then
-        assertThat(JsonPathExtractor.getTotalJsonArraySize(findLineResponse)).isEqualTo(1);
-        assertThat(findLineResponse.jsonPath().getString("name")).isEqualTo("신분당선");
+        assertThat(JsonPathExtractor.getId(findLineResponse)).isEqualTo(1);
+        assertThat(JsonPathExtractor.getName(findLineResponse)).isEqualTo("신분당선");
     }
 }
