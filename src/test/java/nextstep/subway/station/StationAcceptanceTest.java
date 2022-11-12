@@ -8,26 +8,13 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
+public class StationAcceptanceTest extends AbstractAcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -81,10 +68,10 @@ public class StationAcceptanceTest {
         지하철역_등록_요청("역삼역");
 
         // when
-        List<String> stationNames = 지하철역_목록_조회_요청().jsonPath().getList("name", String.class);
+        ExtractableResponse<Response> response = 지하철역_목록_조회_요청();
 
         // then
-        assertThat(stationNames).hasSize(2);
+        assertThat(response.jsonPath().getList("name", String.class)).hasSize(2);
     }
 
     /**
@@ -98,7 +85,7 @@ public class StationAcceptanceTest {
         // given
         String stationName = "선릉역";
         ExtractableResponse<Response> createStationResponse = 지하철역_등록_요청(stationName);
-        long id = createStationResponse.jsonPath().getLong("id");
+        Long id = createStationResponse.jsonPath().getLong("id");
 
         // when
         지하철역_삭제_요청(id);
@@ -108,26 +95,26 @@ public class StationAcceptanceTest {
         assertThat(stationNames).doesNotContain(stationName);
     }
 
-    ExtractableResponse<Response> 지하철역_등록_요청(String name) {
+    private ExtractableResponse<Response> 지하철역_등록_요청(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
         return RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
     }
 
-    ExtractableResponse<Response> 지하철역_목록_조회_요청() {
+    private ExtractableResponse<Response> 지하철역_목록_조회_요청() {
         return  RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
     }
 
-    ExtractableResponse<Response> 지하철역_삭제_요청(long id) {
+    private ExtractableResponse<Response> 지하철역_삭제_요청(Long id) {
         return  RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().delete("/stations/{id}")
