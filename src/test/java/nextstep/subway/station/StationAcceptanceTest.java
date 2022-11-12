@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -64,30 +65,25 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
+        지하철역이_생성됨(response);
+
+        // then
+        List<String> 등록된_모든_지하철역_이름_목록 = 등록된_모든_지하철역_이름_조회();
+        목록에_주어진_역이_포함됨(등록된_모든_지하철역_이름_목록, "강남역");
+    }
+
+    private void 지하철역이_생성됨(ExtractableResponse<Response> response) {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.header("Location")).matches("/stations/" + 숫자_REGEX)
         );
+    }
 
-        // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+    private void 목록에_주어진_역이_포함됨(List<String> 등록된_모든_지하철역_이름_목록, String 지하철역_이름) {
+        assertThat(등록된_모든_지하철역_이름_목록).containsAnyOf(지하철역_이름);
     }
 
     /**
@@ -97,25 +93,16 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        지하철역_생성_요청("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
         // then
+        지하철역이_생성되지_않음(response);
+    }
+
+    private void 지하철역이_생성되지_않음(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -130,10 +117,14 @@ public class StationAcceptanceTest {
         지하철역_생성_요청("올림픽공원역");
 
         // when
-        List<String> stationNames = 등록된_모든_지하철역_이름_조회();
+        List<String> 등록된_모든_지하철역_이름_목록 = 등록된_모든_지하철역_이름_조회();
 
         // then
-        assertThat(stationNames).containsExactlyInAnyOrder("방이역", "올림픽공원역");
+        지하철역이_목록에_있음(등록된_모든_지하철역_이름_목록, "방이역", "올림픽공원역");
+    }
+
+    private void 지하철역이_목록에_있음(List<String> 등록된_모든_지하철역_이름_목록, String... 주어진_이름_목록) {
+        assertThat(등록된_모든_지하철역_이름_목록).containsExactlyInAnyOrderElementsOf(Arrays.asList(주어진_이름_목록));
     }
 
     /**
@@ -150,6 +141,10 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_삭제_요청(철원역_경로);
 
         // then
+        지하철역이_제거됨(response);
+    }
+
+    private void 지하철역이_제거됨(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
