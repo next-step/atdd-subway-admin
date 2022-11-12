@@ -25,16 +25,36 @@ public class Sections {
     }
 
     public void add(Section section) {
+        validateUniqueSection(section);
+        validateIncludingUpStationOrDownStation(section);
+
+        updateUpStation(section);
+        sections.add(section);
+    }
+
+    private void validateUniqueSection(Section section) {
         if (sections.contains(section)) {
             throw new IllegalArgumentException(ExceptionMessage.ALREADY_ADDED_SECTION);
         }
+    }
 
+    private void validateIncludingUpStationOrDownStation(Section section) {
+        List<Station> stations = this.getStationsInOrder();
+
+        if (stations.isEmpty()) {
+            return;
+        }
+
+        if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
+            throw new IllegalArgumentException(ExceptionMessage.NOT_INCLUDE_UP_STATION_AND_DOWN_STATION);
+        }
+    }
+
+    private void updateUpStation(Section section) {
         sections.stream()
                 .filter(it -> it.getUpStation().equals(section.getUpStation()))
                 .findAny()
                 .ifPresent(it -> it.update(section.getDownStation(), it.getDistance() - section.getDistance()));
-
-        sections.add(section);
     }
 
     public List<Station> getStationsInOrder() {

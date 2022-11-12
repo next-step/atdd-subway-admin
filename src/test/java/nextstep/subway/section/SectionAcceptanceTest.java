@@ -4,11 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseInitializer;
-import nextstep.subway.line.LineAcceptanceMethods;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.station.StationAcceptanceMethods;
 import nextstep.subway.station.dto.StationResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -146,6 +144,24 @@ class SectionAcceptanceTest {
         SectionRequest 중복_구간 = SectionRequest.of(신사역.getId(), 광교역.getId(), 10);
 
         ExtractableResponse<Response> response = SectionAcceptanceMethods.지하철_노선에_지하철역_등록(this.신분당선.getId(), 중복_구간);
+
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 새로운 역 A,B를 생성한다.
+     * When 새로운 구간 (A역 - B역) 을 기존 지하철 노선(C역 - D역)에 등록한다.
+     * Then 지하철 구간 등록에 실패한다.
+     */
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.")
+    @Test
+    void outOfUpStationAndDownStation() {
+        StationResponse 수원역 = 지하철역_생성("수원역").as(StationResponse.class);
+        StationResponse 안양역 = 지하철역_생성("안양역").as(StationResponse.class);
+        SectionRequest 안양역_수원역_구간 = SectionRequest.of(안양역.getId(), 수원역.getId(), 10);
+
+        ExtractableResponse<Response> response =
+                SectionAcceptanceMethods.지하철_노선에_지하철역_등록(신분당선.getId(), 안양역_수원역_구간);
 
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

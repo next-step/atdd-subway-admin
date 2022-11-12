@@ -60,6 +60,15 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @DisplayName("상행/하행 종점역 둘다 포함하지 않는 구간 추가 시 예외가 발생한다.")
+    @Test
+    void add6() {
+        Section section = Section.of(Station.from("안양역"), Station.from("수원역"), 10);
+
+        Assertions.assertThatThrownBy(() -> sections.add(section))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
     @DisplayName("지하철 노선 내 지하철 역 조회(상행역 -> 하행역 순)")
     @Test
     void getStationsInOrder() {
