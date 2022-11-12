@@ -6,7 +6,6 @@ import nextstep.subway.application.LineService;
 import nextstep.subway.domain.PathConstant;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,13 +25,13 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping()
+    @PostMapping
     public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create(PathConstant.LINE_ROOT_PATH +"/" + line.getId())).body(line);
     }
 
-    @GetMapping()
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
