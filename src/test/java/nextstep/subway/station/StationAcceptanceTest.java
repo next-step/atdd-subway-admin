@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -19,18 +20,20 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+    private static final String 숫자_REGEX = "\\d+";
     @LocalServerPort
     int port;
 
-    private static void 지하철역_생성_요청(final String name) {
+    private static ExtractableResponse<Response> 지하철역_생성_요청(final String name) {
         Map<String, String> params1 = new HashMap<>();
         params1.put("name", name);
 
-        RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(params1)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
-                .then().log().all();
+                .then().log().all()
+                .extract();
     }
 
     private static List<String> 등록된_모든_지하철역_이름_조회() {
@@ -38,6 +41,13 @@ public class StationAcceptanceTest {
                 .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name");
+    }
+
+    private static ExtractableResponse<Response> 지하철역_삭제_요청(String path) {
+        return RestAssured.given().log().all()
+                .when().delete(path)
+                .then().log().all()
+                .extract();
     }
 
     @BeforeEach
@@ -66,7 +76,10 @@ public class StationAcceptanceTest {
                         .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.header("Location")).matches("/stations/" + 숫자_REGEX)
+        );
 
         // then
         List<String> stationNames =
@@ -129,5 +142,14 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> createdResponse = 지하철역_생성_요청("철원역");
+        String 철원역_경로 = createdResponse.header("Location");
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_삭제_요청(철원역_경로);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
