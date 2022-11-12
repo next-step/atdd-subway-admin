@@ -1,7 +1,6 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -9,12 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import static nextstep.subway.station.StationAcceptanceFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -100,33 +95,5 @@ public class StationAcceptanceTest {
         assertThat(지하철역_이름_조회().size()).isEqualTo(0);
     }
 
-    private static ValidatableResponse 지하철역_생성(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
-    }
-
-    private static List<String> 지하철역_이름_조회() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
-    }
-
-    private static void 지하철역_삭제(Long stationId) {
-        RestAssured.given().log().all()
-                .pathParam("id", stationId)
-                .when().delete("/stations/{id}")
-                .then().log().all();
-    }
-
-    private JsonPath 제이슨_경로_얻기(ValidatableResponse validatableResponse) {
-        return validatableResponse.extract().jsonPath();
-    }
 
 }
