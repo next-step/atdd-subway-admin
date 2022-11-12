@@ -39,4 +39,9 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse getLine(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return LineResponse.of(line);
+    }
 }
