@@ -54,4 +54,10 @@ public class LineService {
     private Line getLineById(Long id) {
         return lineRepository.findById(id).orElseThrow(NoResultException::new);
     }
+
+    @Transactional
+    public void modifyLine(Long id, LineRequest request) {
+        Line line = getLineById(id);
+        line.modify(request.getName(), request.getColor());
+    }
 }

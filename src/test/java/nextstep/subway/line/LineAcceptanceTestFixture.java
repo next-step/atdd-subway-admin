@@ -34,4 +34,15 @@ public class LineAcceptanceTestFixture {
             .then().log().all()
             .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정(Long id, String name, String color) {
+        LineRequest lineRequest = new LineRequest().modify(name, color);
+
+        return RestAssured.given().log().all()
+            .body(lineRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put("/lines/{id}", id)
+            .then().log().all()
+            .extract();
+    }
 }

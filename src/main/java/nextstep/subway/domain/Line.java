@@ -67,4 +67,9 @@ public class Line extends BaseEntity {
     public Station getDownStation() {
         return downStation;
     }
+
+    public void modify(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
 }

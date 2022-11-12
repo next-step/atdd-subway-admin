@@ -49,4 +49,10 @@ public class LineRequest {
     public Line toLine(Station upStation, Station downStation) {
         return new Line(this.name, this.color, this.distance, upStation, downStation);
     }
+
+    public LineRequest modify(String name, String color) {
+        this.name = name;
+        this.color = color;
+        return this;
+    }
 }
