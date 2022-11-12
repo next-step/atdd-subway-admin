@@ -13,10 +13,12 @@ import org.springframework.http.MediaType;
 
 public class LineAcceptanceFixture {
 
-    public static LineRequest 노선_요청(String 노선명, String 노션_색깔, String 지하철역) {
-        ExtractableResponse<Response> 지하철역_생성_결과 = 지하철_역을_생성한다(지하철역);
-        Long 지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(지하철역_생성_결과);
-        return new LineRequest(노선명, 노션_색깔, 지하철역_번호, 지하철역_번호, 30L);
+    public static LineRequest 노선_요청(String 노선명, String 노션_색깔, String 상행_지하철역, String 하행_지하철역) {
+        ExtractableResponse<Response> 상행_지하철역_생성_결과 = 지하철_역을_생성한다(상행_지하철역);
+        ExtractableResponse<Response> 하행_지하철역_생성_결과 = 지하철_역을_생성한다(하행_지하철역);
+        Long 상행_지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(상행_지하철역_생성_결과);
+        Long 하행_지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(하행_지하철역_생성_결과);
+        return new LineRequest(노선명, 노션_색깔, 상행_지하철역_번호, 하행_지하철역_번호, 30L);
     }
 
     public static LineUpdateRequest 노선_수정_요청(String 노선명, String 노션_색깔) {

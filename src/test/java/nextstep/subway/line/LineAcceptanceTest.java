@@ -43,7 +43,7 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> 노선_생성결과 = 노선을_생성한다(노선_요청("1호선", "Blue", "서울역"));
+        ExtractableResponse<Response> 노선_생성결과 = 노선을_생성한다(노선_요청("1호선", "Blue", "서울역", "두정역"));
 
         // then
         List<String> 노선_목록 = 노선_목록을_조회한다();
@@ -58,8 +58,8 @@ public class LineAcceptanceTest {
     @Test
     void createLineAndFind() {
         // given
-        ExtractableResponse<Response> 노선_생성_결과_2 = 노선을_생성한다(노선_요청("2호선", "Green", "까치산역"));
-        ExtractableResponse<Response> 노선_생성_결과_3 = 노선을_생성한다(노선_요청("3호선", "Orange", "원흥역"));
+        ExtractableResponse<Response> 노선_생성_결과_2 = 노선을_생성한다(노선_요청("2호선", "Green", "까치산역", "신도림역"));
+        ExtractableResponse<Response> 노선_생성_결과_3 = 노선을_생성한다(노선_요청("3호선", "Orange", "대화역", "오금역"));
 
         // when
         List<String> 노선_목록 = 노선_목록을_조회한다();
@@ -80,7 +80,7 @@ public class LineAcceptanceTest {
     @Test
     void createLineAndVerifyLine() {
         // given
-        ExtractableResponse<Response> 노선_생성_결과_4 = 노선을_생성한다(노선_요청("4호선", "Red", "오이도역"));
+        ExtractableResponse<Response> 노선_생성_결과_4 = 노선을_생성한다(노선_요청("4호선", "Sky", "당고개역", "남태령역"));
         Long 노선_생성_아이디 = 노선_결과에서_노선_아이디를_조회한다(노선_생성_결과_4);
         String 노선_생성_이름 = 노선_결과에서_노선_이름을_조회한다(노선_생성_결과_4);
 
@@ -103,7 +103,7 @@ public class LineAcceptanceTest {
     @Test
     void updateLineAndVerifyLine() {
         // given
-        ExtractableResponse<Response> 노선_생성_결과_5 = 노선을_생성한다(노선_요청("5호선", "Sky", "당산역"));
+        ExtractableResponse<Response> 노선_생성_결과_5 = 노선을_생성한다(노선_요청("5호선", "Purple", "방화역", "상일동역"));
         Long 노선_생성_아이디 = 노선_결과에서_노선_아이디를_조회한다(노선_생성_결과_5);
 
         // when
@@ -126,7 +126,7 @@ public class LineAcceptanceTest {
     @Test
     void deleteLineAndVerifyNotExists() {
         // given
-        ExtractableResponse<Response> 노선_생성_결과_6 = 노선을_생성한다(노선_요청("6호선", "Wine", "남포역"));
+        ExtractableResponse<Response> 노선_생성_결과_6 = 노선을_생성한다(노선_요청("6호선", "Ocher", "응암역", "신내역"));
         Long 노선_아이디 = 노선_결과에서_노선_아이디를_조회한다(노선_생성_결과_6);
 
         // when
