@@ -1,8 +1,11 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +17,11 @@ import java.util.List;
 @RestController
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping("/lines")
@@ -46,7 +51,19 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @PostMapping(value = "/lines/{lineId}/sections")
+    public ResponseEntity<SectionResponse> createSections(@PathVariable final Long lineId,
+                                                             @RequestBody SectionRequest sectionRequest) {
+        SectionResponse section = sectionService.saveSection(lineId, sectionRequest);
+        return ResponseEntity.created(URI.create("/lines/" + section.getId() + "/sections")).body(section);
+    }
+
+    @GetMapping(value = "/lines/{lineId}/sections")
+    public ResponseEntity<List<SectionResponse>> showSections(@PathVariable final Long lineId) {
+        return ResponseEntity.ok(sectionService.findAllSections(lineId));
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})
     public ResponseEntity<Void> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }

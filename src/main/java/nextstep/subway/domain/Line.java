@@ -1,25 +1,33 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineRequest;
-
 import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
+    @Column(name = "line_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     private String name;
     @Column
     private String color;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
 
-    public Line(final String name, final String color) {
+    public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
+        section.setLine(this);
+        sections = new Sections(section);
+    }
+
+    public static Line of(final String name, final String color, final Section section) {
+        return new Line(name, color, section);
     }
 
     public Long getId() {
@@ -34,8 +42,20 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void modify(final LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+    public void changeName(final String name) {
+        this.name = name;
+    }
+
+    public void changeColor(final String color) {
+        this.color = color;
+    }
+
+    public Sections getSections() {
+        return sections;
+    }
+
+    public void addSection(Section section) {
+        section.setLine(this);
+        sections.add(section);
     }
 }
