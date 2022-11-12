@@ -70,15 +70,8 @@ public class Line {
         return upStation;
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
     public Station getDownStation() {
         return downStation;
     }
 
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
 }

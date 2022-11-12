@@ -39,7 +39,4 @@ public class LineRequest {
         return distance;
     }
 
-//    public LineRequest toLine() {
-//        return new Line(name, color, upStationId, downStationId, distance);
-//    }
 }
