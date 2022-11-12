@@ -45,7 +45,7 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // given
-        Long upStationId = 지하철역_생성("마곡역").jsonPath().getLong("id");
+        Long upStationId = 지하철역_생성("김포공항역").jsonPath().getLong("id");
         Long downStationId = 지하철역_생성("여의도역").jsonPath().getLong("id");
 
         // when
@@ -57,5 +57,29 @@ public class LineAcceptanceTest {
         // then
         List<String> lineNames = 지하철_노선_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lineNames).containsAnyOf("5호선");
+    }
+
+
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철 노선 목록을 조회한다.")
+    @Test
+    void showLines() {
+        // given
+        Long upStationId = 지하철역_생성("김포공항역").jsonPath().getLong("id");
+        Long downStationId = 지하철역_생성("여의도역").jsonPath().getLong("id");
+
+        지하철_노선_생성("5호선", "보라색", upStationId, downStationId, 13);
+        지하철_노선_생성("9호선", "금색", upStationId, downStationId, 13);
+
+        // when
+        List<String> lineNames = 지하철_노선_목록_조회().jsonPath().getList("name", String.class);
+
+        // then
+        assertThat(lineNames).hasSize(2)
+            .contains("5호선", "9호선");
     }
 }
