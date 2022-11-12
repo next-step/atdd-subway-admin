@@ -38,10 +38,6 @@ public class StationAcceptanceFixture {
                 .then().log().all();
     }
 
-    public static JsonPath 제이슨_경로_얻기(ExtractableResponse<Response> response) {
-        return response.jsonPath();
-    }
-
     public static long 지하철역_아이디_조회(ExtractableResponse<Response> response) {
         return Long.parseLong(response.jsonPath().get("id").toString());
     }

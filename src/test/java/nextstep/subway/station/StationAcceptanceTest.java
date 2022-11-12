@@ -1,31 +1,18 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
+import static nextstep.subway.AcceptanceFixture.식별_아이디_조회;
 import static nextstep.subway.station.StationAcceptanceFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
+public class StationAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -87,7 +74,7 @@ public class StationAcceptanceTest {
     void deleteStation() {
         // given
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청("강남역");
-        Long stationId = 제이슨_경로_얻기(지하철역_생성_응답).getLong("id");
+        Long stationId = 식별_아이디_조회(지하철역_생성_응답);
 
         // when
         지하철역_삭제(stationId);
