@@ -6,7 +6,6 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,14 +30,14 @@ public class LineService {
         Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new IllegalArgumentException());
         Line line = new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
         lineRepository.save(line);
-        return LineResponse.toDto(line);
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> stations = lineRepository.findAll();
 
         return stations.stream()
-                .map(station -> LineResponse.toDto(station))
+                .map(station -> LineResponse.of(station))
                 .collect(Collectors.toList());
     }
 
