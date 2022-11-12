@@ -1,23 +1,26 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.station.StationAcceptanceFixture.지하철_생성_결과에서_지하철역_번호를_조회한다;
-import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_생성한다;
+import static nextstep.subway.line.LineAcceptanceFixture.노선_결과에서_노선_색깔을_조회한다;
+import static nextstep.subway.line.LineAcceptanceFixture.노선_결과에서_노선_아이디를_조회한다;
+import static nextstep.subway.line.LineAcceptanceFixture.노선_결과에서_노선_이름을_조회한다;
+import static nextstep.subway.line.LineAcceptanceFixture.노선_목록을_조회한다;
+import static nextstep.subway.line.LineAcceptanceFixture.노선_수정_요청;
+import static nextstep.subway.line.LineAcceptanceFixture.노선_요청;
+import static nextstep.subway.line.LineAcceptanceFixture.노선을_삭제한다;
+import static nextstep.subway.line.LineAcceptanceFixture.노선을_생성한다;
+import static nextstep.subway.line.LineAcceptanceFixture.노선을_수정한다;
+import static nextstep.subway.line.LineAcceptanceFixture.특정_노선을_조회한다;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import javax.persistence.EntityNotFoundException;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.MediaType;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -134,15 +137,6 @@ public class LineAcceptanceTest {
         노선_목록_중_해당_노선을_찾을_수_없다(노선_목록, "6호선");
     }
 
-
-    private ExtractableResponse<Response> 노선을_삭제한다(Long 노선_아이디) {
-        return RestAssured.given().log().all()
-                .pathParam("id", 노선_아이디)
-                .when().delete("/lines/{id}")
-                .then().log().all()
-                .extract();
-    }
-
     private void 두_노선_결과는_동일해야_한다(Object 노선_생성_이름, Object 노선_이름) {
         assertThat(노선_이름).isEqualTo(노선_생성_이름);
     }
@@ -153,65 +147,5 @@ public class LineAcceptanceTest {
 
     private void 노선_목록_중_해당_노선을_찾을_수_없다(List<String> 노선_목록, String 노선명) {
         assertThat(노선_목록).doesNotContain(노선명);
-    }
-
-
-    private LineRequest 노선_요청(String 노선명, String 노션_색깔, String 지하철역) {
-        ExtractableResponse<Response> 지하철역_생성_결과 = 지하철_역을_생성한다(지하철역);
-        Long 지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(지하철역_생성_결과);
-        return new LineRequest(노선명, 노션_색깔, 지하철역_번호, 지하철역_번호, 30L);
-    }
-
-    private LineUpdateRequest 노선_수정_요청(String 노선명, String 노션_색깔) {
-        return new LineUpdateRequest(노선명, 노션_색깔);
-    }
-
-
-    public static String 노선_결과에서_노선_이름을_조회한다(ExtractableResponse<Response> 노선_생성_결과) {
-        return 노선_생성_결과.jsonPath()
-                .getString("name");
-    }
-
-    public static Long 노선_결과에서_노선_아이디를_조회한다(ExtractableResponse<Response> 노선_생성_결과) {
-        return 노선_생성_결과.jsonPath()
-                .getLong("id");
-    }
-
-    public static String 노선_결과에서_노선_색깔을_조회한다(ExtractableResponse<Response> 노선_생성_결과) {
-        return 노선_생성_결과.jsonPath()
-                .getString("color");
-    }
-
-    private List<String> 노선_목록을_조회한다() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
-
-    }
-
-    private ExtractableResponse<Response> 특정_노선을_조회한다(Long 노선_아이디) {
-        return RestAssured.given().log().all()
-                .when().get("/lines/" + 노선_아이디)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 노선을_생성한다(LineRequest 노선_요청_정보) {
-        return RestAssured.given().log().all()
-                .body(노선_요청_정보)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 노선을_수정한다(Long 노선_아이디, LineUpdateRequest 노선_수정_정보) {
-        return RestAssured.given().log().all()
-                .body(노선_수정_정보)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/" + 노선_아이디)
-                .then().log().all()
-                .extract();
     }
 }
