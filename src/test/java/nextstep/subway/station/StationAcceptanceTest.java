@@ -45,7 +45,7 @@ public class StationAcceptanceTest {
         // then
         checkStatusCode(response.statusCode(), HttpStatus.CREATED.value());
 
-        List<String> allStationNames = getAllStationNames("name");
+        List<String> allStationNames = findAllStationNames("name");
         checkContainName(allStationNames, stationName);
 
     }
@@ -83,7 +83,7 @@ public class StationAcceptanceTest {
         createStationWithName("역삼역");
 
         // when
-        ExtractableResponse<Response> response = getAllStations();
+        ExtractableResponse<Response> response = findAllStations();
 
         // then
         assertThat(response.jsonPath().getList("name", String.class)).hasSize(2);
@@ -107,7 +107,7 @@ public class StationAcceptanceTest {
         deleteStationById(id);
 
         // then
-        assertThat(getStationById(id).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(findStationById(id).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 
     }
 
@@ -116,7 +116,7 @@ public class StationAcceptanceTest {
      * @param id
      * @return
      */
-    private ExtractableResponse<Response> getStationById(int id) {
+    private ExtractableResponse<Response> findStationById(int id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations/" + id)
@@ -161,7 +161,7 @@ public class StationAcceptanceTest {
      * 지하철역 전체 조회
      * @return
      */
-    private ExtractableResponse<Response> getAllStations() {
+    private ExtractableResponse<Response> findAllStations() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
@@ -185,7 +185,7 @@ public class StationAcceptanceTest {
      * @param target
      * @return
      */
-    private List<String> getAllStationNames(String target) {
+    private List<String> findAllStationNames(String target) {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
