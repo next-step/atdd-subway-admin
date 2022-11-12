@@ -1,6 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.LineRepository;
+import nextstep.subway.repository.LineRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
