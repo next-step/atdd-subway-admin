@@ -50,6 +50,10 @@ public class LineService {
         lineRepository.save(line);
     }
 
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
+
     private Line getLineBy(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new EntityNotFoundException("지하철 노선 아이디 [ " + lineId + " ]를 찾을 수 없습니다."));

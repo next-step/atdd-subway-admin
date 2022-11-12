@@ -3,11 +3,13 @@ package nextstep.subway.line;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철_생성_결과에서_지하철역_번호를_조회한다;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import javax.persistence.EntityNotFoundException;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
 import org.junit.jupiter.api.BeforeEach;
@@ -112,12 +114,45 @@ public class LineAcceptanceTest {
         두_노선_결과는_동일해야_한다( "Gray", 노선_색깔);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선 삭제")
+    @Test
+    void deleteLineAndVerifyNotExists() {
+        // given
+        ExtractableResponse<Response> 노선_생성_결과_6 = 노선을_생성한다(노선_요청("6호선", "Wine", "남포역"));
+        Long 노선_아이디 = 노선_결과에서_노선_아이디를_조회한다(노선_생성_결과_6);
+
+        // when
+        노선을_삭제한다(노선_아이디);
+
+        // then
+        List<String> 노선_목록 = 노선_목록을_조회한다();
+        노선_목록_중_해당_노선을_찾을_수_없다(노선_목록, "6호선");
+    }
+
+
+    private ExtractableResponse<Response> 노선을_삭제한다(Long 노선_아이디) {
+        return RestAssured.given().log().all()
+                .pathParam("id", 노선_아이디)
+                .when().delete("/lines/{id}")
+                .then().log().all()
+                .extract();
+    }
+
     private void 두_노선_결과는_동일해야_한다(Object 노선_생성_이름, Object 노선_이름) {
         assertThat(노선_이름).isEqualTo(노선_생성_이름);
     }
 
     private void 노선_목록_중_해당_노선을_찾을_수_있다(List<String> 노선_목록, String 노선명) {
         assertThat(노선_목록).contains(노선명);
+    }
+
+    private void 노선_목록_중_해당_노선을_찾을_수_없다(List<String> 노선_목록, String 노선명) {
+        assertThat(노선_목록).doesNotContain(노선명);
     }
 
 
