@@ -49,7 +49,7 @@ public class StationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> findAllResponse = StationAcceptanceTestFixture.findAllStations();
-        List<String> stationNames = findAllResponse.jsonPath().getList("name", String.class);
+        List<String> stationNames = JsonPathExtractor.getNames(findAllResponse);
         assertThat(stationNames).containsAnyOf("신림역");
     }
 

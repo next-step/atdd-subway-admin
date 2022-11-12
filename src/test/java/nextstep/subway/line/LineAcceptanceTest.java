@@ -43,13 +43,12 @@ public class LineAcceptanceTest {
     @Test
     void createLineTest() {
         // when
-        Long upStationId = createStation("지하철역").jsonPath().getLong("id");
-        Long downStationId = createStation("새로운지하철역").jsonPath().getLong("id");
+        Long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
+        Long downStationId = JsonPathExtractor.getId(createStation("새로운지하철역"));
         createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
 
         // then
-        ExtractableResponse<Response> findAllResponse = findAllLines();
-        List<String> lineNames = findAllResponse.jsonPath().getList("name", String.class);
+        List<String> lineNames = JsonPathExtractor.getNames(findAllLines());
         assertThat(lineNames).containsAnyOf("신분당선");
     }
 
@@ -62,10 +61,10 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        Long upStationId = createStation("지하철역").jsonPath().getLong("id");
-        Long downStationId = createStation("새로운지하철역").jsonPath().getLong("id");
+        Long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
+        Long downStationId =  JsonPathExtractor.getId(createStation("새로운지하철역"));
         createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
-        Long anotherDownStationId = createStation("또다른지하철역").jsonPath().getLong("id");
+        Long anotherDownStationId =  JsonPathExtractor.getId(createStation("또다른지하철역"));
         createLine("분당선", "bg-green-600", 20, upStationId, anotherDownStationId);
 
         // when
