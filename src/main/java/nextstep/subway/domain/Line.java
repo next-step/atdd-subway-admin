@@ -17,16 +17,21 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true, nullable = false)
     private String name;
+
     @Column(unique = true, nullable = false)
     private String color;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_line_up_station"))
     private Station upStation;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_line_down_station"))
     private Station downStation;
+
     private Integer distance;
 
     public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
