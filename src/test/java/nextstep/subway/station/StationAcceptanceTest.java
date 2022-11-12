@@ -154,16 +154,16 @@ public class StationAcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         params.put("name", "강남역");
-        RestAssured.given().log().all()
+        Long id = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
-                .extract();
+                .extract().jsonPath().getLong("id");
 
         // when
         RestAssured.given().log().all()
-                .when().delete("/stations/{id}", 1L)
+                .when().delete("/stations/{id}", id)
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .extract();
