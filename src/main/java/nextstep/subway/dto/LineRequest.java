@@ -19,7 +19,12 @@ public class LineRequest {
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, distance, upStation, downStation);
+        return Line.builder()
+                .name(this.name)
+                .color(this.color)
+                .distance(this.distance)
+                .upStation(upStation)
+                .downStation(downStation).build();
     }
 
     public Long getUpStationId() {

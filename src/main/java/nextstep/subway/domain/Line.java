@@ -30,12 +30,16 @@ public class Line {
     protected Line() {
     }
 
-    public Line(String name, String color, int distance, Station upStation, Station downStation) {
-        this.name = name;
-        this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
+    private Line(Builder builder) {
+        this.name = builder.name;
+        this.color = builder.color;
+        this.distance = builder.distance;
+        this.upStation = builder.upStation;
+        this.downStation = builder.downStation;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
     public Long getId() {
@@ -56,5 +60,45 @@ public class Line {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public static class Builder {
+        private String name;
+        private int distance;
+        private String color;
+        private Station upStation;
+        private Station downStation;
+
+        private Builder() {
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder distance(int distance) {
+            this.distance = distance;
+            return this;
+        }
+
+        public Builder color(String color) {
+            this.color = color;
+            return this;
+        }
+
+        public Builder upStation(Station upStation) {
+            this.upStation = upStation;
+            return this;
+        }
+
+        public Builder downStation(Station downStation) {
+            this.downStation = downStation;
+            return this;
+        }
+
+        public Line build() {
+            return new Line(this);
+        }
     }
 }
