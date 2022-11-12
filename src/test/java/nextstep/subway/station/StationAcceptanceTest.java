@@ -93,10 +93,7 @@ public class StationAcceptanceTest {
         createStations("강남역", "문정역");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = retrieveStations();
 
         // then
         JsonPath jsonPath = response.body().jsonPath();
@@ -115,6 +112,25 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> createStationResponse = createStation("문정역");
+        long stationId = createStationResponse.jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .when().delete("/stations/{id}", stationId)
+                .then().log().all()
+                .extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        ExtractableResponse<Response> retrieveResponse = retrieveStations();
+
+        // then
+        JsonPath jsonPath = retrieveResponse.body().jsonPath();
+        assertAll(
+                () -> assertThat(retrieveResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(jsonPath.getList("id", Long.class)).doesNotContain(stationId)
+        );
     }
 
     private ExtractableResponse<Response> createStation(String name) {
@@ -133,6 +149,13 @@ public class StationAcceptanceTest {
         return Arrays.stream(names)
                 .map(name -> createStation(name))
                 .collect(Collectors.toList());
+    }
+
+    private ExtractableResponse<Response> retrieveStations() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
     }
 
 }
