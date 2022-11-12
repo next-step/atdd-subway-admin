@@ -33,8 +33,4 @@ public class LineAcceptanceTestFixture {
                 .then().log().all()
                 .extract();
     }
-
-    public static int getTotalJsonArraySize(ExtractableResponse<Response> response) {
-        return response.body().jsonPath().getInt("size()");
-    }
 }

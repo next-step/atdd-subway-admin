@@ -2,7 +2,6 @@ package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceTestFixture.createLine;
 import static nextstep.subway.line.LineAcceptanceTestFixture.findAllLines;
-import static nextstep.subway.line.LineAcceptanceTestFixture.getTotalJsonArraySize;
 import static nextstep.subway.station.StationAcceptanceTestFixture.createStation;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -10,6 +9,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import nextstep.subway.helper.JsonPathExtractor;
 import nextstep.subway.helper.TestIsolator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -72,6 +72,6 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> findAllResponse = findAllLines();
 
         // then
-        assertThat(getTotalJsonArraySize(findAllResponse)).isEqualTo(2);
+        assertThat(JsonPathExtractor.getTotalJsonArraySize(findAllResponse)).isEqualTo(2);
     }
 }

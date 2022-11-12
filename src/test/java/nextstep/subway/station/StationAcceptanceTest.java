@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.helper.JsonPathExtractor;
 import nextstep.subway.helper.TestIsolator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -86,7 +87,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = StationAcceptanceTestFixture.findAllStations();
 
         //then
-        assertThat(StationAcceptanceTestFixture.getTotalJsonArraySize(response)).isEqualTo(2);
+        assertThat(JsonPathExtractor.getTotalJsonArraySize(response)).isEqualTo(2);
     }
 
     /**
@@ -106,6 +107,6 @@ public class StationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> findAllResponse = StationAcceptanceTestFixture.findAllStations();
-        assertThat(StationAcceptanceTestFixture.getTotalJsonArraySize(findAllResponse)).isEqualTo(0);
+        assertThat(JsonPathExtractor.getTotalJsonArraySize(findAllResponse)).isEqualTo(0);
     }
 }
