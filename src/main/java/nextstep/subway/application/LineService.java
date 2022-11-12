@@ -24,17 +24,20 @@ public class LineService {
     }
 
     @Transactional
+    public void updateNameAndColor(Long id, LineRequest lineRequest) {
+        Line originLine = findLineById(id);
+        originLine.changeNameAndColor(lineRequest.getName(), lineRequest.getColor());
+        lineRepository.save(originLine);
+
+    }
+
+    @Transactional
     public LineResponse save(LineRequest lineRequest) {
         Line line = lineRequest.toLine(
                 findStationById(lineRequest.getUpStationId()),
                 findStationById(lineRequest.getDownStationId()));
 
         return LineResponse.of(lineRepository.save(line));
-    }
-
-    private Station findStationById(Long lineRequest) {
-        return stationRepository.findById(lineRequest)
-                .orElseThrow(NoResultException::new);
     }
 
     public List<LineResponse> findAllLines() {
@@ -49,20 +52,17 @@ public class LineService {
     }
 
     @Transactional
-    public void updateNameAndColor(Long id, LineRequest lineRequest) {
-        Line originLine = findLineById(id);
-        originLine.changeNameAndColor(lineRequest.getName(), lineRequest.getColor());
-        lineRepository.save(originLine);
+    public void deleteById(Long id) {
+        lineRepository.delete(findLineById(id));
+    }
 
+    private Station findStationById(Long lineRequest) {
+        return stationRepository.findById(lineRequest)
+                .orElseThrow(NoResultException::new);
     }
 
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(NoResultException::new);
-    }
-
-    @Transactional
-    public void deleteById(Long id) {
-        lineRepository.delete(findLineById(id));
     }
 }
