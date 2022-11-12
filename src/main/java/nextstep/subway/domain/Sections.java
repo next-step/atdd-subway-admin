@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -34,14 +35,18 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void addSection(Section section) {
-        validateDuplicateSection(section);
-        validateNotContainAnySection(section);
+    public void addSection(Section newSection) {
+        validateDuplicateSection(newSection);
+        validateNotContainAnySection(newSection);
 
-        updateLineDistance(section);
-        updateUpStationSection(section);
-        updateDownStationSection(section);
-        sections.add(section);
+        Optional<Section> updateUpStationSection = findUpdateUpStationSection(newSection);
+        Optional<Section> updateDownStationSection = findUpdateDownStationSection(newSection);
+        if(!updateUpStationSection.isPresent() && !updateDownStationSection.isPresent()) {
+            updateLineDistance(newSection);
+        }
+        updateUpStationSection.ifPresent(section -> section.updateUpStation(newSection));
+        updateDownStationSection.ifPresent(section -> section.updateDownStation(newSection));
+        sections.add(newSection);
     }
 
     private void validateDuplicateSection(Section section) {
@@ -65,22 +70,16 @@ public class Sections {
     }
 
     private void updateLineDistance(Section section) {
-        if(isOutsideSectionInLine(section)) {
-            section.updateLineDistance();
-        }
+        section.updateLineDistance();
     }
 
-    private boolean isOutsideSectionInLine(Section newSection) {
-        return sections.stream().noneMatch(section -> section.isSameUpStation(newSection) || section.isSameDownStation(newSection));
+    private Optional<Section> findUpdateUpStationSection(Section newSection) {
+        return sections.stream().filter(section -> section.isSameUpStation(newSection))
+                .findFirst();
     }
 
-    private void updateUpStationSection(Section newSection) {
-        sections.stream().filter(section -> section.isSameUpStation(newSection))
-                .findFirst().ifPresent(section -> section.updateUpStation(newSection));
-    }
-
-    private void updateDownStationSection(Section newSection) {
-        sections.stream().filter(section -> section.isSameDownStation(newSection))
-                .findFirst().ifPresent(section -> section.updateDownStation(newSection));
+    private Optional<Section> findUpdateDownStationSection(Section newSection) {
+        return sections.stream().filter(section -> section.isSameDownStation(newSection))
+                .findFirst();
     }
 }
