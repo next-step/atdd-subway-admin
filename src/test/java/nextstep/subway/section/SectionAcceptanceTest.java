@@ -3,15 +3,31 @@ package nextstep.subway.section;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.SubwayAcceptanceTest;
+import nextstep.subway.line.LineAcceptanceTestRequest;
+import nextstep.subway.line.LineAcceptanceTestResponse;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_생성;
+import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_조회;
 import static nextstep.subway.section.SectionAcceptanceTestAssertions.구간_거리_등록됨;
 import static nextstep.subway.section.SectionAcceptanceTestAssertions.구간_등록됨;
+import static nextstep.subway.section.SectionAcceptanceTestAssured.상행역_기준_구간_등록;
+import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_생성;
+import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_식별자;
 
 @DisplayName("구간 관련 기능")
 class SectionAcceptanceTest extends SubwayAcceptanceTest {
+
+    LineAcceptanceTestRequest 노선요청정보;
+    LineAcceptanceTestResponse 노선응답정보;
+
+    @BeforeEach
+    void 노선_등록() {
+        노선요청정보 = 노선_요청_정보("2호선", "합정역", "홍대역", 10);
+        노선응답정보 = 지하철_노선_생성(노선요청정보);
+    }
 
     /**
      * Given 하행 종점역과 상행 종점역이 생성되어 있고
@@ -20,12 +36,10 @@ class SectionAcceptanceTest extends SubwayAcceptanceTest {
      */
     @Test
     void 노선_등록시_구간이_함께_등록된다() {
-        int 거리 = 10;
-        ExtractableResponse<Response> 생성_응답 =
-                지하철_노선_생성("2호선", "당산", "합정", 거리);
+        ExtractableResponse<Response> 조회_응답 = 지하철_노선_조회(노선응답정보.노선_식별자);
 
-        구간_등록됨(생성_응답);
-        구간_거리_등록됨(생성_응답, 거리);
+        구간_등록됨(조회_응답);
+        구간_거리_등록됨(조회_응답, 노선요청정보.거리);
     }
 
     /**
@@ -37,7 +51,17 @@ class SectionAcceptanceTest extends SubwayAcceptanceTest {
      */
     @Test
     void 역_사이에_새로운_역을_등록한다() {
+        long 하행역_식별자 = 지하철역_식별자(지하철역_생성("가양역"));
+        int 기존_구간거리 = 노선요청정보.거리;
+        int 거리 = 5;
 
+        SectionAcceptanceTestRequest 구간요청정보
+                = new SectionAcceptanceTestRequest(노선응답정보.노선_식별자, 노선응답정보.상행종점역_식별자, 하행역_식별자, 거리);
+        상행역_기준_구간_등록(구간요청정보);
+
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회(노선응답정보.노선_식별자);
+        구간_등록됨(노선_조회_응답);
+        SectionAcceptanceTestAssertions.총_구간_거리_합이_같음(노선_조회_응답, 기존_구간거리);
     }
 
     /**
@@ -89,6 +113,10 @@ class SectionAcceptanceTest extends SubwayAcceptanceTest {
     @Test
     void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없다() {
 
+    }
+
+    private LineAcceptanceTestRequest 노선_요청_정보(String 노선, String 상행종점역, String 하행종점역, int 거리) {
+        return new LineAcceptanceTestRequest(노선, 상행종점역, 하행종점역, 거리);
     }
 
 }

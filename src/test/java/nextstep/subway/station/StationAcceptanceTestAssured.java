@@ -1,13 +1,13 @@
 package nextstep.subway.station;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.groovy.util.Maps;
-
+import io.restassured.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.RestAssuredUtils;
+import org.apache.groovy.util.Maps;
+
+import java.util.List;
+import java.util.Map;
 
 public class StationAcceptanceTestAssured {
 
@@ -17,6 +17,15 @@ public class StationAcceptanceTestAssured {
 
     public static List<String> 지하철역_목록_조회() {
         return RestAssuredUtils.getAll(REQUEST_PATH, NAME);
+    }
+
+    public static long 지하철역_조회(String 지하철역_이름) {
+        Map<String, String> 지하철역_정보 = RestAssuredUtils.getAll(REQUEST_PATH)
+                .body().jsonPath().getObject(".", new TypeRef<List<Map<String, String>>>() {})
+                .stream().filter(body -> body.containsKey(NAME) && body.containsValue(지하철역_이름))
+                .findAny().orElseThrow(IllegalArgumentException::new);
+
+        return Long.parseLong(지하철역_정보.get(ID));
     }
 
     public static ExtractableResponse<Response> 지하철역_생성(String 지하철역_이름) {
@@ -32,7 +41,7 @@ public class StationAcceptanceTestAssured {
         RestAssuredUtils.delete(REQUEST_PATH, 지하철역_식별자);
     }
 
-    public static Long 지하철역_식별자(ExtractableResponse<Response> 지하철역_생성_응답) {
+    public static long 지하철역_식별자(ExtractableResponse<Response> 지하철역_생성_응답) {
         return 지하철역_생성_응답.response().getBody().jsonPath().getLong(ID);
     }
 

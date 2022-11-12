@@ -1,14 +1,13 @@
 package nextstep.subway.line;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import java.util.List;
-
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.apache.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineAcceptanceTestAssertions {
 
@@ -21,7 +20,7 @@ public class LineAcceptanceTestAssertions {
         assertThat(지하철_노선_목록).containsAnyOf(지하철_노선_이름);
     }
 
-    static void 지하철_노선_존재함(String 생성된_지하철_노선_이름, String 요청한_지하철_노선_이름) {
+    public static void 지하철_노선_존재함(String 생성된_지하철_노선_이름, String 요청한_지하철_노선_이름) {
         assertThat(생성된_지하철_노선_이름).isEqualTo(요청한_지하철_노선_이름);
     }
 

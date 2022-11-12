@@ -23,14 +23,19 @@ public class LineAcceptanceTestAssured {
     static final String DOWN_STATION_ID = "downStationId";
     static final String REQUEST_PATH = "/lines";
 
-    public static ExtractableResponse<Response> 지하철_노선_생성(String 노선_이름, String 상행역_이름, String 하행역_이름, int 거리) {
-        Long 상행역_아이디 = 지하철역_식별자(지하철역_생성(상행역_이름));
-        Long 하행역_아이디 = 지하철역_식별자(지하철역_생성(하행역_이름));
-        return 지하철_노선_생성(노선_이름, 상행역_아이디, 하행역_아이디, 거리);
+    public static LineAcceptanceTestResponse 지하철_노선_생성(LineAcceptanceTestRequest 노선요청정보) {
+
+        long 상행역_식별자 = 지하철역_식별자(지하철역_생성(노선요청정보.상행종점역));
+        long 하행역_식별자 = 지하철역_식별자(지하철역_생성(노선요청정보.하행종점역));
+        long 노선_식별자 = 지하철_노선_식별자(지하철_노선_생성(노선요청정보.노선, 상행역_식별자, 하행역_식별자, 노선요청정보.거리));
+        return new LineAcceptanceTestResponse(노선_식별자, 상행역_식별자, 하행역_식별자);
     }
 
+    @Deprecated
     public static ExtractableResponse<Response> 지하철_노선_생성(String 노선_이름, String 상행역_이름, String 하행역_이름) {
-        return 지하철_노선_생성(노선_이름, 상행역_이름, 하행역_이름, DEFAULT_DISTANCE);
+        long 상행역_식별자 = 지하철역_식별자(지하철역_생성(상행역_이름));
+        long 하행역_식별자 = 지하철역_식별자(지하철역_생성(하행역_이름));
+        return 지하철_노선_생성(노선_이름, 상행역_식별자, 하행역_식별자, DEFAULT_DISTANCE);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성(String 노선_이름, long 상행역_아이디, long 하행역_아이디, int 거리) {
@@ -45,6 +50,10 @@ public class LineAcceptanceTestAssured {
 
     static String 지하철_노선_조회(ExtractableResponse<Response> 지하철_노선_생성_응답) {
         return RestAssuredUtils.get(REQUEST_PATH, 지하철_노선_식별자(지하철_노선_생성_응답), NAME);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회(long 식별자_아이디) {
+        return RestAssuredUtils.get(REQUEST_PATH, 식별자_아이디);
     }
 
     static ExtractableResponse<Response> 지하철_노선_수정(ExtractableResponse<Response> 지하철_노선_생성_응답, String 수정할_지하철_노선_이름) {
@@ -69,7 +78,7 @@ public class LineAcceptanceTestAssured {
             DISTANCE, 거리 + "");
     }
 
-    private static long 지하철_노선_식별자(ExtractableResponse<Response> 지하철_노선_생성_응답) {
+    public static long 지하철_노선_식별자(ExtractableResponse<Response> 지하철_노선_생성_응답) {
         return 지하철_노선_생성_응답.jsonPath().getLong(ID);
     }
 }

@@ -5,6 +5,7 @@ import javax.persistence.*;
 @Entity
 public class Line extends BaseEntity {
 
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -24,12 +25,13 @@ public class Line extends BaseEntity {
 	public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
 		this.name = name;
 		this.color = color;
-		addStation(upStation, downStation, distance);
+		addSection(upStation, downStation, distance);
 	}
 
-	public void addStation(Station upStation, Station downStation, Integer distance) {
-		lineStations.addStation(this, upStation, downStation, distance);
+	public void addSection(Station upStation, Station downStation, Integer distance) {
+		lineStations.addSection(this, upStation, downStation, distance);
 	}
+
 
 	public void update(String name, String color) {
 		this.name = name;
