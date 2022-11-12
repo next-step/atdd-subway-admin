@@ -88,6 +88,14 @@ public class Section {
         return downStation;
     }
 
+    public boolean isSameUpStation(Section section) {
+        return upStation.isSameStation(section.upStation);
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return downStation.isSameStation(section.downStation);
+    }
+
     public void updateUpStation(Section section) {
         this.distance = this.distance.substract(section.distance);
         this.upStation = section.downStation;
@@ -96,5 +104,9 @@ public class Section {
     public void updateDownStation(Section section) {
         this.distance = this.distance.substract(section.distance);
         this.downStation = section.upStation;
+    }
+
+    public void updateLineDistance() {
+        this.line.addDistance(this.distance);
     }
 }

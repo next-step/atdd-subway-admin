@@ -91,4 +91,8 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         sections.addSection(section);
     }
+
+    public void addDistance(Distance distance) {
+        this.distance = this.distance.add(distance);
+    }
 }

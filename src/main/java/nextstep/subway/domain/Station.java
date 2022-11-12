@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,5 +28,9 @@ public class Station extends BaseEntity {
 
     public Name getName() {
         return name;
+    }
+
+    public boolean isSameStation(Station station) {
+        return Objects.equals(this.id, station.id);
     }
 }

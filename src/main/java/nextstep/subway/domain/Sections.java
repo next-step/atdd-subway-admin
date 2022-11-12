@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -38,6 +39,7 @@ public class Sections {
         validateDuplicateSection(section);
         validateNotContainAnySection(section);
 
+        updateLineDistance(section);
         updateUpStationSection(section);
         updateDownStationSection(section);
         sections.add(section);
@@ -63,13 +65,22 @@ public class Sections {
         return findStations().contains(station);
     }
 
+    private void updateLineDistance(Section newSection) {
+        Optional<Section> optionalSection = sections.stream()
+                .filter(section -> section.isSameUpStation(newSection) || section.isSameDownStation(newSection))
+                .findFirst();
+        if(!optionalSection.isPresent()) {
+            newSection.updateLineDistance();
+        }
+    }
+
     private void updateUpStationSection(Section newSection) {
-        sections.stream().filter(section -> section.getUpStation().equals(newSection.getUpStation()))
+        sections.stream().filter(section -> section.isSameUpStation(newSection))
                 .findFirst().ifPresent(section -> section.updateUpStation(newSection));
     }
 
     private void updateDownStationSection(Section newSection) {
-        sections.stream().filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+        sections.stream().filter(section -> section.isSameDownStation(newSection))
                 .findFirst().ifPresent(section -> section.updateDownStation(newSection));
     }
 }
