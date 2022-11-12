@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -52,7 +51,7 @@ public class Sections {
     }
 
     private void validateNotContainAnySection(Section section) {
-        if(!isContainStation(section.getUpStation()) && !isContainStation(section.getDownStation())) {
+        if(isNotContainAnyStation(section)) {
             throw new IllegalArgumentException(ErrorCode.구간의_상행역과_하행역이_모두_노선에_포함되지_않음.getErrorMessage());
         }
     }
@@ -61,17 +60,18 @@ public class Sections {
         return findStations().containsAll(section.stations());
     }
 
-    private boolean isContainStation(Station station) {
-        return findStations().contains(station);
+    private boolean isNotContainAnyStation(Section section) {
+        return findStations().stream().noneMatch(station -> section.stations().contains(station));
     }
 
-    private void updateLineDistance(Section newSection) {
-        Optional<Section> optionalSection = sections.stream()
-                .filter(section -> section.isSameUpStation(newSection) || section.isSameDownStation(newSection))
-                .findFirst();
-        if(!optionalSection.isPresent()) {
-            newSection.updateLineDistance();
+    private void updateLineDistance(Section section) {
+        if(isOutsideSectionInLine(section)) {
+            section.updateLineDistance();
         }
+    }
+
+    private boolean isOutsideSectionInLine(Section newSection) {
+        return sections.stream().noneMatch(section -> section.isSameUpStation(newSection) || section.isSameDownStation(newSection));
     }
 
     private void updateUpStationSection(Section newSection) {

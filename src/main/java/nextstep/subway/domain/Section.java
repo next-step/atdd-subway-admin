@@ -80,14 +80,6 @@ public class Section {
         return stations;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public boolean isSameUpStation(Section section) {
         return upStation.isSameStation(section.upStation);
     }
