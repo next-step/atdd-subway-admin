@@ -25,7 +25,6 @@ public class LineService {
     }
 
     public LineResponse create(LineRequest request) {
-        // TODO: 라인 생성
         Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new IllegalArgumentException());
         Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new IllegalArgumentException());
         Line line = new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
@@ -43,13 +42,24 @@ public class LineService {
 
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철노선 입니다."));
+        Line line = findById(id);
         return LineResponse.of(line);
     }
 
-    public LineResponse updateLine(Long id, LineRequest request) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+    @Transactional
+    public void updateLine(Long id, LineRequest request) {
+        Line line = findById(id);
         line.update(request.toLine());
-        return LineResponse.of(line);
     }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        Line line = findById(id);
+        lineRepository.delete(line);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+    }
+
 }

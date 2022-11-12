@@ -120,9 +120,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(수정된_지하철_노선_이름).isEqualTo("지하철노선수정");
     }
 
+    /**
+     *  Given 지하철 노선을 생성하고
+     *  When 생성한 지하철 노선을 삭제하면
+     *  Then 해당 지하철 노선 정보는 삭제된다
+     */
     @DisplayName("지하철노선 삭제")
     @Test
     void delete_line() {
+        // given
+        ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
+        ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청(
+                "1번지하철노선", "red", 지하철역_아이디_조회(강남역), 지하철역_아이디_조회(잠실역), 10
+        );
+
+        // when
+        Long 지하철역_아이디 = 식별_아이디_조회(지하철_노선_생성_응답);
+        ExtractableResponse<Response> 지하철_노선_삭제_응답 = RestAssured.given().log().all()
+                .pathParam("id", 지하철역_아이디)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/{id}")
+                .then().log().all()
+                .extract();
+
+        assertThat(지하철_노선_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
     }
 
