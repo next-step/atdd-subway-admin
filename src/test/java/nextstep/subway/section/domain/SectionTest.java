@@ -1,6 +1,5 @@
 package nextstep.subway.section.domain;
 
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -76,22 +75,6 @@ class SectionTest {
     void createSection() {
         Section section = Section.of(upStation, downStation, distance);
         assertThat(section).isNotNull();
-    }
-
-    @DisplayName("지하철 노선에 지하철 구간 추가")
-    @Test
-    void addTo() {
-        Line line = Line.of("신분당선", "red", Section.of(upStation, downStation, distance));
-
-        Section 신사역_강남역_구간 = Section.of(upStation, Station.from("강남역"), 5);
-        신사역_강남역_구간.addTo(line);
-
-        assertThat(line.getStationsInOrder())
-                .containsExactly(
-                        Station.from("신사역"),
-                        Station.from("강남역"),
-                        Station.from("광교역")
-                );
     }
 
     @DisplayName("지하철 구간 수정")

@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import com.google.common.collect.Lists;
+import nextstep.subway.common.message.ExceptionMessage;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.CascadeType;
@@ -25,7 +26,7 @@ public class Sections {
 
     public void add(Section section) {
         if (sections.contains(section)) {
-            return;
+            throw new IllegalArgumentException(ExceptionMessage.ALREADY_ADDED_SECTION);
         }
 
         sections.stream()

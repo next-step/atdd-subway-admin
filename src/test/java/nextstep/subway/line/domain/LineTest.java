@@ -59,6 +59,22 @@ class LineTest {
         );
     }
 
+    @DisplayName("지하철 노선에 지하철 구간 추가")
+    @Test
+    void addTo() {
+        Line line = Line.of("신분당선", "red", Section.of(upStation, downStation, distance));
+
+        Section 신사역_강남역_구간 = Section.of(upStation, Station.from("강남역"), 5);
+        line.addSection(신사역_강남역_구간);
+
+        assertThat(line.getStationsInOrder())
+                .containsExactly(
+                        Station.from("신사역"),
+                        Station.from("강남역"),
+                        Station.from("광교역")
+                );
+    }
+
     @DisplayName("지하철 노선 동등성 테스트")
     @Test
     void equals1() {

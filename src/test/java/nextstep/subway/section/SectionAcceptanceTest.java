@@ -135,4 +135,18 @@ class SectionAcceptanceTest {
 
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * When 지하철 노선(B역 - C역)에 지하철 노선(B역 - C역)을 등록한다.
+     * Then 지하철 구간 등록에 실패한다.
+     */
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+    @Test
+    void duplicatedUpStationAndDownStation() {
+        SectionRequest 중복_구간 = SectionRequest.of(신사역.getId(), 광교역.getId(), 10);
+
+        ExtractableResponse<Response> response = SectionAcceptanceMethods.지하철_노선에_지하철역_등록(this.신분당선.getId(), 중복_구간);
+
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

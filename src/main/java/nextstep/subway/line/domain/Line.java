@@ -72,8 +72,8 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        this.sections.add(section);
         section.addTo(this);
+        this.sections.add(section);
     }
 
     public List<Station> getStationsInOrder() {
