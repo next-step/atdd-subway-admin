@@ -9,9 +9,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import nextstep.subway.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -22,11 +24,16 @@ public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
+            databaseCleanup.afterPropertiesSet();
         }
+        databaseCleanup.cleanUp();
     }
 
     /**
@@ -98,7 +105,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // when
-        지하철역_삭제(response.body().jsonPath().get("id"));
+        지하철역_삭제(response.body().jsonPath().getLong("id"));
 
         // then
         assertThat(지하철역_목록_조회().jsonPath().getList("")).isEmpty();
