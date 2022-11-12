@@ -116,7 +116,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
      * Then 노선에 새로운 구간이 생성이 안된다
      */
     @DisplayName("기존 역 사이 거리보다 크거나 같은 거리의 역을 노선에 등록한다.")
-    @ParameterizedTest
+    @ParameterizedTest(name = "기존 역 사이 거리(10)보다 {0}은 크거나 같으므로 실패한다.")
     @ValueSource(longs = {10L, 12L, 25L})
     void addSectionWhichHasEqualOrLongerDistance(Long currentDistance) {
         // when
@@ -160,7 +160,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     void addSectionNotInLine() {
         // when
         Long currentDistance = 7L;
-        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 신사역.getId(), 양재시민의숲.getId(), lineDistance);
+        ExtractableResponse<Response> response = 지하철_노선에_지하철역_등록_요청(신분당선.getId(), 신사역.getId(), 양재시민의숲.getId(), currentDistance);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -178,7 +178,6 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
                 .pathParam("id", lineId)
                 .when().post("/lines/{id}/sections")
                 .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
                 .extract();
     }
 }

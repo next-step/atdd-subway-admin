@@ -26,8 +26,16 @@ public class Distance {
         if(distance == null) {
             throw new IllegalArgumentException(ErrorCode.노선거리는_비어있을_수_없음.getErrorMessage());
         }
-        if(distance < 0) {
-            throw new IllegalArgumentException(ErrorCode.노선거리는_음수일_수_없음.getErrorMessage());
+        if(distance <= 0) {
+            throw new IllegalArgumentException(ErrorCode.노선거리는_0보다_작거나_같을_수_없음.getErrorMessage());
         }
+    }
+
+    public Long value() {
+        return distance;
+    }
+
+    public Distance substract(Distance distance) {
+        return new Distance(this.distance - distance.distance);
     }
 }

@@ -1,14 +1,12 @@
 package nextstep.subway.domain;
 
-import javax.persistence.Column;
+import java.util.Collections;
+import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import nextstep.subway.constant.ErrorCode;
 import nextstep.subway.utils.StringUtils;
 
@@ -22,12 +20,8 @@ public class Line extends BaseEntity {
     private Name name;
     @Embedded
     private Color color;
-    @ManyToOne
-    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_line_to_upstation"), nullable = false)
-    private Station upStation;
-    @ManyToOne
-    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_line_to_downstation"), nullable = false)
-    private Station downStation;
+    @Embedded
+    private Sections sections;
     @Embedded
     private Distance distance;
 
@@ -38,6 +32,7 @@ public class Line extends BaseEntity {
         validateUpStation(upStation);
         validateDownStation(downStation);
 
+        Section section = Section.of(upStation, downStation, this, distance);
         this.name = Name.from(name);
         this.color = Color.from(color);
         this.sections = Sections.from(Collections.singletonList(section));
@@ -85,11 +80,15 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Distance getDistance() {
+        return distance;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public List<Station> findStations() {
+        return sections.findStations();
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 }

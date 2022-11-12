@@ -29,7 +29,7 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(LineResponse::of)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
@@ -41,11 +41,11 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.하행종착역은_비어있을_수_없음.getErrorMessage()));
 
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     public LineResponse findLineById(Long id) {
-        return LineResponse.of(findById(id));
+        return LineResponse.from(findById(id));
     }
 
     @Transactional
