@@ -53,4 +53,11 @@ public class LineAcceptanceTestFixture {
                 .then().statusCode(HttpStatus.OK.value()).log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> deleteLine(Long id) {
+        return RestAssured.given().log().all()
+                .when().delete(LINE_API_MAIN_PATH + "/{id}", id)
+                .then().statusCode(HttpStatus.NO_CONTENT.value()).log().all()
+                .extract();
+    }
 }

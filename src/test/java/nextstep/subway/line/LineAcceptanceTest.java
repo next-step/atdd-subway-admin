@@ -120,4 +120,26 @@ public class LineAcceptanceTest {
         assertThat(JsonPathExtractor.getName(findLineResponse)).isEqualTo("다른분당선");
         assertThat(findLineResponse.jsonPath().getString("color")).isEqualTo("bg-red-700");
     }
+
+    /**
+     *  Given 지하철 노선을 생성하고
+     *  When 생성한 지하철 노선을 삭제하면
+     *  Then 해당 지하철 노선 정보는 삭제된다.
+     */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLineTest() {
+        // given
+        long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
+        long downStationId = JsonPathExtractor.getId(createStation("새로운지하철역"));
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
+
+        // when
+        Long lineId = JsonPathExtractor.getId(createResponse);
+        LineAcceptanceTestFixture.deleteLine(lineId);
+
+        // then
+        ExtractableResponse<Response> findAllResponse = findAllLines();
+        assertThat(JsonPathExtractor.getTotalJsonArraySize(findAllResponse)).isEqualTo(0);
+    }
 }
