@@ -26,11 +26,11 @@ public class StationAcceptanceTest {
     int port;
 
     private static ExtractableResponse<Response> 지하철역_생성_요청(final String name) {
-        Map<String, String> params1 = new HashMap<>();
-        params1.put("name", name);
+        Map<String, String> 요청_본문 = new HashMap<>();
+        요청_본문.put("name", name);
 
         return RestAssured.given().log().all()
-                .body(params1)
+                .body(요청_본문)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
