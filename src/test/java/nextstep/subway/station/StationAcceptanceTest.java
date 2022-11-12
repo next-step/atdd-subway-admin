@@ -55,11 +55,7 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = retrieveStations().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -117,15 +113,11 @@ public class StationAcceptanceTest {
         long stationId = createStationResponse.jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .when().delete("/stations/{id}", stationId)
-                .then().log().all()
-                .extract();
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
-        ExtractableResponse<Response> retrieveResponse = retrieveStations();
+        ExtractableResponse<Response> deleteResponse = deleteStation(stationId);
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
+        ExtractableResponse<Response> retrieveResponse = retrieveStations();
         JsonPath jsonPath = retrieveResponse.body().jsonPath();
         assertAll(
                 () -> assertThat(retrieveResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -154,6 +146,13 @@ public class StationAcceptanceTest {
     private ExtractableResponse<Response> retrieveStations() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStation(long id) {
+        return RestAssured.given().log().all()
+                .when().delete("/stations/{id}", id)
                 .then().log().all()
                 .extract();
     }
