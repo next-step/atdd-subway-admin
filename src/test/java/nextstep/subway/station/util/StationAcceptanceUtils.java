@@ -1,5 +1,6 @@
 package nextstep.subway.station.util;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import io.restassured.response.ExtractableResponse;
@@ -14,8 +15,9 @@ public class StationAcceptanceUtils {
 	}
 
 	public static ExtractableResponse<Response> 지하철역_생성_요청(final String name) {
-		Map<String, String> param = RequestParamUtils.generateRequestParam("name", name);
-		return RestAssuredUtils.post(STATION_URL, param).extract();
+		Map<String, String> requestParam = new HashMap<>();
+		requestParam.put("name", name);
+		return RestAssuredUtils.post(STATION_URL, requestParam).extract();
 	}
 
 	 public static ExtractableResponse<Response> 지하철역_목록_조회_요청() {

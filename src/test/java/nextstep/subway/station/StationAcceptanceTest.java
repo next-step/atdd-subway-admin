@@ -1,6 +1,5 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.station.util.AssertionsUtils.*;
 import static nextstep.subway.station.util.StationAcceptanceUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,7 +18,7 @@ import io.restassured.response.Response;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+class StationAcceptanceTest {
 	@LocalServerPort
 	int port;
 
@@ -42,12 +41,12 @@ public class StationAcceptanceTest {
 		ExtractableResponse<Response> response = 지하철역_생성_요청("강남역");
 
 		// then
-		assertStatusCode(response, HttpStatus.CREATED);
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
 		// then
 		ExtractableResponse<Response> allStationsResponse = 지하철역_목록_조회_요청();
 		assertAll(
-			() -> assertStatusCode(allStationsResponse, HttpStatus.OK),
+			() -> assertThat(allStationsResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(allStationsResponse.jsonPath().getList("name", String.class))
 				.containsAnyOf("강남역")
 		);
@@ -69,8 +68,8 @@ public class StationAcceptanceTest {
 
 		// then
 		assertAll(
-			() -> assertStatusCode(response, HttpStatus.CREATED),
-			() -> assertStatusCode(duplicateCreationResponse, HttpStatus.BAD_REQUEST)
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+			() -> assertThat(duplicateCreationResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
 		);
 	}
 
@@ -83,11 +82,8 @@ public class StationAcceptanceTest {
 	@Test
 	void getStations() {
 		// given
-		ExtractableResponse<Response> firstStationResponse = 지하철역_생성_요청("삼성역");
-		assertStatusCode(firstStationResponse, HttpStatus.CREATED);
-
-		ExtractableResponse<Response> secondStationResponse = 지하철역_생성_요청("역삼역");
-		assertStatusCode(secondStationResponse, HttpStatus.CREATED);
+		지하철역_생성_요청("삼성역");
+		지하철역_생성_요청("역삼역");
 
 		// when
 		ExtractableResponse<Response> inquiryStationsResponse = 지하철역_목록_조회_요청();
@@ -95,7 +91,7 @@ public class StationAcceptanceTest {
 		// then
 		JsonPath jsonPath = inquiryStationsResponse.jsonPath();
 		assertAll(
-			() -> assertStatusCode(inquiryStationsResponse, HttpStatus.OK),
+			() -> assertThat(inquiryStationsResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() -> assertThat(jsonPath.getList("name", String.class)).containsExactly("삼성역", "역삼역"),
 			() -> assertThat(jsonPath.getList("id", Long.class)).hasSize(2)
 		);
@@ -111,13 +107,12 @@ public class StationAcceptanceTest {
 	void deleteStation() {
 		// given
 		ExtractableResponse<Response> firstStationResponse = 지하철역_생성_요청("신논현역");
-		assertStatusCode(firstStationResponse, HttpStatus.CREATED);
 
 		// when
 		String id = firstStationResponse.jsonPath().getString("id");
 		ExtractableResponse<Response> deleteStationResponse = 지하철역_삭제_요청(id);
 
 		// then
-		assertStatusCode(deleteStationResponse, HttpStatus.NO_CONTENT);
+		assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 	}
 }
