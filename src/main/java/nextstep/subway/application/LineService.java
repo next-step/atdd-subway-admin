@@ -45,20 +45,21 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.해당하는_노선_없음.getErrorMessage())));
+        return LineResponse.of(findById(id));
     }
 
     @Transactional
     public void updateLine(Long id, UpdateLineRequest updateLineRequest) {
-        Line findLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.해당하는_노선_없음.getErrorMessage()));
-        updateLineRequest.updateLine(findLine);
-        lineRepository.save(findLine);
+        updateLineRequest.updateLine(findById(id));
     }
 
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.해당하는_노선_없음.getErrorMessage()));
     }
 }
