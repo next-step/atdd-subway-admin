@@ -1,6 +1,6 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.station.StationAcceptanceTest.givenCreateStation;
+import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -29,10 +29,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void createLine() {
         // When
-        ExtractableResponse<Response> lineResponse = 지하철노선_생성_요청("1호선", "bg-red-600","강남역", "역삼역", 10);
+        ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성_요청("1호선", "bg-red-600","강남역", "역삼역", 10);
 
         // Then
-        ResponseAssertTest.생성_확인(lineResponse);
+        ResponseAssertTest.생성_확인(지하철노선_생성_응답);
 
         // Then
         ExtractableResponse<Response> linesResponse = 지하철노선_목록조회_요청();
@@ -52,10 +52,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         지하철노선_생성_요청("2호선", "bg-red-600","신촌역", "이대역",  2);
 
         // When
-        ExtractableResponse<Response> linesResponse = 지하철노선_목록조회_요청();
+        ExtractableResponse<Response> 지하철노선_목록_응답 = 지하철노선_목록조회_요청();
 
         // When
-        노선_포함_확인(linesResponse, new String[]{"1호선", "2호선"});
+        노선_포함_확인(지하철노선_목록_응답, new String[]{"1호선", "2호선"});
     }
 
     /**
@@ -71,10 +71,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ResponseAssertTest.생성_확인(createResponse);
 
         // When
-        ExtractableResponse<Response> lineResponse = 지하철노선_조회_요청(getResponseId(createResponse));
+        ExtractableResponse<Response> 지하철노선_조회_응답 = 지하철노선_조회_요청(객체_응답_ID(createResponse));
 
         // Then
-        노선_정보_확인(lineResponse, getResponseId(createResponse));
+        노선_정보_확인(지하철노선_조회_응답, 객체_응답_ID(createResponse));
     }
 
     /**
@@ -86,15 +86,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void updateLine() {
         // Given
-        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("1호선", "bg-red-600", "강남역", "역삼역", 2);
-        ResponseAssertTest.생성_확인(createResponse);
+        ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성_요청("1호선", "bg-red-600", "강남역", "역삼역", 2);
+        ResponseAssertTest.생성_확인(지하철노선_생성_응답);
 
         // When
-        Long id = getResponseId(createResponse);
-        ExtractableResponse<Response> updateResponse = 지하철노선_수정_요청(id, "다른 분당선", "bg-blue-600");
+        Long id = 객체_응답_ID(지하철노선_생성_응답);
+        ExtractableResponse<Response> 지하철노선_수정_응답 = 지하철노선_수정_요청(id, "다른 분당선", "bg-blue-600");
 
         // Then
-        지하철노선_수정_확인(id, updateResponse, "다른 분당선", "bg-blue-600");
+        지하철노선_수정_확인(id, 지하철노선_수정_응답, "다른 분당선", "bg-blue-600");
     }
 
     /**
@@ -106,14 +106,14 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void deleteLine() {
         // Given
-        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("1호선", "bg-red-600", "강남역", "역삼역", 2);
-        ResponseAssertTest.생성_확인(createResponse);
+        ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성_요청("1호선", "bg-red-600", "강남역", "역삼역", 2);
+        ResponseAssertTest.생성_확인(지하철노선_생성_응답);
 
         // When
-        ExtractableResponse<Response> deleteResponse = 지하철노선_삭제_요청(getResponseId(createResponse));
+        ExtractableResponse<Response> 지하철노선_삭제_응답 = 지하철노선_삭제_요청(객체_응답_ID(지하철노선_생성_응답));
 
         // Then
-        지하철노선_삭제_확인(getResponseId(createResponse), deleteResponse);
+        지하철노선_삭제_확인(객체_응답_ID(지하철노선_생성_응답), 지하철노선_삭제_응답);
     }
 
     private void 지하철노선_삭제_확인(Long id, ExtractableResponse<Response> response) {
@@ -123,8 +123,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철노선_생성_요청(String lineName, String color, String upStationName, String downStationName, int distance) {
-        Long upStationId = getResponseId(givenCreateStation(upStationName));
-        Long downStationId = getResponseId(givenCreateStation(downStationName));
+        Long upStationId = 객체_응답_ID(지하철역_생성_요청(upStationName));
+        Long downStationId = 객체_응답_ID(지하철역_생성_요청(downStationName));
 
         HashMap<String, Object> lineMap = new HashMap<>();
         lineMap.put("name", lineName);
