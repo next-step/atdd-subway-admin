@@ -14,7 +14,8 @@ import nextstep.subway.utils.StringUtils;
 @Entity
 public class Line extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false, unique = true)
     private String name;
@@ -22,10 +23,10 @@ public class Line extends BaseEntity {
     private String color;
     @ManyToOne
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_line_to_upstation"), nullable = false)
-    private Station upStation;      // 상행종점역
+    private Station upStation;
     @ManyToOne
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_line_to_downstation"), nullable = false)
-    private Station downStation;    // 하행종점역
+    private Station downStation;
     @Column(nullable = false)
     private Long distance;
 
