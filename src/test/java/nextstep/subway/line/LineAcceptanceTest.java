@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.ResponseAssertTest;
-import nextstep.subway.domain.PathConstant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -137,7 +136,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(lineMap)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(PathConstant.LINE_ROOT_PATH)
+                .when().post("/lines")
                 .then().log().all()
                 .extract();
     }
@@ -145,7 +144,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     private ExtractableResponse<Response> 지하철노선_목록조회_요청() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(PathConstant.LINE_ROOT_PATH)
+                .when().get("/lines")
                 .then().log().all()
                 .extract();
     }
@@ -153,7 +152,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     private ExtractableResponse<Response> 지하철노선_조회_요청(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(PathConstant.LINE_ROOT_PATH + PathConstant.PATH_SEPARATOR + lineId)
+                .when().get("/lines/" + lineId)
                 .then().log().all()
                 .extract();
     }
@@ -182,7 +181,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
-                .when().patch(PathConstant.LINE_ROOT_PATH + PathConstant.PATH_SEPARATOR + lindId)
+                .when().patch("/lines/" + lindId)
                 .then().log().all()
                 .extract();
     }
@@ -201,7 +200,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     private ExtractableResponse<Response> 지하철노선_삭제_요청(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(PathConstant.LINE_ROOT_PATH + PathConstant.PATH_SEPARATOR + id)
+                .when().delete("/lines/" + id)
                 .then().log().all()
                 .extract();
     }

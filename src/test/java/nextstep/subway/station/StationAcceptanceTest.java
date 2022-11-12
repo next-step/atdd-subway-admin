@@ -5,7 +5,6 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseAcceptanceTest;
-import nextstep.subway.domain.PathConstant;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -103,7 +102,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(createParam(name))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(PathConstant.STATION_ROOT_PATH)
+                .when().post("/stations")
                 .then().log().all()
                 .extract();
     }
@@ -111,21 +110,21 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
     private static List<String> thenGetStation(String name) {
         return RestAssured.given().log().all()
                 .body(createParam(name))
-                .when().get(PathConstant.STATION_ROOT_PATH)
+                .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
     }
 
     private static List<String> thenGetStations() {
         return RestAssured.given().log().all()
-                .when().get(PathConstant.STATION_ROOT_PATH)
+                .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
     }
 
     private void whenDeleteStation(long id) {
         RestAssured.given().log().all()
-                .when().delete(PathConstant.STATION_ROOT_PATH + PathConstant.PATH_SEPARATOR + id)
+                .when().delete("/stations/" + id)
                 .then().log().all();
     }
 

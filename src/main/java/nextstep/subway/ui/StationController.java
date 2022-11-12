@@ -3,7 +3,6 @@ package nextstep.subway.ui;
 import java.net.URI;
 import java.util.List;
 import nextstep.subway.application.StationService;
-import nextstep.subway.domain.PathConstant;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping(PathConstant.STATION_ROOT_PATH)
+@RequestMapping("/stations")
 public class StationController {
     private StationService stationService;
 
@@ -29,7 +28,7 @@ public class StationController {
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
         StationResponse station = stationService.saveStation(stationRequest);
-        return ResponseEntity.created(URI.create(PathConstant.STATION_ROOT_PATH + PathConstant.PATH_SEPARATOR + station.getId())).body(station);
+        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
     }
 
     @GetMapping
