@@ -3,10 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -122,7 +119,7 @@ public class Line extends BaseEntity {
     private boolean isInsertable(final Section section, final Section newSection) {
         Set<Station> copy = new HashSet<>(section.getStations());
         copy.addAll(newSection.getStations());
-        return copy.size() == 3;
+        return copy.size() == 3 && !Objects.equals(newSection.getDownStation(), newSection.getUpStation());
     }
 
     public List<StationResponse> stationsToResponse() {
