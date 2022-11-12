@@ -31,7 +31,7 @@ public class StationAcceptanceFixture {
                 .extract().jsonPath().getList("name", String.class);
     }
 
-    public static void 지하철_역을_삭제한다(String 지하철역_번호) {
+    public static void 지하철_역을_삭제한다(Long 지하철역_번호) {
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/stations/" + 지하철역_번호)
@@ -39,8 +39,8 @@ public class StationAcceptanceFixture {
                 .extract();
     }
 
-    public static String 지하철_생성_결과에서_지하철역_번호를_조회한다(ExtractableResponse<Response> 지하철_생성_결과) {
+    public static Long 지하철_생성_결과에서_지하철역_번호를_조회한다(ExtractableResponse<Response> 지하철_생성_결과) {
         return 지하철_생성_결과.jsonPath()
-                .getString("id");
+                .getLong("id");
     }
 }

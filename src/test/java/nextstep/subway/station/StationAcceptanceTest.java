@@ -1,9 +1,15 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.station.StationAcceptanceFixture.지하철_생성_결과에서_지하철역_번호를_조회한다;
+import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_삭제한다;
+import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_생성한다;
+import static nextstep.subway.station.StationAcceptanceFixture.지하철역_목록을_조회한다;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.assertj.core.api.AbstractIntegerAssert;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -12,17 +18,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static nextstep.subway.station.StationAcceptanceFixture.지하철_생성_결과에서_지하철역_번호를_조회한다;
-import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_삭제한다;
-import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_생성한다;
-import static nextstep.subway.station.StationAcceptanceFixture.지하철역_목록을_조회한다;
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -108,7 +103,7 @@ public class StationAcceptanceTest {
     void deleteStation(String 지하철_역명) {
         // given
         ExtractableResponse<Response> 지하철_생성_결과 = 지하철_역을_생성한다(지하철_역명);
-        String 지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(지하철_생성_결과);
+        Long 지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(지하철_생성_결과);
 
         // when
         지하철_역을_삭제한다(지하철역_번호);
