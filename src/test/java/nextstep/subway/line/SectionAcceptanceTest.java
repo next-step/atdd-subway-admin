@@ -12,8 +12,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceStep.등록된_지하철노선;
-import static nextstep.subway.line.SectionAcceptanceStep.지하철구간_생성_응답상태_201_검증;
-import static nextstep.subway.line.SectionAcceptanceStep.지하철노선에_구간_등록_요청;
+import static nextstep.subway.line.LineAcceptanceStep.지하철노선_목록_조회_응답상태_200_검증;
+import static nextstep.subway.line.SectionAcceptanceStep.*;
 import static nextstep.subway.station.StationAcceptanceStep.등록된_지하철역;
 
 @DisplayName("지하철 구간 관련 기능")
@@ -50,6 +50,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철구간_생성_응답상태_201_검증(response);
+        지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우 응답상태 201을 반환한다.")
@@ -60,5 +61,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         지하철구간_생성_응답상태_201_검증(response);
+        지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
+    }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우 응답상태 201을 반환한다.")
+    @Test
+    void createSectionToDeAscentEndpoint() {
+        // when
+        ExtractableResponse<Response> response = 지하철노선에_구간_등록_요청(lineId, registeredStationId2, stationId1, 3);
+
+        // then
+        지하철구간_생성_응답상태_201_검증(response);
+        지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
     }
 }

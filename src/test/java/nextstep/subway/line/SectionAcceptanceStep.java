@@ -36,6 +36,19 @@ public class SectionAcceptanceStep extends AcceptanceTest {
           //@formatter:on
     }
 
+    public static ExtractableResponse<Response> 지하철노선_구간_목록_조회_요청(Long lineId) {
+
+        //@formatter:off
+        return RestAssured.given()
+                                .log().all()
+                          .when()
+                                .get("/lines/" + lineId + "/sections")
+                          .then()
+                                .log().all()
+                          .extract();
+        //@formatter:on
+    }
+
     public static void 지하철구간_생성_응답상태_201_검증(ExtractableResponse<Response> response) {
         응답상태_검증(response, HttpStatus.CREATED);
         assertThat(response.header("Location")).isNotBlank();
