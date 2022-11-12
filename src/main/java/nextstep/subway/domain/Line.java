@@ -1,11 +1,13 @@
 package nextstep.subway.domain;
 
-import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import nextstep.subway.dto.LineResponse;
 
 @Entity
@@ -17,10 +19,12 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @Column(name = "up_station_id")
-    private Long upStationId;
-    @Column(name = "down_station_id")
-    private Long downStationId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
     @Column
     private int distance;
 
@@ -32,11 +36,11 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
@@ -49,30 +53,11 @@ public class Line extends BaseEntity {
         return new LineResponse(id, name, color);
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        Line line = (Line) o;
-        return distance == line.distance && Objects.equals(name, line.name) && Objects.equals(color,
-                line.color) && Objects.equals(upStationId, line.upStationId) && Objects.equals(
-                downStationId, line.downStationId);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(name, color, upStationId, downStationId, distance);
+    public Station getDownStation() {
+        return downStation;
     }
 }

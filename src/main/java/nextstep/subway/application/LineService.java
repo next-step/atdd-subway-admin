@@ -28,7 +28,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
-        Line saveLine = lineRepository.save(lineRequest.toLine());
+        Line saveLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(saveLine, StationResponse.of(upStation), StationResponse.of(downStation));
     }
 
@@ -36,16 +36,16 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
                 .map(line -> LineResponse.of(line,
-                        StationResponse.of(stationService.findById(line.getUpStationId())),
-                        StationResponse.of(stationService.findById(line.getDownStationId()))))
+                        StationResponse.of(line.getUpStation()),
+                        StationResponse.of(line.getDownStation())))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineById(Long id) {
         Optional<Line> findLine = lineRepository.findById(id);
         return findLine.map(line -> LineResponse.of(line,
-                        StationResponse.of(stationService.findById(line.getUpStationId())),
-                        StationResponse.of(stationService.findById(line.getDownStationId()))))
+                        StationResponse.of(line.getUpStation()),
+                        StationResponse.of(line.getDownStation())))
                 .orElseThrow(IllegalArgumentException::new);
     }
 
