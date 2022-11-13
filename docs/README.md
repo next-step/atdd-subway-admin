@@ -20,5 +20,5 @@
 * [ ] LineResponse 에 역의 이름이 포함되도록 수정
 * [x] @RequestMapping 을 활용
 * [ ] TestFixtures 를 기능별로 분리하여 의미를 좀 더 명확하게 드러내도록 수정
-* [ ] StationAcceptanceTest 의 setUp() 공통부분 추출
+* [x] AcceptanceTest 의 setUp() 공통부분 추출
 * [ ] service, domain 의 단위테스트 추가

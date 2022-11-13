@@ -5,9 +5,29 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.DatabaseCleanup;
+import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class TestFixtures {
+
+    @LocalServerPort
+    int port;
+
+    @Autowired
+    DatabaseCleanup databaseCleanup;
+
+    @BeforeEach
+    void setUp() {
+        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
+            RestAssured.port = port;
+        }
+        databaseCleanup.execute();
+    }
 
     protected ExtractableResponse<Response> 생성(Map<String, String> paramMap, String path) {
         return RestAssured.given().log().all()
