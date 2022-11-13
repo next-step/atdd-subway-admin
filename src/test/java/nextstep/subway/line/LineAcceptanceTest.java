@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceRestAssured.*;
-import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역_생성;
 import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역들_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -106,5 +105,26 @@ public class LineAcceptanceTest {
         JsonPath jsonPath = response.jsonPath();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(jsonPath.getLong("id")).isEqualTo(id);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @Test
+    @DisplayName("지하철 노선 수정")
+    void updateLine() {
+        // given
+        지하철역들_생성("잠실역", "문정역");
+        Long id = 지하철노선_생성("8호선", "분홍색", 1L, 2L, 10)
+                .jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철노선_수정(1L, "수인분당선", "노란색");
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
     }
 }

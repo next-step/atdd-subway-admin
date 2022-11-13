@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,8 +31,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = findByIdStation(lineRequest.getUpStationId());
-        Station downStation = findByIdStation(lineRequest.getDownStationId());
+        Station upStation = getStationById(lineRequest.getUpStationId());
+        Station downStation = getStationById(lineRequest.getDownStationId());
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.from(persistLine);
     }
@@ -43,14 +44,23 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLineById(Long id) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
-        return LineResponse.from(persistLine);
+    @Transactional
+    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+        Line persistLine = getLineById(id);
+        persistLine.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
-    private Station findByIdStation(Long id) {
+    public LineResponse findLineById(Long id) {
+        return LineResponse.from(getLineById(id));
+    }
+
+    private Station getStationById(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("지하철역이 존재하지 않습니다."));
+    }
+
+    private Line getLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
     }
 }

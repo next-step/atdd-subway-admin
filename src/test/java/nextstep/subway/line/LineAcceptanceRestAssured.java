@@ -42,5 +42,18 @@ public class LineAcceptanceRestAssured {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철노선_수정(Long id, String name, String color) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("name", name);
+        body.put("color", color);
+
+        return RestAssured
+                .given().log().all()
+                .body(body)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+    }
 
 }
