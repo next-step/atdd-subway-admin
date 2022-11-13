@@ -30,6 +30,13 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
+	private Line getLine(LineRequest lineRequest) {
+		Station upStation = getStation(lineRequest.getUpStationId());
+		Station downStation = getStation(lineRequest.getDownStationId());
+
+		return lineRequest.toLine(upStation, downStation);
+	}
+
 	public void updateLine(Long lineId, LineRequest lineRequest) {
 		Line line = getLine(lineId);
 		line.update(lineRequest.getName(), lineRequest.getColor());
@@ -37,6 +44,11 @@ public class LineService {
 
 	public void removeLine(Long id) {
 		lineRepository.deleteById(id);
+	}
+
+	private Line getLine(Long lineId) {
+		return lineRepository.findById(lineId)
+				.orElseThrow(() -> new LineNotFoundException(lineId));
 	}
 
 	public LineResponse addSections(long lineId, LineStationRequest request) {
@@ -47,18 +59,6 @@ public class LineService {
 		line.addSection(upStation, downStation, request.getDistance());
 
 		return LineResponse.of(line);
-	}
-
-	private Line getLine(Long lineId) {
-		return lineRepository.findById(lineId)
-			.orElseThrow(() -> new LineNotFoundException(lineId));
-	}
-
-	private Line getLine(LineRequest lineRequest) {
-		Station upStation = getStation(lineRequest.getUpStationId());
-		Station downStation = getStation(lineRequest.getDownStationId());
-
-		return lineRequest.toLine(upStation, downStation);
 	}
 
 	private Station getStation(Long stationId) {
