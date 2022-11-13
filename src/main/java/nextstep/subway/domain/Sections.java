@@ -3,9 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,14 +27,37 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        validateHasStations(newSection);
+        if (sections.isEmpty()) {
+            sections.add(newSection);
+            return;
+        }
+
+        validate(newSection);
         sections.forEach(section -> section.update(newSection));
         sections.add(newSection);
     }
 
-    private void validateHasStations(Section newSection) {
-        if (new HashSet<>(getStations()).containsAll(newSection.findStations())) {
+    private void validate(Section section) {
+        validateHasBothStations(section);
+        validateHasNotBothStations(section);
+    }
+
+    private void validateHasBothStations(Section section) {
+        if (getStations().containsAll(section.findStations())) {
             throw new IllegalArgumentException("추가하려는 역이 모두 존재합니다.");
         }
+    }
+
+    private void validateHasNotBothStations(Section section) {
+        if (hasNotBothStations(section)) {
+            throw new IllegalArgumentException("상행성 하행선 모두 존재하지 않습니다.");
+        }
+    }
+
+    private boolean hasNotBothStations(Section section) {
+        List<Station> stations = getStations();
+        return section.findStations()
+                .stream()
+                .noneMatch(stations::contains);
     }
 }
