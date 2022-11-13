@@ -1,6 +1,5 @@
 package nextstep.subway.station;
 
-import io.restassured.mapper.TypeRef;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.RestAssuredUtils;
@@ -17,15 +16,6 @@ public class StationAcceptanceTestAssured {
 
     public static List<String> 지하철역_목록_조회() {
         return RestAssuredUtils.getAll(REQUEST_PATH, NAME);
-    }
-
-    public static long 지하철역_조회(String 지하철역_이름) {
-        Map<String, String> 지하철역_정보 = RestAssuredUtils.getAll(REQUEST_PATH)
-                .body().jsonPath().getObject(".", new TypeRef<List<Map<String, String>>>() {})
-                .stream().filter(body -> body.containsKey(NAME) && body.containsValue(지하철역_이름))
-                .findAny().orElseThrow(IllegalArgumentException::new);
-
-        return Long.parseLong(지하철역_정보.get(ID));
     }
 
     public static ExtractableResponse<Response> 지하철역_생성(String 지하철역_이름) {

@@ -24,7 +24,7 @@ class SectionAcceptanceTest extends SubwayAcceptanceTest {
 
     @BeforeEach
     void 노선_등록() {
-        노선요청정보 = 노선_요청_정보("2호선", "합정역", "홍대역", 10);
+        노선요청정보 = new LineAcceptanceTestRequest("2호선", "합정역", "홍대역", 10);
         노선응답정보 = 지하철_노선_생성(노선요청정보);
     }
 
@@ -155,10 +155,6 @@ class SectionAcceptanceTest extends SubwayAcceptanceTest {
         ExtractableResponse<Response> 응답 = 구간_등록(구간요청정보);
 
         구간_등록_실패함(응답);
-    }
-
-    private LineAcceptanceTestRequest 노선_요청_정보(String 노선, String 상행종점역, String 하행종점역, int 거리) {
-        return new LineAcceptanceTestRequest(노선, 상행종점역, 하행종점역, 거리);
     }
 
 }

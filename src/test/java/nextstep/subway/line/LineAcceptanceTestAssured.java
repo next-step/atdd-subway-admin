@@ -31,14 +31,13 @@ public class LineAcceptanceTestAssured {
         return new LineAcceptanceTestResponse(노선_식별자, 상행역_식별자, 하행역_식별자);
     }
 
-    @Deprecated
     public static ExtractableResponse<Response> 지하철_노선_생성(String 노선_이름, String 상행역_이름, String 하행역_이름) {
         long 상행역_식별자 = 지하철역_식별자(지하철역_생성(상행역_이름));
         long 하행역_식별자 = 지하철역_식별자(지하철역_생성(하행역_이름));
         return 지하철_노선_생성(노선_이름, 상행역_식별자, 하행역_식별자, DEFAULT_DISTANCE);
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성(String 노선_이름, long 상행역_아이디, long 하행역_아이디, int 거리) {
+    static ExtractableResponse<Response> 지하철_노선_생성(String 노선_이름, long 상행역_아이디, long 하행역_아이디, int 거리) {
         Map<String, String> 요청_본문 = 지하철_노선_파라미터(노선_이름, DEFAULT_COLOR, 상행역_아이디, 하행역_아이디, 거리);
 
         return RestAssuredUtils.post(REQUEST_PATH, 요청_본문);
