@@ -30,7 +30,7 @@ class LineRepositoryTest {
         Station downStation = stationRepository.save(new Station("양재역"));
 
         Line line = new Line("신분당선", "bg-red-600");
-        new Section(line, upStation, downStation, 10);
+        line.addSection(new Section(upStation, downStation, 10));
         lineRepository.save(line);
 
         List<Line> lines =  lineRepository.findAll();
