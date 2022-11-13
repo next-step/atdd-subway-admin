@@ -1,7 +1,6 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.common.util.SubwayValidator;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -12,19 +11,18 @@ public class Station extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String name;
+    @Embedded
+    private StationName name;
 
     protected Station() {
     }
 
-    private Station(String name) {
+    private Station(StationName name) {
         this.name = name;
     }
 
     public static Station from(String name) {
-        SubwayValidator.validateNotNullAndNotEmpty(name);
-        return new Station(name);
+        return new Station(StationName.from(name));
     }
 
     public Long getId() {
@@ -32,7 +30,7 @@ public class Station extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     @Override
