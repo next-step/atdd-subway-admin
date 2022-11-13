@@ -8,6 +8,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 
 public class JsonPathUtils {
+    private JsonPathUtils() {
+    }
+
     public static <T> List<T> extractList(ExtractableResponse<Response> response, String path) {
         return extract(response, path);
     }
