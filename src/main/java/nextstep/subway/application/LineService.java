@@ -47,7 +47,7 @@ public class LineService {
     @Transactional
     public void updateLineById(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        lineUpdateRequest.updateLine(line);
+        line.updateLine(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
     @Transactional
