@@ -41,12 +41,20 @@ public class Sections {
 
         Optional<Section> updateUpStationSection = findUpdateUpStationSection(newSection);
         Optional<Section> updateDownStationSection = findUpdateDownStationSection(newSection);
-        if(!updateUpStationSection.isPresent() && !updateDownStationSection.isPresent()) {
+        if(hasNotBothUpAnddownStationSection(updateUpStationSection.isPresent(), updateDownStationSection.isPresent())) {
             updateLineDistance(newSection);
         }
         updateUpStationSection.ifPresent(section -> section.updateUpStation(newSection));
         updateDownStationSection.ifPresent(section -> section.updateDownStation(newSection));
         sections.add(newSection);
+    }
+
+    public void deleteStation(Station deleteStation) {
+        Optional<Section> upStationSection = findSectionByUpStation(deleteStation);
+        Optional<Section> downStationSection = findSectionByDownStation(deleteStation);
+        validateNotContainAnySection(upStationSection.isPresent(), downStationSection.isPresent());
+        validateIfOnlyOneSection();
+
     }
 
     private void validateDuplicateSection(Section section) {
@@ -70,6 +78,26 @@ public class Sections {
                 .noneMatch(station -> section.stations().contains(station));
     }
 
+    private void validateNotContainAnySection(boolean hasUpStationSection, boolean hasDownStationSection) {
+        if(hasNotBothUpAnddownStationSection(hasUpStationSection, hasDownStationSection)) {
+            throw new IllegalArgumentException(ErrorCode.노선_내_존재하지_않는_역.getErrorMessage());
+        }
+    }
+
+    private boolean hasNotBothUpAnddownStationSection(boolean hasUpStationSection, boolean hasDownStationSection) {
+        return !hasUpStationSection && !hasDownStationSection;
+    }
+
+    private void validateIfOnlyOneSection() {
+        if(sections.size() == 1) {
+            throw new IllegalArgumentException(ErrorCode.노선에_속한_구간이_하나이면_제거_불가.getErrorMessage());
+        }
+    }
+
+    private boolean hasBothUpAndDownStationSection(boolean hasUpStationSection, boolean hasDownStationSection) {
+        return hasUpStationSection && hasDownStationSection;
+    }
+
     private void updateLineDistance(Section section) {
         section.updateLineDistance();
     }
@@ -83,6 +111,18 @@ public class Sections {
     private Optional<Section> findUpdateDownStationSection(Section newSection) {
         return sections.stream()
                 .filter(section -> section.isSameDownStation(newSection))
+                .findFirst();
+    }
+
+    private Optional<Section> findSectionByUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(station))
+                .findFirst();
+    }
+
+    private Optional<Section> findSectionByDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameDownStation(station))
                 .findFirst();
     }
 }

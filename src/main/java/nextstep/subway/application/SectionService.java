@@ -29,9 +29,21 @@ public class SectionService {
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.상행종착역은_비어있을_수_없음.getErrorMessage()));
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.하행종착역은_비어있을_수_없음.getErrorMessage()));
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.노선_정보가_없음.getErrorMessage()));
+        Line line = findLineById(id);
         line.addSection(Section.of(upStation, downStation, line, sectionRequest.getDistance()));
         return LineResponse.from(line);
+    }
+
+    @Transactional
+    public void deleteStationInLine(Long id, Long stationId) {
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.존재하지_않는_역.getErrorMessage()));
+        Line line = findLineById(id);
+        line.deleteStation(station);
+    }
+
+    private Line findLineById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.노선_정보가_없음.getErrorMessage()));
     }
 }

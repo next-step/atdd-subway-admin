@@ -88,6 +88,14 @@ public class Section {
         return downStation.isSameStation(section.downStation);
     }
 
+    public boolean isSameUpStation(Station station) {
+        return upStation.isSameStation(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return downStation.isSameStation(station);
+    }
+
     public void updateUpStation(Section section) {
         this.distance = this.distance.substract(section.distance);
         this.upStation = section.downStation;

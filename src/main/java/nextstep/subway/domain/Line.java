@@ -80,6 +80,10 @@ public class Line extends BaseEntity {
         return sections.findStations();
     }
 
+    public void deleteStation(Station station) {
+        sections.deleteStation(station);
+    }
+
     public Long getId() {
         return id;
     }
