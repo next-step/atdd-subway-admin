@@ -1,14 +1,15 @@
-package nextstep.subway.application;
-
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.StationRequest;
-import nextstep.subway.dto.StationResponse;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+package nextstep.subway.application.stations;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.StationRepository;
+import nextstep.subway.dto.stations.StationRequest;
+import nextstep.subway.dto.stations.StationResponse;
 
 @Service
 @Transactional(readOnly = true)
