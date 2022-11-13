@@ -1,7 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.common.util.SubwayValidator;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -20,8 +19,8 @@ public class Line extends BaseEntity {
     @Embedded
     private LineName name;
 
-    @Column(unique = true, nullable = false)
-    private String color;
+    @Embedded
+    private LineColor color;
 
     @Embedded
     private Sections sections = Sections.createEmpty();
@@ -29,7 +28,7 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private Line(Long id, LineName name, String color, Section section) {
+    private Line(Long id, LineName name, LineColor color, Section section) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -41,8 +40,7 @@ public class Line extends BaseEntity {
     }
 
     public static Line of(Long id, String name, String color, Section section) {
-        SubwayValidator.validateNotNullAndNotEmpty(color);
-        return new Line(id, LineName.from(name), color, section);
+        return new Line(id, LineName.from(name), LineColor.from(color), section);
     }
 
     public Long getId() {
@@ -54,13 +52,12 @@ public class Line extends BaseEntity {
     }
 
     public String getColor() {
-        return color;
+        return color.getColor();
     }
 
     public void update(String name, String color) {
-        SubwayValidator.validateNotNullAndNotEmpty(color);
         this.name = LineName.from(name);
-        this.color = color;
+        this.color = LineColor.from(color);
     }
 
     public void addSection(Section section) {
