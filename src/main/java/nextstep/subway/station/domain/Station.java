@@ -1,7 +1,7 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.common.message.ExceptionMessage;
+import nextstep.subway.common.util.SubwayValidator;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -23,14 +23,8 @@ public class Station extends BaseEntity {
     }
 
     public static Station from(String name) {
-        validate(name);
+        SubwayValidator.validateNotNullAndNotEmpty(name);
         return new Station(name);
-    }
-
-    private static void validate(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException(ExceptionMessage.REQUIRED);
-        }
     }
 
     public Long getId() {

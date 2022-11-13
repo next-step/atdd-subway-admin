@@ -1,7 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.common.message.ExceptionMessage;
+import nextstep.subway.common.util.SubwayValidator;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
@@ -41,15 +41,9 @@ public class Line extends BaseEntity {
     }
 
     public static Line of(Long id, String name, String color, Section section) {
-        validateNotNullAndNotEmpty(name);
-        validateNotNullAndNotEmpty(color);
+        SubwayValidator.validateNotNullAndNotEmpty(name);
+        SubwayValidator.validateNotNullAndNotEmpty(color);
         return new Line(id, name, color, section);
-    }
-
-    private static void validateNotNullAndNotEmpty(String value) {
-        if (value == null || value.isEmpty()) {
-            throw new IllegalArgumentException(ExceptionMessage.REQUIRED);
-        }
     }
 
     public Long getId() {
@@ -65,8 +59,8 @@ public class Line extends BaseEntity {
     }
 
     public void update(String name, String color) {
-        validateNotNullAndNotEmpty(name);
-        validateNotNullAndNotEmpty(color);
+        SubwayValidator.validateNotNullAndNotEmpty(name);
+        SubwayValidator.validateNotNullAndNotEmpty(color);
         this.name = name;
         this.color = color;
     }
