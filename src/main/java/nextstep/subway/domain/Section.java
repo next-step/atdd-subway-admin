@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import com.google.common.collect.Lists;
 import nextstep.subway.exception.CannotAddSectionException;
 
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,7 +34,7 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @Column(nullable = false)
+    @Embedded
     private Distance distance;
 
     protected Section() {

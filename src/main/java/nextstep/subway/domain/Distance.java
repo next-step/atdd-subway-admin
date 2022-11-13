@@ -11,7 +11,7 @@ public class Distance {
 
     private static final int ZERO_DISTANCE = 0;
 
-    @Column
+    @Column(nullable = false)
     private Integer value;
 
     protected Distance() {

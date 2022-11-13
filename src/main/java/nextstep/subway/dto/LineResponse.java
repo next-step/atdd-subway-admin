@@ -2,6 +2,7 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.Station;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,19 +13,19 @@ public class LineResponse {
 	private Long id;
 	private String name;
 	private String color;
-	private List<LineStationResponse> sections;
+	private List<String> stations;
 	private LocalDateTime cratedDate;
 	private LocalDateTime modifiedDate;
 
 	private LineResponse() {
 	}
 
-	public LineResponse(Long id, String name, String color, List<LineStationResponse> sections,
+	public LineResponse(Long id, String name, String color, List<String> stations,
 						LocalDateTime cratedDate, LocalDateTime modifiedDate) {
 		this.id = id;
 		this.name = name;
 		this.color = color;
-		this.sections = sections;
+		this.stations = stations;
 		this.cratedDate = cratedDate;
 		this.modifiedDate = modifiedDate;
 	}
@@ -35,14 +36,15 @@ public class LineResponse {
 
 	public static LineResponse of(Line line) {
 		return new LineResponse(line.getId(), line.getName(), line.getColor(),
-				of(line.getLineStations()),
+				toStationName(line.getLineStations()),
 				line.getCreatedDate(), line.getModifiedDate()
 			);
 	}
 
-	public static List<LineStationResponse> of(Sections sections) {
-		return sections.stream()
-				.map(LineStationResponse::of)
+	public static List<String> toStationName(Sections sections) {
+		return sections.getStations()
+				.stream()
+				.map(Station::getName)
 				.collect(Collectors.toList());
 	}
 
@@ -58,8 +60,8 @@ public class LineResponse {
 		return color;
 	}
 
-	public List<LineStationResponse> getSections() {
-		return sections;
+	public List<String> getStations() {
+		return stations;
 	}
 
 	public LocalDateTime getCratedDate() {

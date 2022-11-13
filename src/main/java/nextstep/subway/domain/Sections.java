@@ -6,10 +6,13 @@ import nextstep.subway.exception.CannotAddSectionException;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import static nextstep.subway.exception.CannotAddSectionException.NO_MATCHED_STATION;
 
@@ -50,8 +53,38 @@ public class Sections {
         sectionList.addAll(previousLineStationIndex, appendedSections);
     }
 
-    public Stream<Section> stream() {
-        return sectionList.stream();
+    public List<Station> getStations() {
+        if (sectionList.isEmpty()) {
+            return Collections.emptyList();
+        }
+        Deque<Section> sections = new ArrayDeque<>(sectionList);
+        Deque<Station> orderedStations = new ArrayDeque<>();
+        Section firstSection = sections.poll();
+        orderedStations.add(firstSection.getUpStation());
+        orderedStations.add(firstSection.getDownStation());
+
+        return new ArrayList<>(getOrderedStations(sections, orderedStations));
+    }
+
+    private Deque<Station> getOrderedStations(Deque<Section> sections, Deque<Station> orderedStations) {
+        if (sections.isEmpty()) {
+            return orderedStations;
+        }
+        Section section = sections.pollFirst();
+        Station upStation = section.getUpStation();
+        Station downStation = section.getDownStation();
+
+        if (orderedStations.getFirst().equals(downStation)) {
+            orderedStations.addFirst(upStation);
+            return getOrderedStations(sections, orderedStations);
+        }
+        if (orderedStations.getLast().equals(upStation)) {
+            orderedStations.addLast(downStation);
+            return getOrderedStations(sections, orderedStations);
+        }
+
+        sections.addLast(section);
+        return getOrderedStations(sections, orderedStations);
     }
 
     @Override
@@ -70,11 +103,11 @@ public class Sections {
     public int hashCode() {
         return Objects.hash(sectionList);
     }
-
     @Override
     public String toString() {
         return "LineStations{" +
                 "lineStationList=" + sectionList +
                 '}';
     }
+
 }
