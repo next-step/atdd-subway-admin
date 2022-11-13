@@ -1,43 +1,17 @@
-package nextstep.subway.Acceptance.station;
+package nextstep.subway.Acceptance;
 
-import static io.restassured.RestAssured.UNDEFINED_PORT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import nextstep.subway.utils.DatabaseCleanup;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 
 @DisplayName("지하철역 관련 기능")
-@ActiveProfiles("acceptance")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        if(RestAssured.port == UNDEFINED_PORT){
-            RestAssured.port = port;
-            databaseCleanup.afterPropertiesSet();
-        }
-        databaseCleanup.execute();
-    }
+public class StationAcceptanceTest extends AbstractAcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -118,26 +92,15 @@ public class StationAcceptanceTest {
         assertThat(stationNames).doesNotContain(강남역);
     }
 
-    public static ExtractableResponse<Response> 지하철역_신규_생성_요청(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
 
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private static List<String> 지하철역_목록_조회_요청() {
+    private List<String> 지하철역_목록_조회_요청() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
     }
 
-    private static void 지하철역_삭제_요청(String id) {
+    private void 지하철역_삭제_요청(String id) {
         RestAssured.given().log().all()
                 .when().delete("/stations/" + id)
                 .then().log().all();

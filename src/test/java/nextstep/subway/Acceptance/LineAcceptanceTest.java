@@ -1,7 +1,5 @@
-package nextstep.subway.Acceptance.line;
+package nextstep.subway.Acceptance;
 
-import static io.restassured.RestAssured.UNDEFINED_PORT;
-import static nextstep.subway.Acceptance.station.StationAcceptanceTest.지하철역_신규_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -11,43 +9,22 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 
 @DisplayName("지하철노선 관련 기능")
-@ActiveProfiles("acceptance")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
+public class LineAcceptanceTest extends AbstractAcceptanceTest {
 
     private Long stationId1;
     private Long stationId2;
     private Long stationId3;
 
     @BeforeEach
-    public void setUp() {
-        if(RestAssured.port == UNDEFINED_PORT){
-            RestAssured.port = port;
-            databaseCleanup.afterPropertiesSet();
-        }
-        databaseCleanup.execute();
-        setUpData();
-    }
-
-    private void setUpData() {
+    public void setUpData() {
+        System.out.println("======setUpData======");
         stationId1 = 지하철역_신규_생성_및_아이디_요청("강남역");
         stationId2 = 지하철역_신규_생성_및_아이디_요청("양재역");
         stationId3 = 지하철역_신규_생성_및_아이디_요청("교대역");
@@ -189,29 +166,12 @@ public class LineAcceptanceTest {
 
     }
 
-    private static Long 지하철역_신규_생성_및_아이디_요청(String name) {
+    private Long 지하철역_신규_생성_및_아이디_요청(String name) {
         return Long.parseLong(지하철역_신규_생성_요청(name).jsonPath().getString("id"));
     }
 
-    private static ExtractableResponse<Response> 지하철_노선_신규_생성_요청(String name, String color, Long upStationId,
-                                                                 Long downStationId) {
 
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", 10);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private static JsonPath 지하철_노선_목록_조회() {
+    private JsonPath 지하철_노선_목록_조회() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
@@ -219,7 +179,7 @@ public class LineAcceptanceTest {
                 .extract().jsonPath();
     }
 
-    private static JsonPath 지하철_노선_단일_조회(int id) {
+    private JsonPath 지하철_노선_단일_조회(int id) {
         return RestAssured.given().log().all()
                 .when().get("/lines/" + id)
                 .then().log().all()
@@ -227,7 +187,7 @@ public class LineAcceptanceTest {
                 .extract().jsonPath();
     }
 
-    private static JsonPath 지하철_노선_정보_수정_요청(int lineId, String newName, String newColor) {
+    private JsonPath 지하철_노선_정보_수정_요청(int lineId, String newName, String newColor) {
         Map<String, String> paramMap = new HashMap<>();
         paramMap.put("name", newName);
         paramMap.put("color", newColor);
@@ -240,7 +200,7 @@ public class LineAcceptanceTest {
                 .extract().jsonPath();
     }
 
-    private static void 지하철_노선_삭제_요청(int id) {
+    private void 지하철_노선_삭제_요청(int id) {
         RestAssured.given().log().all()
                 .when().delete("/lines/" + id)
                 .then().log().all()
