@@ -10,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(readOnly = true)
 public class LineService {
@@ -31,6 +34,13 @@ public class LineService {
         Station downStation = findByIdStation(lineRequest.getDownStationId());
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.from(persistLine);
+    }
+
+    public List<LineResponse> findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
+                .map(line -> LineResponse.from(line))
+                .collect(Collectors.toList());
     }
 
     private Station findByIdStation(Long id) {

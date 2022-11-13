@@ -25,4 +25,14 @@ public class LineAcceptanceRestAssured {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철노선_조회() {
+        return RestAssured
+                .given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+
 }
