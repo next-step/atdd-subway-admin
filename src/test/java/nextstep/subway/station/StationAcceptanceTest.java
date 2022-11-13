@@ -1,6 +1,6 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.station.util.StationAcceptanceUtils.*;
+import static nextstep.subway.util.StationAcceptanceUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 

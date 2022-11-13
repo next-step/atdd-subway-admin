@@ -1,4 +1,4 @@
-package nextstep.subway.station.util;
+package nextstep.subway.util;
 
 import java.util.HashMap;
 import java.util.Map;
