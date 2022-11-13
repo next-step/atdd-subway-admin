@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,9 +87,10 @@ class LineStationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(이호선.getLong("id"));
-        assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(getResponse.jsonPath().getList("stations")).hasSize(3);
-        assertThat(com.jayway.jsonpath.JsonPath.parse(getResponse.jsonPath()).read("$.name[0]").equals("교대역")).isTrue();
+        List<String> stationNames = getResponse.jsonPath().getList("stations.name", String.class);
+        assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(stationNames).hasSize(3);
+        assertThat(stationNames).containsExactly("교대역", "강남역", "선릉역");
     }
 
     /**

@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,6 +21,9 @@ public class LineStations {
     }
 
     public void add(LineStation newLineStation) {
+        if (addLineStationIfFirst(newLineStation)) {
+           return;
+        }
         LineStation upperLineStation = lineStations.stream()
                 .filter(s -> s.canAddInterLineStation(newLineStation))
                 .findFirst()
@@ -28,10 +32,27 @@ public class LineStations {
         upperLineStation.arrangeInterLineStation(newLineStation);
     }
 
+    private boolean addLineStationIfFirst(LineStation newLineStation) {
+        LineStation firstLineStation = getFirstLineStation();
+        if (firstLineStation.canAddFirstLineStation(newLineStation)) {
+            firstLineStation.arrangeFirstLineStation(newLineStation);
+            lineStations.add(newLineStation);
+            return true;
+        }
+        return false;
+    }
+
+    private LineStation getFirstLineStation() {
+        return lineStations.stream()
+                .filter(s -> s.getUpStation() == null)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 중 하나는 포함되어야 합니다."));
+    }
+
     public List<Station> getStationsInOrder() {
         return getLineStationsInOrder().stream()
                 .map(LineStation::getDownStation)
-                .filter(downStation -> downStation != null)
+                .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }
 
