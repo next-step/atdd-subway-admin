@@ -68,6 +68,18 @@ public class Line extends BaseEntity {
         }
     }
 
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
+    public void addDistance(Distance distance) {
+        this.distance = this.distance.add(distance);
+    }
+
+    public List<Station> findStations() {
+        return sections.findStations();
+    }
+
     public Long getId() {
         return id;
     }
@@ -82,17 +94,5 @@ public class Line extends BaseEntity {
 
     public Distance getDistance() {
         return distance;
-    }
-
-    public List<Station> findStations() {
-        return sections.findStations();
-    }
-
-    public void addSection(Section section) {
-        sections.addSection(section);
-    }
-
-    public void addDistance(Distance distance) {
-        this.distance = this.distance.add(distance);
     }
 }
