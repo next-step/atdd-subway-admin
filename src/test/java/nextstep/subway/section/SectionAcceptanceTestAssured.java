@@ -15,15 +15,15 @@ class SectionAcceptanceTestAssured {
     static String UP_STATION_ID = "upStationId";
     static String DOWN_STATION_ID = "downStationId";
 
-    static ExtractableResponse<Response> 구간_등록(SectionAcceptanceTestRequest 구간요청정보) {
-        return post(요청_주소(구간요청정보.노선_식별자), 요청_본문(구간요청정보));
+    static ExtractableResponse<Response> 구간_등록(long 노선_식별자, long 상행역_식별자, long 하행역_식별자, int 거리) {
+        return post(요청_주소(노선_식별자), 요청_본문(상행역_식별자, 하행역_식별자, 거리));
     }
 
-    private static Map<String, String> 요청_본문(SectionAcceptanceTestRequest 구간요청정보) {
+    private static Map<String, String> 요청_본문(long 상행역_식별자, long 하행역_식별자, int 거리) {
         return Maps.of(
-                UP_STATION_ID, 구간요청정보.상행역_식별자 + "",
-                DOWN_STATION_ID, 구간요청정보.하행역_식별자 + "",
-                DISTANCE, 구간요청정보.거리 + "");
+                UP_STATION_ID, 상행역_식별자 + "",
+                DOWN_STATION_ID, 하행역_식별자 + "",
+                DISTANCE, 거리 + "");
     }
 
     private static String 요청_주소(long 노선_식별자) {

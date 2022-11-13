@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.RestAssuredUtils;
+import nextstep.subway.dto.LineResponse;
 import org.apache.groovy.util.Maps;
 
 import java.util.List;
@@ -23,12 +24,12 @@ public class LineAcceptanceTestAssured {
     static final String DOWN_STATION_ID = "downStationId";
     static final String REQUEST_PATH = "/lines";
 
-    public static LineAcceptanceTestResponse 지하철_노선_생성(LineAcceptanceTestRequest 노선요청정보) {
+    public static LineResponse 지하철_노선_생성(String 노선_이름, String 상행종점역, String 하행종점역, int 거리) {
+        long 상행역_식별자 = 지하철역_식별자(지하철역_생성(상행종점역));
+        long 하행역_식별자 = 지하철역_식별자(지하철역_생성(하행종점역));
+        Map<String, String> 요청_본문 = 지하철_노선_파라미터(노선_이름, DEFAULT_COLOR, 상행역_식별자, 하행역_식별자, 거리);
 
-        long 상행역_식별자 = 지하철역_식별자(지하철역_생성(노선요청정보.상행종점역));
-        long 하행역_식별자 = 지하철역_식별자(지하철역_생성(노선요청정보.하행종점역));
-        long 노선_식별자 = 지하철_노선_식별자(지하철_노선_생성(노선요청정보.노선, 상행역_식별자, 하행역_식별자, 노선요청정보.거리));
-        return new LineAcceptanceTestResponse(노선_식별자, 상행역_식별자, 하행역_식별자);
+        return RestAssuredUtils.post(REQUEST_PATH, 요청_본문).as(LineResponse.class);
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성(String 노선_이름, String 상행역_이름, String 하행역_이름) {
