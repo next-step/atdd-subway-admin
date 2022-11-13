@@ -46,6 +46,16 @@ public class Line {
         this.downStation = downStation;
     }
 
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void merge(final Line otherLine) {
+        this.name = otherLine.name;
+        this.color = otherLine.color;
+    }
+
     public Long getId() {
         return id;
     }
