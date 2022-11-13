@@ -15,11 +15,10 @@ import java.util.List;
 import static nextstep.subway.AcceptanceFixture.*;
 import static nextstep.subway.line.LineAcceptanceFixture.*;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철역_생성_요청;
-import static nextstep.subway.station.StationAcceptanceFixture.지하철역_아이디_조회;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@DisplayName("지하철 노선 관련 테스트")
+@DisplayName("지하철 노선 인수 테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     /**
@@ -35,7 +34,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청(
-                "강남잠실노선", "red", 지하철역_아이디_조회(강남역), 지하철역_아이디_조회(잠실역), 10
+                "강남잠실노선", "red", 식별_아이디_조회(강남역), 식별_아이디_조회(잠실역), 10
         );
 
         // then
@@ -53,8 +52,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // given
         ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
         ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
-        지하철_노선_생성_요청("1번지하철노선", "red", 지하철역_아이디_조회(강남역), 지하철역_아이디_조회(잠실역), 10);
-        지하철_노선_생성_요청("2번지하철노선", "yellow", 지하철역_아이디_조회(강남역), 지하철역_아이디_조회(잠실역), 10);
+        지하철_노선_생성_요청("1번지하철노선", "red", 식별_아이디_조회(강남역), 식별_아이디_조회(잠실역), 10);
+        지하철_노선_생성_요청("2번지하철노선", "yellow", 식별_아이디_조회(강남역), 식별_아이디_조회(잠실역), 10);
 
         // when
         ExtractableResponse<Response> 지하철_노선_목록_조회_응답 = 지하철_노선_목록_조회_요청();
@@ -77,7 +76,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
         ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
         ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청(
-                "1번지하철노선", "red", 지하철역_아이디_조회(강남역), 지하철역_아이디_조회(잠실역), 10
+                "1번지하철노선", "red", 식별_아이디_조회(강남역), 식별_아이디_조회(잠실역), 10
         );
 
         // when
@@ -100,7 +99,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
         ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
         ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청(
-                "1번지하철노선", "red", 지하철역_아이디_조회(강남역), 지하철역_아이디_조회(잠실역), 10
+                "1번지하철노선", "red", 식별_아이디_조회(강남역), 식별_아이디_조회(잠실역), 10
         );
 
 
@@ -114,16 +113,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        String 수정된_지하철_노선_이름 = 이름_조회(지하철_노선_수정_응답);
+        ExtractableResponse<Response> 지하철_노선_조회_응답 = 지하철_노선_조회_요청(지하철역_아이디);
+        String 수정된_지하철_노선_이름 = 이름_조회(지하철_노선_조회_응답);
 
         assertThat(지하철_노선_수정_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(수정된_지하철_노선_이름).isEqualTo("지하철노선수정");
     }
 
     /**
-     *  Given 지하철 노선을 생성하고
-     *  When 생성한 지하철 노선을 삭제하면
-     *  Then 해당 지하철 노선 정보는 삭제된다
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
      */
     @DisplayName("지하철노선 삭제")
     @Test
@@ -132,7 +132,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
         ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
         ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청(
-                "1번지하철노선", "red", 지하철역_아이디_조회(강남역), 지하철역_아이디_조회(잠실역), 10
+                "1번지하철노선", "red", 식별_아이디_조회(강남역), 식별_아이디_조회(잠실역), 10
         );
 
         // when

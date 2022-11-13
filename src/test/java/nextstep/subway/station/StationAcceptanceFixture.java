@@ -1,10 +1,8 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import io.restassured.response.ValidatableResponse;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -38,7 +36,4 @@ public class StationAcceptanceFixture {
                 .then().log().all();
     }
 
-    public static long 지하철역_아이디_조회(ExtractableResponse<Response> response) {
-        return Long.parseLong(response.jsonPath().get("id").toString());
-    }
 }

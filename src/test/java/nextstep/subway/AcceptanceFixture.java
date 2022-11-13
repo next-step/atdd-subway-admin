@@ -21,7 +21,7 @@ public class AcceptanceFixture {
     }
 
     public static String 이름_조회(ExtractableResponse<Response> response) {
-        return response.jsonPath().get("name");
+        return response.jsonPath().getString("name");
     }
 
 }
