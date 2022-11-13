@@ -18,7 +18,7 @@ public class LineStations {
 
     private static final int ZERO_DISTANCE = 0;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<LineStation> lineStationList = new LinkedList<>();
 
     protected LineStations() {

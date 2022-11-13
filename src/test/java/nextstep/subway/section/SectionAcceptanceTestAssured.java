@@ -13,7 +13,7 @@ class SectionAcceptanceTestAssured {
     static String UP_STATION_ID = "upStationId";
     static String DOWN_STATION_ID = "downStationId";
 
-    static void 상행역_기준_구간_등록(SectionAcceptanceTestRequest 구간요청정보) {
+    static void 구간_등록(SectionAcceptanceTestRequest 구간요청정보) {
         post(요청_주소(구간요청정보.노선_식별자), 요청_본문(구간요청정보));
     }
 
