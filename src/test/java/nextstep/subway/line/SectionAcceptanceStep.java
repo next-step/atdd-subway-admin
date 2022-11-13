@@ -36,7 +36,7 @@ public class SectionAcceptanceStep extends AcceptanceTest {
           //@formatter:on
     }
 
-    public static ExtractableResponse<Response> 지하철노선에_구간_제거_요청(final Long lineId, final Long stationId) {
+    public static ExtractableResponse<Response> 지하철노선에_구간_삭제_요청(final Long lineId, final Long stationId) {
 
         //@formatter:off
           return RestAssured.given()
@@ -70,6 +70,10 @@ public class SectionAcceptanceStep extends AcceptanceTest {
 
     public static void 지하철구간_생성_응답상태_400_검증(ExtractableResponse<Response> response) {
         응답상태_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
+    public static void 지하철구간_삭제_응답상태_204_검증(ExtractableResponse<Response> response) {
+        응답상태_검증(response, HttpStatus.NO_CONTENT);
     }
 }
 

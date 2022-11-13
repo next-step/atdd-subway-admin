@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -113,14 +114,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSection_endpoint() {
         // given
-        지하철노선에_구간_등록_요청(lineId, registeredStationId1, stationId1, 3);
+        지하철노선에_구간_등록_요청(lineId, registeredStationId2, stationId1, 3);
         지하철노선에_구간_등록_요청(lineId, stationId1, stationId2, 3);
+        지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
 
         // when
-        ExtractableResponse<Response> response = 지하철노선에_구간_제거_요청(lineId, stationId2);
+        ExtractableResponse<Response> response = 지하철노선에_구간_삭제_요청(lineId, stationId2);
 
-        지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
         // then
-        지하철구간_생성_응답상태_400_검증(response);
+        지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
+        지하철구간_삭제_응답상태_204_검증(response);
     }
 }

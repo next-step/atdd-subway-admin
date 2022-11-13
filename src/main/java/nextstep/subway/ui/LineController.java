@@ -50,7 +50,7 @@ public class LineController {
 
     @PostMapping(value = "/lines/{lineId}/sections")
     public ResponseEntity<SectionResponse> createSections(@PathVariable final Long lineId,
-                                                             @RequestBody SectionRequest sectionRequest) {
+                                                          @RequestBody SectionRequest sectionRequest) {
         SectionResponse section = lineService.addSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + section.getId() + "/sections")).body(section);
     }
@@ -58,6 +58,13 @@ public class LineController {
     @GetMapping(value = "/lines/{lineId}/sections")
     public ResponseEntity<List<SectionResponse>> showSections(@PathVariable final Long lineId) {
         return ResponseEntity.ok(lineService.findAllSections(lineId));
+    }
+
+    @DeleteMapping(value = "/lines/{lineId}/sections")
+    public ResponseEntity<List<SectionResponse>> deleteSections(
+            @PathVariable final Long lineId, @RequestParam Long stationId) {
+        lineService.deleteSection(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})

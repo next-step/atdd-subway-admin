@@ -1,15 +1,23 @@
 package nextstep.subway.domain;
 
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@DynamicInsert
 public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     private String name;
+    @ColumnDefault("false")
+    private Boolean isAscentEndPoint;
+    @ColumnDefault("false")
+    private Boolean isDeAscentEndPoint;
 
     protected Station() {
     }
@@ -41,5 +49,21 @@ public class Station extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public void changeAscentEndPoint(final Boolean ascentEndPoint) {
+        isAscentEndPoint = ascentEndPoint;
+    }
+
+    public void changeDeAscentEndPoint(final Boolean deAscentEndPoint) {
+        isDeAscentEndPoint = deAscentEndPoint;
+    }
+
+    public Boolean isAscentEndPoint() {
+        return isAscentEndPoint;
+    }
+
+    public Boolean isDeAscentEndPoint() {
+        return isDeAscentEndPoint;
     }
 }

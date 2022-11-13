@@ -28,6 +28,7 @@ public class Line extends BaseEntity {
     }
 
     public static Line of(final String name, final String color, final Section section) {
+        section.registerEndPoint();
         return new Line(name, color, section);
     }
 
@@ -58,5 +59,9 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         section.setLine(this);
         sections.add(section);
+    }
+
+    public void deleteSectionByStationId(final Long stationId) {
+        sections.deleteByStationId(stationId);
     }
 }

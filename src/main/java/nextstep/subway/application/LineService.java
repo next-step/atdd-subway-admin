@@ -39,9 +39,8 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(final Long id) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(id + "번 노선을 찾을 수 없습니다."));
+    public LineResponse findLine(final Long lineId) {
+        Line persistLine = findById(lineId);
         return LineResponse.from(persistLine);
     }
 
@@ -51,9 +50,8 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse modify(final Long id, final LineRequest lineRequest) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(id + "번 노선을 찾을 수 없습니다."));
+    public LineResponse modify(final Long lineId, final LineRequest lineRequest) {
+        Line persistLine = findById(lineId);
         persistLine.changeName(lineRequest.getName());
         persistLine.changeColor(lineRequest.getColor());
         return LineResponse.from(persistLine);
@@ -69,24 +67,23 @@ public class LineService {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
         Section section = new Section(upStation, downStation, sectionRequest.getDistance());
-
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException(lineId + "번 노선을 찾을 수 없습니다."));
+        Line line = findById(lineId);
         line.addSection(section);
         lineRepository.flush();
         return SectionResponse.from(section);
     }
 
     public List<SectionResponse> findAllSections(final Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException(lineId + "번 노선을 찾을 수 없습니다."));
+        Line line = findById(lineId);
 
         return line.getSections().stream()
                 .map(SectionResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public void flush() {
+    public void deleteSection(final Long lineId, final Long stationId) {
+        Line line = findById(lineId);
+        line.deleteSectionByStationId(stationId);
         lineRepository.flush();
     }
 }

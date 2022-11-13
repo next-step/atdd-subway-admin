@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -63,6 +64,14 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
+    public void setUpStation(final Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(final Station downStation) {
+        this.downStation = downStation;
+    }
+
     public void changeUpStation(final Station station) {
         this.upStation = station;
     }
@@ -77,5 +86,53 @@ public class Section extends BaseEntity {
 
     public void validateDistance(final Section newSection) {
         distance.equalToOrLessThan(newSection.getDistance());
+    }
+
+    public void registerEndPoint() {
+        registerAscentEndPoint();
+        registerDeAscentEndPoint();
+    }
+
+    public void registerAscentEndPoint() {
+        upStation.changeAscentEndPoint(true);
+
+    }
+
+    public void registerDeAscentEndPoint() {
+        downStation.changeDeAscentEndPoint(false);
+    }
+
+
+    public boolean isAscentEndpoint(final Section originalSection) {
+        return originalSection.getUpStation().equals(downStation);
+    }
+
+    public boolean isDeAscentEndpoint(final Section originalSection) {
+        return originalSection.getDownStation().equals(upStation);
+    }
+
+    public boolean isAscentEndpoint() {
+        return upStation.isAscentEndPoint();
+    }
+
+    public boolean isDeAscentEndpoint() {
+        return upStation.isDeAscentEndPoint();
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        final Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
