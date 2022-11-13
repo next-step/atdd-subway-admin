@@ -56,8 +56,8 @@ public class Line extends BaseEntity {
         this.color = Color.from(color);
     }
 
-    private void validateUpStation(Station upstation) {
-        if(upstation == null) {
+    private void validateUpStation(Station upStation) {
+        if(upStation == null) {
             throw new IllegalArgumentException(ErrorCode.상행종착역은_비어있을_수_없음.getErrorMessage());
         }
     }
@@ -76,12 +76,16 @@ public class Line extends BaseEntity {
         this.distance = this.distance.add(distance);
     }
 
+    public void substractDistance(Distance distance) {
+        this.distance = this.distance.substract(distance);
+    }
+
     public List<Station> findStations() {
         return sections.findStations();
     }
 
-    public void deleteStation(Station station) {
-        sections.deleteStation(station);
+    public void deleteStationInLine(Station station) {
+        sections.deleteStationInLine(station);
     }
 
     public Long getId() {

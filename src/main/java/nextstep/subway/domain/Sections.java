@@ -42,19 +42,30 @@ public class Sections {
         Optional<Section> updateUpStationSection = findUpdateUpStationSection(newSection);
         Optional<Section> updateDownStationSection = findUpdateDownStationSection(newSection);
         if(hasNotBothUpAnddownStationSection(updateUpStationSection.isPresent(), updateDownStationSection.isPresent())) {
-            updateLineDistance(newSection);
+            newSection.addLineDistance();
         }
         updateUpStationSection.ifPresent(section -> section.updateUpStation(newSection));
         updateDownStationSection.ifPresent(section -> section.updateDownStation(newSection));
         sections.add(newSection);
     }
 
-    public void deleteStation(Station deleteStation) {
+    public void deleteStationInLine(Station deleteStation) {
         Optional<Section> upStationSection = findSectionByUpStation(deleteStation);
         Optional<Section> downStationSection = findSectionByDownStation(deleteStation);
         validateNotContainAnySection(upStationSection.isPresent(), downStationSection.isPresent());
         validateIfOnlyOneSection();
+        if(hasBothUpAndDownStationSection(upStationSection.isPresent(), downStationSection.isPresent())) {
+            combineSection(downStationSection.get(), upStationSection.get());
+        }
+        upStationSection.ifPresent(this::deleteSection);
+        downStationSection.ifPresent(this::deleteSection);
+    }
 
+    private void combineSection(Section upSection, Section downSection) {
+        Distance distance = upSection.addDistance(downSection);
+        Section section = Section.of(upSection.getUpStation(), downSection.getDownStation(), upSection.getLine(), distance.value());
+        sections.add(section);
+        section.addLineDistance();
     }
 
     private void validateDuplicateSection(Section section) {
@@ -98,19 +109,15 @@ public class Sections {
         return hasUpStationSection && hasDownStationSection;
     }
 
-    private void updateLineDistance(Section section) {
-        section.updateLineDistance();
-    }
-
     private Optional<Section> findUpdateUpStationSection(Section newSection) {
         return sections.stream()
-                .filter(section -> section.isSameUpStation(newSection))
+                .filter(section -> section.isSameUpStation(newSection.getUpStation()))
                 .findFirst();
     }
 
     private Optional<Section> findUpdateDownStationSection(Section newSection) {
         return sections.stream()
-                .filter(section -> section.isSameDownStation(newSection))
+                .filter(section -> section.isSameDownStation(newSection.getDownStation()))
                 .findFirst();
     }
 
@@ -124,5 +131,10 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isSameDownStation(station))
                 .findFirst();
+    }
+
+    private void deleteSection(Section deleteSection) {
+        sections.removeIf(section -> section.isSameSection(deleteSection));
+        deleteSection.substractLineDistance();
     }
 }

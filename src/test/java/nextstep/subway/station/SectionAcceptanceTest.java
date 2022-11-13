@@ -201,10 +201,10 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
      * Then 노선의 상행 종점이 바뀐다(노선에 전체 길이가 기존보다 줄어든다)
      */
     @DisplayName("노선의 상행 종점을 제거하면 노선에서 해당 역이 제거되고 상행 종점이 바뀐다.")
-    @Test
-    void deleteStationWhichIsUpStation() {
+    @ParameterizedTest(name = "A - B - C 노선에서 A역을 제거하면 전체 거리는 10 - {0}이다. (A-B 사이 거리: {0}, 노선 전체 거리: 10)")
+    @ValueSource(longs = {3L, 4L, 8L})
+    void deleteStationWhichIsUpStation(Long currentDistance) {
         // given
-        Long currentDistance = 4L;
         지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 양재시민의숲.getId(), currentDistance);
 
         // when
@@ -229,10 +229,10 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
      * Then 노선의 하행 종점이 바뀐다(노선에 전체 길이가 기존보다 줄어든다)
      */
     @DisplayName("노선의 하행 종점을 제거하면 노선에서 해당 역이 제거되고 하행 종점이 바뀐다.")
-    @Test
-    void deleteStationWhichIsDownStation() {
+    @ParameterizedTest(name = "A - B - C 노선에서 C역을 제거하면 전체 거리는 {0}이다. (B-C 사이 거리: 10 - {0}, 노선 전체 거리: 10)")
+    @ValueSource(longs = {3L, 4L, 8L})
+    void deleteStationWhichIsDownStation(Long currentDistance) {
         // given
-        Long currentDistance = 4L;
         지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 양재시민의숲.getId(), currentDistance);
 
         // when
@@ -246,7 +246,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
                 () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(stationNames).hasSize(2),
                 () -> assertThat(stationNames).doesNotContain(판교역.getName()),
-                () -> assertThat(distance).isEqualTo(lineDistance - currentDistance)
+                () -> assertThat(distance).isEqualTo(currentDistance)
         );
     }
 

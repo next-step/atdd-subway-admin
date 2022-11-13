@@ -39,7 +39,7 @@ public class SectionService {
         Station station = stationRepository.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.존재하지_않는_역.getErrorMessage()));
         Line line = findLineById(id);
-        line.deleteStation(station);
+        line.deleteStationInLine(station);
     }
 
     private Line findLineById(Long id) {

@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -80,14 +81,6 @@ public class Section {
         return stations;
     }
 
-    public boolean isSameUpStation(Section section) {
-        return upStation.isSameStation(section.upStation);
-    }
-
-    public boolean isSameDownStation(Section section) {
-        return downStation.isSameStation(section.downStation);
-    }
-
     public boolean isSameUpStation(Station station) {
         return upStation.isSameStation(station);
     }
@@ -106,7 +99,31 @@ public class Section {
         this.downStation = section.upStation;
     }
 
-    public void updateLineDistance() {
+    public void addLineDistance() {
         this.line.addDistance(this.distance);
+    }
+
+    public void substractLineDistance() {
+        this.line.substractDistance(this.distance);
+    }
+
+    public Distance addDistance(Section section) {
+        return this.distance.add(section.distance);
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public boolean isSameSection(Section section) {
+        return Objects.equals(this.id, section.id);
     }
 }
