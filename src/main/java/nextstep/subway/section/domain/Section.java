@@ -9,7 +9,6 @@ import java.util.Objects;
 
 @Entity
 public class Section {
-    private static final int MAX_INVALID_DISTANCE = 0;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,12 +26,13 @@ public class Section {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, int distance) {
+    private Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -40,8 +40,7 @@ public class Section {
 
     public static Section of(Station upStation, Station downStation, int distance) {
         validateStations(upStation, downStation);
-        validateDistance(distance);
-        return new Section(upStation, downStation, distance);
+        return new Section(upStation, downStation, Distance.from(distance));
     }
 
     public void addTo(Line line) {
@@ -60,14 +59,13 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 
     public void update(Station station, int distance) {
         validateStationIsNotNull(station);
-        validateDistance(distance);
         this.upStation = station;
-        this.distance = distance;
+        this.distance = Distance.from(distance);
     }
 
     private static void validateStations(Station upStation, Station downStation) {
@@ -82,14 +80,6 @@ public class Section {
     private static void validateStationIsNotNull(Station station) {
         if (station == null) {
             throw new IllegalArgumentException(ExceptionMessage.REQUIRED);
-        }
-    }
-
-    private static void validateDistance(int distance) {
-        if (distance <= MAX_INVALID_DISTANCE) {
-            throw new IllegalArgumentException(
-                    String.format(ExceptionMessage.INVALID_SECTION_DISTANCE, distance)
-            );
         }
     }
 
