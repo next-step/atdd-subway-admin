@@ -25,7 +25,7 @@ public class LineResponse {
 
     public static LineResponse from(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
-                line.findStations().stream().map(StationResponse::from).collect(Collectors.toList()), line.getDistance());
+                line.findInOrderStations().stream().map(StationResponse::from).collect(Collectors.toList()), line.getDistance());
     }
 
     public Long getId() {

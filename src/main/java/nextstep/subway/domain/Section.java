@@ -99,16 +99,12 @@ public class Section {
         this.downStation = section.upStation;
     }
 
-    public void addLineDistance() {
-        this.line.addDistance(this.distance);
-    }
-
-    public void subtractLineDistance() {
-        this.line.subtractDistance(this.distance);
-    }
-
     public Distance addDistance(Section section) {
         return this.distance.add(section.distance);
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     public Station getUpStation() {

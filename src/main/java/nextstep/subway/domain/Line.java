@@ -70,22 +70,16 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         sections.addSection(section);
+        this.distance = Distance.from(sections.totalDistance());
     }
 
-    public void addDistance(Distance distance) {
-        this.distance = this.distance.add(distance);
-    }
-
-    public void subtractDistance(Distance distance) {
-        this.distance = this.distance.subtract(distance);
-    }
-
-    public List<Station> findStations() {
-        return sections.inOrderStations();
+    public List<Station> findInOrderStations() {
+        return sections.findInOrderStations();
     }
 
     public void deleteStationInLine(Station station) {
         sections.deleteStationInLine(station);
+        this.distance = Distance.from(sections.totalDistance());
     }
 
     public Long getId() {

@@ -38,7 +38,7 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public List<Station> inOrderStations() {
+    public List<Station> findInOrderStations() {
         Map<Station, Station> stations = sections.stream()
                 .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
         return sortStations(findLineUpStation(stations), stations);
@@ -63,15 +63,18 @@ public class Sections {
         return sortStations;
     }
 
+    public Long totalDistance() {
+        return sections.stream()
+                .map(Section::getDistance)
+                .mapToLong(Distance::value).sum();
+    }
+
     public void addSection(Section newSection) {
         validateDuplicateSection(newSection);
         validateNotContainAnySection(newSection);
 
         Optional<Section> updateUpStationSection = findSectionByUpStation(newSection.getUpStation());
         Optional<Section> updateDownStationSection = findSectionByDownStation(newSection.getDownStation());
-        if(hasNotBothUpAnddownStationSection(updateUpStationSection.isPresent(), updateDownStationSection.isPresent())) {
-            newSection.addLineDistance();
-        }
         updateUpStationSection.ifPresent(section -> section.updateUpStation(newSection));
         updateDownStationSection.ifPresent(section -> section.updateDownStation(newSection));
         sections.add(newSection);
@@ -95,12 +98,10 @@ public class Sections {
         Distance distance = upSection.addDistance(downSection);
         Section section = Section.of(upSection.getUpStation(), downSection.getDownStation(), upSection.getLine(), distance.value());
         sections.add(section);
-        section.addLineDistance();
     }
 
     private void deleteSection(Section deleteSection) {
         sections.removeIf(section -> section.isSameSection(deleteSection));
-        deleteSection.subtractLineDistance();
     }
 
     private void validateDuplicateSection(Section section) {
