@@ -53,6 +53,11 @@ public class LineService {
         line.merge(request.toLine());
     }
 
+    @Transactional
+    public void deleteLine(Long id) {
+        lineRepository.delete(findLine(id));
+    }
+
     private Line findLine(Long id) {
         return lineRepository.findById(id).orElseThrow(NoLineException::new);
     }
@@ -61,6 +66,4 @@ public class LineService {
         return stationRepository.findById(stationId)
             .orElseThrow(NoStationException::new);
     }
-
-
 }
