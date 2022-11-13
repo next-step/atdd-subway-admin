@@ -5,6 +5,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,5 +41,12 @@ public class LineService {
         return lineRepository.findById(id)
                 .map(LineResponse::of)
                 .orElseThrow(IllegalArgumentException::new);
+    }
+
+    @Transactional
+    public void updateLine(Long id, LineUpdateRequest request) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new);
+        line.updateNameAndColor(request.getName(), request.getColor());
     }
 }

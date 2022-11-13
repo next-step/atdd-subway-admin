@@ -66,9 +66,9 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 ### 기능 요구사항
 
 - [X] 지하철 노선 생성
-- [ ] 지하철 노선 목록 조회
-- [ ] 지하철 노선 조회
-- [ ] 지하철 노선 수정
+- [X] 지하철 노선 목록 조회
+- [X] 지하철 노선 조회
+- [X] 지하철 노선 수정
 - [ ] 지하철 노선 삭제
 
 ### 프로그래밍 요구사항

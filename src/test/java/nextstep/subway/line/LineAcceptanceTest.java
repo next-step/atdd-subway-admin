@@ -78,4 +78,24 @@ public class LineAcceptanceTest extends AcceptanceTest {
         // then
         지하철_노선_이름을_검증한다(지하철_노선_조회.jsonPath().getString("name"), "2호선");
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선을 생성하고 노선명, 노선색을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        ExtractableResponse<Response> 지하철_노선_생성 = 지하철_노선_생성("2호선", "bg-red-600", upStationId, downStationId, 15);
+
+        // when
+        ExtractableResponse<Response> 지하철_노선_수정 = 지하철_노선_수정(지하철_노선_생성.jsonPath().getLong("id"), "신분당선", "bg-yellow-600");
+
+        // then
+        응답코드가_일치한다(지하철_노선_수정.statusCode(), HttpStatus.OK);
+        ExtractableResponse<Response> 지하철_노선_조회 = 지하철_노선_조회(지하철_노선_생성.jsonPath().getLong("id"));
+        수정된_지하철_노선_정보를_검증한다(지하철_노선_조회, "신분당선", "bg-yellow-600");
+    }
 }
