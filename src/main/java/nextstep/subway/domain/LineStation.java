@@ -97,7 +97,6 @@ public class LineStation extends BaseEntity {
     }
 
     private boolean isNotValidNewLineStation(LineStation newLineStation) {
-        // newLineStation의 up, down station은 모두 null이 아니어야 한다.
         return newLineStation.getUpStation() == null || newLineStation.getDownStation() == null;
     }
 

@@ -27,37 +27,42 @@ public class LineStations {
         if (addLineStationIfLast(newLineStation)) {
             return;
         }
-        LineStation upperLineStation = lineStations.stream()
-                .filter(s -> s.canAddInterLineStation(newLineStation))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 중 하나는 포함되어야 합니다."));
-
-        if(upperLineStation.isShorterThan(newLineStation)) {
-            throw new IllegalArgumentException("기존 구간의 길이보다 크거나 같습니다.");
-        }
-
-        lineStations.add(newLineStation);
-        upperLineStation.arrangeInterLineStation(newLineStation);
+        addLineStationIfInter(newLineStation);
     }
 
     private boolean addLineStationIfFirst(LineStation newLineStation) {
         LineStation firstLineStation = getFirstLineStation();
+
         if (firstLineStation.canAddFirstLineStation(newLineStation)) {
             firstLineStation.arrangeFirstLineStation(newLineStation);
             lineStations.add(newLineStation);
             return true;
         }
+
         return false;
     }
 
     private boolean addLineStationIfLast(LineStation newLineStation) {
         LineStation lastLineStation = getLastLineStation();
+
         if (lastLineStation.canAddLastLineStation(newLineStation)) {
             lastLineStation.arrangeLastLineStation(newLineStation);
             lineStations.add(newLineStation);
             return true;
         }
+
         return false;
+    }
+
+    private void addLineStationIfInter(LineStation newLineStation) {
+        LineStation upperLineStation = getUpperLineStation(newLineStation);
+
+        if (upperLineStation.isShorterThan(newLineStation)) {
+            throw new IllegalArgumentException("기존 구간의 길이보다 크거나 같습니다.");
+        }
+
+        lineStations.add(newLineStation);
+        upperLineStation.arrangeInterLineStation(newLineStation);
     }
 
     private LineStation getFirstLineStation() {
@@ -70,6 +75,13 @@ public class LineStations {
     private LineStation getLastLineStation() {
         return lineStations.stream()
                 .filter(s -> s.getDownStation() == null)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 중 하나는 포함되어야 합니다."));
+    }
+
+    private LineStation getUpperLineStation(LineStation newLineStation) {
+        return lineStations.stream()
+                .filter(s -> s.canAddInterLineStation(newLineStation))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 중 하나는 포함되어야 합니다."));
     }
@@ -94,6 +106,7 @@ public class LineStations {
                     .filter(candidate -> isNextLineStation(lineStation, candidate))
                     .findFirst();
         }
+
         return result;
     }
 
