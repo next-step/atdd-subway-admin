@@ -3,13 +3,11 @@ package nextstep.subway.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
+import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 @Builder
@@ -46,9 +44,6 @@ public class Line extends BaseEntity {
         this.downLastStation = downLastStation;
     }
 
-    public Line(String name) {
-        this.name = name;
-    }
 
     public Long getId() {
         return id;
@@ -64,6 +59,27 @@ public class Line extends BaseEntity {
         return new ArrayList(Arrays.asList(upLastStation, downLastStation));
     }
 
+    public void update(LineRequest updateRequest) {
+        if(!updateRequest.getName().isEmpty() && updateRequest.getName() != "") {
+            this.name = updateRequest.getName();
+        }
+        if(!updateRequest.getColor().isEmpty() && updateRequest.getColor() != ""){
+            this.color = updateRequest.getColor();
+        }
+
+        if(updateRequest.getDistance() > 0) {
+            this.distance = updateRequest.getDistance();
+        }
+    }
+
+
+    public void changeUpStation(Station station) {
+        this.upLastStation = station;
+    }
+
+    public void changeDownStation(Station station) {
+        this.downLastStation = station;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -90,6 +106,7 @@ public class Line extends BaseEntity {
                 ", downLastStation=" + downLastStation +
                 '}';
     }
+
 
 
 

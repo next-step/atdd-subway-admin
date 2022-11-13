@@ -2,6 +2,8 @@ package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
 import nextstep.subway.application.StationService;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationRequest;
@@ -25,7 +27,7 @@ public class LineController {
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+        return ResponseEntity.created(URI.create("/line/" + line.getId())).body(line);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,15 +39,21 @@ public class LineController {
     public ResponseEntity<LineResponse> searchStation(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLineById(id));
     }
-//
-//    @DeleteMapping("/stations/{id}")
-//    public ResponseEntity deleteStation(@PathVariable Long id) {
-//        stationService.deleteStationById(id);
-//        return ResponseEntity.noContent().build();
-//    }
-//
-//    @ExceptionHandler(DataIntegrityViolationException.class)
-//    public ResponseEntity handleIllegalArgsException() {
-//        return ResponseEntity.badRequest().build();
-//    }
+
+    @PutMapping(value = "/line/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity modifyLine(@PathVariable Long id, @RequestBody LineRequest updateRequest) {
+        lineService.updateLineById(id, updateRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/line/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteLineById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity handleIllegalArgsException() {
+        return ResponseEntity.badRequest().build();
+    }
 }

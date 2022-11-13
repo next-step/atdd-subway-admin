@@ -16,8 +16,10 @@ public class LineRequest {
     private String name;
     private String color;
     private int distance;
-    private int upLastStationId;
-    private int downLastStationId;
+    @Builder.Default
+    private int upLastStationId = 0;
+    @Builder.Default
+    private int downLastStationId = 0;
 
     public Line toLine(Station upStation, Station downStation) {
         return new Line().builder()

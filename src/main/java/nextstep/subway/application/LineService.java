@@ -30,10 +30,9 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation  = stationRepository.findById(Long.valueOf(lineRequest.getUpLastStationId()))
-                .orElseThrow(() -> new CannotFindException(NOT_FOUND_UP_STATION_ERR));
-        Station downStation  = stationRepository.findById(Long.valueOf(lineRequest.getUpLastStationId()))
-                .orElseThrow(() -> new CannotFindException(NOT_FOUND_DOWN_STATION_ERR));
+        Station upStation = findStationById(Long.valueOf(lineRequest.getUpLastStationId()));
+        Station downStation = findStationById(Long.valueOf(lineRequest.getDownLastStationId()));
+
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
@@ -51,16 +50,37 @@ public class LineService {
                 .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
         return LineResponse.of(line);
     }
-    public StationResponse findStationById(Long id) {
-        Station station = stationRepository.findById(id)
-                .orElseThrow(() -> new CannotFindException(NOT_FOUND_STATION_ERR));
-        return StationResponse.of(station);
+
+    // @Transactional 이 있어야 update문 탐
+    @Transactional
+    public void updateLineById(Long id, LineRequest updateRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
+
+        if(updateRequest.getUpLastStationId() > 0) {
+            line.changeUpStation(findStationById(Long.valueOf(updateRequest.getUpLastStationId())));
+        }
+
+        if(updateRequest.getDownLastStationId() > 0) {
+            line.changeUpStation(findStationById(Long.valueOf(updateRequest.getDownLastStationId())));
+        }
+
+        line.update(updateRequest);
+
+        // save 없어도 처리
+//        lineRepository.save(line);
     }
 
     @Transactional
-    public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
     }
+
+    private Station findStationById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new CannotFindException(NOT_FOUND_UP_STATION_ERR));
+    }
+
 
 
 

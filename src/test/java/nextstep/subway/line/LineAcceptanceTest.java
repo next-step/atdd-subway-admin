@@ -107,9 +107,81 @@ public class LineAcceptanceTest {
         지하철_노선_정보_확인(savedLine, result);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철노선 수정")
+    @Test
+    void modifyLine() {
+        // given
+        ExtractableResponse<Response> savedLine = 노선_한개_생성한다();
+        int id = savedLine.jsonPath().get("id");
+
+        // when
+        ExtractableResponse<Response> result = 노선_정보를_수정한다(id);
+
+        ExtractableResponse<Response> temp = 특정_노선을_조회한다(id);
+        String color = temp.jsonPath().get("color").toString();
+
+        // then
+        지하철_노선_정보_수정_확인(id, result);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선 삭제")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> savedLine = 노선_한개_생성한다();
+        int id = savedLine.jsonPath().get("id");
+
+        // when
+        특정_노선을_제거한다(id);
+
+        // then
+        해당_노선의_정보가_삭제된다(id);
+    }
+
+    private void 해당_노선의_정보가_삭제된다(int id) {
+        ExtractableResponse<Response> response = 특정_노선을_조회한다(id);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
 
 
+    private void 지하철_노선_정보_수정_확인(int id, ExtractableResponse<Response> result) {
+        assertThat(result.statusCode()).isEqualTo(HttpStatus.OK.value());
 
+        ExtractableResponse<Response> savedLine = 특정_노선을_조회한다(id);
+
+        String temp  = savedLine.jsonPath().getString("color");
+
+        assertAll(
+                ()-> assertThat(savedLine.jsonPath().getString("name")).isEqualTo("새로운 노선"),
+                ()-> assertThat(savedLine.jsonPath().getInt("distance")).isEqualTo(33)
+        );
+    }
+
+    private ExtractableResponse<Response> 노선_정보를_수정한다(int id) {
+        LineRequest updateRequest = LineRequest.builder()
+                .name("새로운 노선")
+//                .color("파란색")
+                .distance(33)
+                .build();
+
+        return RestAssured.given()
+                .body(updateRequest).log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/line/" + id)
+                .then()
+                .log().all()
+                .extract();
+    }
 
 
     private ExtractableResponse<Response> 노선_한개_생성한다() {
@@ -187,11 +259,19 @@ public class LineAcceptanceTest {
 
     private void 지하철_노선_정보_확인(ExtractableResponse<Response> savedLine, ExtractableResponse<Response> result) {
         assertAll(
-                () -> assertThat(result.jsonPath().get("id").toString()).isEqualTo(savedLine.jsonPath().get("id").toString()),
-                () -> assertThat(result.jsonPath().get("name").toString()).isEqualTo(savedLine.jsonPath().get("name").toString()),
-                ()-> assertThat(result.jsonPath().get("color").toString()).isEqualTo(savedLine.jsonPath().get("color").toString()),
-                ()-> assertThat(result.jsonPath().get("distance").toString()).isEqualTo(savedLine.jsonPath().get("distance").toString())
+                () -> assertThat(result.jsonPath().getInt("id")).isEqualTo(savedLine.jsonPath().getInt("id")),
+                () -> assertThat(result.jsonPath().getString("name")).isEqualTo(savedLine.jsonPath().getString("name")),
+                ()-> assertThat(result.jsonPath().getString("color")).isEqualTo(savedLine.jsonPath().getString("color")),
+                ()-> assertThat(result.jsonPath().getInt("distance")).isEqualTo(savedLine.jsonPath().getInt("distance"))
         );
+    }
+
+    private ExtractableResponse<Response> 특정_노선을_제거한다(int id) {
+        return RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/line/" + id)
+                .then().log().all()
+                .extract();
     }
 
 
