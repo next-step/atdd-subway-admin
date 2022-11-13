@@ -73,10 +73,10 @@ public class Sections {
         validateDuplicateSection(newSection);
         validateNotContainAnySection(newSection);
 
-        Optional<Section> updateUpStationSection = findSectionByUpStation(newSection.getUpStation());
-        Optional<Section> updateDownStationSection = findSectionByDownStation(newSection.getDownStation());
-        updateUpStationSection.ifPresent(section -> section.updateUpStation(newSection));
-        updateDownStationSection.ifPresent(section -> section.updateDownStation(newSection));
+        Optional<Section> upStationSection = findSectionByUpStation(newSection.getUpStation());
+        Optional<Section> downStationSection = findSectionByDownStation(newSection.getDownStation());
+        upStationSection.ifPresent(section -> section.updateUpStation(newSection));
+        downStationSection.ifPresent(section -> section.updateDownStation(newSection));
         sections.add(newSection);
     }
 
