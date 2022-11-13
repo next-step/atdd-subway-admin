@@ -14,7 +14,12 @@ public class LineResponse {
     private List<StationResponse> stations;
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(),
+                line.getDownStation());
+    }
+
+    protected LineResponse() {
+
     }
 
     private LineResponse(Long id, String name, String color, Station upStation, Station downStation) {
