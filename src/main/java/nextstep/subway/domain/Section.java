@@ -127,12 +127,12 @@ public class Section {
         return downStation.equals(upStation);
     }
 
-    public List<Section> splitSectionByUpStation(Station appendedStation, Integer distance) {
+    private List<Section> splitSectionByUpStation(Station appendedStation, Integer distance) {
         verifyDistance(distance);
         return addSection(appendedStation, distance,this.distance - distance);
     }
 
-    public List<Section> splitSectionByDownStation(Station appendedStation, Integer distance) {
+    private List<Section> splitSectionByDownStation(Station appendedStation, Integer distance) {
         verifyDistance(distance);
         return addSection(appendedStation, this.distance - distance, distance);
     }
