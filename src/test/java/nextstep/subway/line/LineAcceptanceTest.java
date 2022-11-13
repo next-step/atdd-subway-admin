@@ -153,10 +153,9 @@ public class LineAcceptanceTest {
 
         ExtractableResponse<Response> savedLine = 특정_노선을_조회한다(id);
 
-        String temp  = savedLine.jsonPath().getString("color");
-
         assertAll(
                 ()-> assertThat(savedLine.jsonPath().getString("name")).isEqualTo("새로운 노선"),
+                ()-> assertThat(savedLine.jsonPath().getString("color")).isEqualTo("파란색"),
                 ()-> assertThat(savedLine.jsonPath().getInt("distance")).isEqualTo(33)
         );
     }

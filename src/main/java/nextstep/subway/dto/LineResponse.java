@@ -26,7 +26,7 @@ public class LineResponse {
         return new LineResponse().builder()
                 .id(persistLine.getId())
                 .name(persistLine.getName())
-                .color(persistLine.getName())
+                .color(persistLine.getColor())
                 .stations(persistLine.getStations().stream()
                         .map(StationResponse::of)
                         .collect(Collectors.toList()))

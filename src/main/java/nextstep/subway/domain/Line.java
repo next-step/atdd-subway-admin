@@ -45,6 +45,10 @@ public class Line extends BaseEntity {
         return name;
     }
 
+    public String getColor() {
+        return color;
+    }
+
     public int getDistance() { return distance; }
 
     public List<Station> getStations() {
@@ -97,7 +101,6 @@ public class Line extends BaseEntity {
                 ", downLastStation=" + downLastStation +
                 '}';
     }
-
 
 
 
