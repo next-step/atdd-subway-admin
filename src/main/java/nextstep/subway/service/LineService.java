@@ -3,9 +3,9 @@ package nextstep.subway.service;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,19 +17,23 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
+    @Transactional
     public LineResponse create(LineRequest request) {
-        Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(() -> new IllegalArgumentException());
-        Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(() -> new IllegalArgumentException());
-        Line line = new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
-        lineRepository.save(line);
+        Line line = lineRepository.save(getLine(request));
         return LineResponse.of(line);
+    }
+
+    private Line getLine(LineRequest request) {
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        return new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
     }
 
     public List<LineResponse> findAllLines() {
@@ -59,7 +63,13 @@ public class LineService {
     }
 
     private Line findById(Long id) {
-        return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+        return lineRepository.findById(id)
+                .orElseThrow(IllegalArgumentException::new);
     }
 
+    public void validateCheck(LineRequest request) {
+        if (lineRepository.existsByName(request.getName())) {
+            throw new DataIntegrityViolationException("이미 존재하는 지하철 노선 이름입니다.");
+        }
+    }
 }

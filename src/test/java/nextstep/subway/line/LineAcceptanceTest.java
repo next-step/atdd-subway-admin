@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
@@ -8,7 +7,6 @@ import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -39,6 +37,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(지하철_노선_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    @DisplayName("같은 이름으로 지하철노선 생성 오류")
+    @Test
+    void same_name_create_line_error() {
+        // given
+        ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
+        ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
+        지하철_노선_생성_요청("강남잠실노선", "red", 식별_아이디_조회(강남역), 식별_아이디_조회(잠실역), 10);
+
+        // when
+        ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청(
+                "강남잠실노선", "red", 식별_아이디_조회(강남역), 식별_아이디_조회(잠실역), 10
+        );
+
+        // then
+        assertThat(지하철_노선_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -96,26 +111,22 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철노선 수정")
     @Test
     void update_line() {
+        // given
         ExtractableResponse<Response> 강남역 = 지하철역_생성_요청("강남역");
         ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
         ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성_요청(
                 "1번지하철노선", "red", 식별_아이디_조회(강남역), 식별_아이디_조회(잠실역), 10
         );
 
-
+        // when
         Long 지하철역_아이디 = 식별_아이디_조회(지하철_노선_생성_응답);
-        LineRequest lineRequest = new LineRequest("지하철노선수정", "blue");
-        ExtractableResponse<Response> 지하철_노선_수정_응답 = RestAssured.given().log().all()
-                .pathParam("id", 지하철역_아이디)
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{id}")
-                .then().log().all()
-                .extract();
+        LineRequest 수정_정보 = new LineRequest("지하철노선수정", "blue");
+        ExtractableResponse<Response> 지하철_노선_수정_응답 = 지하철_노선_수정_요청(지하철역_아이디, 수정_정보);
 
         ExtractableResponse<Response> 지하철_노선_조회_응답 = 지하철_노선_조회_요청(지하철역_아이디);
         String 수정된_지하철_노선_이름 = 이름_조회(지하철_노선_조회_응답);
 
+        // then
         assertThat(지하철_노선_수정_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(수정된_지하철_노선_이름).isEqualTo("지하철노선수정");
     }
@@ -137,15 +148,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         // when
         Long 지하철역_아이디 = 식별_아이디_조회(지하철_노선_생성_응답);
-        ExtractableResponse<Response> 지하철_노선_삭제_응답 = RestAssured.given().log().all()
-                .pathParam("id", 지하철역_아이디)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/{id}")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 지하철_노선_삭제_응답 = 지하철_노선_삭제_요청(지하철역_아이디);
 
+        // then
         assertThat(지하철_노선_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-
     }
+
 
 }

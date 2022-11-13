@@ -69,8 +69,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [x] 지하철역 관련 인수 테스트를 완성
         - [x] 지하철역 목록 조회 인수 테스트 작성하기
         - [x] 지하철역 삭제 인수 테스트 작성하기
-
-2. 설정관련
+2. 설정
     - Non-ASCII characters 설정 해제
 
 ### 2단계 - 지하철 노선 기능
@@ -105,6 +104,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
                 - Then 해당 지하철 노선 정보는 삭제된다
         - [x] 인수 테스트를 충족하는 기능 구현
     - [x] 인수 테스트의 결과가 다른 테스트에 영향을 미치지 않도록 인수 테스트 격리
-    - [ ] 인수 테스트의 재사용성과 가독성, 빠른 테스트 의도 파악을 위해 인수 테스트 리팩터링
+    - [x] 인수 테스트의 재사용성과 가독성, 빠른 테스트 의도 파악을 위해 인수 테스트 리팩터링
 3. 참조
     - [데이터 베이스 초기화](https://velog.io/@janeljs/test-database-init)

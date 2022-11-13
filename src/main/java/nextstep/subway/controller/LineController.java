@@ -3,6 +3,7 @@ package nextstep.subway.controller;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.service.LineService;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ public class LineController {
 
     @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest request) {
+        lineService.validateCheck(request);
         LineResponse lineResponse = lineService.create(request);
         return ResponseEntity.created(URI.create("/lines" + lineResponse.getId())).body(lineResponse);
     }
@@ -45,6 +47,11 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity handleIllegalArgsException() {
+        return ResponseEntity.badRequest().build();
     }
 
 }
