@@ -17,8 +17,8 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String name;
+    @Embedded
+    private LineName name;
 
     @Column(unique = true, nullable = false)
     private String color;
@@ -29,7 +29,7 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private Line(Long id, String name, String color, Section section) {
+    private Line(Long id, LineName name, String color, Section section) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -41,9 +41,8 @@ public class Line extends BaseEntity {
     }
 
     public static Line of(Long id, String name, String color, Section section) {
-        SubwayValidator.validateNotNullAndNotEmpty(name);
         SubwayValidator.validateNotNullAndNotEmpty(color);
-        return new Line(id, name, color, section);
+        return new Line(id, LineName.from(name), color, section);
     }
 
     public Long getId() {
@@ -51,7 +50,7 @@ public class Line extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public String getColor() {
@@ -59,9 +58,8 @@ public class Line extends BaseEntity {
     }
 
     public void update(String name, String color) {
-        SubwayValidator.validateNotNullAndNotEmpty(name);
         SubwayValidator.validateNotNullAndNotEmpty(color);
-        this.name = name;
+        this.name = LineName.from(name);
         this.color = color;
     }
 
