@@ -6,6 +6,7 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +31,7 @@ public class LineController {
     @PostMapping("/lines/{id}/sections")
     public ResponseEntity<LineResponse> createSection(@PathVariable Long id, @RequestBody SectionRequest request) {
         LineResponse line = lineService.addSection(id, request);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId() + "/sections")).body(line);
+        return ResponseEntity.status(HttpStatus.CREATED).body(line);
     }
 
     @PatchMapping("/lines/{id}")
@@ -56,6 +57,11 @@ public class LineController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Void> handleDataIntegrityViolationException() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
