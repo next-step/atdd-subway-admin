@@ -5,10 +5,10 @@ import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.LineExceptionCode;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,7 +21,6 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
 
-    @Autowired
     public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
@@ -61,7 +60,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findById(id);
-        line.update(lineRequest.getName(), line.getColor());
+        line.update(lineRequest.getName(), lineRequest.getColor());
 
         lineRepository.save(line);
     }
@@ -69,5 +68,15 @@ public class LineService {
     @Transactional
     public void deleteLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void updateSection(Long id, SectionRequest sectionRequest) {
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        Line line = findById(id);
+
+        line.updateSections(sectionRequest.toSection(upStation, downStation));
+        lineRepository.save(line);
     }
 }
