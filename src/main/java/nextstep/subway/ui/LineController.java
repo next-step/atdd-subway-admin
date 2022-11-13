@@ -27,12 +27,12 @@ public class LineController {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
-//
-//    @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<List<StationResponse>> showStations() {
-//        return ResponseEntity.ok().body(stationService.findAllStations());
-//    }
-//
+
+    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<LineResponse>> showLines() {
+        return ResponseEntity.ok().body(lineService.findAllLines());
+    }
+
 //    @GetMapping(value = "/stations/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
 //    public ResponseEntity<StationResponse> searchStation(@PathVariable Long id) {
 //        return ResponseEntity.ok().body(stationService.findStationById(id));

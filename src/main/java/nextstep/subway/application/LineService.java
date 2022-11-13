@@ -37,19 +37,19 @@ public class LineService {
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
+
+    public List<LineResponse> findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+
+        return lines.stream()
+                .map(line -> LineResponse.of(line))
+                .collect(Collectors.toList());
+    }
     public StationResponse saveStation(StationRequest stationRequest) {
         Station persistStation = stationRepository.save(stationRequest.toStation());
         return StationResponse.of(persistStation);
     }
-
-    public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
-
-        return stations.stream()
-                .map(station -> StationResponse.of(station))
-                .collect(Collectors.toList());
-    }
-
+    
     public StationResponse findStationById(Long id) {
         Station station = stationRepository.findById(id)
                 .orElseThrow(() -> new CannotFindException(NOT_FOUND_STATION_ERR));
