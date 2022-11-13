@@ -32,31 +32,7 @@ public class Sections {
     }
 
     private void reArrangeSection(final Section section, final Section newSection) {
-        if (isSameUpStation(section, newSection)) {
-            section.changeUpStation(newSection.getDownStation());
-            reArrangeDistance(section, newSection);
-        } else if (isSameDownStation(section, newSection)) {
-            section.changeDownStation(newSection.getUpStation());
-            reArrangeDistance(section, newSection);
-        } else if (newSection.isAscentEndpoint(section)) {
-            section.getUpStation().changeAscentEndPoint(false);
-            newSection.getUpStation().changeAscentEndPoint(true);
-        } else if (newSection.isDeAscentEndpoint(section)) {
-            section.getDownStation().changeDeAscentEndPoint(false);
-            newSection.getDownStation().changeDeAscentEndPoint(true);
-        }
-    }
-
-    private void reArrangeDistance(final Section section, final Section newSection) {
-        section.changeDistance(section.getDistance() - newSection.getDistance());
-    }
-
-    private boolean isSameDownStation(final Section section, final Section newSection) {
-        return section.getDownStation().equals(newSection.getDownStation());
-    }
-
-    private boolean isSameUpStation(final Section section, final Section newSection) {
-        return section.getUpStation().equals(newSection.getUpStation());
+        section.swap(newSection);
     }
 
     private Section validateIfConnectableSectionWith(final Section newSection) {
@@ -68,7 +44,7 @@ public class Sections {
     }
 
     private boolean isIncludedBetweenStations(final Section newSection, final Section section) {
-        return isSameUpStation(section, newSection) || isSameDownStation(section, newSection);
+        return section.isSameUpStation(newSection) || section.isSameDownStation(newSection);
     }
 
     private Section findConnectableSectionWith(final Section newSection) {
@@ -137,15 +113,20 @@ public class Sections {
     }
 
     private void connect(final Section A, final Section B) {
+        int distance = connectDistance(A, B);
         if (A.getDownStation().isDeAscentEndPoint()) {
-            B.changeDistance(A.getDistance() + B.getDistance());
             B.setDownStation(A.getDownStation());
+            B.changeDistance(distance);
             removeSection(A);
         } else {
-            A.changeDistance(A.getDistance() + B.getDistance());
             A.setUpStation(B.getUpStation());
+            A.changeDistance(distance);
             removeSection(B);
         }
+    }
+
+    private int connectDistance(final Section A, final Section B) {
+        return A.getDistance() + B.getDistance();
     }
 
     private void removeSection(final Section section) {
@@ -155,8 +136,7 @@ public class Sections {
 
     private List<Section> findSectionsByStationId(final Long stationId) {
         return getSections().stream()
-                .filter(section -> Objects.equals(section.getUpStation().getId(), stationId)
-                        || Objects.equals(section.getDownStation().getId(), stationId))
+                .filter(section -> section.isInclude(stationId))
                 .collect(Collectors.toList());
     }
 }

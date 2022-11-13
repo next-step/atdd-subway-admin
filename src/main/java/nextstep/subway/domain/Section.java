@@ -103,12 +103,12 @@ public class Section extends BaseEntity {
     }
 
 
-    public boolean isAscentEndpoint(final Section originalSection) {
-        return originalSection.getUpStation().equals(downStation);
+    public boolean isAscentEndpoint(final Section newSection) {
+        return downStation.equals(newSection.getUpStation());
     }
 
-    public boolean isDeAscentEndpoint(final Section originalSection) {
-        return originalSection.getDownStation().equals(upStation);
+    public boolean isDeAscentEndpoint(final Section newSection) {
+        return upStation.equals(newSection.getDownStation());
     }
 
     public boolean isAscentEndpoint() {
@@ -134,5 +134,37 @@ public class Section extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public boolean isInclude(final Long stationId) {
+        return upStation.getId().equals(stationId) || downStation.getId().equals(stationId);
+    }
+
+    public void swap(final Section newSection) {
+        if (isSameUpStation(newSection)) {
+            changeUpStation(newSection.getDownStation());
+            minusDistanceOf(newSection);
+        } else if (isSameDownStation(newSection)) {
+            changeDownStation(newSection.getUpStation());
+            minusDistanceOf(newSection);
+        } else if (isAscentEndpoint(newSection)) {
+            getUpStation().changeAscentEndPoint(false);
+            newSection.getUpStation().changeAscentEndPoint(true);
+        } else if (isDeAscentEndpoint(newSection)) {
+            getDownStation().changeDeAscentEndPoint(false);
+            newSection.getDownStation().changeDeAscentEndPoint(true);
+        }
+    }
+
+    private void minusDistanceOf(final Section newSection) {
+        changeDistance(getDistance() - newSection.getDistance());
+    }
+
+    public boolean isSameDownStation(final Section newSection) {
+        return getDownStation().equals(newSection.getDownStation());
+    }
+
+    public boolean isSameUpStation(final Section newSection) {
+        return getUpStation().equals(newSection.getUpStation());
     }
 }
