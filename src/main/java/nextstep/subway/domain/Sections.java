@@ -27,12 +27,8 @@ public class Sections {
 
     public void add(final Section newSection) {
         Section section = validateIfConnectableSectionWith(newSection);
-        reArrangeSection(section, newSection);
+        section.reArrangeWith(newSection);
         this.sections.add(newSection);
-    }
-
-    private void reArrangeSection(final Section section, final Section newSection) {
-        section.swap(newSection);
     }
 
     private Section validateIfConnectableSectionWith(final Section newSection) {

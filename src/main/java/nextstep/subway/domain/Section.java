@@ -72,11 +72,11 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
     }
 
-    public void changeUpStation(final Station station) {
+    private void changeUpStation(final Station station) {
         this.upStation = station;
     }
 
-    public void changeDownStation(final Station station) {
+    private void changeDownStation(final Station station) {
         this.downStation = station;
     }
 
@@ -93,12 +93,12 @@ public class Section extends BaseEntity {
         registerDeAscentEndPoint();
     }
 
-    public void registerAscentEndPoint() {
+    private void registerAscentEndPoint() {
         upStation.changeAscentEndPoint(true);
 
     }
 
-    public void registerDeAscentEndPoint() {
+    private void registerDeAscentEndPoint() {
         downStation.changeDeAscentEndPoint(false);
     }
 
@@ -140,7 +140,7 @@ public class Section extends BaseEntity {
         return upStation.getId().equals(stationId) || downStation.getId().equals(stationId);
     }
 
-    public void swap(final Section newSection) {
+    public void reArrangeWith(final Section newSection) {
         if (isSameUpStation(newSection)) {
             changeUpStation(newSection.getDownStation());
             minusDistanceOf(newSection);

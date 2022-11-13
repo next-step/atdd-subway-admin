@@ -15,9 +15,9 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
     @ColumnDefault("false")
-    private Boolean isAscentEndPoint;
+    private boolean isAscentEndPoint;
     @ColumnDefault("false")
-    private Boolean isDeAscentEndPoint;
+    private boolean isDeAscentEndPoint;
 
     protected Station() {
     }
