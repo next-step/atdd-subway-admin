@@ -100,9 +100,24 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 응답상태 400을 반환한다.")
     @Test
-    void createSection_NoStation() {
+    void createSection_noStation() {
         // when
         ExtractableResponse<Response> response = 지하철노선에_구간_등록_요청(lineId, stationId1, stationId2, 3);
+
+        지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
+        // then
+        지하철구간_생성_응답상태_400_검증(response);
+    }
+
+    @DisplayName("종점을 제거하는 경우")
+    @Test
+    void deleteSection_endpoint() {
+        // given
+        지하철노선에_구간_등록_요청(lineId, registeredStationId1, stationId1, 3);
+        지하철노선에_구간_등록_요청(lineId, stationId1, stationId2, 3);
+
+        // when
+        ExtractableResponse<Response> response = 지하철노선에_구간_제거_요청(lineId, stationId2);
 
         지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
         // then

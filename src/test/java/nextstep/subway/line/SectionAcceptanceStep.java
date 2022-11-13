@@ -19,17 +19,31 @@ public class SectionAcceptanceStep extends AcceptanceTest {
             final Long lineId, final long upStationId, final Long downStationId, final int distance) {
 
         Map<String, Object> params = new HashMap<>();
-          params.put("upStationId", upStationId);
-          params.put("downStationId", downStationId);
-          params.put("distance", distance);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
-          //@formatter:off
+        //@formatter:off
           return RestAssured.given()
                                   .log().all()
                                   .body(params)
                                   .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .when()
                                   .post("/lines/" + lineId + "/sections")
+                            .then()
+                                  .log().all()
+                            .extract();
+          //@formatter:on
+    }
+
+    public static ExtractableResponse<Response> 지하철노선에_구간_제거_요청(final Long lineId, final Long stationId) {
+
+        //@formatter:off
+          return RestAssured.given()
+                                  .param("stationId", stationId)
+                                  .log().all()
+                            .when()
+                                  .delete("/lines/" + lineId + "/sections")
                             .then()
                                   .log().all()
                             .extract();
