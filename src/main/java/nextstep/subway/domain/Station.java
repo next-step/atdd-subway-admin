@@ -1,6 +1,10 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.StationException;
+
 import javax.persistence.*;
+
+import static nextstep.subway.exception.StationExceptionMessage.EMPTY_STATION_NAME;
 
 @Entity
 public class Station extends BaseEntity {
@@ -14,7 +18,12 @@ public class Station extends BaseEntity {
     }
 
     public Station(String name) {
+        validateStation(name);
         this.name = name;
+    }
+
+    private void validateStation(String name) {
+        if (name == null || name.isEmpty()) throw new StationException(EMPTY_STATION_NAME.getMessage());
     }
 
     public Long getId() {

@@ -4,7 +4,7 @@ import nextstep.subway.exception.LineException;
 
 import javax.persistence.*;
 
-import static nextstep.subway.exception.LineExceptionMessage.EMPTY_NAME;
+import static nextstep.subway.exception.LineExceptionMessage.EMPTY_LINE_NAME;
 import static nextstep.subway.exception.LineExceptionMessage.EMPTY_STATION;
 
 @Entity
@@ -39,7 +39,7 @@ public class Line extends BaseEntity {
     }
 
     private void validateLine(String name, Station upStation, Station downStation) {
-        if (name == null || name.isEmpty()) throw new LineException(EMPTY_NAME.getMessage());
+        if (name == null || name.isEmpty()) throw new LineException(EMPTY_LINE_NAME.getMessage());
         if (upStation == null || downStation == null) throw new LineException(EMPTY_STATION.getMessage());
     }
 
