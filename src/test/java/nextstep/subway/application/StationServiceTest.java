@@ -20,8 +20,9 @@ class StationServiceTest {
     @Test
     void saveStation() {
         StationResponse expected = new StationResponse(null, "경기 광주역", null, null);
-        StationResponse actual = service.saveStation(new StationRequest("경기 광주역"));
-        assertThat(actual.getName()).isEqualTo(expected.getName());
+        Long id = service.saveStation(new StationRequest("경기 광주역"));
+        StationResponse findStation = service.findById(id);
+        assertThat(findStation.getName()).isEqualTo(expected.getName());
     }
 
     @Test
@@ -34,8 +35,8 @@ class StationServiceTest {
 
     @Test
     void deleteStationById() {
-        StationResponse response = service.saveStation(new StationRequest("경기 광주역"));
-        service.deleteStationById(response.getId());
+        Long id = service.saveStation(new StationRequest("경기 광주역"));
+        service.deleteStationById(id);
         List<StationResponse> allStations = service.findAllStations();
         assertThat(allStations).hasSize(0);
     }

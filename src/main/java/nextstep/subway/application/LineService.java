@@ -22,9 +22,9 @@ public class LineService {
 
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) {
+    public Long saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
-        return LineResponse.of(persistLine);
+        return persistLine.getId();
     }
 
     public List<LineResponse> findAllLines() {
@@ -33,6 +33,10 @@ public class LineService {
         return lines.stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findById(Long id) {
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
     public LineResponse findByName(String name) {

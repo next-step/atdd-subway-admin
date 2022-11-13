@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import java.util.List;
 import javax.persistence.EntityNotFoundException;
@@ -22,7 +23,8 @@ class LineServiceTest {
     @Test
     void saveLine() {
         LineRequest expected = new LineRequest("신분당선", "bg-red-600", 10, "1", "2");
-        LineResponse actual = service.saveLine(expected);
+        Long id = service.saveLine(expected);
+        LineResponse actual = service.findById(id);
         assertThat(actual.getName()).isEqualTo(expected.getName());
     }
 
@@ -35,9 +37,14 @@ class LineServiceTest {
 
     @Test
     void findByName() {
-        LineResponse expected = service.saveLine(new LineRequest("신분당선", "bg-red-600", 10, "1", "2"));
-        LineResponse actual = service.findByName("신분당선");
-        assertThat(actual.getName()).isEqualTo(expected.getName());
+        service.saveLine(new LineRequest("신분당선", "bg-red-600", 10, "1", "2"));
+        assertThatNoException().isThrownBy(() -> service.findByName("신분당선"));
+    }
+
+    @Test
+    void findById() {
+        Long id = service.saveLine(new LineRequest("신분당선", "bg-red-600", 10, "1", "2"));
+        assertThatNoException().isThrownBy(() -> service.findById(id));
     }
 
     @Test
@@ -49,8 +56,8 @@ class LineServiceTest {
 
     @Test
     void deleteLineById() {
-        LineResponse saveLine = service.saveLine(new LineRequest("신분당선", "bg-red-600", 10, "1", "2"));
-        service.deleteLineById(saveLine.getId());
+        Long id = service.saveLine(new LineRequest("신분당선", "bg-red-600", 10, "1", "2"));
+        service.deleteLineById(id);
         assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(() -> service.findByName("신분당선"));
     }
 

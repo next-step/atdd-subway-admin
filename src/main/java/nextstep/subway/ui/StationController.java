@@ -2,6 +2,7 @@ package nextstep.subway.ui;
 
 import java.net.URI;
 import java.util.List;
+import javax.persistence.PersistenceException;
 import nextstep.subway.application.StationService;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
@@ -28,8 +29,15 @@ public class StationController {
 
     @PostMapping
     public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        StationResponse station = stationService.saveStation(stationRequest);
-        return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
+        Long id = stationService.saveStation(stationRequest);
+        StationResponse stationResponse = new StationResponse();
+        stationResponse.setId(id);
+        return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<StationResponse> showStationById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(stationService.findById(id));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -43,7 +51,7 @@ public class StationController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler({DataIntegrityViolationException.class, PersistenceException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
