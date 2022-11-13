@@ -31,15 +31,15 @@ public class Distance {
         }
     }
 
-    public Long value() {
-        return distance;
-    }
-
     public Distance substract(Distance distance) {
         return new Distance(this.distance - distance.distance);
     }
 
     public Distance add(Distance distance) {
         return new Distance(this.distance + distance.distance);
+    }
+
+    public Long value() {
+        return distance;
     }
 }
