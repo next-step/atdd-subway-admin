@@ -96,11 +96,8 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void 지하철역_제거() {
-        // given
-        createStation("서울대입구역");
-
-        // when
-        deleteStation(1);
+        // given & when
+        deleteStation(createStation("서울대입구역").jsonPath().get("id"));
 
         // then
         List<String> stationNames = getStations();
