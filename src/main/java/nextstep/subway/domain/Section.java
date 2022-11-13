@@ -38,13 +38,21 @@ public class Section extends BaseEntity {
     }
 
     public void update(Section newSection) {
-        if (upStation.equals(newSection.upStation)) {
+        if (isEqualUpStation(newSection)) {
             updateUpStation(newSection);
         }
 
-        if (downStation.equals(newSection.downStation)) {
+        if (isEqualDownStation(newSection)) {
             updateDownStation(newSection);
         }
+    }
+
+    private boolean isEqualUpStation(Section newSection) {
+        return upStation.equals(newSection.upStation);
+    }
+
+    private boolean isEqualDownStation(Section newSection) {
+        return downStation.equals(newSection.downStation);
     }
 
     private void updateUpStation(Section newSection) {
