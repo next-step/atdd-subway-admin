@@ -4,10 +4,7 @@ import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
@@ -30,6 +27,12 @@ public class LineController {
     @GetMapping("/lines")
     public ResponseEntity<List<LineResponse>> showLines() {
         List<LineResponse> lineResponses = lineService.findAllLines();
+        return ResponseEntity.ok().body(lineResponses);
+    }
+
+    @GetMapping("/lines/{id}")
+    public ResponseEntity<LineResponse> showLinesById(@PathVariable Long id) {
+        LineResponse lineResponses = lineService.findById(id);
         return ResponseEntity.ok().body(lineResponses);
     }
 }

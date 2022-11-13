@@ -35,4 +35,10 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findById(Long id) {
+        return lineRepository.findById(id)
+                .map(LineResponse::of)
+                .orElseThrow(IllegalArgumentException::new);
+    }
 }
