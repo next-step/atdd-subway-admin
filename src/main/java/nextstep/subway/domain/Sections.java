@@ -16,8 +16,6 @@ import static nextstep.subway.exception.CannotAddSectionException.NO_MATCHED_STA
 @Embeddable
 public class Sections {
 
-    private static final int ZERO_DISTANCE = 0;
-
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sectionList = new LinkedList<>();
 
@@ -28,9 +26,7 @@ public class Sections {
         sectionList.addAll(Lists.newArrayList(sections));
     }
 
-    public void addSection(Line line, Station upStation, Station downStation, Integer distance) {
-        verifyDistanceMoreThanZero(distance);
-
+    public void addSection(Line line, Station upStation, Station downStation, Distance distance) {
         if (sectionList.isEmpty()) {
             sectionList.add(new Section(line, upStation, downStation, distance));
             return;
@@ -48,20 +44,14 @@ public class Sections {
                 .orElseThrow(() -> new CannotAddSectionException(NO_MATCHED_STATION));
     }
 
-    private void replaceSection(Section previouSection, List<Section> appendedSections) {
-        int previousLineStationIndex = sectionList.indexOf(previouSection);
+    private void replaceSection(Section previousSection, List<Section> appendedSections) {
+        int previousLineStationIndex = sectionList.indexOf(previousSection);
         sectionList.remove(previousLineStationIndex);
         sectionList.addAll(previousLineStationIndex, appendedSections);
     }
 
     public Stream<Section> stream() {
         return sectionList.stream();
-    }
-
-    private void verifyDistanceMoreThanZero(Integer distance) {
-        if (distance <= ZERO_DISTANCE) {
-            throw new CannotAddSectionException(CannotAddSectionException.DISTANCE_LESS_THAN_ZERO);
-        }
     }
 
     @Override

@@ -35,12 +35,16 @@ public class Section {
     private Station downStation;
 
     @Column(nullable = false)
-    private Integer distance;
+    private Distance distance;
 
     protected Section() {
     }
 
     public Section(Line line, Station upStation, Station downStation, Integer distance) {
+        this(line, upStation, downStation, Distance.valueOf(distance));
+    }
+
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -55,7 +59,7 @@ public class Section {
         return downStation;
     }
 
-    public Integer getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
@@ -89,7 +93,7 @@ public class Section {
         return isUpStation(otherUpStation) && !isDownStation(otherDownStation);
     }
 
-    public List<Section> addSection(Station upStation, Station downStation, Integer distance) {
+    public List<Section> addSection(Station upStation, Station downStation, Distance distance) {
         if (canSplitByUpStation(upStation, downStation)) {
             return splitSectionByUpStation(downStation, distance);
         }
@@ -105,14 +109,14 @@ public class Section {
         throw new CannotAddSectionException(NO_MATCHED_STATION);
     }
 
-    private List<Section> addOnUpStation(Station appendedUpStation, Integer distance) {
+    private List<Section> addOnUpStation(Station appendedUpStation, Distance distance) {
         return Lists.newArrayList(
             new Section(line, appendedUpStation, this.upStation, distance),
             this
         );
     }
 
-    private List<Section> addOnDownStation(Station appendedDownStation, Integer distance) {
+    private List<Section> addOnDownStation(Station appendedDownStation, Distance distance) {
         return Lists.newArrayList(
                 this,
             new Section(line, this.downStation, appendedDownStation, distance)
@@ -127,23 +131,15 @@ public class Section {
         return downStation.equals(upStation);
     }
 
-    private List<Section> splitSectionByUpStation(Station appendedStation, Integer distance) {
-        verifyDistance(distance);
-        return addSection(appendedStation, distance,this.distance - distance);
+    private List<Section> splitSectionByUpStation(Station appendedStation, Distance otherDistance) {
+        return addSection(appendedStation, otherDistance, this.distance.subtract(otherDistance));
     }
 
-    private List<Section> splitSectionByDownStation(Station appendedStation, Integer distance) {
-        verifyDistance(distance);
-        return addSection(appendedStation, this.distance - distance, distance);
+    private List<Section> splitSectionByDownStation(Station appendedStation, Distance otherDistance) {
+        return addSection(appendedStation, this.distance.subtract(otherDistance), otherDistance);
     }
 
-    private void verifyDistance(Integer distance) {
-        if (this.distance <= distance) {
-            throw new CannotAddSectionException(CannotAddSectionException.LONGER_THAN_SECTION);
-        }
-    }
-
-    private List<Section> addSection(Station appendedStation, Integer upDistance, Integer downDistance) {
+    private List<Section> addSection(Station appendedStation, Distance upDistance, Distance downDistance) {
         return Lists.newArrayList(
                 new Section(line, this.upStation, appendedStation, upDistance),
                 new Section(line, appendedStation, this.downStation, downDistance)

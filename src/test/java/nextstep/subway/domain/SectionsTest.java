@@ -28,7 +28,7 @@ class SectionsTest {
         Section 구간 = new Section(노선, 기준_상행역, 하행역, 10);
 
         Station 새로운_하행역 = new Station("신촌");
-        List<Section> 새로운_구간 = 구간.addSection(기준_상행역, 새로운_하행역, 4);
+        List<Section> 새로운_구간 = 구간.addSection(기준_상행역, 새로운_하행역, Distance.valueOf(4));
 
         assertThat(새로운_구간)
                 .isEqualTo(Lists.newArrayList(
@@ -45,7 +45,7 @@ class SectionsTest {
         Section 구간 = new Section(노선, 상행역, 기준_하행역, 10);
 
         Station 새로운_하행역 = new Station("신촌");
-        List<Section> 새로운_구간 = 구간.addSection(새로운_하행역, 기준_하행역, 4);
+        List<Section> 새로운_구간 = 구간.addSection(새로운_하행역, 기준_하행역, Distance.valueOf(4));
 
         assertThat(새로운_구간)
                 .isEqualTo(Lists.newArrayList(

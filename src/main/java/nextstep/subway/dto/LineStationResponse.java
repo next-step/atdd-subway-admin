@@ -34,6 +34,6 @@ public class LineStationResponse {
 		return new LineStationResponse(
 				StationResponse.of(section.getUpStation()),
 				StationResponse.of(section.getDownStation()),
-				section.getDistance());
+				section.getDistance().getValue());
 	}
 }
