@@ -13,7 +13,7 @@ import java.util.Map;
 
 public class LineAcceptance {
     public static ExtractableResponse<Response> create_line(String name, String color, Long upStationId,
-        Long downStationId, int distance) {
+            Long downStationId, int distance) {
         LineRequest request = new LineRequest(name, color, upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()

@@ -4,9 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.station.acceptance.StationAcceptance;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
@@ -19,19 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @DisplayName("지하철 노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {
 
-    private Long upStationId;
-    private Long downStationId;
-    private Long lineId;
-
-    @BeforeEach
-    @Order(1)
-    void initDefaultParameters() {
-        upStationId = StationAcceptance.getStationId(StationAcceptance.create_station("강남역"));
-        downStationId = StationAcceptance.getStationId(StationAcceptance.create_station("양재역"));
-        lineId = LineAcceptance.getLineId(
-                LineAcceptance.create_line("신분당선", "bg-red-600", upStationId, downStationId, 10));
-    }
-
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
@@ -40,7 +25,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        // initDefaultParameters()
+        Long upStationId = StationAcceptance.getStationId(StationAcceptance.create_station("강남역"));
+        Long downStationId = StationAcceptance.getStationId(StationAcceptance.create_station("양재역"));
+        LineAcceptance.getLineId(
+                LineAcceptance.create_line("신분당선", "bg-red-600", upStationId, downStationId, 10));
 
         // then
         List<String> lineNames = LineAcceptance.line_list_was_queried();
@@ -56,6 +44,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
+        Long upStationId = StationAcceptance.getStationId(StationAcceptance.create_station("강남역"));
+        Long downStationId = StationAcceptance.getStationId(StationAcceptance.create_station("양재역"));
+        LineAcceptance.getLineId(
+                LineAcceptance.create_line("신분당선", "bg-red-600", upStationId, downStationId, 10));
         Long downStationId2 = StationAcceptance.getStationId(StationAcceptance.create_station("역삼역"));
         LineAcceptance.create_line("2호선", "bg-green-600", upStationId, downStationId2, 10);
 
@@ -75,7 +67,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // initDefaultParameters()
+        Long upStationId = StationAcceptance.getStationId(StationAcceptance.create_station("강남역"));
+        Long downStationId = StationAcceptance.getStationId(StationAcceptance.create_station("양재역"));
+        Long lineId = LineAcceptance.getLineId(
+                LineAcceptance.create_line("신분당선", "bg-red-600", upStationId, downStationId, 10));
 
         // when
         String name = LineAcceptance.line_was_queried(lineId);
@@ -93,7 +88,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        // initDefaultParameters()
+        Long upStationId = StationAcceptance.getStationId(StationAcceptance.create_station("강남역"));
+        Long downStationId = StationAcceptance.getStationId(StationAcceptance.create_station("양재역"));
+        Long lineId = LineAcceptance.getLineId(
+                LineAcceptance.create_line("신분당선", "bg-red-600", upStationId, downStationId, 10));
 
         // when
         LineAcceptance.update_line(lineId, "다른분당선", "bg-red-600");
@@ -112,7 +110,10 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        // initDefaultParameters()
+        Long upStationId = StationAcceptance.getStationId(StationAcceptance.create_station("강남역"));
+        Long downStationId = StationAcceptance.getStationId(StationAcceptance.create_station("양재역"));
+        Long lineId = LineAcceptance.getLineId(
+                LineAcceptance.create_line("신분당선", "bg-red-600", upStationId, downStationId, 10));
 
         // when
         ExtractableResponse<Response> response = LineAcceptance.delete_line(lineId);
