@@ -184,6 +184,34 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 추가하는 상행역, 하행역 모두 존재하지 않으면
+     * Then 새로운 지하철 역을 추가할 수 없다
+     */
+    @DisplayName("상행역, 하행역 모두 존재하지 않는 경우 추가할 수 없다")
+    @Test
+    void addNotExistSectionException() {
+        // given
+        int distance = 10;
+        Long upStationId = StationAcceptanceTest.지하철_역_생성("판교역")
+                .jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTest.지하철_역_생성("강남역")
+                .jsonPath().getLong("id");
+        Long lineId = 지하철_노선_생성("신분당선", "주황색", upStationId, downStationId, distance)
+                .jsonPath().getLong("id");
+        Long newStationId1 = StationAcceptanceTest.지하철_역_생성("양재역")
+                .jsonPath().getLong("id");
+        Long newStationId2 = StationAcceptanceTest.지하철_역_생성("양재시민의숲")
+                .jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, newStationId1, newStationId2, 4);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> 지하철_구간_추가(
             Long lineId,
             Long upStationId,
