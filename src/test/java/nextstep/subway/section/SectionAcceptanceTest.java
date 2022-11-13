@@ -75,7 +75,7 @@ class SectionAcceptanceTest extends SubwayAcceptanceTest {
         int 거리 = 5;
 
         SectionAcceptanceTestRequest 구간요청정보
-                = new SectionAcceptanceTestRequest(노선응답정보.노선_식별자, 상행역_식별자, 노선응답정보.하행종점역_식별자, 거리);
+                = new SectionAcceptanceTestRequest(노선응답정보.노선_식별자, 상행역_식별자, 노선응답정보.상행종점역_식별자, 거리);
         구간_등록(구간요청정보);
 
         ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회(노선응답정보.노선_식별자);
@@ -111,7 +111,14 @@ class SectionAcceptanceTest extends SubwayAcceptanceTest {
      */
     @Test
     void 역_사이에_구간_등록시_역_사이_길이보다_크거나_같으면_구간을_등록할_수_없다() {
+        long 새로운_하행역_식별자 = 지하철역_식별자(지하철역_생성("가양역"));
+        int 거리 = 10;
 
+        SectionAcceptanceTestRequest 구간요청정보
+                = new SectionAcceptanceTestRequest(노선응답정보.노선_식별자, 노선응답정보.상행종점역_식별자, 새로운_하행역_식별자, 거리);
+        ExtractableResponse<Response> 응답 = 구간_등록(구간요청정보);
+
+        구간_등록_실패함(응답);
     }
 
     /**

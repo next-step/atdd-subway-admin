@@ -2,6 +2,7 @@ package nextstep.subway.section;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,10 @@ class SectionAcceptanceTestAssertions {
     static void 구간_등록됨(ExtractableResponse<Response> 노선_응답) {
         List<Object> 구간 = 노선_응답.body().jsonPath().getList(SECTIONS);
         assertThat(구간.isEmpty()).isFalse();
+    }
+
+    static void 구간_등록_실패함(ExtractableResponse<Response> 노선_응답) {
+        assertThat(노선_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     static void 구간_거리_등록됨(ExtractableResponse<Response> 노선_응답, int 거리) {

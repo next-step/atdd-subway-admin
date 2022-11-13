@@ -1,5 +1,7 @@
 package nextstep.subway.section;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.apache.groovy.util.Maps;
 
 import java.util.Map;
@@ -13,8 +15,8 @@ class SectionAcceptanceTestAssured {
     static String UP_STATION_ID = "upStationId";
     static String DOWN_STATION_ID = "downStationId";
 
-    static void 구간_등록(SectionAcceptanceTestRequest 구간요청정보) {
-        post(요청_주소(구간요청정보.노선_식별자), 요청_본문(구간요청정보));
+    static ExtractableResponse<Response> 구간_등록(SectionAcceptanceTestRequest 구간요청정보) {
+        return post(요청_주소(구간요청정보.노선_식별자), 요청_본문(구간요청정보));
     }
 
     private static Map<String, String> 요청_본문(SectionAcceptanceTestRequest 구간요청정보) {
