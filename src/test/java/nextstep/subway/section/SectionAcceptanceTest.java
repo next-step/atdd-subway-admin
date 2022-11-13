@@ -11,7 +11,10 @@ import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_생성;
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_조회;
-import static nextstep.subway.section.SectionAcceptanceTestAssertions.*;
+import static nextstep.subway.section.SectionAcceptanceTestAssertions.구간_거리_등록됨;
+import static nextstep.subway.section.SectionAcceptanceTestAssertions.구간_등록_실패함;
+import static nextstep.subway.section.SectionAcceptanceTestAssertions.구간_등록됨;
+import static nextstep.subway.section.SectionAcceptanceTestAssertions.총_구간_거리_합이_같음;
 import static nextstep.subway.section.SectionAcceptanceTestAssured.구간_등록;
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_생성;
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_식별자;

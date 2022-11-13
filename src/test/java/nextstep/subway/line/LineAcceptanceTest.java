@@ -10,8 +10,15 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 import java.util.List;
 
-import static nextstep.subway.line.LineAcceptanceTestAssertions.*;
-import static nextstep.subway.line.LineAcceptanceTestAssured.*;
+import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선_삭제됨;
+import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선_생성됨;
+import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선_존재함;
+import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_목록_조회;
+import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_삭제;
+import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_생성;
+import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_수정;
+import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_조회;
+
 
 @DisplayName("지하철 노선 관련 기능 ")
 class LineAcceptanceTest extends SubwayAcceptanceTest {
