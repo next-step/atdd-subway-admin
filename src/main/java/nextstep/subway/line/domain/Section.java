@@ -3,7 +3,6 @@ package nextstep.subway.line.domain;
 import nextstep.subway.common.BaseEntity;
 import nextstep.subway.line.exception.SectionExceptionCode;
 import nextstep.subway.station.domain.Station;
-import nextstep.subway.utils.NumberUtil;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -27,31 +26,19 @@ public class Section extends BaseEntity {
     @JoinColumn(nullable = false)
     private Station downStation;
 
-    @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
-        validate(line, upStation, downStation, distance);
+    public Section(Station upStation, Station downStation, int distance) {
+        validateStations(upStation, downStation);
 
         updateLine(line);
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
-    }
-
-    private void validate(Line line, Station upStation, Station downStation, int distance) {
-        validateLine(line);
-        validateStations(upStation, downStation);
-        validateDistance(distance);
-    }
-
-    private void validateLine(Line line) {
-        if(Objects.isNull(line)) {
-            throw new IllegalArgumentException(SectionExceptionCode.REQUIRED_LINE.getMessage());
-        }
+        this.distance = new Distance(distance);
     }
 
     private void validateStations(Station upStation, Station downStation) {
@@ -69,17 +56,34 @@ public class Section extends BaseEntity {
         }
     }
 
-    private void validateDistance(int distance) {
-        if(!NumberUtil.isPositiveNumber(distance)) {
-            throw new IllegalArgumentException(SectionExceptionCode.INVALID_DISTANCE.getMessage());
-        }
-    }
-
     void updateLine(Line line) {
         if(this.line != line) {
             this.line = line;
             line.addSection(this);
         }
+    }
+
+    public void update(Section request) {
+        if(equals(request)) {
+            throw new IllegalArgumentException(
+                    SectionExceptionCode.CANNOT_UPDATE_SAME_SECTION.getMessage());
+        }
+
+        distance.calculate(request.getDistance());
+        this.upStation = request.downStation;
+    }
+
+    public boolean hasAnyStation(Section request) {
+        return equalsUpStation(request.getUpStation()) || equalsDownStation(request.getDownStation())
+                || equalsUpStation(request.getDownStation()) || equalsDownStation(request.getUpStation());
+    }
+
+    public boolean equalsUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean equalsDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public Station getUpStation() {
@@ -88,6 +92,10 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public int getDistance() {
+        return distance.getDistance();
     }
 
     @Override
