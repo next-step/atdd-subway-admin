@@ -1,5 +1,6 @@
-package nextstep.subway.station;
+package nextstep.subway.Acceptance.station;
 
+import static io.restassured.RestAssured.UNDEFINED_PORT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -8,26 +9,34 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.ActiveProfiles;
 
 @DisplayName("지하철역 관련 기능")
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@ActiveProfiles("acceptance")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     public void setUp() {
-        RestAssured.port = port;
+        if(RestAssured.port == UNDEFINED_PORT){
+            RestAssured.port = port;
+            databaseCleanup.afterPropertiesSet();
+        }
+        databaseCleanup.execute();
     }
 
     /**
@@ -109,7 +118,7 @@ public class StationAcceptanceTest {
         assertThat(stationNames).doesNotContain(강남역);
     }
 
-    private static ExtractableResponse<Response> 지하철역_신규_생성_요청(String name) {
+    public static ExtractableResponse<Response> 지하철역_신규_생성_요청(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
