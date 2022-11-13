@@ -60,7 +60,7 @@ public class LineAcceptanceTest {
     void createLine() {
         //given
         LineRequest request = LineRequest.builder()
-                .name("삼성역")
+                .name("2호선")
                 .color("red darken-2")
                 .distance(100)
                 .upLastStationId(upLastStationId)
@@ -72,12 +72,26 @@ public class LineAcceptanceTest {
         List<String> allLineNames = 모든_노선_이름을_조회한다();
 
         //then
-        노선_이름이_조회된다(allLineNames, "삼성역");
-
-
+        노선_이름이_조회된다(allLineNames, "2호선");
     }
 
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철노선 목록 조회")
+    @Test
+    void findLines() {
+        //given
+        노선_여러개_생성();
 
+        //when
+        ExtractableResponse<Response> allLines = 모든_노선을_조회한다();
+
+        //then
+        노선의_수가_일치한다(allLines, 2);
+    }
 
     public ExtractableResponse<Response> 노선을_생성한다(LineRequest request) {
         return RestAssured.given()
@@ -99,4 +113,40 @@ public class LineAcceptanceTest {
     private void 노선_이름이_조회된다(List<String> allLineNames, String lineName) {
         assertThat(allLineNames).containsAnyOf(lineName);
     }
+
+    private void 노선_여러개_생성() {
+        LineRequest request1 = LineRequest.builder()
+                .name("2호선")
+                .color("red darken-2")
+                .distance(100)
+                .upLastStationId(upLastStationId)
+                .downLastStationId(downLastStationId)
+                .build();
+        노선을_생성한다(request1);
+
+        LineRequest request2 = LineRequest.builder()
+                .name("분당선")
+                .color("yellow darken-1")
+                .distance(20)
+                .upLastStationId(upLastStationId)
+                .downLastStationId(downLastStationId)
+                .build();
+        노선을_생성한다(request2);
+    }
+
+
+    private ExtractableResponse<Response> 모든_노선을_조회한다() {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private void 노선의_수가_일치한다(ExtractableResponse<Response> allLines, int size) {
+        assertThat(allLines.jsonPath().getList("name", String.class)).hasSize(size);
+    }
+
+
+
 }
