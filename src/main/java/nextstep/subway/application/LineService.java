@@ -3,7 +3,6 @@ package nextstep.subway.application;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,17 +22,17 @@ public class LineService {
     private LineRepository lineRepository;
 
     @Autowired
-    private StationRepository stationRepository;
+    private StationService stationService;
 
-
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = getStationById(lineRequest.getUpStationId());
-        Station downStation = getStationById(lineRequest.getDownStationId());
+        Station upStation = stationService.getStationById(lineRequest.getUpStationId());
+        Station downStation = stationService.getStationById(lineRequest.getDownStationId());
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.from(persistLine);
     }
@@ -42,6 +42,10 @@ public class LineService {
         return lines.stream()
                 .map(line -> LineResponse.from(line))
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findLineById(Long id) {
+        return LineResponse.from(getLineById(id));
     }
 
     @Transactional
@@ -55,17 +59,8 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    public LineResponse findLineById(Long id) {
-        return LineResponse.from(getLineById(id));
-    }
-
-    private Station getStationById(Long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("지하철역이 존재하지 않습니다."));
-    }
-
     private Line getLineById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException("노선이 존재하지 않습니다."));
     }
 }

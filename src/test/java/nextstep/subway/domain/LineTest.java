@@ -38,4 +38,27 @@ public class LineTest {
                 () -> assertThatIllegalArgumentException().isThrownBy(() -> Line.of(null, "색깔", upStation, downStation))
         );
     }
+
+    @Test
+    @DisplayName("노선은 이름, 색깔을 받아 업데이트 한다")
+    void 업데이트() {
+        // given
+        String name = "8호선";
+        String color = "분홍색";
+        Station upStation = new Station("잠실역");
+        Station downStation = new Station("장지역");
+        Line line = Line.of(name, color, upStation, downStation);
+
+        // when
+        String newName = "1호선";
+        String newColor = "파랑색";
+        line.update(newName, newColor);
+
+        // then
+        assertAll(
+                () -> assertThat(line.getName()).isEqualTo(newName),
+                () -> assertThat(line.getColor()).isEqualTo(newColor)
+        );
+
+    }
 }
