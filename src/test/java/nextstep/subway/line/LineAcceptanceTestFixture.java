@@ -65,4 +65,25 @@ public class LineAcceptanceTestFixture {
             .then().log().all()
             .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정(Long id, String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given().log().all()
+            .body(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_삭제(Long id) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete("/lines/" + id)
+            .then().log().all()
+            .extract();
+    }
 }

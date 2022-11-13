@@ -42,14 +42,14 @@ public class LineAcceptanceTest {
     @Test
     void createStationLine() {
         // when
-        String name = "2호선";
-        지하철_노선_생성_강남_잠실(name);
+        String LINE_2 = "2호선";
+        지하철_노선_생성_강남_잠실(LINE_2);
 
         // then
         ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_목록_조회();
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.body().jsonPath().getList("name", String.class)).contains(name)
+            () -> assertThat(response.body().jsonPath().getList("name", String.class)).contains(LINE_2)
         );
     }
 
@@ -62,11 +62,11 @@ public class LineAcceptanceTest {
     @Test
     void getStationLines() {
         // given
-        String name1 = "2호선";
-        지하철_노선_생성_강남_잠실(name1);
+        String LINE_2 = "2호선";
+        지하철_노선_생성_강남_잠실(LINE_2);
 
-        String name2 = "분당선";
-        지하철_노선_생성_왕십리_죽전(name2);
+        String LINE_BUNDANG = "분당선";
+        지하철_노선_생성_왕십리_죽전(LINE_BUNDANG);
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_목록_조회();
@@ -74,7 +74,7 @@ public class LineAcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.body().jsonPath().getList("name", String.class)).contains(name1, name2)
+            () -> assertThat(response.body().jsonPath().getList("name", String.class)).contains(LINE_2, LINE_BUNDANG)
         );
     }
 
@@ -87,8 +87,8 @@ public class LineAcceptanceTest {
     @Test
     void getStationLine() {
         // given
-        String name = "2호선";
-        Long id = 지하철_노선_생성_강남_잠실(name).body().jsonPath().getLong("id");
+        String LINE_2 = "2호선";
+        Long id = 지하철_노선_생성_강남_잠실(LINE_2).body().jsonPath().getLong("id");
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_조회(id);
@@ -96,7 +96,49 @@ public class LineAcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo(name)
+            () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_2)
         );
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철노선 수정")
+    @Test
+    void updateStationLine() {
+        // given
+        Long id = 지하철_노선_생성_강남_잠실("2호선").body().jsonPath().getLong("id");
+
+        // when
+        String CHANGED_NAME = "8호선";
+        String CHANGED_COLOR = "bg-red-600";
+        ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_수정(id, CHANGED_NAME, CHANGED_COLOR);
+
+        // then
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo(CHANGED_NAME),
+            () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo(CHANGED_COLOR)
+        );
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철노선 삭제")
+    @Test
+    void deleteStationLine() {
+        // given
+        Long id = 지하철_노선_생성_강남_잠실("2호선").body().jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_삭제(id);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
