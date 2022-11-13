@@ -22,7 +22,8 @@ import static nextstep.subway.exception.StationExceptionMessage.NONE_EXISTS_STAT
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
-    public LineService(LineRepository lineRepository,StationRepository stationRepository) {
+
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
     }
@@ -31,19 +32,18 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = findStation(lineRequest.getUpStationId());
         Station downStation = findStation(lineRequest.getDownStationId());
-        Line persistStation = lineRepository.save(lineRequest.toLine(upStation,downStation));
+        Line persistStation = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.from(persistStation);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-        return lines.stream()
-                .map(LineResponse::from)
-                .collect(Collectors.toList());
+        return lines.stream().map(LineResponse::from).collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
         return LineResponse.from(line);
     }
 
@@ -53,13 +53,15 @@ public class LineService {
     }
 
     @Transactional
-    public void modifyLine(Long id,LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
-        line.modifyLine(lineRequest.getName(),lineRequest.getColor());
+    public void modifyLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
+        line.modifyLine(lineRequest.getName(), lineRequest.getColor());
     }
 
-    private Station findStation(Long id){
-        return stationRepository.findById(id).orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+    private Station findStation(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
     }
 }
 
