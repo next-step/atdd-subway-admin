@@ -15,7 +15,7 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
-import static nextstep.subway.common.Common.지하철역을_생성한다;
+import static nextstep.subway.station.acceptance.StationAcceptaneRequest.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
