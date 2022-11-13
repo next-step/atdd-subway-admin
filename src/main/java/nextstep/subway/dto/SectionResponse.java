@@ -12,7 +12,7 @@ public class SectionResponse {
     private final LocalDateTime createdDate;
     private final LocalDateTime modifiedDate;
 
-    public static SectionResponse of(Section section) {
+    public static SectionResponse from(Section section) {
         return new SectionResponse(section.getId(), section.getUpStation().getId(), section.getDownStation().getId(),
                 section.getDistance(), section.getCreatedDate(), section.getModifiedDate());
     }

@@ -28,21 +28,21 @@ public class LineService {
         Station downStation = stationService.findById(lineRequest.getDownStationId());
         Section section = new Section(upStation, downStation, lineRequest.getDistance());
         Line line = Line.of(lineRequest.getName(), lineRequest.getColor(), section);
-        return LineResponse.of(lineRepository.save(line));
+        return LineResponse.from(lineRepository.save(line));
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(LineResponse::of)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLine(final Long id) {
         Line persistLine = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(id + "번 노선을 찾을 수 없습니다."));
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     @Transactional
@@ -56,7 +56,7 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException(id + "번 노선을 찾을 수 없습니다."));
         persistLine.changeName(lineRequest.getName());
         persistLine.changeColor(lineRequest.getColor());
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     public Line findById(final Long lineId) {
@@ -74,7 +74,7 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException(lineId + "번 노선을 찾을 수 없습니다."));
         line.addSection(section);
         lineRepository.flush();
-        return SectionResponse.of(section);
+        return SectionResponse.from(section);
     }
 
     public List<SectionResponse> findAllSections(final Long lineId) {
@@ -82,7 +82,7 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException(lineId + "번 노선을 찾을 수 없습니다."));
 
         return line.getSections().stream()
-                .map(SectionResponse::of)
+                .map(SectionResponse::from)
                 .collect(Collectors.toList());
     }
 
