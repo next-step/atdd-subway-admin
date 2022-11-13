@@ -66,7 +66,8 @@ public class Sections {
     }
 
     private boolean isNotContainAnyStation(Section section) {
-        return findStations().stream().noneMatch(station -> section.stations().contains(station));
+        return findStations().stream()
+                .noneMatch(station -> section.stations().contains(station));
     }
 
     private void updateLineDistance(Section section) {
@@ -74,12 +75,14 @@ public class Sections {
     }
 
     private Optional<Section> findUpdateUpStationSection(Section newSection) {
-        return sections.stream().filter(section -> section.isSameUpStation(newSection))
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(newSection))
                 .findFirst();
     }
 
     private Optional<Section> findUpdateDownStationSection(Section newSection) {
-        return sections.stream().filter(section -> section.isSameDownStation(newSection))
+        return sections.stream()
+                .filter(section -> section.isSameDownStation(newSection))
                 .findFirst();
     }
 }
