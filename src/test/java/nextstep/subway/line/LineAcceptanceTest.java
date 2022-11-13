@@ -98,4 +98,23 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_조회 = 지하철_노선_조회(지하철_노선_생성.jsonPath().getLong("id"));
         수정된_지하철_노선_정보를_검증한다(지하철_노선_조회, "신분당선", "bg-yellow-600");
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철 노선을 생성하고 삭제하면 지하철 노선 조회 시 목록에서 제외된다.")
+    @Test
+    void deleteLine() {
+        // given
+        ExtractableResponse<Response> 지하철_노선_생성 = 지하철_노선_생성("2호선", "bg-red-600", upStationId, downStationId, 15);
+
+        // when
+        ExtractableResponse<Response> 지하철_노선_삭제 = 지하철_노선_삭제(지하철_노선_생성.jsonPath().getLong("id"));
+
+        // then
+        응답코드가_일치한다(지하철_노선_삭제.statusCode(), HttpStatus.OK);
+        지하철_노선_목록에서_삭제되었는지_검증한다(지하철_노선_이름_전체_목록());
+    }
 }

@@ -49,4 +49,9 @@ public class LineService {
                 .orElseThrow(IllegalArgumentException::new);
         line.updateNameAndColor(request.getName(), request.getColor());
     }
+
+    @Transactional
+    public void deleteById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
