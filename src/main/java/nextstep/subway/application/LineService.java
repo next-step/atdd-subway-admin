@@ -1,14 +1,14 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -16,10 +16,12 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
+    private final LineStationRepository lineStationRepository;
     private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, LineStationRepository lineStationRepository, StationService stationService) {
         this.lineRepository = lineRepository;
+        this.lineStationRepository = lineStationRepository;
         this.stationService = stationService;
     }
 
@@ -29,6 +31,11 @@ public class LineService {
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());
 
         Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance()));
+        line.initLineStations(Arrays.asList(
+                lineStationRepository.save(new LineStation(null, upStation, 0, line)),
+                lineStationRepository.save(new LineStation(upStation, downStation, lineRequest.getDistance(), line)),
+                lineStationRepository.save(new LineStation(downStation, null, 0, line))
+        ));
 
         return LineResponse.of(line);
     }
@@ -65,5 +72,19 @@ public class LineService {
         );
 
         lineRepository.delete(line);
+    }
+
+    @Transactional
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(lineId).orElseThrow(
+                () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
+        );
+        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+        LineStation lineStation = new LineStation(upStation, downStation, sectionRequest.getDistance(), line);
+
+        line.addLineStation(lineStation);
+
+        return LineResponse.of(line);
     }
 }

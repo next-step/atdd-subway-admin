@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineUpdateRequest;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,7 +20,7 @@ public class Line extends BaseEntity {
     private int distance;
 
     @Embedded
-    private final LineStations lineStations = new LineStations();
+    private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
@@ -28,6 +29,10 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
         this.distance = distance;
+    }
+
+    public void initLineStations(List<LineStation> lineStations) {
+        this.lineStations = new LineStations(lineStations);
     }
 
     public void update(LineUpdateRequest lineUpdateRequest) {
@@ -39,8 +44,8 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void addStation(Station station) {
-        lineStations.add(station);
+    public void addLineStation(LineStation lineStation) {
+        lineStations.add(lineStation);
     }
 
     public Long getId() {

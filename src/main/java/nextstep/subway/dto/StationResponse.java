@@ -18,7 +18,7 @@ public class StationResponse {
     }
 
     public static List<StationResponse> of(LineStations lineStations) {
-        return lineStations.getLineStations().stream().map(StationResponse::of).collect(Collectors.toList());
+        return lineStations.getStationsInOrder().stream().map(StationResponse::of).collect(Collectors.toList());
     }
 
     public StationResponse() {

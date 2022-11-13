@@ -4,10 +4,14 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.DatabaseCleaner;
 import nextstep.subway.dto.LineRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -19,6 +23,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineStationAcceptanceTest {
+    @LocalServerPort
+    int port;
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @BeforeEach
+    public void setUp() {
+        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
+            RestAssured.port = port;
+        }
+        databaseCleaner.clear();
+    }
+
     /**
      * Given 역 2개와 노선을 생성하고
      * When 사이에 새로운 역을 등록하면
@@ -42,8 +59,8 @@ class LineStationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(이호선.getLong("id"));
-        assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(getResponse.jsonPath().getList("lineStations")).hasSize(3);
+        assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.jsonPath().getList("stations")).hasSize(3);
     }
 
     /**
@@ -70,7 +87,7 @@ class LineStationAcceptanceTest {
         // then
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(이호선.getLong("id"));
         assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(getResponse.jsonPath().getList("lineStations")).hasSize(3);
+        assertThat(getResponse.jsonPath().getList("stations")).hasSize(3);
         assertThat(com.jayway.jsonpath.JsonPath.parse(getResponse.jsonPath()).read("$.name[0]").equals("교대역")).isTrue();
     }
 
@@ -98,7 +115,7 @@ class LineStationAcceptanceTest {
         // then
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(이호선.getLong("id"));
         assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(getResponse.jsonPath().getList("lineStations")).hasSize(3);
+        assertThat(getResponse.jsonPath().getList("stations")).hasSize(3);
         assertThat(com.jayway.jsonpath.JsonPath.parse(getResponse.jsonPath()).read("$.name[2]").equals("삼성역")).isTrue();
     }
 
@@ -126,7 +143,7 @@ class LineStationAcceptanceTest {
         // then
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(이호선.getLong("id"));
         assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(getResponse.jsonPath().getList("lineStations")).hasSize(2);
+        assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
     /**
@@ -152,7 +169,7 @@ class LineStationAcceptanceTest {
         // then
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(이호선.getLong("id"));
         assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(getResponse.jsonPath().getList("lineStations")).hasSize(2);
+        assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
     /**
@@ -179,7 +196,7 @@ class LineStationAcceptanceTest {
         // then
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(이호선.getLong("id"));
         assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-        assertThat(getResponse.jsonPath().getList("lineStations")).hasSize(2);
+        assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
     private JsonPath 지하철_역_생성(String name) {
@@ -212,7 +229,7 @@ class LineStationAcceptanceTest {
         return RestAssured.given().log().all()
                 .body(paramMap)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/" + lineId + "/sections")
+                .when().post("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract();
     }
@@ -220,7 +237,7 @@ class LineStationAcceptanceTest {
     private ExtractableResponse<Response> 노선_아이디로_지하철역_조회(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/" + lineId + "/stations")
+                .when().get("/lines/" + lineId)
                 .then().log().all()
                 .extract();
     }
