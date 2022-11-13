@@ -14,48 +14,48 @@ import java.util.stream.Stream;
 import static nextstep.subway.exception.CannotAddSectionException.NO_MATCHED_STATION;
 
 @Embeddable
-public class LineStations {
+public class Sections {
 
     private static final int ZERO_DISTANCE = 0;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<LineStation> lineStationList = new LinkedList<>();
+    private List<Section> sectionList = new LinkedList<>();
 
-    protected LineStations() {
+    protected Sections() {
     }
 
-    public LineStations(LineStation ...lineStations) {
-        lineStationList.addAll(Lists.newArrayList(lineStations));
+    public Sections(Section... sections) {
+        sectionList.addAll(Lists.newArrayList(sections));
     }
 
     public void addSection(Line line, Station upStation, Station downStation, Integer distance) {
         verifyDistanceMoreThanZero(distance);
 
-        if (lineStationList.isEmpty()) {
-            lineStationList.add(new LineStation(line, upStation, downStation, distance));
+        if (sectionList.isEmpty()) {
+            sectionList.add(new Section(line, upStation, downStation, distance));
             return;
         }
-        LineStation previousSection = getPreviousSection(upStation, downStation);
-        List<LineStation> appendedSections = previousSection.addSection(upStation, downStation, distance);
+        Section previousSection = getPreviousSection(upStation, downStation);
+        List<Section> appendedSections = previousSection.addSection(upStation, downStation, distance);
 
         replaceSection(previousSection, appendedSections);
     }
 
-    private LineStation getPreviousSection(Station upStation, Station downStation) {
-        return lineStationList.stream()
-                .filter(lineStation -> lineStation.canAddSection(upStation, downStation))
+    private Section getPreviousSection(Station upStation, Station downStation) {
+        return sectionList.stream()
+                .filter(section -> section.canAddSection(upStation, downStation))
                 .findFirst()
                 .orElseThrow(() -> new CannotAddSectionException(NO_MATCHED_STATION));
     }
 
-    private void replaceSection(LineStation previouSection, List<LineStation> appendedSections) {
-        int previousLineStationIndex = lineStationList.indexOf(previouSection);
-        lineStationList.remove(previousLineStationIndex);
-        lineStationList.addAll(previousLineStationIndex, appendedSections);
+    private void replaceSection(Section previouSection, List<Section> appendedSections) {
+        int previousLineStationIndex = sectionList.indexOf(previouSection);
+        sectionList.remove(previousLineStationIndex);
+        sectionList.addAll(previousLineStationIndex, appendedSections);
     }
 
-    public Stream<LineStation> stream() {
-        return lineStationList.stream();
+    public Stream<Section> stream() {
+        return sectionList.stream();
     }
 
     private void verifyDistanceMoreThanZero(Integer distance) {
@@ -72,19 +72,19 @@ public class LineStations {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        LineStations that = (LineStations) o;
-        return lineStationList.equals(that.lineStationList);
+        Sections that = (Sections) o;
+        return sectionList.equals(that.sectionList);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(lineStationList);
+        return Objects.hash(sectionList);
     }
 
     @Override
     public String toString() {
         return "LineStations{" +
-                "lineStationList=" + lineStationList +
+                "lineStationList=" + sectionList +
                 '}';
     }
 }

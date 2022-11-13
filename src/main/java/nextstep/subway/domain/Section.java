@@ -10,7 +10,7 @@ import java.util.Objects;
 import static nextstep.subway.exception.CannotAddSectionException.NO_MATCHED_STATION;
 
 @Entity
-public class LineStation {
+public class Section {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,10 +31,10 @@ public class LineStation {
     @Column(nullable = false)
     private Integer distance;
 
-    protected LineStation() {
+    protected Section() {
     }
 
-    public LineStation(Line line, Station upStation, Station downStation, Integer distance) {
+    public Section(Line line, Station upStation, Station downStation, Integer distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -83,7 +83,7 @@ public class LineStation {
         return isUpStation(otherUpStation) && !isDownStation(otherDownStation);
     }
 
-    public List<LineStation> addSection(Station upStation, Station downStation, Integer distance) {
+    public List<Section> addSection(Station upStation, Station downStation, Integer distance) {
         if (canSplitByUpStation(upStation, downStation)) {
             return splitSectionByUpStation(downStation, distance);
         }
@@ -99,17 +99,17 @@ public class LineStation {
         throw new CannotAddSectionException(NO_MATCHED_STATION);
     }
 
-    private List<LineStation> addOnUpStation(Station appendedUpStation, Integer distance) {
+    private List<Section> addOnUpStation(Station appendedUpStation, Integer distance) {
         return Lists.newArrayList(
-            new LineStation(line, appendedUpStation, this.upStation, distance),
+            new Section(line, appendedUpStation, this.upStation, distance),
             this
         );
     }
 
-    private List<LineStation> addOnDownStation(Station appendedDownStation, Integer distance) {
+    private List<Section> addOnDownStation(Station appendedDownStation, Integer distance) {
         return Lists.newArrayList(
                 this,
-            new LineStation(line, this.downStation, appendedDownStation, distance)
+            new Section(line, this.downStation, appendedDownStation, distance)
         );
     }
 
@@ -121,12 +121,12 @@ public class LineStation {
         return downStation.equals(upStation);
     }
 
-    public List<LineStation> splitSectionByUpStation(Station appendedStation, Integer distance) {
+    public List<Section> splitSectionByUpStation(Station appendedStation, Integer distance) {
         verifyDistance(distance);
         return addSection(appendedStation, distance,this.distance - distance);
     }
 
-    public List<LineStation> splitSectionByDownStation(Station appendedStation, Integer distance) {
+    public List<Section> splitSectionByDownStation(Station appendedStation, Integer distance) {
         verifyDistance(distance);
         return addSection(appendedStation, this.distance - distance, distance);
     }
@@ -137,10 +137,10 @@ public class LineStation {
         }
     }
 
-    private List<LineStation> addSection(Station appendedStation, Integer upDistance, Integer downDistance) {
+    private List<Section> addSection(Station appendedStation, Integer upDistance, Integer downDistance) {
         return Lists.newArrayList(
-                new LineStation(line, this.upStation, appendedStation, upDistance),
-                new LineStation(line, appendedStation, this.downStation, downDistance)
+                new Section(line, this.upStation, appendedStation, upDistance),
+                new Section(line, appendedStation, this.downStation, downDistance)
         );
     }
 
@@ -152,7 +152,7 @@ public class LineStation {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        LineStation that = (LineStation) o;
+        Section that = (Section) o;
         return line.equals(that.line)
                 && upStation.equals(that.upStation)
                 && downStation.equals(that.downStation)

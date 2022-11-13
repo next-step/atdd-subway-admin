@@ -1,7 +1,7 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineStations;
+import nextstep.subway.domain.Sections;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -40,8 +40,8 @@ public class LineResponse {
 			);
 	}
 
-	public static List<LineStationResponse> of(LineStations lineStations) {
-		return lineStations.stream()
+	public static List<LineStationResponse> of(Sections sections) {
+		return sections.stream()
 				.map(LineStationResponse::of)
 				.collect(Collectors.toList());
 	}

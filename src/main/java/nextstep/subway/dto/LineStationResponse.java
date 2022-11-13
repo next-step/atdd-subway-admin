@@ -1,6 +1,6 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.LineStation;
+import nextstep.subway.domain.Section;
 
 public class LineStationResponse {
 
@@ -30,10 +30,10 @@ public class LineStationResponse {
 		return distance;
 	}
 
-	public static LineStationResponse of(LineStation lineStation) {
+	public static LineStationResponse of(Section section) {
 		return new LineStationResponse(
-				StationResponse.of(lineStation.getUpStation()),
-				StationResponse.of(lineStation.getDownStation()),
-				lineStation.getDistance());
+				StationResponse.of(section.getUpStation()),
+				StationResponse.of(section.getDownStation()),
+				section.getDistance());
 	}
 }

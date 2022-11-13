@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-class LineStationsTest {
+class SectionsTest {
 
     Station 상행종점역 = new Station("합정역");
     Station 하행종점역 = new Station("신촌역");
@@ -22,9 +22,9 @@ class LineStationsTest {
         노선.addSection(상행종점역, 홍대역, 구간_거리);
 
         assertThat(노선.getLineStations())
-                .isEqualTo(new LineStations(
-                        new LineStation(노선, 상행종점역, 홍대역, 4),
-                        new LineStation(노선, 홍대역, 하행종점역, 6)
+                .isEqualTo(new Sections(
+                        new Section(노선, 상행종점역, 홍대역, 4),
+                        new Section(노선, 홍대역, 하행종점역, 6)
                         ));
 
     }
@@ -39,9 +39,9 @@ class LineStationsTest {
         노선.addSection(홍대역, 하행종점역, 구간_거리);
 
         assertThat(노선.getLineStations())
-                .isEqualTo(new LineStations(
-                        new LineStation(노선, 상행종점역, 홍대역, 6),
-                        new LineStation(노선, 홍대역, 하행종점역, 4)
+                .isEqualTo(new Sections(
+                        new Section(노선, 상행종점역, 홍대역, 6),
+                        new Section(노선, 홍대역, 하행종점역, 4)
                 ));
     }
 
@@ -55,9 +55,9 @@ class LineStationsTest {
         노선.addSection(홍대역, 상행종점역, 구간_거리);
 
         assertThat(노선.getLineStations())
-                .isEqualTo(new LineStations(
-                        new LineStation(노선, 홍대역, 상행종점역, 11),
-                        new LineStation(노선, 상행종점역, 하행종점역, 10)
+                .isEqualTo(new Sections(
+                        new Section(노선, 홍대역, 상행종점역, 11),
+                        new Section(노선, 상행종점역, 하행종점역, 10)
                 ));
     }
 
@@ -71,9 +71,9 @@ class LineStationsTest {
         노선.addSection(하행종점역, 홍대역, 구간_거리);
 
         assertThat(노선.getLineStations())
-                .isEqualTo(new LineStations(
-                        new LineStation(노선, 상행종점역, 하행종점역, 10),
-                        new LineStation(노선, 하행종점역, 홍대역, 11)
+                .isEqualTo(new Sections(
+                        new Section(노선, 상행종점역, 하행종점역, 10),
+                        new Section(노선, 하행종점역, 홍대역, 11)
                 ));
     }
 
