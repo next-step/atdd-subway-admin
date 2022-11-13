@@ -15,8 +15,9 @@ public class PreDataUtil {
     }
 
     public void truncate() {
+        jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE", new EmptySqlParameterSource());
         jdbcTemplate.update("truncate table station", new EmptySqlParameterSource());
-        jdbcTemplate.update("delete from line", new EmptySqlParameterSource());
+        jdbcTemplate.update("truncate table line", new EmptySqlParameterSource());
     }
 
     public void station(Long id, String name, Long lineId) {

@@ -98,7 +98,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> fetchResponse = fetchLine(lineId);
 
         // then
-        checkFetchedLine(fetchResponse, lineId);
+        checkFetchedLine(fetchResponse, lineId, lineRequest);
     }
 
     /**
@@ -268,13 +268,16 @@ public class LineAcceptanceTest {
         }
     }
 
-    private void checkFetchedLine(ExtractableResponse<Response> fetchResponse, Long id) {
+    private void checkFetchedLine(ExtractableResponse<Response> fetchResponse, Long id,
+        LineRequestDto lineRequest) {
         assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
         JsonPath jsonPath = fetchResponse.jsonPath();
         assertThat(jsonPath.getLong("id")).isEqualTo(id);
-        assertThat(jsonPath.getString("name")).isNotBlank();
-        assertThat(jsonPath.getString("color")).isNotBlank();
-        assertThat(jsonPath.getList("stations")).isNotNull();
+        assertThat(jsonPath.getString("name")).isEqualTo(lineRequest.getName());
+        assertThat(jsonPath.getString("color")).isEqualTo(lineRequest.getColor());
+        assertThat(jsonPath.getList("stations.id", Long.class)).containsExactly(lineRequest.getUpStationId(),
+            lineRequest.getDownStationId());
+        assertThat(jsonPath.getList("stations.name")).hasSize(2);
     }
 
     private void checkFetchedLine(ExtractableResponse<Response> fetchResponse, long id, String name, String color) {

@@ -10,6 +10,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.LineChange;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.AlreadyDeletedException;
@@ -34,10 +35,10 @@ public class LineService {
             throw new SameStationException();
         }
 
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-            .orElseThrow(() -> new NoStationException(lineRequest.getUpStationId()));
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-            .orElseThrow(() -> new NoStationException(lineRequest.getDownStationId()));
+        Station upStation = findStationById(lineRequest.getUpStationId(),
+            new NoStationException(lineRequest.getUpStationId()));
+        Station downStation = findStationById(lineRequest.getDownStationId(),
+            new NoStationException(lineRequest.getDownStationId()));
 
         Line persistLine = lineRepository.save(Line.of(lineRequest));
         upStation.updateLine(persistLine);
@@ -53,20 +54,28 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findLine(id).orElseThrow(NotFoundException::new);
+        Line line = findLineById(id, new NotFoundException());
         return LineResponse.of(line);
     }
 
     @Transactional
-    public void changeLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(NotFoundException::new);
-        line.update(lineRequest);
+    public void changeLine(Long id, LineChange lineChange) {
+        Line line = findLineById(id, new NotFoundException());
+        line.update(lineChange);
     }
 
     @Transactional
     public void removeLine(Long id) {
-        Line line = lineRepository.findLine(id).orElseThrow(AlreadyDeletedException::new);
+        Line line = findLineById(id, new AlreadyDeletedException());
         line.removeStations();
         lineRepository.delete(line);
+    }
+
+    private Station findStationById(Long id, RuntimeException exception) {
+        return stationRepository.findById(id).orElseThrow(() -> exception);
+    }
+
+    private Line findLineById(Long id, RuntimeException exception) {
+        return lineRepository.findById(id).orElseThrow(() -> exception);
     }
 }

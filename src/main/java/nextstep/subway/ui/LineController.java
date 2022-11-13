@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.ErrorResponse;
+import nextstep.subway.dto.LineChange;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.AlreadyDeletedException;
@@ -47,7 +48,7 @@ public class LineController {
 
     @PutMapping("/lines/{id}")
     public ResponseEntity<?> changeLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.changeLine(id, lineRequest);
+        lineService.changeLine(id, LineChange.of(lineRequest));
         return ResponseEntity.ok().build();
     }
 

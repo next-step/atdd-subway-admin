@@ -12,6 +12,7 @@ import javax.persistence.OneToMany;
 
 import org.springframework.util.StringUtils;
 
+import nextstep.subway.dto.LineChange;
 import nextstep.subway.dto.LineRequest;
 
 @Entity
@@ -45,12 +46,12 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void update(LineRequest lineRequest) {
-        if (StringUtils.hasText(lineRequest.getName())) {
-            this.name = lineRequest.getName();
+    public void update(LineChange lineChange) {
+        if (StringUtils.hasText(lineChange.getName())) {
+            this.name = lineChange.getName();
         }
-        if (StringUtils.hasText(lineRequest.getColor())) {
-            this.color = lineRequest.getColor();
+        if (StringUtils.hasText(lineChange.getColor())) {
+            this.color = lineChange.getColor();
         }
     }
 
