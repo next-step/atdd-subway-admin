@@ -84,7 +84,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
         Long distance = response.jsonPath().getLong("distance");
         assertAll(
-                () -> assertThat(stationNames).containsOnly(신사역.getName(), 강남역.getName(), 판교역.getName()),
+                () -> assertThat(stationNames).containsExactly(신사역.getName(), 강남역.getName(), 판교역.getName()),
                 () -> assertThat(stationNames).hasSize(3),
                 () -> assertThat(distance).isEqualTo(lineDistance + currentDistance)
         );
@@ -106,7 +106,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
         Long distance = response.jsonPath().getLong("distance");
         assertAll(
-                () -> assertThat(stationNames).containsOnly(강남역.getName(), 판교역.getName(), 광교역.getName()),
+                () -> assertThat(stationNames).containsExactly(강남역.getName(), 판교역.getName(), 광교역.getName()),
                 () -> assertThat(stationNames).hasSize(3),
                 () -> assertThat(distance).isEqualTo(lineDistance + currentDistance)
         );
@@ -190,6 +190,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
                 () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(stationNames).hasSize(2),
                 () -> assertThat(stationNames).doesNotContain(양재시민의숲.getName()),
+                () -> assertThat(stationNames).containsExactly(강남역.getName(), 판교역.getName()),
                 () -> assertThat(distance).isEqualTo(lineDistance)
         );
     }
@@ -218,6 +219,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
                 () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(stationNames).hasSize(2),
                 () -> assertThat(stationNames).doesNotContain(강남역.getName()),
+                () -> assertThat(stationNames).containsExactly(양재시민의숲.getName(), 판교역.getName()),
                 () -> assertThat(distance).isEqualTo(lineDistance - currentDistance)
         );
     }
@@ -246,6 +248,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
                 () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
                 () -> assertThat(stationNames).hasSize(2),
                 () -> assertThat(stationNames).doesNotContain(판교역.getName()),
+                () -> assertThat(stationNames).containsExactly(강남역.getName(), 양재시민의숲.getName()),
                 () -> assertThat(distance).isEqualTo(currentDistance)
         );
     }

@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -35,6 +36,31 @@ public class Sections {
                 .flatMap(Collection::stream)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public List<Station> inOrderStations() {
+        Map<Station, Station> stations = sections.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+        return sortStations(findLineUpStation(stations), stations);
+    }
+
+    private Station findLineUpStation(Map<Station, Station> stations) {
+        return stations.keySet()
+                .stream()
+                .filter(upStation -> !stations.containsValue(upStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.상행종착역은_비어있을_수_없음.getErrorMessage()));
+    }
+
+    private List<Station> sortStations(Station lineUpStation, Map<Station, Station> stations) {
+        List<Station> sortStations = new ArrayList<>();
+        sortStations.add(lineUpStation);
+        Station currentStation = lineUpStation;
+        while(stations.get(currentStation) != null) {
+            currentStation = stations.get(currentStation);
+            sortStations.add(currentStation);
+        }
+        return sortStations;
     }
 
     public void addSection(Section newSection) {

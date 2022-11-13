@@ -81,7 +81,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> findStations() {
-        return sections.findStations();
+        return sections.inOrderStations();
     }
 
     public void deleteStationInLine(Station station) {
