@@ -37,7 +37,7 @@ public class LineStation extends BaseEntity {
         this.downStation = newLineStation.upStation;
     }
 
-    public void arrangeEndLineStation(LineStation newLineStation) {
+    public void arrangeLastLineStation(LineStation newLineStation) {
         this.upStation = newLineStation.getDownStation();
     }
 
@@ -58,7 +58,7 @@ public class LineStation extends BaseEntity {
         return newLineStation.downStation.getId().equals(this.downStation.getId());
     }
 
-    public boolean canAddEndLineStation(LineStation newLineStation) {
+    public boolean canAddLastLineStation(LineStation newLineStation) {
         if (isNotValidNewLineStation(newLineStation)) {
             return false;
         }
