@@ -43,6 +43,12 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public LineResponse findLineById(Long id) {
+        Line persistLine = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("노선이 존재하지 않습니다."));
+        return LineResponse.from(persistLine);
+    }
+
     private Station findByIdStation(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("지하철역이 존재하지 않습니다."));

@@ -15,8 +15,8 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.subway.line.LineAcceptanceRestAssured.지하철노선_생성;
-import static nextstep.subway.line.LineAcceptanceRestAssured.지하철노선_조회;
+import static nextstep.subway.line.LineAcceptanceRestAssured.*;
+import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역_생성;
 import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역들_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -55,7 +55,7 @@ public class LineAcceptanceTest {
         assertThat(createResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> lineNames = 지하철노선_조회().jsonPath().getList("name", String.class);
+        List<String> lineNames = 지하철노선_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lineNames).containsExactly("8호선");
     }
 
@@ -74,7 +74,7 @@ public class LineAcceptanceTest {
         지하철노선_생성("3호선", "노란색", 2L, 3L, 10);
 
         // when
-        ExtractableResponse<Response> response = 지하철노선_조회();
+        ExtractableResponse<Response> response = 지하철노선_목록_조회();
 
         // then
         JsonPath jsonPath = response.jsonPath();
@@ -86,4 +86,25 @@ public class LineAcceptanceTest {
         );
     }
 
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @Test
+    @DisplayName("지하철 노선 조회")
+    void retrieveLine() {
+        // given
+        지하철역들_생성("잠실역", "문정역");
+        Long id = 지하철노선_생성("8호선", "분홍색", 1L, 2L, 10)
+                .jsonPath().getLong("id");
+        // when
+        ExtractableResponse<Response> response = 지하철노선_조회(id);
+
+        // then
+        JsonPath jsonPath = response.jsonPath();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(jsonPath.getLong("id")).isEqualTo(id);
+    }
 }
