@@ -4,8 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,6 +62,28 @@ public class LineService {
     public Line findById(final Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(lineId + "번 노선을 찾을 수 없습니다."));
+    }
+
+    @Transactional
+    public SectionResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        Section section = new Section(upStation, downStation, sectionRequest.getDistance());
+
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException(lineId + "번 노선을 찾을 수 없습니다."));
+        line.addSection(section);
+        lineRepository.flush();
+        return SectionResponse.of(section);
+    }
+
+    public List<SectionResponse> findAllSections(final Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException(lineId + "번 노선을 찾을 수 없습니다."));
+
+        return line.getSections().stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
     }
 
     public void flush() {

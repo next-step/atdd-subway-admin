@@ -1,11 +1,8 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.StationResponse;
-
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 
@@ -83,11 +80,7 @@ public class Sections {
                 && !Objects.equals(newSection.getDownStation(), newSection.getUpStation());
     }
 
-    public List<StationResponse> toResponse() {
-        return sections.stream()
-                .flatMap(o -> o.getStations().stream())
-                .distinct()
-                .map(o -> new StationResponse(o.getId(), o.getName(), o.getCreatedDate(), o.getModifiedDate()))
-                .collect(Collectors.toList());
+    public List<Section> getSections() {
+        return sections;
     }
 }
