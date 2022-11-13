@@ -2,15 +2,17 @@ package nextstep.subway.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NoArgsConstructor;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Builder
+@AllArgsConstructor
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,16 +37,6 @@ public class Line extends BaseEntity {
     public Line() {
     }
 
-    public Line(Long id, String name, String color, int distance, Station upLastStation, Station downLastStation) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.distance = distance;
-        this.upLastStation = upLastStation;
-        this.downLastStation = downLastStation;
-    }
-
-
     public Long getId() {
         return id;
     }
@@ -66,7 +58,6 @@ public class Line extends BaseEntity {
         if(!updateRequest.getColor().isEmpty() && updateRequest.getColor() != ""){
             this.color = updateRequest.getColor();
         }
-
         if(updateRequest.getDistance() > 0) {
             this.distance = updateRequest.getDistance();
         }

@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,9 +14,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static nextstep.subway.station.StationAcceptanceTest.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -122,9 +119,6 @@ public class LineAcceptanceTest {
         // when
         ExtractableResponse<Response> result = 노선_정보를_수정한다(id);
 
-        ExtractableResponse<Response> temp = 특정_노선을_조회한다(id);
-        String color = temp.jsonPath().get("color").toString();
-
         // then
         지하철_노선_정보_수정_확인(id, result);
     }
@@ -170,7 +164,7 @@ public class LineAcceptanceTest {
     private ExtractableResponse<Response> 노선_정보를_수정한다(int id) {
         LineRequest updateRequest = LineRequest.builder()
                 .name("새로운 노선")
-//                .color("파란색")
+                .color("파란색")
                 .distance(33)
                 .build();
 

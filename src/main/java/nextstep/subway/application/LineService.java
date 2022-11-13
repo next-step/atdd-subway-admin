@@ -6,8 +6,6 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationRequest;
-import nextstep.subway.dto.StationResponse;
 import nextstep.subway.exception.CannotFindException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.constant.Message.*;
+import static nextstep.subway.constant.Message.NOT_FOUND_LINE_ERR;
+import static nextstep.subway.constant.Message.NOT_FOUND_UP_STATION_ERR;
 
 @Service
 @Transactional(readOnly = true)
@@ -62,7 +61,7 @@ public class LineService {
         }
 
         if(updateRequest.getDownLastStationId() > 0) {
-            line.changeUpStation(findStationById(Long.valueOf(updateRequest.getDownLastStationId())));
+            line.changeDownStation(findStationById(Long.valueOf(updateRequest.getDownLastStationId())));
         }
 
         line.update(updateRequest);
@@ -80,8 +79,4 @@ public class LineService {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new CannotFindException(NOT_FOUND_UP_STATION_ERR));
     }
-
-
-
-
 }
