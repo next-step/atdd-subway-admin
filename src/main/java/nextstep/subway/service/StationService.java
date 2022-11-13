@@ -1,4 +1,4 @@
-package nextstep.subway.application;
+package nextstep.subway.service;
 
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
@@ -36,5 +36,10 @@ public class StationService {
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findById(Long stationId) {
+        return stationRepository.findById(stationId)
+                .orElseThrow(IllegalArgumentException::new);
     }
 }
