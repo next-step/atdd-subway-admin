@@ -1,8 +1,6 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -40,17 +38,15 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = registerStation("강남역").extract();
+        ValidatableResponse response = requestRegister("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = requestFetch().extract()
+                .jsonPath()
+                .getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -63,14 +59,13 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        registerStation("강남역");
+        requestRegister("강남역");
 
         // when
-        ValidatableResponse validatableResponse = registerStation("강남역");
-        ExtractableResponse<Response> response = validatableResponse.extract();
+        ValidatableResponse response = requestRegister("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -82,15 +77,14 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        registerStation("강남역");
-        registerStation("양재역");
+        requestRegister("강남역");
+        requestRegister("양재역");
 
         // when
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = requestFetch()
+                .extract()
+                .jsonPath()
+                .getList("name", String.class);
 
         // then
         assertThat(stationNames).containsExactly("강남역", "양재역");
@@ -104,9 +98,25 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        long stationId = requestRegister("강남역").extract()
+                .jsonPath()
+                .getLong("id");
+
+        // when
+        int statusCode = requestDelete(stationId).extract()
+                .response()
+                .statusCode();
+        assertThat(statusCode).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        List<String> stationNames = requestFetch().extract()
+                .jsonPath()
+                .getList("name", String.class);
+        assertThat(stationNames).isEmpty();
     }
 
-    private ValidatableResponse registerStation(String name) {
+    private ValidatableResponse requestRegister(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -114,6 +124,19 @@ public class StationAcceptanceTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
+                .then().log().all();
+    }
+
+    private ValidatableResponse requestDelete(long id) {
+        return RestAssured.given().log().all()
+                .pathParam("id", id)
+                .when().delete("/stations/{id}")
+                .then().log().all();
+    }
+
+    private ValidatableResponse requestFetch() {
+        return RestAssured.given().log().all()
+                .when().get("/stations")
                 .then().log().all();
     }
 }
