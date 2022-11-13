@@ -44,13 +44,13 @@ public class Line extends BaseEntity {
 
     private void validateName(String name) {
         if (isBlankString(name)) {
-            throw new IllegalArgumentException("라인 생성 시 이름은 필수 값 입니다.");
+            throw new IllegalArgumentException("노선 생성 시 이름은 필수 값 입니다.");
         }
     }
 
     private void validateColor(String color) {
         if (isBlankString(color)) {
-            throw new IllegalArgumentException("라인 생성 시 이름은 필수 값 입니다.");
+            throw new IllegalArgumentException("노선 생성 시 색깔은 필수 값 입니다.");
         }
     }
 

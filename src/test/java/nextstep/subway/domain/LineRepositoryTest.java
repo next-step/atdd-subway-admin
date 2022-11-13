@@ -14,7 +14,7 @@ public class LineRepositoryTest {
     private LineRepository lineRepository;
 
     @Test
-    @DisplayName("라인 저장")
+    @DisplayName("노선 저장")
     void save() {
         // given
         String name = "8호선";
