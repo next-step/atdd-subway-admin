@@ -99,6 +99,36 @@ public class SectionAcceptanceTest {
         assertThat(stationNames).contains("판교역", "양재역", "강남역");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 하행선 종점에 지하철 구간을 추가하면
+     * Then 노선에 새로운 지하철 역이 등록된다
+     */
+    @DisplayName("하행 종점에 지하철 구간을 추가한다.")
+    @Test
+    void addDownSection() {
+        // given
+        int distance = 10;
+        String expectLine = "신분당선";
+        Long upStationId = StationAcceptanceTest.지하철_역_생성("판교역")
+                .jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTest.지하철_역_생성("강남역")
+                .jsonPath().getLong("id");
+        Long lineId = 지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, distance)
+                .jsonPath().getLong("id");
+        Long newStationId = StationAcceptanceTest.지하철_역_생성("양재역")
+                .jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, downStationId, newStationId, 5);
+
+        // then
+        List<String> stationNames = response
+                .jsonPath()
+                .getList("stations.name", String.class);
+        assertThat(stationNames).contains("판교역", "양재역", "강남역");
+    }
+
     private ExtractableResponse<Response> 지하철_구간_추가(
             Long lineId,
             Long upStationId,
