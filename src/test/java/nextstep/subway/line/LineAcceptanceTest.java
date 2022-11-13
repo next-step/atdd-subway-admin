@@ -38,7 +38,6 @@ public class LineAcceptanceTest {
         databaseCleanup.execute();
     }
 
-
     /**
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
@@ -57,7 +56,6 @@ public class LineAcceptanceTest {
         List<String> lineNames = 지하철노선_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lineNames).containsExactly("8호선");
     }
-
 
     /**
      * Given 2개의 지하철 노선을 생성하고
@@ -84,7 +82,6 @@ public class LineAcceptanceTest {
                 () -> assertThat(jsonPath.getList("stations")).hasSize(2)
         );
     }
-
 
     /**
      * Given 지하철 노선을 생성하고
@@ -125,6 +122,25 @@ public class LineAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @Test
+    @DisplayName("지하철 노선 삭제")
+    void deleteLine() {
+        // given
+        지하철역들_생성("잠실역", "문정역");
+        Long id = 지하철노선_생성("8호선", "분홍색", 1L, 2L, 10)
+                .jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철노선_삭제(id);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }

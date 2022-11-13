@@ -56,4 +56,12 @@ public class LineAcceptanceRestAssured {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철노선_삭제(Long id) {
+        return RestAssured
+                .given().log().all()
+                .when().delete("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
 }

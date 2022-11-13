@@ -50,6 +50,11 @@ public class LineService {
         persistLine.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
+
     public LineResponse findLineById(Long id) {
         return LineResponse.from(getLineById(id));
     }
