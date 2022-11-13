@@ -45,11 +45,12 @@ public class LineService {
                 .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
     }
-    public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
+
+    public LineResponse findLineById(Long id) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
+        return LineResponse.of(line);
     }
-    
     public StationResponse findStationById(Long id) {
         Station station = stationRepository.findById(id)
                 .orElseThrow(() -> new CannotFindException(NOT_FOUND_STATION_ERR));

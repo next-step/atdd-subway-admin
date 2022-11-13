@@ -33,10 +33,10 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
-//    @GetMapping(value = "/stations/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public ResponseEntity<StationResponse> searchStation(@PathVariable Long id) {
-//        return ResponseEntity.ok().body(stationService.findStationById(id));
-//    }
+    @GetMapping(value = "/line/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> searchStation(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLineById(id));
+    }
 //
 //    @DeleteMapping("/stations/{id}")
 //    public ResponseEntity deleteStation(@PathVariable Long id) {
