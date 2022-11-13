@@ -33,9 +33,9 @@ public class StationAcceptanceTest {
         }
     }
 
-    private ExtractableResponse<Response> createNewStation(final String name){
+    private ExtractableResponse<Response> 지하철_역_생성(final String 지하철역_이름){
         Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+        params.put("name", 지하철역_이름);
 
         return RestAssured.given().log().all()
                 .body(params)
@@ -44,12 +44,28 @@ public class StationAcceptanceTest {
                 .then().log().all()
                 .extract();
     }
-    private ExtractableResponse<Response> getSavedStations(){
+    private ExtractableResponse<Response> 지하철역_목록_조회(){
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
                 .extract();
     }
+
+    private ExtractableResponse<Response> 지하철역_삭제_요청(int id) {
+        return RestAssured.given().log().all()
+                .pathParam("id", id)
+                .when().delete("/stations/{id}")
+                .then().log().all()
+                .extract();
+    }
+
+    private void 지하철역_목록_존재한다(ExtractableResponse<Response> 지하철역_목록, String...지하철들) {
+        assertAll(
+                ()->assertThat(지하철역_목록.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                ()->assertThat(지하철역_목록.jsonPath().getList("name", String.class)).containsExactly(지하철들)
+        );
+    }
+
 
     /**
      * When 지하철역을 생성하면
@@ -59,13 +75,14 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
+
         // when
-        ExtractableResponse<Response> response = createNewStation("강남역");
+        ExtractableResponse<Response> 지하철역_생성_결과 = 지하철_역_생성("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        List<String> stationNames = getSavedStations().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        assertThat(지하철역_생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> 지하철역_목록 = 지하철역_목록_조회();
+        지하철역_목록_존재한다(지하철역_목록, "강남역");
     }
 
     /**
@@ -77,10 +94,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        String name = createNewStation("강남역").body().jsonPath().get("name");
+        String 강남역 = 지하철_역_생성("강남역").body().jsonPath().get("name");
 
         // when
-        ExtractableResponse<Response> response = createNewStation(name);
+        ExtractableResponse<Response> response = 지하철_역_생성(강남역);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -95,18 +112,15 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createNewStation("강남역");
-        createNewStation("역삼역");
+        String 강남역 = 지하철_역_생성("강남역").body().jsonPath().get("name");
+        String 역삼역 = 지하철_역_생성("역삼역").body().jsonPath().get("name");
 
         // when
-        ExtractableResponse<Response> getResponse = getSavedStations();
+        ExtractableResponse<Response> 지하철역_목록 = 지하철역_목록_조회();
 
         // then
-        assertAll(
-                ()->assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                ()->assertThat(getResponse.jsonPath().getList(".").size()).isEqualTo(2),
-                ()->assertThat(getResponse.jsonPath().getList("name", String.class)).containsExactly("강남역", "역삼역")
-        );
+        지하철역_목록_존재한다(지하철역_목록, 강남역, 역삼역);
+
     }
 
     /**
@@ -118,21 +132,17 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        int id1 = createNewStation("강남역").body().jsonPath().get("id");
-        int id2 = createNewStation("역삼역").body().jsonPath().get("id");
+        int 강남역_아이디 = 지하철_역_생성("강남역").body().jsonPath().get("id");
+        int 역삼역_아이디 = 지하철_역_생성("역삼역").body().jsonPath().get("id");
 
         // when
-        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
-                .pathParam("id",id1)
-                .when().delete("/stations/{id}")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 지하철역_삭제_결과 = 지하철역_삭제_요청(강남역_아이디);
 
         // then
-        List<Integer> ids = getSavedStations().jsonPath().getList("id");
+        List<Integer> 저장된_아이디_리스트 = 지하철역_목록_조회().jsonPath().getList("id");
         assertAll(
-                ()->assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                ()->assertThat(ids).containsExactly(id2)
+                ()->assertThat(지하철역_삭제_결과.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                ()->assertThat(저장된_아이디_리스트).containsExactly(역삼역_아이디)
         );
     }
 }
