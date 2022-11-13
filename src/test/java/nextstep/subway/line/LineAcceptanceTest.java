@@ -4,16 +4,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import nextstep.subway.fixtures.TestFixtures;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철노선 관련 기능")
-class LineAcceptanceTest extends TestFixtures {
+class LineAcceptanceTest extends LineTestFixtures {
 
     /**
      * When 지하철 노선을 생성하면
@@ -24,10 +21,9 @@ class LineAcceptanceTest extends TestFixtures {
     @Test
     void createLine() {
         // when
-        생성(노선("신분당선", "bg-red-600", "1", "2", "10"), "/lines");
-
+        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
         //then
-        List<String> lineNames = 목록조회("name", "/lines");
+        List<String> lineNames = 노선_목록조회("name");
 
         //then
         assertThat(lineNames).contains("신분당선");
@@ -44,11 +40,11 @@ class LineAcceptanceTest extends TestFixtures {
     @Test
     void getLines() {
         //given
-        생성(노선("신분당선", "bg-red-600", "1", "2", "10"), "/lines");
-        생성(노선("분당선", "bg-green-600", "1", "3", "10"), "/lines");
+        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
+        노선_생성("분당선", "bg-green-600", "1", "3", "10");
 
         //when
-        List<String> lineNames = 목록조회("name", "/lines");
+        List<String> lineNames = 노선_목록조회("name");
 
         //then
         assertThat(lineNames).contains("신분당선", "분당선");
@@ -65,10 +61,10 @@ class LineAcceptanceTest extends TestFixtures {
     @Test
     void getLineByName() {
         //given
-        생성(노선("신분당선", "bg-red-600", "1", "2", "10"), "/lines");
+        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
 
         //when
-        String lineName = 조회("/lines/{name}", "신분당선", "name");
+        String lineName = 노선_조회("/{name}", "신분당선", "name");
 
         //then
         assertThat(lineName).isEqualTo("신분당선");
@@ -85,11 +81,11 @@ class LineAcceptanceTest extends TestFixtures {
     @Test
     void modifyLine() {
         //given
-        생성(노선("신분당선", "bg-red-600", "1", "2", "10"), "/lines");
+        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
 
         //when
         ExtractableResponse<Response> response =
-                수정(노선("신분당선", "bg-green-600", "1", "2", "10"), "/lines/{name}", "신분당선");
+                노선_수정("신분당선", "bg-green-600", "1", "2", "10", "/{name}", "신분당선");
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -106,23 +102,12 @@ class LineAcceptanceTest extends TestFixtures {
     @Test
     void deleteLine() {
         //given
-        String id = 생성_값_리턴(노선("신분당선", "bg-red-600", "1", "2", "10"), "/lines", "id");
+        String id = 노선_생성_값_리턴("신분당선", "bg-red-600", "1", "2", "10", "id");
 
         //when
-        ExtractableResponse<Response> response = 삭제("/lines/{id}", id);
+        ExtractableResponse<Response> response = 노선_삭제("/{id}", id);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private Map<String, String> 노선(String name, String color, String upStationId, String downStationId,
-                                   String distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-        return params;
     }
 }

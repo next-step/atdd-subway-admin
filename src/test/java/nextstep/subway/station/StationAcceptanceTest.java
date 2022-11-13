@@ -4,33 +4,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import nextstep.subway.fixtures.TestFixtures;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철역 관련 기능")
-class StationAcceptanceTest extends TestFixtures {
+class StationAcceptanceTest extends StationTestFixtures {
 
     /**
      * When 지하철역을 생성하면
+     * <p>
      * Then 지하철역이 생성된다
+     * <p>
      * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 생성(지하철역("강남역"), "/stations");
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = 목록조회("name", "/stations");
+        List<String> stationNames = 지하철역_목록조회("name");
+
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -43,10 +43,10 @@ class StationAcceptanceTest extends TestFixtures {
     @Test
     void createStationWithDuplicateName() {
         // given
-        생성(지하철역("강남역"), "/stations");
+        지하철역_생성("강남역");
 
         //when
-        ExtractableResponse<Response> response = 생성(지하철역("강남역"), "/stations");
+        ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -61,11 +61,11 @@ class StationAcceptanceTest extends TestFixtures {
     @Test
     void getStations() {
         //given
-        생성(지하철역("경기 광주역"), "/stations");
-        생성(지하철역("중앙역"), "/stations");
+        지하철역_생성("경기 광주역");
+        지하철역_생성("중앙역");
 
         // when
-        List<String> stationNames = 목록조회("name", "/stations");
+        List<String> stationNames = 지하철역_목록조회("name");
 
         //then
         assertThat(stationNames).contains("경기 광주역", "중앙역");
@@ -80,18 +80,12 @@ class StationAcceptanceTest extends TestFixtures {
     @Test
     void deleteStation() {
         //given
-        String id = 생성_값_리턴(지하철역("경기 광주역"), "/stations", "id");
+        String id = 지하철역_생성_값_리턴("경기 광주역", "id");
 
         //when
-        ExtractableResponse<Response> response = 삭제("/stations/{id}", id);
+        ExtractableResponse<Response> response = 지하철역_삭제("/{id}", id);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private Map<String, String> 지하철역(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
-        return params;
     }
 }
