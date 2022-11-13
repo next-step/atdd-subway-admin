@@ -74,7 +74,8 @@ public class LineService {
         return new Line(lineRequest.getName(),
                 lineRequest.getColor(),
                 lastUpStation,
-                lastDownStation
+                lastDownStation,
+                lineRequest.getDistance()
         );
     }
 

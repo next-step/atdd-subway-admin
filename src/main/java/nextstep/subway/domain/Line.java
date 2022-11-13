@@ -29,14 +29,18 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station lastDownStation;
 
+    @Column
+    private Long distance;
+
     protected Line() {
     }
 
-    public Line(String name, String color, Station lastUpStation, Station lastDownStation) {
+    public Line(String name, String color, Station lastUpStation, Station lastDownStation, Long distance) {
         this.name = name;
         this.color = color;
         this.lastUpStation = lastUpStation;
         this.lastDownStation = lastDownStation;
+        this.distance = distance;
     }
 
     public void update(String name, String color) {
