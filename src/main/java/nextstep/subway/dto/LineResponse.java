@@ -1,8 +1,11 @@
 package nextstep.subway.dto;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import nextstep.subway.domain.Color;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Name;
 
 public class LineResponse {
 
@@ -10,19 +13,19 @@ public class LineResponse {
     private String name;
     private String color;
     private List<StationResponse> stations;
+    private Long distance;
 
-    private LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    private LineResponse(Long id, Name name, Color color, List<StationResponse> stations, Distance distance) {
         this.id = id;
-        this.name = name;
-        this.color = color;
+        this.name = name.value();
+        this.color = color.value();
         this.stations = stations;
+        this.distance = distance.value();
     }
 
-    public static LineResponse of(Line line) {
-        List<StationResponse> stations = new ArrayList<>();
-        stations.add(StationResponse.of(line.getUpStation()));
-        stations.add(StationResponse.of(line.getDownStation()));
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+    public static LineResponse from(Line line) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+                line.findStations().stream().map(StationResponse::from).collect(Collectors.toList()), line.getDistance());
     }
 
     public Long getId() {
@@ -39,5 +42,9 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    public Long getDistance() {
+        return distance;
     }
 }

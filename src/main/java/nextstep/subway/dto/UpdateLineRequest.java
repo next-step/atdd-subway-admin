@@ -1,8 +1,5 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
-
 public class UpdateLineRequest {
 
     private String name;
@@ -19,9 +16,5 @@ public class UpdateLineRequest {
 
     public String getColor() {
         return color;
-    }
-
-    public void updateLine(Line line) {
-        line.updateLineNameAndColor(name, color);
     }
 }

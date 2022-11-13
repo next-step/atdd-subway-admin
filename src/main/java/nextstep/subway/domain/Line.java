@@ -1,70 +1,59 @@
 package nextstep.subway.domain;
 
-import javax.persistence.Column;
+import java.util.Collections;
+import java.util.List;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import nextstep.subway.constant.ErrorCode;
 import nextstep.subway.utils.StringUtils;
 
 @Entity
 public class Line extends BaseEntity {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false, unique = true)
-    private String name;
-    @Column(nullable = false)
-    private String color;
-    @ManyToOne
-    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_line_to_upstation"), nullable = false)
-    private Station upStation;      // 상행종점역
-    @ManyToOne
-    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_line_to_downstation"), nullable = false)
-    private Station downStation;    // 하행종점역
-    @Column(nullable = false)
-    private Long distance;
+    @Embedded
+    private Name name;
+    @Embedded
+    private Color color;
+    @Embedded
+    private Sections sections;
+    @Embedded
+    private Distance distance;
 
     protected Line() {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, Long distance) {
-        validateLineName(name);
-        validateLineColor(color);
         validateUpStation(upStation);
         validateDownStation(downStation);
-        validateDistance(distance);
 
-        this.name = name;
-        this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        Section section = Section.of(upStation, downStation, this, distance);
+        this.name = Name.from(name);
+        this.color = Color.from(color);
+        this.sections = Sections.from(Collections.singletonList(section));
+        this.distance = Distance.from(distance);
     }
 
     public void updateLineNameAndColor(String name, String color) {
         if(!StringUtils.isNullOrEmpty(name)) {
-            this.name = name;
+            updateLineName(name);
         }
         if(!StringUtils.isNullOrEmpty(color)) {
-            this.color = color;
+            updateLineColor(color);
         }
     }
 
-    private void validateLineName(String name) {
-        if(StringUtils.isNullOrEmpty(name)) {
-            throw new IllegalArgumentException(ErrorCode.노선명은_비어있을_수_없음.getErrorMessage());
-        }
+    private void updateLineName(String name) {
+        this.name = Name.from(name);
     }
 
-    private void validateLineColor(String color) {
-        if(StringUtils.isNullOrEmpty(color)) {
-            throw new IllegalArgumentException(ErrorCode.노선색상은_비어있을_수_없음.getErrorMessage());
-        }
+    private void updateLineColor(String color) {
+        this.color = Color.from(color);
     }
 
     private void validateUpStation(Station upstation) {
@@ -79,32 +68,31 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void validateDistance(Long distance) {
-        if(distance == null) {
-            throw new IllegalArgumentException(ErrorCode.노선거리는_비어있을_수_없음.getErrorMessage());
-        }
-        if(distance < 0) {
-            throw new IllegalArgumentException(ErrorCode.노선거리는_음수일_수_없음.getErrorMessage());
-        }
-    }
-
     public Long getId() {
         return id;
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Distance getDistance() {
+        return distance;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public List<Station> findStations() {
+        return sections.findStations();
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
+    public void addDistance(Distance distance) {
+        this.distance = this.distance.add(distance);
     }
 }
