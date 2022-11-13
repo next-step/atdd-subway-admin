@@ -30,10 +30,12 @@ public class LineStations {
         LineStation upperLineStation = lineStations.stream()
                 .filter(s -> s.canAddInterLineStation(newLineStation))
                 .findFirst()
-                .get();
+                .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 중 하나는 포함되어야 합니다."));
+
         if(upperLineStation.isShorterThan(newLineStation)) {
             throw new IllegalArgumentException("기존 구간의 길이보다 크거나 같습니다.");
         }
+
         lineStations.add(newLineStation);
         upperLineStation.arrangeInterLineStation(newLineStation);
     }
@@ -62,7 +64,7 @@ public class LineStations {
         return lineStations.stream()
                 .filter(s -> s.getUpStation() == null)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 중 하나는 포함되어야 합니다."));
+                .orElseThrow(() -> new IllegalArgumentException("과"));
     }
 
     private LineStation getLastLineStation() {
