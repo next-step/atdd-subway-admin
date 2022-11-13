@@ -1,6 +1,9 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceTestFixture.*;
+import static nextstep.subway.station.StationAcceptanceTest.*;
+import static nextstep.subway.station.StationAcceptanceTestFixture.*;
+import static nextstep.subway.utils.JsonPathUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -16,15 +19,20 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.utils.DatabaseCleaner;
+import nextstep.subway.utils.JsonPathUtils;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
+    private static final String LINE_2 = "2호선";
+    private static final String LINE_BUNDANG = "분당선";
     @LocalServerPort
     int port;
-
     @Autowired
     DatabaseCleaner databaseCleaner;
+    private Integer GANGNAM_ID;
+    private Integer WANGSIPLI_ID;
+    private Integer JUKJUN_ID;
 
     @BeforeEach
     public void setUp() {
@@ -32,6 +40,10 @@ public class LineAcceptanceTest {
             RestAssured.port = port;
         }
         databaseCleaner.execute();
+
+        GANGNAM_ID = extractInteger(지하철역_생성(GANGNAM), "$.id");
+        WANGSIPLI_ID = extractInteger(지하철역_생성(WANGSIPLI), "$.id");
+        JUKJUN_ID = extractInteger(지하철역_생성(JUKJUN), "$.id");
     }
 
     /**
@@ -42,14 +54,15 @@ public class LineAcceptanceTest {
     @Test
     void createStationLine() {
         // when
-        String LINE_2 = "2호선";
-        지하철_노선_생성_강남_잠실(LINE_2);
+        지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID);
 
         // then
         ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_목록_조회();
+
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.body().jsonPath().getList("name", String.class)).contains(LINE_2)
+            () -> assertThat(extractList(response, "$[*].name")).contains(LINE_2),
+            () -> assertThat(extractList(response, "$[*].stations[*].name")).contains(GANGNAM, WANGSIPLI)
         );
     }
 
@@ -62,11 +75,8 @@ public class LineAcceptanceTest {
     @Test
     void getStationLines() {
         // given
-        String LINE_2 = "2호선";
-        지하철_노선_생성_강남_잠실(LINE_2);
-
-        String LINE_BUNDANG = "분당선";
-        지하철_노선_생성_왕십리_죽전(LINE_BUNDANG);
+        지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID);
+        지하철_노선_생성(LINE_BUNDANG, WANGSIPLI_ID, JUKJUN_ID);
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_목록_조회();
@@ -74,7 +84,8 @@ public class LineAcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.body().jsonPath().getList("name", String.class)).contains(LINE_2, LINE_BUNDANG)
+            () -> assertThat(extractList(response, "$[*].name")).contains(LINE_2, LINE_BUNDANG),
+            () -> assertThat(extractList(response, "$[*].stations[*].name")).contains(GANGNAM, WANGSIPLI, JUKJUN)
         );
     }
 
@@ -87,8 +98,7 @@ public class LineAcceptanceTest {
     @Test
     void getStationLine() {
         // given
-        String LINE_2 = "2호선";
-        Long id = 지하철_노선_생성_강남_잠실(LINE_2).body().jsonPath().getLong("id");
+        Integer id = JsonPathUtils.extractInteger(지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID), "$.id");
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_조회(id);
@@ -96,7 +106,8 @@ public class LineAcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo(LINE_2)
+            () -> assertThat(extractString(response, "$.name")).isEqualTo(LINE_2),
+            () -> assertThat(extractList(response, "$.stations[*].name")).contains(GANGNAM, WANGSIPLI)
         );
     }
 
@@ -109,7 +120,7 @@ public class LineAcceptanceTest {
     @Test
     void updateStationLine() {
         // given
-        Long id = 지하철_노선_생성_강남_잠실("2호선").body().jsonPath().getLong("id");
+        Integer id = JsonPathUtils.extractInteger(지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID), "$.id");
 
         // when
         String CHANGED_NAME = "8호선";
@@ -119,8 +130,8 @@ public class LineAcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo(CHANGED_NAME),
-            () -> assertThat(response.body().jsonPath().getString("color")).isEqualTo(CHANGED_COLOR)
+            () -> assertThat(extractString(response, "$.name")).isEqualTo(CHANGED_NAME),
+            () -> assertThat(extractString(response, "$.color")).isEqualTo(CHANGED_COLOR)
         );
     }
 
@@ -133,7 +144,7 @@ public class LineAcceptanceTest {
     @Test
     void deleteStationLine() {
         // given
-        Long id = 지하철_노선_생성_강남_잠실("2호선").body().jsonPath().getLong("id");
+        Integer id = JsonPathUtils.extractInteger(지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID), "$.id");
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_삭제(id);
