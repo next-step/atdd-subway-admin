@@ -48,7 +48,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      * When 기존에 존재하는 지하철노선 이름으로 지하철노선을 생성하면
      * Then 지하철노선 생성이 안된다
      */
-    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성하면 지하철노선이 생성되지 않는다.")
     @Test
     void createLineWithDuplicateName() {
         // given

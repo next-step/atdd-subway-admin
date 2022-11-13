@@ -116,7 +116,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
      * Then 노선에 새로운 구간이 생성이 안된다
      */
     @DisplayName("기존 역 사이 거리보다 크거나 같은 거리의 역을 노선에 등록한다.")
-    @ParameterizedTest(name = "기존 역 사이 거리(10)보다 {0}은 크거나 같으므로 실패한다.")
+    @ParameterizedTest(name = "기존 역 사이 거리(10)보다 {0}은 크거나 같으므로 구간이 생성되지 않는다.")
     @ValueSource(longs = {10L, 12L, 25L})
     void addSectionWhichHasEqualOrLongerDistance(Long currentDistance) {
         // when
@@ -131,7 +131,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
      * When 노선에 기존에 등록된 역들의 구간을 등록하면
      * Then 노선에 새로운 구간이 생성이 안된다
      */
-    @DisplayName("노선에 기등록된 역들의 구간을 등록한다.")
+    @DisplayName("노선에 기등록된 역들의 구간을 등록하면 새로운 구간이 생성되지 않는다.")
     @Test
     void addSectionDuplicateInLine() {
         // given
@@ -155,7 +155,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
      * When 노선에 등록되지 않은 역들의 구간을 등록하면
      * Then 노선에 새로운 구간이 생성이 안된다
      */
-    @DisplayName("노선에 등록되지 않은 역들의 구간을 등록한다.")
+    @DisplayName("노선에 등록되지 않은 역들의 구간을 등록하면 새로운 구간이 생성되지 않는다.")
     @Test
     void addSectionNotInLine() {
         // when
