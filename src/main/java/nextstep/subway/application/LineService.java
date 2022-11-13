@@ -10,10 +10,8 @@ import nextstep.subway.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LineService {
 
 	private final StationService stationService;
@@ -24,7 +22,6 @@ public class LineService {
 		this.lineRepository = lineRepository;
 	}
 
-	@Transactional
 	public LineResponse saveLine(LineRequest lineRequest) {
 		Line line = getLine(lineRequest);
 
@@ -33,18 +30,15 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
-	@Transactional
 	public void updateLine(Long lineId, LineRequest lineRequest) {
 		Line line = getLine(lineId);
 		line.update(lineRequest.getName(), lineRequest.getColor());
 	}
 
-	@Transactional
 	public void removeLine(Long id) {
 		lineRepository.deleteById(id);
 	}
 
-	@Transactional
 	public LineResponse addSections(long lineId, LineStationRequest request) {
 		Line line = getLine(lineId);
 		Station upStation = getStation(request.getUpStationId());
@@ -52,15 +46,6 @@ public class LineService {
 
 		line.addSection(upStation, downStation, request.getDistance());
 
-		return LineResponse.of(line);
-	}
-
-	public List<LineResponse> findAllLines() {
-		return LineResponse.ofList(lineRepository.findAll());
-	}
-
-	public LineResponse findLine(Long lineId) {
-		Line line = getLine(lineId);
 		return LineResponse.of(line);
 	}
 

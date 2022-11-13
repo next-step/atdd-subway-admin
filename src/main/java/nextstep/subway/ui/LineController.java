@@ -1,5 +1,6 @@
 package nextstep.subway.ui;
 
+import nextstep.subway.application.LineQueryService;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -14,9 +15,11 @@ import java.util.List;
 public class LineController {
 
 	private final LineService lineService;
+	private final LineQueryService lineQueryService;
 
-	public LineController(LineService lineService) {
+	public LineController(LineService lineService, LineQueryService lineQueryService) {
 		this.lineService = lineService;
+		this.lineQueryService = lineQueryService;
 	}
 
 	@PostMapping
@@ -28,13 +31,13 @@ public class LineController {
 
 	@GetMapping
 	public ResponseEntity<List<LineResponse>> getLines() {
-		List<LineResponse> lineResponse = lineService.findAllLines();
+		List<LineResponse> lineResponse = lineQueryService.findAllLines();
 		return ResponseEntity.ok().body(lineResponse);
 	}
 
 	@GetMapping("/{id}")
 	public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-		LineResponse lineResponse = lineService.findLine(id);
+		LineResponse lineResponse = lineQueryService.findLine(id);
 		return ResponseEntity.ok().body(lineResponse);
 	}
 
