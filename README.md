@@ -300,9 +300,9 @@ Content-Length: 230
 #### 프로그래밍 요구사항
 * 인수 테스트 주도 개발 프로세스에 맞추어 기능 구현할 것
   * [x] 요구사항 설명을 참고해 인수 조건 정의
-  * [ ] 인수 조건을 검증하는 인수 테스트 작성
+  * [x] 인수 조건을 검증하는 인수 테스트 작성
   * [ ] 인수 테스트를 충족하는 기능 구현
-* [ ] 인수 조건은 인수 테스트 메소드 상단에 주석 작성
+* [x] 인수 조건은 인수 테스트 메소드 상단에 주석 작성
   * 뼈대 코드의 인수 테스트 참고
   * 인수 테스트 서로 격리 및 재사용성과 가독성, 빠른 테스트 의도 파악을 위해 리팩토링
 
@@ -312,4 +312,11 @@ Content-Length: 230
 DELETE /lines/1/sections?stationId=2 HTTP/1.1
 accept: */*
 host: localhost:52165
+```
+[ HTTP response ]
+```json
+HTTP/1.1 204 No Content
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
 ```

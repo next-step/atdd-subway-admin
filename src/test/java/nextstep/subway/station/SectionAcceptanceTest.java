@@ -2,6 +2,7 @@ package nextstep.subway.station;
 
 import static nextstep.subway.station.CreateFactory.지하철노선_등록_요청;
 import static nextstep.subway.station.CreateFactory.지하철역_등록_요청;
+import static nextstep.subway.station.ReadFactory.지하철노선_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -175,41 +176,78 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     @DisplayName("노선 내 상행/하행 종점이 아닌 역을 제거하면 노선에서 해당 역이 제거된다.")
     @Test
     void deleteStationInMiddle() {
+        // given
+        지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 양재시민의숲.getId(), 4L);
 
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철역_삭제_요청(신분당선.getId(), 양재시민의숲.getId());
+
+        // then
+        ExtractableResponse<Response> findResponse = 지하철노선_조회_요청(신분당선.getId());
+        List<String> stationNames = findResponse.jsonPath().getList("stations.name", String.class);
+        Long distance = findResponse.jsonPath().getLong("distance");
+        assertAll(
+                () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(stationNames).hasSize(2),
+                () -> assertThat(stationNames).doesNotContain(양재시민의숲.getName()),
+                () -> assertThat(distance).isEqualTo(lineDistance)
+        );
     }
 
     /**
      * Given 노선 내 3개 이상 역들을 등록하고
      * When 노선의 상행 종점 역을 제거하면
      * Then 노선 내에 제거된 역이 존재하지 않는다
-     * Then 노선의 상행 종점이 바뀐다
+     * Then 노선의 상행 종점이 바뀐다(노선에 전체 길이가 기존보다 줄어든다)
      */
     @DisplayName("노선의 상행 종점을 제거하면 노선에서 해당 역이 제거되고 상행 종점이 바뀐다.")
     @Test
     void deleteStationWhichIsUpStation() {
+        // given
+        Long currentDistance = 4L;
+        지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 양재시민의숲.getId(), currentDistance);
 
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철역_삭제_요청(신분당선.getId(), 강남역.getId());
+
+        // then
+        ExtractableResponse<Response> findResponse = 지하철노선_조회_요청(신분당선.getId());
+        List<String> stationNames = findResponse.jsonPath().getList("stations.name", String.class);
+        Long distance = findResponse.jsonPath().getLong("distance");
+        assertAll(
+                () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(stationNames).hasSize(2),
+                () -> assertThat(stationNames).doesNotContain(강남역.getName()),
+                () -> assertThat(distance).isEqualTo(lineDistance - currentDistance)
+        );
     }
 
     /**
      * Given 노선 내 3개 이상 역들을 등록하고
      * When 노선의 하행 종점 역을 제거하면
      * Then 노선 내에 제거된 역이 존재하지 않는다
-     * Then 노선의 하행 종점이 바뀐다
+     * Then 노선의 하행 종점이 바뀐다(노선에 전체 길이가 기존보다 줄어든다)
      */
     @DisplayName("노선의 하행 종점을 제거하면 노선에서 해당 역이 제거되고 하행 종점이 바뀐다.")
     @Test
     void deleteStationWhichIsDownStation() {
+        // given
+        Long currentDistance = 4L;
+        지하철_노선에_지하철역_등록_요청(신분당선.getId(), 강남역.getId(), 양재시민의숲.getId(), currentDistance);
 
-    }
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철역_삭제_요청(신분당선.getId(), 판교역.getId());
 
-    /**
-     * When 노선에 존재하지 않는 역을 제거하면
-     * Then 노선에서 해당 역이 제거되지 않는다
-     */
-    @DisplayName("노선에 구간이 1개이면 해당 구간에 포함된 역을 노선에서 제거할 수 없다.")
-    @Test
-    void deleteStationWhenLineHasOneSection() {
-
+        // then
+        ExtractableResponse<Response> findResponse = 지하철노선_조회_요청(신분당선.getId());
+        List<String> stationNames = findResponse.jsonPath().getList("stations.name", String.class);
+        Long distance = findResponse.jsonPath().getLong("distance");
+        assertAll(
+                () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(stationNames).hasSize(2),
+                () -> assertThat(stationNames).doesNotContain(판교역.getName()),
+                () -> assertThat(distance).isEqualTo(lineDistance - currentDistance)
+        );
     }
 
     /**
@@ -217,12 +255,33 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
      * When 노선에 존재하는 역을 제거하면
      * Then 노선에서 해당 역이 제거되지 않는다
      */
+    @DisplayName("노선에 구간이 1개이면 해당 구간에 포함된 역을 노선에서 제거할 수 없다.")
+    @Test
+    void deleteStationWhenLineHasOneSection() {
+        // when
+        ExtractableResponse<Response> deleteResponse1 = 지하철_노선에_지하철역_삭제_요청(신분당선.getId(), 판교역.getId());
+        ExtractableResponse<Response> deleteResponse2 = 지하철_노선에_지하철역_삭제_요청(신분당선.getId(), 강남역.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(deleteResponse1.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(deleteResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+        );
+    }
+
+    /**
+     * When 노선에 존재하지 않는 역을 제거하면
+     * Then 노선에서 해당 역이 제거되지 않는다
+     */
     @DisplayName("노선에 등록되지 않은 역을 제거하면 노선에서 역이 제거되지 않는다.")
     @Test
     void deleteStationNotInLine() {
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_노선에_지하철역_삭제_요청(신분당선.getId(), 신사역.getId());
 
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
 
     private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Long> params = new HashMap<>();
@@ -235,6 +294,18 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("id", lineId)
                 .when().post("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선에_지하철역_삭제_요청(Long lineId, Long stationId) {
+        Map<String, Long> params = new HashMap<>();
+        params.put("stationId", stationId);
+
+        return RestAssured.given().log().all()
+                .params(params)
+                .pathParam("id", lineId)
+                .when().delete("/lines/{id}/sections")
                 .then().log().all()
                 .extract();
     }
