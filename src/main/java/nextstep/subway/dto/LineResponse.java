@@ -56,7 +56,8 @@ public class LineResponse {
     private static List<StationResponse> toStationResponse(final Line line) {
         return line.getSections()
                 .stream()
-                .flatMap(o -> o.getStations().stream())
+                .flatMap(section -> section.getStations().stream())
+                .distinct()
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
