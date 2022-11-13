@@ -60,12 +60,12 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 #### 요구사항 2
  - 지하철역 삭제 인수 테스트 작성하기
 #### 구현 리스트
-- [ ] 지하철역 목록 조회 인수 테스트
-  - [ ] given - ( sation name { "지하철역이름", "새로운지하철역이름", "또다른지하철역이름" } )  
-  - [ ] when - ( method : get )
-  - [ ] then - ( statusCode : HttpStatus.OK(200) )
+- [x] 지하철역 목록 조회 인수 테스트
+  - [x] given - ( sation name { "지하철역이름", "새로운지하철역이름", "또다른지하철역이름" } )  
+  - [x] when - ( method : get )
+  - [x] then - ( statusCode : HttpStatus.OK(200) )
 
-- [ ] 지하철역 삭제 인수 테스트
-  - [ ] given - 
-  - [ ] when - ( method : get )
-  - [ ] then -   
+- [x] 지하철역 삭제 인수 테스트
+  - [x] given - ( sation name { "강남역" } )
+  - [x] when - ( method : delete )
+  - [x] then - ( statusCode : HttpStatus.NO_CONTENT(204) )
