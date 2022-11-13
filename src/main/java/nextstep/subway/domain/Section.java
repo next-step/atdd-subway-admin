@@ -18,10 +18,10 @@ public class Section extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
-    @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Distance distance;
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -35,5 +35,25 @@ public class Section extends BaseEntity {
 
     public void addLine(Line line) {
         this.line = line;
+    }
+
+    public void update(Section newSection) {
+        if (upStation.equals(newSection.upStation)) {
+            updateUpStation(newSection);
+        }
+
+        if (downStation.equals(newSection.downStation)) {
+            updateDownStation(newSection);
+        }
+    }
+
+    private void updateUpStation(Section newSection) {
+        upStation = newSection.downStation;
+        distance = distance.subtract(newSection.distance);
+    }
+
+    private void updateDownStation(Section newSection) {
+        downStation = newSection.upStation;
+        distance = distance.subtract(newSection.distance);
     }
 }

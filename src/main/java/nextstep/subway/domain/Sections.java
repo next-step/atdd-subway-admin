@@ -19,8 +19,6 @@ public class Sections {
     protected Sections() {}
 
     public List<Station> getStations() {
-        System.out.println("???");
-        System.out.println(sections.size());
         return sections.stream()
                 .map(Section::findStations)
                 .flatMap(Collection::stream)
@@ -28,7 +26,8 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void add(Section section) {
-        sections.add(section);
+    public void add(Section newSection) {
+        sections.forEach(section -> section.update(newSection));
+        sections.add(newSection);
     }
 }
