@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,11 +9,14 @@ import javax.persistence.Id;
 
 @Entity
 public class Line extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
     private int distance;
     private String upStationId;
@@ -59,5 +63,22 @@ public class Line extends BaseEntity {
         this.distance = distance;
         this.upStationId = upStationId;
         this.downStationId = downStationId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Line)) {
+            return false;
+        }
+        Line line = (Line) o;
+        return Objects.equals(getId(), line.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getId());
     }
 }
