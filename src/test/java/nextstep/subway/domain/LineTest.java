@@ -47,6 +47,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("구간 추가 성공")
     void addSection() {
         Line line = Line.of("1호선", "blue", section1);
 
@@ -56,6 +57,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("구간 삭제 성공")
     void deleteSectionByStationId() {
         Line line = Line.of("1호선", "blue", section1);
         line.addSection(section2);

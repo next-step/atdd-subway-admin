@@ -99,7 +99,7 @@ public class Section extends BaseEntity {
     }
 
     private void registerDeAscentEndPoint() {
-        downStation.changeDeAscentEndPoint(false);
+        downStation.changeDeAscentEndPoint(true);
     }
 
 
@@ -116,7 +116,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean isDeAscentEndpoint() {
-        return upStation.isDeAscentEndPoint();
+        return downStation.isDeAscentEndPoint();
     }
 
     @Override
