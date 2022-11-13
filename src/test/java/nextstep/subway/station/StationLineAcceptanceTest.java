@@ -22,8 +22,8 @@ class StationLineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     private void before() {
-        upStationId = requestCreateStation("강남역");
-        downStationId = requestCreateStation("성수역");
+        upStationId = getId(requestCreateStation("강남역"));
+        downStationId = getId(requestCreateStation("성수역"));
     }
 
     /**
@@ -66,12 +66,12 @@ class StationLineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("지하철 노선 조회")
     void getStationLine() {
-        Long lineId = requestCreateStationLine("신분당선").jsonPath().getLong("id");
+        Long lineId = getId(requestCreateStationLine("신분당선"));
 
         ExtractableResponse<Response> response = requestGetStationLine(lineId);
         assertThat(response.statusCode()).isEqualTo(200);
 
-        String name = response.jsonPath().getString("name");
+        String name = getProperty(response, "name");
         assertThat(name).isEqualTo("신분당선");
     }
 
@@ -83,7 +83,7 @@ class StationLineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("지하철 노선 수정")
     void updateStationLine() {
-        Long lineId = requestCreateStationLine("신분당선").jsonPath().getLong("id");
+        Long lineId = getId(requestCreateStationLine("신분당선"));
 
         Map<String, Object> updateParams = new HashMap<>();
         updateParams.put("name", "분당선");
@@ -92,8 +92,8 @@ class StationLineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = requestUpdateStationLine(lineId, updateParams);
         assertThat(response.statusCode()).isEqualTo(200);
 
-        String lineName = requestGetStationLine(lineId).jsonPath().getString("name");
-        String color = requestGetStationLine(lineId).jsonPath().getString("color");
+        String lineName = getProperty(requestGetStationLine(lineId), "name");
+        String color = getProperty(requestGetStationLine(lineId), "color");
         assertThat(lineName).isEqualTo("분당선");
         assertThat(color).isEqualTo("bg-red-600");
     }
@@ -106,7 +106,7 @@ class StationLineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("지하철 노선 삭제")
     void deleteStationLine() {
-        Long lineId = requestCreateStationLine("신분당선").jsonPath().getLong("id");
+        Long lineId = getId(requestCreateStationLine("신분당선"));
 
         ExtractableResponse<Response> response = requestDeleteStationLine(lineId);
         assertThat(response.statusCode()).isEqualTo(200);
@@ -121,10 +121,6 @@ class StationLineAcceptanceTest extends AcceptanceTest {
                 .when().delete("/lines/{lineId}", lineId)
                 .then().log().all()
                 .extract();
-    }
-
-    private List<String> getList(ExtractableResponse<Response> response, String key) {
-        return response.jsonPath().getList(key, String.class);
     }
 
     private ExtractableResponse<Response> requestCreateStationLine(String lineName) {
@@ -166,7 +162,7 @@ class StationLineAcceptanceTest extends AcceptanceTest {
                 .then().log().all().extract();
     }
 
-    private Long requestCreateStation(final String name) {
+    private ExtractableResponse<Response> requestCreateStation(final String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -175,8 +171,6 @@ class StationLineAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
-                .extract()
-                .jsonPath()
-                .getLong("id");
+                .extract();
     }
 }

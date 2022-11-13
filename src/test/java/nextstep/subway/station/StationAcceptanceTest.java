@@ -29,7 +29,7 @@ class StationAcceptanceTest extends AcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        List<String> stationNames = requestGetStations();
+        List<String> stationNames = getList(requestGetStations(), "name");
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -59,7 +59,7 @@ class StationAcceptanceTest extends AcceptanceTest {
         requestCreateStation("강남역");
         requestCreateStation("서울역");
 
-        List<String> stations = requestGetStations();
+        List<String> stations = getList(requestGetStations(), "name");
         assertThat(stations).contains("강남역", "서울역");
     }
 
@@ -71,13 +71,13 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        Long stationId = requestCreateStationGetLong("강남역");
+        Long stationId = getId(requestCreateStation("강남역"));
 
         ExtractableResponse<Response> response = requestDeleteStation(stationId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        List<String> stations = requestGetStations();
+        List<String> stations = getList(requestGetStations(), "name");
         assertThat(stations).isEmpty();
     }
 
@@ -101,14 +101,10 @@ class StationAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private Long requestCreateStationGetLong(String name) {
-        return requestCreateStation(name).jsonPath().getLong("id");
-    }
-
-    private List<String> requestGetStations() {
+    private ExtractableResponse<Response> requestGetStations() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+                .extract();
     }
 }
