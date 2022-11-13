@@ -45,6 +45,9 @@ public class Line extends BaseEntity {
     }
 
     public void addLineStation(LineStation lineStation) {
+        if (lineStations.contains(lineStation)) {
+            throw new IllegalArgumentException("이미 등록된 구간입니다.");
+        }
         lineStations.add(lineStation);
     }
 

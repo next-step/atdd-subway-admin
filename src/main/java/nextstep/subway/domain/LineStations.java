@@ -103,4 +103,12 @@ public class LineStations {
 
         return lineStation.getDownStation().getId().equals(candidate.getUpStation().getId());
     }
+
+    public boolean contains(LineStation lineStation) {
+        Optional<LineStation> duplicate = lineStations.stream()
+                .filter(ls -> ls.isSameLineStation(lineStation))
+                .findFirst();
+
+        return duplicate.isPresent();
+    }
 }
