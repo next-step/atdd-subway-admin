@@ -166,6 +166,64 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+
+    /**
+     * Given 노선 내 3개 이상 역들을 등록하고
+     * When 노선 내 역들 중 상행/하행 종점이 아닌 역을 제거하면
+     * Then 노선 내에 제거된 역이 존재하지 않는다
+     */
+    @DisplayName("노선 내 상행/하행 종점이 아닌 역을 제거하면 노선에서 해당 역이 제거된다.")
+    @Test
+    void deleteStationInMiddle() {
+
+    }
+
+    /**
+     * Given 노선 내 3개 이상 역들을 등록하고
+     * When 노선의 상행 종점 역을 제거하면
+     * Then 노선 내에 제거된 역이 존재하지 않는다
+     * Then 노선의 상행 종점이 바뀐다
+     */
+    @DisplayName("노선의 상행 종점을 제거하면 노선에서 해당 역이 제거되고 상행 종점이 바뀐다.")
+    @Test
+    void deleteStationWhichIsUpStation() {
+
+    }
+
+    /**
+     * Given 노선 내 3개 이상 역들을 등록하고
+     * When 노선의 하행 종점 역을 제거하면
+     * Then 노선 내에 제거된 역이 존재하지 않는다
+     * Then 노선의 하행 종점이 바뀐다
+     */
+    @DisplayName("노선의 하행 종점을 제거하면 노선에서 해당 역이 제거되고 하행 종점이 바뀐다.")
+    @Test
+    void deleteStationWhichIsDownStation() {
+
+    }
+
+    /**
+     * When 노선에 존재하지 않는 역을 제거하면
+     * Then 노선에서 해당 역이 제거되지 않는다
+     */
+    @DisplayName("노선에 구간이 1개이면 해당 구간에 포함된 역을 노선에서 제거할 수 없다.")
+    @Test
+    void deleteStationWhenLineHasOneSection() {
+
+    }
+
+    /**
+     * Given 노선 내에 존재하는 구간이 1개이고
+     * When 노선에 존재하는 역을 제거하면
+     * Then 노선에서 해당 역이 제거되지 않는다
+     */
+    @DisplayName("노선에 등록되지 않은 역을 제거하면 노선에서 역이 제거되지 않는다.")
+    @Test
+    void deleteStationNotInLine() {
+
+    }
+
+
     private ExtractableResponse<Response> 지하철_노선에_지하철역_등록_요청(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Long> params = new HashMap<>();
         params.put("upStationId", upStationId);
