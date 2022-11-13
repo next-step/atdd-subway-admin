@@ -11,7 +11,7 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
-    public static LineResponse of(Line line) {
+    public static LineResponse from(Line line) {
         return new LineResponse(line);
     }
 

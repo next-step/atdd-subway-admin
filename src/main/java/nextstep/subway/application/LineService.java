@@ -32,19 +32,19 @@ public class LineService {
         Station upStation = findStation(lineRequest.getUpStationId());
         Station downStation = findStation(lineRequest.getDownStationId());
         Line persistStation = lineRepository.save(lineRequest.toLine(upStation,downStation));
-        return LineResponse.of(persistStation);
+        return LineResponse.from(persistStation);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(LineResponse::of)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     @Transactional
