@@ -132,6 +132,11 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
+    public static Long 생성된_지하철_역_ID_조회(String name) {
+        return 지하철_역_생성(name).jsonPath()
+                .getLong("id");
+    }
+
     private ExtractableResponse<Response> 지하철_역_전체_조회() {
         return RestAssured.given().log().all()
                 .when().get("/stations")

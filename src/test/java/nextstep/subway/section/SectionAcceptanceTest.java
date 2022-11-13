@@ -5,8 +5,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleanup;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,14 +16,23 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.List;
 
-import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_생성;
+import static nextstep.subway.line.LineAcceptanceTest.생성된_지하철_노선_ID_조회;
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest {
+    private Long 판교역_ID;
+    private Long 강남역_ID;
+    private Long 신분당선_구간_ID;
+    private Long 신규_역_ID;
+    private ExtractableResponse<Response> 지하철_구간_추가_결과;
+
     @LocalServerPort
     int port;
 
@@ -51,24 +58,20 @@ public class SectionAcceptanceTest {
     void addSection() {
         // given
         int distance = 10;
-        String expectLine = "신분당선";
-        Long upStationId = StationAcceptanceTest.지하철_역_생성("판교역")
-                .jsonPath().getLong("id");
-        Long downStationId = StationAcceptanceTest.지하철_역_생성("강남역")
-                .jsonPath().getLong("id");
-        Long lineId = 지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, distance)
-                .jsonPath().getLong("id");
-        Long newStationId = StationAcceptanceTest.지하철_역_생성("양재역")
-                .jsonPath().getLong("id");
+        String lineName = "신분당선";
+        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, newStationId, downStationId, 5);
+        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 5);
 
         // then
-        List<String> stationNames = response
-                .jsonPath()
-                .getList("stations.name", String.class);
-        assertThat(stationNames).containsOnly("판교역", "양재역", "강남역");
+        지하철_구간_추가_성공_확인(지하철_구간_추가_결과);
+
+        // then
+        지하철_추가된_구간_조회_확인(지하철_구간_추가_결과, lineName, "판교역", "양재역", "강남역");
     }
 
     /**
@@ -81,24 +84,20 @@ public class SectionAcceptanceTest {
     void addUpSection() {
         // given
         int distance = 10;
-        String expectLine = "신분당선";
-        Long upStationId = StationAcceptanceTest.지하철_역_생성("판교역")
-                .jsonPath().getLong("id");
-        Long downStationId = StationAcceptanceTest.지하철_역_생성("강남역")
-                .jsonPath().getLong("id");
-        Long lineId = 지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, distance)
-                .jsonPath().getLong("id");
-        Long newStationId = StationAcceptanceTest.지하철_역_생성("양재역")
-                .jsonPath().getLong("id");
+        String lineName = "신분당선";
+        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, newStationId, upStationId, 5);
+        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 판교역_ID, 5);
 
         // then
-        List<String> stationNames = response
-                .jsonPath()
-                .getList("stations.name", String.class);
-        assertThat(stationNames).containsOnly("판교역", "양재역", "강남역");
+        지하철_구간_추가_성공_확인(지하철_구간_추가_결과);
+
+        // then
+        지하철_추가된_구간_조회_확인(지하철_구간_추가_결과, lineName, "양재역", "판교역", "강남역");
     }
 
     /**
@@ -111,24 +110,20 @@ public class SectionAcceptanceTest {
     void addDownSection() {
         // given
         int distance = 10;
-        String expectLine = "신분당선";
-        Long upStationId = StationAcceptanceTest.지하철_역_생성("판교역")
-                .jsonPath().getLong("id");
-        Long downStationId = StationAcceptanceTest.지하철_역_생성("강남역")
-                .jsonPath().getLong("id");
-        Long lineId = 지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, distance)
-                .jsonPath().getLong("id");
-        Long newStationId = StationAcceptanceTest.지하철_역_생성("양재역")
-                .jsonPath().getLong("id");
+        String lineName = "신분당선";
+        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, downStationId, newStationId, 5);
+        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 강남역_ID, 신규_역_ID, 5);
 
         // then
-        List<String> stationNames = response
-                .jsonPath()
-                .getList("stations.name", String.class);
-        assertThat(stationNames).containsOnly("판교역", "양재역", "강남역");
+        지하철_구간_추가_성공_확인(지하철_구간_추가_결과);
+
+        // then
+        지하철_추가된_구간_조회_확인(지하철_구간_추가_결과, lineName, "판교역", "강남역", "양재역");
     }
 
     /**
@@ -142,21 +137,16 @@ public class SectionAcceptanceTest {
     void addSectionException(int newDistance) {
         // given
         int distance = 10;
-        String expectLine = "신분당선";
-        Long upStationId = StationAcceptanceTest.지하철_역_생성("판교역")
-                .jsonPath().getLong("id");
-        Long downStationId = StationAcceptanceTest.지하철_역_생성("강남역")
-                .jsonPath().getLong("id");
-        Long lineId = 지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, distance)
-                .jsonPath().getLong("id");
-        Long newStationId = StationAcceptanceTest.지하철_역_생성("양재역")
-                .jsonPath().getLong("id");
+        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
+        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, newStationId, downStationId, newDistance);
+        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, newDistance);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_구간_추가_실패(지하철_구간_추가_결과);
     }
 
     /**
@@ -169,19 +159,15 @@ public class SectionAcceptanceTest {
     void addExistSectionException() {
         // given
         int distance = 10;
-        String expectLine = "신분당선";
-        Long upStationId = StationAcceptanceTest.지하철_역_생성("판교역")
-                .jsonPath().getLong("id");
-        Long downStationId = StationAcceptanceTest.지하철_역_생성("강남역")
-                .jsonPath().getLong("id");
-        Long lineId = 지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, distance)
-                .jsonPath().getLong("id");
+        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, upStationId, downStationId, 4);
+        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 판교역_ID, 강남역_ID, 4);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_구간_추가_실패(지하철_구간_추가_결과);
     }
 
     /**
@@ -194,22 +180,18 @@ public class SectionAcceptanceTest {
     void addNotExistSectionException() {
         // given
         int distance = 10;
-        Long upStationId = StationAcceptanceTest.지하철_역_생성("판교역")
-                .jsonPath().getLong("id");
-        Long downStationId = StationAcceptanceTest.지하철_역_생성("강남역")
-                .jsonPath().getLong("id");
-        Long lineId = 지하철_노선_생성("신분당선", "주황색", upStationId, downStationId, distance)
-                .jsonPath().getLong("id");
-        Long newStationId1 = StationAcceptanceTest.지하철_역_생성("양재역")
-                .jsonPath().getLong("id");
-        Long newStationId2 = StationAcceptanceTest.지하철_역_생성("양재시민의숲")
-                .jsonPath().getLong("id");
+        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
+
+        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 두번째_신규_역_ID = 생성된_지하철_역_ID_조회("양재시민의숲");
 
         // when
-        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, newStationId1, newStationId2, 4);
+        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 두번째_신규_역_ID, 4);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        지하철_구간_추가_실패(지하철_구간_추가_결과);
     }
 
     private ExtractableResponse<Response> 지하철_구간_추가(
@@ -232,17 +214,28 @@ public class SectionAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_구간_전체_조회() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
+    private void 지하철_구간_추가_실패(ExtractableResponse<Response> 지하철_구간_추가_결과) {
+        assertThat(지하철_구간_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    private ExtractableResponse<Response> 지하철_구간_조회(Long id) {
-        return RestAssured.given().log().all()
-                .when().get("/lines/" + id)
-                .then().log().all()
-                .extract();
+    private void 지하철_구간_추가_성공_확인(ExtractableResponse<Response> 지하철_구간_추가_결과) {
+        assertThat(지하철_구간_추가_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    private void 지하철_추가된_구간_조회_확인(
+            ExtractableResponse<Response> 지하철_구간_추가_결과,
+            String expectLineName,
+            String... expectStationNames
+    ) {
+        List<String> stationNames = 지하철_구간_추가_결과
+                .jsonPath()
+                .getList("stations.name", String.class);
+        String lineName = 지하철_구간_추가_결과.jsonPath()
+                        .getString("name");
+
+        assertAll(
+                () -> assertThat(lineName).isEqualTo(expectLineName),
+                () -> assertThat(stationNames).containsAll(Arrays.asList(expectStationNames))
+        );
     }
 }
