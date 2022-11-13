@@ -139,7 +139,7 @@ public class SectionAcceptanceTest {
     @DisplayName("구간 거리가 동일하거나 더 클 경우 역을 추가할 수 없다")
     @ParameterizedTest
     @ValueSource(ints = {10, 11})
-    void addSameDistanceSectionFail(int newDistance) {
+    void addSectionException(int newDistance) {
         // given
         int distance = 10;
         String expectLine = "신분당선";
@@ -154,6 +154,31 @@ public class SectionAcceptanceTest {
 
         // when
         ExtractableResponse<Response> response = 지하철_구간_추가(lineId, newStationId, downStationId, newDistance);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 상행역, 하행역 모두 노선에 등록되어 있다면
+     * Then 새로운 지하철 역을 추가할 수 없다
+     */
+    @DisplayName("상행역, 하행역 모두 존재할 경우 추가할 수 없다")
+    @Test
+    void addExistSectionException() {
+        // given
+        int distance = 10;
+        String expectLine = "신분당선";
+        Long upStationId = StationAcceptanceTest.지하철_역_생성("판교역")
+                .jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTest.지하철_역_생성("강남역")
+                .jsonPath().getLong("id");
+        Long lineId = 지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, distance)
+                .jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, upStationId, downStationId, 4);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
