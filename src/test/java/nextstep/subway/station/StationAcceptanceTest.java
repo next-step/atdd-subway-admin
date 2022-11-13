@@ -47,17 +47,17 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // given
-        String stationName = "강남역";
-        ExtractableResponse<Response> response = 지하철역을_생성한다(stationName);
-        상태코드를_체크한다(response.statusCode(), HttpStatus.CREATED.value());
+        지하철역_생성_호출("강남역");
 
         // when
         List<String> allStationNames = 모든_지하철역_이름을_조회한다("name");
 
         // then
-        지하철역_이름이_조회된다(allStationNames, stationName);
+        지하철역_이름이_조회된다(allStationNames, "강남역");
 
     }
+
+
 
     /**
      * Given 지하철역을 생성하고
@@ -68,12 +68,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        String stationName = "강남역";
-        지하철역을_생성한다(stationName);
+        지하철역_생성_호출("강남역");
 
         // when
-        String duplicatedName = "강남역";
-        ExtractableResponse<Response> response = 지하철역을_생성한다(duplicatedName);
+        ExtractableResponse<Response> response = 지하철역을_생성한다("강남역");
 
         // then
         상태코드를_체크한다(response.statusCode(), HttpStatus.BAD_REQUEST.value());
@@ -147,6 +145,11 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
+
+    private void 지하철역_생성_호출(String 강남역) {
+        ExtractableResponse<Response> response = 지하철역을_생성한다("강남역");
+        상태코드를_체크한다(response.statusCode(), HttpStatus.CREATED.value());
+    }
 
     /**
      * 지하철역 생성
