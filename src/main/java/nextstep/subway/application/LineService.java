@@ -8,6 +8,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.NoLineException;
 import nextstep.subway.exception.NoStationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -40,9 +41,13 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
+    public LineResponse getLine(final Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(NoLineException::new);
+        return LineResponse.of(line);
+    }
+
     public Station findStation(final Long stationId) {
         return stationRepository.findById(stationId)
             .orElseThrow(NoStationException::new);
     }
-
 }
