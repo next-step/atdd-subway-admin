@@ -77,4 +77,26 @@ public class LineAcceptanceTest {
             () -> assertThat(response.body().jsonPath().getList("name", String.class)).contains(name1, name2)
         );
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철노선 조회")
+    @Test
+    void getStationLine() {
+        // given
+        String name = "2호선";
+        Long id = 지하철_노선_생성_강남_잠실(name).body().jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_조회(id);
+
+        // then
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+            () -> assertThat(response.body().jsonPath().getString("name")).isEqualTo(name)
+        );
+    }
 }

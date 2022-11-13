@@ -62,7 +62,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - [ ] 인수 테스트 작성
   - [X] 지하철노선 생성
   - [X] 지하철노선 목록 조회
-  - [ ] 지하철노선 조회
+  - [X] 지하철노선 조회
   - [ ] 지하철노선 수정
   - [ ] 지하철노선 삭제
 
