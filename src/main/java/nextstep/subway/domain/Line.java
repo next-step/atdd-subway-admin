@@ -76,8 +76,8 @@ public class Line extends BaseEntity {
         this.distance = this.distance.add(distance);
     }
 
-    public void substractDistance(Distance distance) {
-        this.distance = this.distance.substract(distance);
+    public void subtractDistance(Distance distance) {
+        this.distance = this.distance.subtract(distance);
     }
 
     public List<Station> findStations() {

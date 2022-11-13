@@ -13,8 +13,10 @@ import nextstep.subway.constant.ErrorCode;
 @Embeddable
 public class Sections {
 
+    private static final int ONLY_ONE_SECTION = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
@@ -39,8 +41,8 @@ public class Sections {
         validateDuplicateSection(newSection);
         validateNotContainAnySection(newSection);
 
-        Optional<Section> updateUpStationSection = findUpdateUpStationSection(newSection);
-        Optional<Section> updateDownStationSection = findUpdateDownStationSection(newSection);
+        Optional<Section> updateUpStationSection = findSectionByUpStation(newSection.getUpStation());
+        Optional<Section> updateDownStationSection = findSectionByDownStation(newSection.getDownStation());
         if(hasNotBothUpAnddownStationSection(updateUpStationSection.isPresent(), updateDownStationSection.isPresent())) {
             newSection.addLineDistance();
         }
@@ -52,8 +54,10 @@ public class Sections {
     public void deleteStationInLine(Station deleteStation) {
         Optional<Section> upStationSection = findSectionByUpStation(deleteStation);
         Optional<Section> downStationSection = findSectionByDownStation(deleteStation);
+
         validateNotContainAnySection(upStationSection.isPresent(), downStationSection.isPresent());
         validateIfOnlyOneSection();
+
         if(hasBothUpAndDownStationSection(upStationSection.isPresent(), downStationSection.isPresent())) {
             combineSection(downStationSection.get(), upStationSection.get());
         }
@@ -68,20 +72,25 @@ public class Sections {
         section.addLineDistance();
     }
 
+    private void deleteSection(Section deleteSection) {
+        sections.removeIf(section -> section.isSameSection(deleteSection));
+        deleteSection.subtractLineDistance();
+    }
+
     private void validateDuplicateSection(Section section) {
         if(isAllContainStations(section)) {
             throw new IllegalArgumentException(ErrorCode.이미_존재하는_구간.getErrorMessage());
         }
     }
 
+    private boolean isAllContainStations(Section section) {
+        return findStations().containsAll(section.stations());
+    }
+
     private void validateNotContainAnySection(Section section) {
         if(isNotContainAnyStation(section)) {
             throw new IllegalArgumentException(ErrorCode.구간의_상행역과_하행역이_모두_노선에_포함되지_않음.getErrorMessage());
         }
-    }
-
-    private boolean isAllContainStations(Section section) {
-        return findStations().containsAll(section.stations());
     }
 
     private boolean isNotContainAnyStation(Section section) {
@@ -93,32 +102,6 @@ public class Sections {
         if(hasNotBothUpAnddownStationSection(hasUpStationSection, hasDownStationSection)) {
             throw new IllegalArgumentException(ErrorCode.노선_내_존재하지_않는_역.getErrorMessage());
         }
-    }
-
-    private boolean hasNotBothUpAnddownStationSection(boolean hasUpStationSection, boolean hasDownStationSection) {
-        return !hasUpStationSection && !hasDownStationSection;
-    }
-
-    private void validateIfOnlyOneSection() {
-        if(sections.size() == 1) {
-            throw new IllegalArgumentException(ErrorCode.노선에_속한_구간이_하나이면_제거_불가.getErrorMessage());
-        }
-    }
-
-    private boolean hasBothUpAndDownStationSection(boolean hasUpStationSection, boolean hasDownStationSection) {
-        return hasUpStationSection && hasDownStationSection;
-    }
-
-    private Optional<Section> findUpdateUpStationSection(Section newSection) {
-        return sections.stream()
-                .filter(section -> section.isSameUpStation(newSection.getUpStation()))
-                .findFirst();
-    }
-
-    private Optional<Section> findUpdateDownStationSection(Section newSection) {
-        return sections.stream()
-                .filter(section -> section.isSameDownStation(newSection.getDownStation()))
-                .findFirst();
     }
 
     private Optional<Section> findSectionByUpStation(Station station) {
@@ -133,8 +116,17 @@ public class Sections {
                 .findFirst();
     }
 
-    private void deleteSection(Section deleteSection) {
-        sections.removeIf(section -> section.isSameSection(deleteSection));
-        deleteSection.substractLineDistance();
+    private boolean hasNotBothUpAnddownStationSection(boolean hasUpStationSection, boolean hasDownStationSection) {
+        return !hasUpStationSection && !hasDownStationSection;
+    }
+
+    private void validateIfOnlyOneSection() {
+        if(sections.size() == ONLY_ONE_SECTION) {
+            throw new IllegalArgumentException(ErrorCode.노선에_속한_구간이_하나이면_제거_불가.getErrorMessage());
+        }
+    }
+
+    private boolean hasBothUpAndDownStationSection(boolean hasUpStationSection, boolean hasDownStationSection) {
+        return hasUpStationSection && hasDownStationSection;
     }
 }

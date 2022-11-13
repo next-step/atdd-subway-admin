@@ -90,12 +90,12 @@ public class Section {
     }
 
     public void updateUpStation(Section section) {
-        this.distance = this.distance.substract(section.distance);
+        this.distance = this.distance.subtract(section.distance);
         this.upStation = section.downStation;
     }
 
     public void updateDownStation(Section section) {
-        this.distance = this.distance.substract(section.distance);
+        this.distance = this.distance.subtract(section.distance);
         this.downStation = section.upStation;
     }
 
@@ -103,8 +103,8 @@ public class Section {
         this.line.addDistance(this.distance);
     }
 
-    public void substractLineDistance() {
-        this.line.substractDistance(this.distance);
+    public void subtractLineDistance() {
+        this.line.subtractDistance(this.distance);
     }
 
     public Distance addDistance(Section section) {
