@@ -87,14 +87,14 @@ public class Sections {
         validateNotContainAnySection(upStationSection.isPresent(), downStationSection.isPresent());
         validateIfOnlyOneSection();
 
-        if(hasBothUpAndDownStationSection(upStationSection.isPresent(), downStationSection.isPresent())) {
-            combineSection(downStationSection.get(), upStationSection.get());
+        if(isInTheMiddleOfLine(upStationSection.isPresent(), downStationSection.isPresent())) {
+            addCombineSection(downStationSection.get(), upStationSection.get());
         }
         upStationSection.ifPresent(this::deleteSection);
         downStationSection.ifPresent(this::deleteSection);
     }
 
-    private void combineSection(Section upSection, Section downSection) {
+    private void addCombineSection(Section upSection, Section downSection) {
         Distance distance = upSection.addDistance(downSection);
         Section section = Section.of(upSection.getUpStation(), downSection.getDownStation(), upSection.getLine(), distance.value());
         sections.add(section);
@@ -153,7 +153,7 @@ public class Sections {
         }
     }
 
-    private boolean hasBothUpAndDownStationSection(boolean hasUpStationSection, boolean hasDownStationSection) {
+    private boolean isInTheMiddleOfLine(boolean hasUpStationSection, boolean hasDownStationSection) {
         return hasUpStationSection && hasDownStationSection;
     }
 }
