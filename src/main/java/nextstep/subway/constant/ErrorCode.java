@@ -13,9 +13,12 @@ public enum ErrorCode {
     노선_정보가_없음("[ERROR] 노선 정보는 비어있을 수 없습니다."),
     이미_존재하는_구간("[ERROR] 이미 존재하는 구간입니다."),
     구간의_상행역과_하행역이_모두_노선에_포함되지_않음("[ERROR] 해당 구간의 상행역과 하행역은 모두 노선에 포함되지 않아 존재할 수 없는 구간입니다."),
+    존재하지_않는_역("[ERROR] 존재하지 않는 역입니다."),
+    노선_내_존재하지_않는_역("[ERROR] 노선 내 존재하지 않는 역입니다."),
+    노선에_속한_구간이_하나이면_제거_불가("[ERROR] 노선에 속한 구간이 하나이므로 노선에서 역을 제거할 수 없습니다."),
     ;
 
-    private String errorMessage;
+    private final String errorMessage;
 
     ErrorCode(String errorMessage) {
         this.errorMessage = errorMessage;
