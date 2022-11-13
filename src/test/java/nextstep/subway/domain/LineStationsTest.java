@@ -112,4 +112,15 @@ class LineStationsTest {
         assertThatThrownBy(() -> 노선.addSection(상행종점역, 하행종점역, 구간_거리))
                 .isInstanceOf(CannotAddSectionException.class);
     }
+
+    @Test
+    void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없다() {
+        Line 노선 = new Line("2호선", "color", 상행종점역, 하행종점역, 거리);
+        Station 홍대역 = new Station("홍대역");
+        Station 가양역 = new Station("가양역");
+        int 구간_거리 = 5;
+
+        assertThatThrownBy(() -> 노선.addSection(홍대역, 가양역, 구간_거리))
+                .isInstanceOf(CannotAddSectionException.class);
+    }
 }
