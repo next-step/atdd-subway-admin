@@ -3,7 +3,9 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,7 +29,14 @@ public class Sections {
     }
 
     public void add(Section newSection) {
+        validateHasStations(newSection);
         sections.forEach(section -> section.update(newSection));
         sections.add(newSection);
+    }
+
+    private void validateHasStations(Section newSection) {
+        if (new HashSet<>(getStations()).containsAll(newSection.findStations())) {
+            throw new IllegalArgumentException("추가하려는 역이 모두 존재합니다.");
+        }
     }
 }
