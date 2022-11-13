@@ -52,11 +52,11 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_생성("5호선", "보라색", upStationId, downStationId, 13);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
         List<String> lineNames = 지하철_노선_목록_조회().jsonPath().getList("name", String.class);
-        assertThat(lineNames).containsAnyOf("5호선");
+        assertAll(
+            () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+            () -> assertThat(lineNames).containsAnyOf("5호선")
+        );
     }
 
 
