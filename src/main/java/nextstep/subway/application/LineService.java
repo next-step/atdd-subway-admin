@@ -3,6 +3,7 @@ package nextstep.subway.application;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
+import nextstep.subway.domain.Color;
 import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Name;
@@ -38,7 +39,7 @@ public class LineService {
         Station downStation = getStation(lineRequest.getDownStationId());
         return Line.from(
             Name.of(lineRequest.getName()),
-            lineRequest.getColor(),
+            Color.of(lineRequest.getColor()),
             Distance.of(lineRequest.getDistance()),
             upStation,
             downStation

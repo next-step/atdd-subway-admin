@@ -20,8 +20,8 @@ public class Line extends BaseEntity {
     @Embedded
     private Name name;
 
-    @Column(unique = true, nullable = false)
-    private String color;
+    @Embedded
+    private Color color;
 
     @Embedded
     private Distance distance;
@@ -37,7 +37,7 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private Line(Name name, String color, Distance distance, Station upStation, Station downStation) {
+    private Line(Name name, Color color, Distance distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
         this.distance = distance;
@@ -45,13 +45,13 @@ public class Line extends BaseEntity {
         this.downStation = downStation;
     }
 
-    public static Line from(Name name, String color, Distance distance, Station upStation, Station downStation) {
+    public static Line from(Name name, Color color, Distance distance, Station upStation, Station downStation) {
         return new Line(name, color, distance, upStation, downStation);
     }
 
     public void modify(String name, String color) {
         this.name = Name.of(name);
-        this.color = color;
+        this.color = Color.of(color);
     }
 
     public Long getId() {
@@ -63,7 +63,7 @@ public class Line extends BaseEntity {
     }
 
     public String getColor() {
-        return color;
+        return color.value();
     }
 
     public Distance getDistance() {
