@@ -23,7 +23,7 @@ public class LineController {
     private final LineService lineService;
 
     public LineController(LineService lineService) {
-            this.lineService = lineService;
+        this.lineService = lineService;
     }
 
     @PostMapping
@@ -44,14 +44,14 @@ public class LineController {
 
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id,
-                                     @RequestBody LineUpdateRequest lineUpdateRequest) {
+    public ResponseEntity<Void> updateLine(@PathVariable Long id,
+                                           @RequestBody LineUpdateRequest lineUpdateRequest) {
         lineService.updateLineById(id, lineUpdateRequest);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
