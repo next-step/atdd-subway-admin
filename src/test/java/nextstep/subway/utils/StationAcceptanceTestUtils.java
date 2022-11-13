@@ -1,6 +1,5 @@
 package nextstep.subway.utils;
 
-import static io.restassured.RestAssured.given;
 import static nextstep.subway.utils.CommonTestFixture.*;
 
 import io.restassured.response.ExtractableResponse;
@@ -9,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 public class StationAcceptanceTestUtils {
     public static final String 잠실역 = "잠실역";
@@ -19,33 +17,18 @@ public class StationAcceptanceTestUtils {
     }
 
     public static ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put(NAME, stationName);
 
-        return given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(STATION_BASE_PATH)
-                .then().log().all()
-                .extract();
-    }
-
-    public static ExtractableResponse<Response> 지하철역을_제거한다(ExtractableResponse<Response> response) {
-        return given().log().all()
-                .pathParam(ID, 응답_ID_추출(response))
-                .when().delete(STATION_BASE_PATH + PATH_VARIABLE_ID)
-                .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value())
-                .extract();
+        return 생성(STATION_BASE_PATH, params);
     }
 
     public static List<String> 지하철_목록을_조회한다() {
-        return given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(STATION_BASE_PATH)
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract().jsonPath().getList(NAME, String.class);
+        return 목록_조회(STATION_BASE_PATH);
+    }
+
+    public static ExtractableResponse<Response> 지하철역을_제거한다(ExtractableResponse<Response> response) {
+        return 삭제(STATION_BASE_PATH, 응답_ID_추출(response));
     }
 
     public static void 지하철역_생성을_확인한다(ExtractableResponse<Response> response) {

@@ -1,6 +1,5 @@
 package nextstep.subway.utils;
 
-import static io.restassured.RestAssured.given;
 import static nextstep.subway.utils.CommonTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import nextstep.subway.dto.LineRequest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 public class LineAcceptanceTestUtils {
     public static final String 신분당선 = "신분당선";
@@ -23,55 +21,34 @@ public class LineAcceptanceTestUtils {
     public static final String 가평역 = "가평역";
 
     public static ExtractableResponse<Response> 지하철노선을_생성한다(LineRequest lineRequest) {
-         return given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(LINE_BASE_PATH)
-                .then().log().all()
-                .extract();
+        Map<String, Object> params = new HashMap<>();
+        params.put(NAME, lineRequest.getName());
+        params.put(COLOR, lineRequest.getColor());
+        params.put("upStationId", lineRequest.getUpStationId());
+        params.put("downStationId", lineRequest.getDownStationId());
+        params.put("distance", lineRequest.getDistance());
+
+        return 생성(LINE_BASE_PATH, params);
     }
 
     public static List<String> 지하철노선_목록을_조회한다() {
-        return given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(LINE_BASE_PATH)
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract().jsonPath().getList(NAME, String.class);
+        return 목록_조회(LINE_BASE_PATH);
     }
 
     public static ExtractableResponse<Response> 지하철노선을_조회한다(ExtractableResponse<Response> response) {
-        return given().log().all()
-                .pathParam(ID, 응답_ID_추출(response))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(LINE_BASE_PATH + PATH_VARIABLE_ID)
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+        return 상세_조회(LINE_BASE_PATH, 응답_ID_추출(response));
     }
 
-    public static void 지하철노선을_수정한다(ExtractableResponse<Response> response, String updateName, String updateColor) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", updateName);
-        params.put("color", updateColor);
+    public static ExtractableResponse<Response> 지하철노선을_수정한다(ExtractableResponse<Response> response, String updateName, String updateColor) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(NAME, updateName);
+        params.put(COLOR, updateColor);
 
-        given().log().all()
-                .pathParam(ID, 응답_ID_추출(response))
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(LINE_BASE_PATH + PATH_VARIABLE_ID)
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
+        return 수정(LINE_BASE_PATH, params, 응답_ID_추출(response));
     }
 
-    public static void 지하철노선을_삭제한다(ExtractableResponse<Response> response) {
-        given().log().all()
-                .pathParam(ID, 응답_ID_추출(response))
-                .when().delete(LINE_BASE_PATH + PATH_VARIABLE_ID)
-                .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value())
-                .extract();
+    public static ExtractableResponse<Response> 지하철노선을_삭제한다(ExtractableResponse<Response> response) {
+        return 삭제(LINE_BASE_PATH, 응답_ID_추출(response));
     }
 
     public static void 지하철노선_목록_검증_입력된_지하철노선이_존재(List<String> actualNames, String... lineNames) {
