@@ -3,6 +3,7 @@ package nextstep.subway.application;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
@@ -27,12 +28,20 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
+        Line line = lineRepository.save(createLine(lineRequest));
+        return LineResponse.of(line);
+    }
+
+    private Line createLine(LineRequest lineRequest) {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
-
-        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation));
-
-        return LineResponse.of(line);
+        return Line.from(
+            lineRequest.getName(),
+            lineRequest.getColor(),
+            Distance.of(lineRequest.getDistance()),
+            upStation,
+            downStation
+        );
     }
 
     private Station getStation(Long id) {
@@ -41,7 +50,6 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
         return lines.stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
