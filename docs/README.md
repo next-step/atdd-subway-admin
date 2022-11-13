@@ -14,3 +14,11 @@
 * [x] 기능 구현전 인수조건을 만족하는지 검증하는 인수 테스트 만들기(중요!)
 * [x] 인수 테스트의 결과가 다른 테스트에 영향을 끼치지 않도록 격리
 * [x] 재사용성, 가독성, 빠른 테스트 의도파악을 위한 리팩터링
+### 2단계 - 리뷰
+* [ ] LineService 에서 command, query 의 분리
+* [ ] Line 을 Station 과 연관관계를 맺도록 수정
+* [ ] LineResponse 에 역의 이름이 포함되도록 수정
+* [ ] @RequestMapping 을 활용
+* [ ] TestFixtures 를 기능별로 분리하여 의미를 좀 더 명확하게 드러내도록 수정
+* [ ] StationAcceptanceTest 의 setUp() 공통부분 추출
+* [ ] service, domain 의 단위테스트 추가
