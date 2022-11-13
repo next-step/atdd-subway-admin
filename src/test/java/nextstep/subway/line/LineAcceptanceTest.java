@@ -1,6 +1,5 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.RestAssuredSetUp;
@@ -11,13 +10,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.station.StationAcceptanceTest.지하철_역_등록;
+import static nextstep.subway.line.LineAcceptanceCommon.*;
+import static nextstep.subway.station.StationAcceptaneCommon.지하철_역_등록;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -208,49 +207,5 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_등록(LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_전체조회() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_조회(long id) {
-        return RestAssured.given().log().all()
-                .pathParam("id", id)
-                .when().get("/lines/{id}")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_수정(long id, LineRequest lineRequest) {
-        return RestAssured.given().log().all()
-                .pathParam("id", id)
-                .body(lineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{id}")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철_노선_삭제(long id) {
-        return RestAssured.given().log().all()
-                .pathParam("id", id)
-                .when().delete("/lines/{id}")
-                .then().log().all()
-                .extract();
     }
 }
-
