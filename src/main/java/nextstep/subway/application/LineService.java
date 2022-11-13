@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
 import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Name;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -36,7 +37,7 @@ public class LineService {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
         return Line.from(
-            lineRequest.getName(),
+            Name.of(lineRequest.getName()),
             lineRequest.getColor(),
             Distance.of(lineRequest.getDistance()),
             upStation,

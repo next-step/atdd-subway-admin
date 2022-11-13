@@ -17,8 +17,8 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String name;
+    @Embedded
+    private Name name;
 
     @Column(unique = true, nullable = false)
     private String color;
@@ -37,7 +37,7 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private Line(String name, String color, Distance distance, Station upStation, Station downStation) {
+    private Line(Name name, String color, Distance distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
         this.distance = distance;
@@ -45,12 +45,12 @@ public class Line extends BaseEntity {
         this.downStation = downStation;
     }
 
-    public static Line from(String name, String color, Distance distance, Station upStation, Station downStation) {
+    public static Line from(Name name, String color, Distance distance, Station upStation, Station downStation) {
         return new Line(name, color, distance, upStation, downStation);
     }
 
     public void modify(String name, String color) {
-        this.name = name;
+        this.name = Name.of(name);
         this.color = color;
     }
 
@@ -59,7 +59,7 @@ public class Line extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return name.value();
     }
 
     public String getColor() {

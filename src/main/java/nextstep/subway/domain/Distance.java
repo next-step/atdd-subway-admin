@@ -8,7 +8,7 @@ public class Distance {
 
     private static final int MIN = 1;
 
-    private static final String ROUTE_DISTANCE = "구간거리는 %dq보다 크거나 같아야합니다.";
+    private static final String ROUTE_DISTANCE_ERROR = "구간거리는 %d보다 크거나 같아야합니다.";
 
     @Column(nullable = false)
     private int distance;
@@ -22,7 +22,7 @@ public class Distance {
 
     public static Distance of(int distance) {
         if (distance < MIN) {
-            throw new IllegalArgumentException(String.format(ROUTE_DISTANCE, MIN));
+            throw new IllegalArgumentException(String.format(ROUTE_DISTANCE_ERROR, MIN));
         }
         return new Distance(distance);
     }
