@@ -57,7 +57,7 @@ public class LineAcceptanceTest {
         지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID);
 
         // then
-        ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_목록_조회();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회();
 
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
@@ -79,7 +79,7 @@ public class LineAcceptanceTest {
         지하철_노선_생성(LINE_BUNDANG, WANGSIPLI_ID, JUKJUN_ID);
 
         // when
-        ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_목록_조회();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회();
 
         // then
         assertAll(
@@ -101,7 +101,7 @@ public class LineAcceptanceTest {
         Integer id = JsonPathUtils.extractInteger(지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID), "$.id");
 
         // when
-        ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_조회(id);
+        ExtractableResponse<Response> response = 지하철_노선_조회(id);
 
         // then
         assertAll(
@@ -125,7 +125,7 @@ public class LineAcceptanceTest {
         // when
         String CHANGED_NAME = "8호선";
         String CHANGED_COLOR = "bg-red-600";
-        ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_수정(id, CHANGED_NAME, CHANGED_COLOR);
+        ExtractableResponse<Response> response = 지하철_노선_수정(id, CHANGED_NAME, CHANGED_COLOR);
 
         // then
         assertAll(
@@ -151,5 +151,6 @@ public class LineAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(extractList(지하철_노선_목록_조회(), "$[*].name")).doesNotContain(LINE_2);
     }
 }

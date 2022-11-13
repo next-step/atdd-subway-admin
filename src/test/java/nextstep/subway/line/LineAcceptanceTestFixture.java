@@ -1,8 +1,5 @@
 package nextstep.subway.line;
 
-import static nextstep.subway.station.StationAcceptanceTestFixture.*;
-import static nextstep.subway.utils.JsonPathUtils.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
