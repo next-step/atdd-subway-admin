@@ -44,6 +44,11 @@ public class Line extends BaseEntity {
         this.downStation = downStation;
     }
 
+    public void modify(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public Long getId() {
         return id;
     }
@@ -66,10 +71,5 @@ public class Line extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public void modify(String name, String color) {
-        this.name = name;
-        this.color = color;
     }
 }
