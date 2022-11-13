@@ -19,7 +19,8 @@ public class Section extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "downstation_id")
     private Station downStation;
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
 
@@ -28,7 +29,7 @@ public class Section extends BaseEntity {
     public Section(final Station upStation, final Station downStation, final int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Long getId() {
@@ -40,7 +41,7 @@ public class Section extends BaseEntity {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getValue();
     }
 
     public Station getUpStation() {
@@ -71,6 +72,10 @@ public class Section extends BaseEntity {
     }
 
     public void changeDistance(final int distance) {
-        this.distance = distance;
+        this.distance.change(distance);
+    }
+
+    public void validateDistance(final Section newSection) {
+        distance.equalToOrLessThan(newSection.getDistance());
     }
 }

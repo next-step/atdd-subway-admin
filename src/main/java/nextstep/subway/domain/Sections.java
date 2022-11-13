@@ -51,19 +51,13 @@ public class Sections {
     private Section validateIfConnectableSectionWith(final Section newSection) {
         Section section = findConnectableSectionWith(newSection);
         if (isIncludedBetweenStations(newSection, section)) {
-            validateDistance(newSection, section);
+            section.validateDistance(newSection);
         }
         return section;
     }
 
     private boolean isIncludedBetweenStations(final Section newSection, final Section section) {
         return isSameUpStation(section, newSection) || isSameDownStation(section, newSection);
-    }
-
-    private void validateDistance(final Section newSection, final Section section) {
-        if (newSection.getDistance() >= section.getDistance()) {
-            throw new IllegalArgumentException("상행역 또는 하행역이 동일한 경우, 기존 구간의 거리보다 짧아야 합니다.");
-        }
     }
 
     private Section findConnectableSectionWith(final Section newSection) {
