@@ -41,6 +41,11 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
+    public void update(Line line) {
+        this.name = line.getName();
+        this.color = line.getColor();
+    }
+
     public Long getId() {
         return id;
     }
@@ -63,10 +68,5 @@ public class Line extends BaseEntity {
 
     public int getDistance() {
         return distance;
-    }
-
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
     }
 }

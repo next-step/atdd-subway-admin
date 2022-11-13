@@ -14,6 +14,7 @@ import static nextstep.subway.AcceptanceFixture.*;
 import static nextstep.subway.line.LineAcceptanceFixture.*;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 
 @DisplayName("지하철 노선 인수 테스트")
@@ -75,8 +76,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         List<String> 지하철_노선_목록_이름 = 목록_이름_조회(지하철_노선_목록_조회_응답);
 
         // then
-        assertThat(지하철_노선_목록_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(지하철_노선_목록_이름).contains("1번지하철노선", "2번지하철노선");
+        assertAll(
+                () -> assertThat(지하철_노선_목록_조회_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철_노선_목록_이름).contains("1번지하철노선", "2번지하철노선")
+        );
     }
 
     /**
@@ -127,8 +130,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
         String 수정된_지하철_노선_이름 = 이름_조회(지하철_노선_조회_응답);
 
         // then
-        assertThat(지하철_노선_수정_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(수정된_지하철_노선_이름).isEqualTo("지하철노선수정");
+        assertAll(
+                () -> assertThat(지하철_노선_수정_응답.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(수정된_지하철_노선_이름).isEqualTo("지하철노선수정")
+        );
     }
 
     /**

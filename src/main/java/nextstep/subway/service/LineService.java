@@ -40,7 +40,7 @@ public class LineService {
         List<Line> stations = lineRepository.findAll();
 
         return stations.stream()
-                .map(station -> LineResponse.of(station))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -67,9 +67,5 @@ public class LineService {
                 .orElseThrow(IllegalArgumentException::new);
     }
 
-    public void validateCheck(LineRequest request) {
-        if (lineRepository.existsByName(request.getName())) {
-            throw new DataIntegrityViolationException("이미 존재하는 지하철 노선 이름입니다.");
-        }
-    }
 }
+

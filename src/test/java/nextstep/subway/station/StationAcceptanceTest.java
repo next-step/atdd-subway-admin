@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import static nextstep.subway.AcceptanceFixture.식별_아이디_조회;
 import static nextstep.subway.station.StationAcceptanceFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 인수 테스트")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -25,8 +26,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청("강남역");
 
         // then
-        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(지하철역_이름_조회()).containsAnyOf("강남역");
+        assertAll(
+                () -> assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(지하철역_이름_조회()).containsAnyOf("강남역")
+        );
     }
 
     /**
@@ -60,8 +63,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
         지하철역_생성_요청("강남역");
 
         // then
-        assertThat(지하철역_이름_조회().size()).isEqualTo(2);
-        assertThat(지하철역_이름_조회()).containsExactly("잠실역", "강남역");
+        assertAll(
+                () -> assertThat(지하철역_이름_조회().size()).isEqualTo(2),
+                () -> assertThat(지하철역_이름_조회()).containsExactly("잠실역", "강남역")
+        );
     }
 
     /**
