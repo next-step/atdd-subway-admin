@@ -81,9 +81,9 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
     public void deleteSection(final Long lineId, final Long stationId) {
         Line line = findById(lineId);
         line.deleteSectionByStationId(stationId);
-        lineRepository.flush();
     }
 }
