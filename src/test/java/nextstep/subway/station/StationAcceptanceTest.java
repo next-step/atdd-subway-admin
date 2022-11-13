@@ -3,9 +3,12 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.helper.JsonPathExtractor;
+import nextstep.subway.helper.TestIsolator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -19,12 +22,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
+    @Autowired
+    private TestIsolator testIsolator;
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        testIsolator.run();
     }
 
     /**
@@ -43,7 +49,7 @@ public class StationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> findAllResponse = StationAcceptanceTestFixture.findAllStations();
-        List<String> stationNames = findAllResponse.jsonPath().getList("name", String.class);
+        List<String> stationNames = JsonPathExtractor.getNames(findAllResponse);
         assertThat(stationNames).containsAnyOf("신림역");
     }
 
@@ -81,7 +87,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = StationAcceptanceTestFixture.findAllStations();
 
         //then
-        assertThat(response.body().jsonPath().getInt("size()")).isEqualTo(2);
+        assertThat(JsonPathExtractor.getTotalJsonArraySize(response)).isEqualTo(2);
     }
 
     /**
@@ -101,6 +107,6 @@ public class StationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> findAllResponse = StationAcceptanceTestFixture.findAllStations();
-        assertThat(findAllResponse.body().jsonPath().getInt("size()")).isEqualTo(0);
+        assertThat(JsonPathExtractor.getTotalJsonArraySize(findAllResponse)).isEqualTo(0);
     }
 }

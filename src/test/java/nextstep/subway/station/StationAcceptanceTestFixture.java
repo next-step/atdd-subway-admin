@@ -16,11 +16,11 @@ public class StationAcceptanceTestFixture {
         params.put("name", name);
 
         return RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post(STATION_API_MAIN_PATH)
-                        .then().log().all()
-                        .extract();
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(STATION_API_MAIN_PATH)
+                .then().log().all()
+                .extract();
     }
 
     public static ExtractableResponse<Response> findAllStations() {
