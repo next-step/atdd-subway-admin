@@ -36,9 +36,6 @@ public class LineBridgeDto {
             return distance;
         }
 
-        public LineBridge toSection(Line line, Station upStation, Station downStation) {
-            return new LineBridge(line, upStation, downStation, distance);
-        }
     }
 
     public static class Response {
@@ -62,14 +59,6 @@ public class LineBridgeDto {
 
         public Long getId() {
             return id;
-        }
-
-        public Long getDownStationId() {
-            return downStationId;
-        }
-
-        public Long getUpStationId() {
-            return upStationId;
         }
 
         public int getDistance() {

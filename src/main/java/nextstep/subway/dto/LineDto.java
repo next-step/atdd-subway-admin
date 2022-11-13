@@ -103,7 +103,6 @@ public class LineDto {
         public String name;
         public String color;
         public List<StationResponse> stations;
-        public int distance;
 
         public Response(long id, String name, String color, List<StationResponse> stations) {
             this.id = id;
@@ -126,10 +125,6 @@ public class LineDto {
 
         public List<StationResponse> getStations() {
             return stations;
-        }
-
-        public int getDistance() {
-            return distance;
         }
 
         public static Response of (Line line) {
