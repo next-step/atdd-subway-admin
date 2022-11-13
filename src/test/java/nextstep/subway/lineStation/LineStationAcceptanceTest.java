@@ -137,10 +137,10 @@ class LineStationAcceptanceTest {
         JsonPath 이호선 = 지하철_노선_생성("2호선", "green", 강남역.getLong("id"), 선릉역.getLong("id"), 10);
 
         // when
-        JsonPath 삼성역 = 지하철_역_생성("길이가같은역");
+        JsonPath 역삼역 = 지하철_역_생성("역삼역");
         Map paramMap = new HashMap();
-        paramMap.put("upStationId", 선릉역.getLong("id"));
-        paramMap.put("downStationId", 삼성역.getLong("id"));
+        paramMap.put("upStationId", 역삼역.getLong("id"));
+        paramMap.put("downStationId", 선릉역.getLong("id"));
         paramMap.put("distance", 10);
         ExtractableResponse<Response> postResponse = 지하철_구간_추가(이호선.getLong("id"), paramMap);
 

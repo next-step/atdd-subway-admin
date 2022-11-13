@@ -74,9 +74,8 @@ public class LineStation extends BaseEntity {
         if (!isInterLineStation()) {
             return false;
         }
-
-        // upStation이 같아야 inter lineStation의 후보가 될 수 있다.
-        return this.upStation.getId().equals(lineStation.upStation.getId());
+        return this.upStation.getId().equals(lineStation.upStation.getId())
+                || this.downStation.getId().equals(lineStation.downStation.getId());
     }
 
     private boolean isNotFirstLineStation() {
@@ -100,6 +99,10 @@ public class LineStation extends BaseEntity {
     private boolean isNotValidNewLineStation(LineStation newLineStation) {
         // newLineStation의 up, down station은 모두 null이 아니어야 한다.
         return newLineStation.getUpStation() == null || newLineStation.getDownStation() == null;
+    }
+
+    public boolean isShorterThan(LineStation newLineStation) {
+        return this.distance <= newLineStation.distance;
     }
 
     public Long getId() {

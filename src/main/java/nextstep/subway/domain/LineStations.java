@@ -31,6 +31,9 @@ public class LineStations {
                 .filter(s -> s.canAddInterLineStation(newLineStation))
                 .findFirst()
                 .get();
+        if(upperLineStation.isShorterThan(newLineStation)) {
+            throw new IllegalArgumentException("기존 구간의 길이보다 크거나 같습니다.");
+        }
         lineStations.add(newLineStation);
         upperLineStation.arrangeInterLineStation(newLineStation);
     }
