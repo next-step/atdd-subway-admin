@@ -3,9 +3,12 @@ package nextstep.subway.domain;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToOne;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,18 +22,24 @@ public class Line extends BaseEntity {
 
     private String color;
     private int distance;
-    private String upStationId;
-    private String downStationId;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "upStationId")
+    private Station upStation;
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "downStationId")
+    private Station downStation;
 
     protected Line() {
     }
 
-    public Line(String name, String color, int distance, String upStationId, String downStationId) {
+    public Line(String name, String color, int distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
         this.distance = distance;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
     }
 
     public Long getId() {
@@ -49,20 +58,20 @@ public class Line extends BaseEntity {
         return distance;
     }
 
-    public String getUpStationId() {
-        return upStationId;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public String getDownStationId() {
-        return downStationId;
+    public Station getDownStation() {
+        return downStation;
     }
 
-    public void changeInformation(String name, String color, int distance, String upStationId, String downStationId) {
+    public void changeInformation(String name, String color, int distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
         this.distance = distance;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
     }
 
     @Override

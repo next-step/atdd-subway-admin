@@ -5,12 +5,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends StationTestFixtures {
+
+    @BeforeEach
+    void beforeEach() {
+        setUp();
+    }
 
     /**
      * When 지하철역을 생성하면

@@ -5,12 +5,33 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends LineTestFixtures {
+
+    @Autowired
+    StationRepository stationRepository;
+    String stationId1 = "";
+    String stationId2 = "";
+    String stationId3 = "";
+
+    @BeforeEach
+    void beforeEach() {
+        setUp();
+        Station station1 = stationRepository.save(new Station("경기 광주역"));
+        Station station2 = stationRepository.save(new Station("중앙역"));
+        Station station3 = stationRepository.save(new Station("모란역"));
+        stationId1 = String.valueOf(station1.getId());
+        stationId2 = String.valueOf(station2.getId());
+        stationId3 = String.valueOf(station3.getId());
+    }
 
     /**
      * When 지하철 노선을 생성하면
@@ -21,7 +42,7 @@ class LineAcceptanceTest extends LineTestFixtures {
     @Test
     void createLine() {
         // when
-        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
+        노선_생성("신분당선", "bg-red-600", stationId1, stationId2, "10");
         //then
         List<String> lineNames = 노선_목록조회("name");
 
@@ -40,8 +61,8 @@ class LineAcceptanceTest extends LineTestFixtures {
     @Test
     void getLines() {
         //given
-        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
-        노선_생성("분당선", "bg-green-600", "1", "3", "10");
+        노선_생성("신분당선", "bg-red-600", stationId1, stationId2, "10");
+        노선_생성("분당선", "bg-green-600", stationId1, stationId3, "10");
 
         //when
         List<String> lineNames = 노선_목록조회("name");
@@ -61,7 +82,7 @@ class LineAcceptanceTest extends LineTestFixtures {
     @Test
     void getLineByName() {
         //given
-        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
+        노선_생성("신분당선", "bg-red-600", stationId1, stationId2, "10");
 
         //when
         String lineName = 노선_조회("/{name}", "신분당선", "name");
@@ -81,11 +102,11 @@ class LineAcceptanceTest extends LineTestFixtures {
     @Test
     void modifyLine() {
         //given
-        노선_생성("신분당선", "bg-red-600", "1", "2", "10");
+        노선_생성("신분당선", "bg-red-600", stationId1, stationId2, "10");
 
         //when
         ExtractableResponse<Response> response =
-                노선_수정("신분당선", "bg-green-600", "1", "2", "10", "/{name}", "신분당선");
+                노선_수정("신분당선", "bg-green-600", stationId1, stationId2, "10", "/{name}", "신분당선");
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -102,7 +123,7 @@ class LineAcceptanceTest extends LineTestFixtures {
     @Test
     void deleteLine() {
         //given
-        String id = 노선_생성_값_리턴("신분당선", "bg-red-600", "1", "2", "10", "id");
+        String id = 노선_생성_값_리턴("신분당선", "bg-red-600", stationId1, stationId2, "10", "id");
 
         //when
         ExtractableResponse<Response> response = 노선_삭제("/{id}", id);
