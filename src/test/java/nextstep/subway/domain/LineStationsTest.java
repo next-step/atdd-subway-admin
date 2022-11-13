@@ -103,5 +103,13 @@ class LineStationsTest {
                 .isInstanceOf(CannotAddSectionException.class);
     }
 
+    @Test
+    void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없다() {
+        Line 노선 = new Line("2호선", "color", 상행종점역, 하행종점역, 거리);
 
+        int 구간_거리 = 5;
+
+        assertThatThrownBy(() -> 노선.addSection(상행종점역, 하행종점역, 구간_거리))
+                .isInstanceOf(CannotAddSectionException.class);
+    }
 }

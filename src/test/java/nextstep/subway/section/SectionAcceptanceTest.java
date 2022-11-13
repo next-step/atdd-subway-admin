@@ -128,7 +128,15 @@ class SectionAcceptanceTest extends SubwayAcceptanceTest {
      */
     @Test
     void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없다() {
+        long 상행역_식별자 = 노선응답정보.상행종점역_식별자;
+        long 하행역_식별자 = 노선응답정보.하행종점역_식별자;
+        int 거리 = 10;
 
+        SectionAcceptanceTestRequest 구간요청정보
+                = new SectionAcceptanceTestRequest(노선응답정보.노선_식별자, 상행역_식별자, 하행역_식별자, 거리);
+        ExtractableResponse<Response> 응답 = 구간_등록(구간요청정보);
+
+        구간_등록_실패함(응답);
     }
 
     /**

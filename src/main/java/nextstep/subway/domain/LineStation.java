@@ -54,10 +54,17 @@ public class LineStation {
     }
 
     public boolean canAddSection(Station otherUpStation, Station otherDownStation) {
+        verifyNotUpStationDownStation(otherUpStation, otherDownStation);
         return canSplitByUpStation(otherUpStation, otherDownStation)
                 || canSplitByDownStation(otherUpStation, otherDownStation)
                 || isUpStation(otherDownStation)
                 || isDownStation(otherUpStation);
+    }
+
+    private void verifyNotUpStationDownStation(Station otherUpStation, Station otherDownStation) {
+        if (isUpStation(otherUpStation) && isDownStation(otherDownStation)) {
+            throw new CannotAddSectionException(CannotAddSectionException.UP_AND_DOWN_STATION_ALL_EXISTS);
+        }
     }
 
     private boolean isUpStation(Station otherUpStation) {
