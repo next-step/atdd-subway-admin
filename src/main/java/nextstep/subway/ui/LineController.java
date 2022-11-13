@@ -4,6 +4,7 @@ import nextstep.subway.application.LineQueryService;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineStationRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,8 @@ public class LineController {
 	public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
 		LineResponse lineResponse = lineService.saveLine(lineRequest);
 
-		return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+		return ResponseEntity.created(createLinesLocation(lineResponse.getId()))
+				.body(lineResponse);
 	}
 
 	@GetMapping
@@ -53,4 +55,14 @@ public class LineController {
 		return ResponseEntity.noContent().build();
 	}
 
+	@PostMapping("/{id}/sections")
+	public ResponseEntity<LineResponse> createSection(@PathVariable long id,
+													  @RequestBody LineStationRequest request) {
+		LineResponse lineResponse = lineService.addSections(id, request);
+		return ResponseEntity.created(createLinesLocation(id)).body(lineResponse);
+	}
+
+	private URI createLinesLocation(long lineId) {
+		return URI.create("/lines/" + lineId);
+	}
 }
