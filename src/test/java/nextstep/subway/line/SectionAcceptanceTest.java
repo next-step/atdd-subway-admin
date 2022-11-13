@@ -125,4 +125,33 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
         지하철구간_삭제_응답상태_204_검증(response);
     }
+
+    @DisplayName("가운데 역을 제거하는 경우")
+    @Test
+    void deleteSection_midpoint() {
+        // given
+        지하철노선에_구간_등록_요청(lineId, registeredStationId2, stationId1, 3);
+        지하철노선에_구간_등록_요청(lineId, stationId1, stationId2, 3);
+        지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
+
+        // when
+        ExtractableResponse<Response> response = 지하철노선에_구간_삭제_요청(lineId, stationId1);
+
+        // then
+        지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
+        지하철구간_삭제_응답상태_204_검증(response);
+    }
+
+    @DisplayName("구간이 하나인 노선에서 역을 제거하는 경우")
+    @Test
+    void deleteSection_lastSection() {
+        // given
+        지하철노선_목록_조회_응답상태_200_검증(지하철노선_구간_목록_조회_요청(lineId));
+
+        // when
+        ExtractableResponse<Response> response = 지하철노선에_구간_삭제_요청(lineId, stationId1);
+
+        // then
+        지하철구간_삭제_응답상태_400_검증(response);
+    }
 }

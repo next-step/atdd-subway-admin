@@ -75,5 +75,9 @@ public class SectionAcceptanceStep extends AcceptanceTest {
     public static void 지하철구간_삭제_응답상태_204_검증(ExtractableResponse<Response> response) {
         응답상태_검증(response, HttpStatus.NO_CONTENT);
     }
+
+    public static void 지하철구간_삭제_응답상태_400_검증(ExtractableResponse<Response> response) {
+        응답상태_검증(response, HttpStatus.BAD_REQUEST);
+    }
 }
 
