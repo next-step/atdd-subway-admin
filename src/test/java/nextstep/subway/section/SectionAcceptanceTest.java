@@ -10,6 +10,8 @@ import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -66,7 +68,7 @@ public class SectionAcceptanceTest {
         List<String> stationNames = response
                 .jsonPath()
                 .getList("stations.name", String.class);
-        assertThat(stationNames).contains("판교역", "양재역", "강남역");
+        assertThat(stationNames).containsOnly("판교역", "양재역", "강남역");
     }
 
     /**
@@ -96,7 +98,7 @@ public class SectionAcceptanceTest {
         List<String> stationNames = response
                 .jsonPath()
                 .getList("stations.name", String.class);
-        assertThat(stationNames).contains("판교역", "양재역", "강남역");
+        assertThat(stationNames).containsOnly("판교역", "양재역", "강남역");
     }
 
     /**
@@ -126,7 +128,35 @@ public class SectionAcceptanceTest {
         List<String> stationNames = response
                 .jsonPath()
                 .getList("stations.name", String.class);
-        assertThat(stationNames).contains("판교역", "양재역", "강남역");
+        assertThat(stationNames).containsOnly("판교역", "양재역", "강남역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 추가하는 지하철 구간의 거리가 기존구간과 동일하거나 클 경우
+     * Then 새로운 지하철 역을 추가할 수 없다
+     */
+    @DisplayName("구간 거리가 동일하거나 더 클 경우 역을 추가할 수 없다")
+    @ParameterizedTest
+    @ValueSource(ints = {10, 11})
+    void addSameDistanceSectionFail(int newDistance) {
+        // given
+        int distance = 10;
+        String expectLine = "신분당선";
+        Long upStationId = StationAcceptanceTest.지하철_역_생성("판교역")
+                .jsonPath().getLong("id");
+        Long downStationId = StationAcceptanceTest.지하철_역_생성("강남역")
+                .jsonPath().getLong("id");
+        Long lineId = 지하철_노선_생성(expectLine, "주황색", upStationId, downStationId, distance)
+                .jsonPath().getLong("id");
+        Long newStationId = StationAcceptanceTest.지하철_역_생성("양재역")
+                .jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간_추가(lineId, newStationId, downStationId, newDistance);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> 지하철_구간_추가(
@@ -146,7 +176,6 @@ public class SectionAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/{id}/sections", lineId)
                 .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
                 .extract();
     }
 
