@@ -32,6 +32,11 @@ public class Sections {
         }
     }
 
+    private void validationSection(Section newSection) {
+        boolean isContainsAll = false;
+        boolean isNotContainsAny = false;
+    }
+
     public List<Station> getStations() {
         return sections.stream()
                 .flatMap(section -> section.getStations().stream())
