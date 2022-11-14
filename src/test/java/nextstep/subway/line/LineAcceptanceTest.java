@@ -14,11 +14,9 @@ import nextstep.subway.ResponseAssertTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest extends BaseAcceptanceTest {
 
     /**
@@ -48,8 +46,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLines() {
         // Given
-        지하철노선_생성_요청("1호선", "bg-red-600","강남역", "역삼역",  2);
-        지하철노선_생성_요청("2호선", "bg-red-600","신촌역", "이대역",  2);
+        지하철노선_생성_요청("1호선", "bg-blue-600","강남역", "역삼역",  2);
+        지하철노선_생성_요청("2호선", "bg-green-600","신촌역", "이대역",  2);
 
         // When
         ExtractableResponse<Response> 지하철노선_목록_응답 = 지하철노선_목록조회_요청();
@@ -67,7 +65,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void getLine() {
         // Given
-        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("1호선", "bg-red-600", "강남역", "역삼역", 2);
+        ExtractableResponse<Response> createResponse = 지하철노선_생성_요청("1호선", "bg-blue-600", "강남역", "역삼역", 2);
         ResponseAssertTest.생성_확인(createResponse);
 
         // When
@@ -86,15 +84,15 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void updateLine() {
         // Given
-        ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성_요청("1호선", "bg-red-600", "강남역", "역삼역", 2);
+        ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성_요청("1호선", "bg-blue-600", "강남역", "역삼역", 2);
         ResponseAssertTest.생성_확인(지하철노선_생성_응답);
 
         // When
         Long id = 객체_응답_ID(지하철노선_생성_응답);
-        ExtractableResponse<Response> 지하철노선_수정_응답 = 지하철노선_수정_요청(id, "다른 분당선", "bg-blue-600");
+        ExtractableResponse<Response> 지하철노선_수정_응답 = 지하철노선_수정_요청(id, "분당선", "bg-red-600");
 
         // Then
-        지하철노선_수정_확인(id, 지하철노선_수정_응답, "다른 분당선", "bg-blue-600");
+        지하철노선_수정_확인(id, 지하철노선_수정_응답, "분당선", "bg-red-600");
     }
 
     /**
@@ -106,7 +104,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void deleteLine() {
         // Given
-        ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성_요청("1호선", "bg-red-600", "강남역", "역삼역", 2);
+        ExtractableResponse<Response> 지하철노선_생성_응답 = 지하철노선_생성_요청("1호선", "bg-blue-600", "강남역", "역삼역", 2);
         ResponseAssertTest.생성_확인(지하철노선_생성_응답);
 
         // When
@@ -122,7 +120,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         assertThat(getResponse.jsonPath().getList("id")).doesNotContain(id);
     }
 
-    private ExtractableResponse<Response> 지하철노선_생성_요청(String lineName, String color, String upStationName, String downStationName, int distance) {
+    public static ExtractableResponse<Response> 지하철노선_생성_요청(String lineName, String color, String upStationName, String downStationName, int distance) {
         Long upStationId = 객체_응답_ID(지하철역_생성_요청(upStationName));
         Long downStationId = 객체_응답_ID(지하철역_생성_요청(downStationName));
 

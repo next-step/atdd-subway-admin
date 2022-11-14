@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
@@ -27,12 +28,8 @@ public class LineService {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).get();
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).get();
 
-        Line line = new Line(lineRequest.getName(), lineRequest.getColor(), upStation, downStation,
-                lineRequest.getDistance());
-
-        Line persistLine = lineRepository.save(line);
-
-        return LineResponse.of(persistLine);
+        Line savedLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        return LineResponse.of(savedLine);
     }
 
     public List<LineResponse> findAllLines() {

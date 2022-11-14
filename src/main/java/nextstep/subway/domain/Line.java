@@ -1,39 +1,28 @@
 package nextstep.subway.domain;
 
+import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import nextstep.subway.dto.LineRequest;
 
 @Entity
-public class Line {
+public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true)
     private Long id;
+    @Column(unique = true, nullable = false)
     private String name;
+    @Column(unique = true, nullable = false)
     private String color;
-    private int distance;
-    @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-    @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
+    @Embedded
+    private LineStations lineStations = LineStations.create();
 
     protected Line() {
-    }
-
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
     }
 
     public Line(String name, String color) {
@@ -41,13 +30,21 @@ public class Line {
         this.color = color;
     }
 
-    public void updateInfo(Line updateLine) {
-        this.name = updateLine.name;
-        this.color = updateLine.color;
+    public void addLineStation(LineStation lineStation) {
+        this.lineStations.add(lineStation);
+    }
+
+    public List<Station> getStations() {
+        return lineStations.getStations();
     }
 
     public Line of(LineRequest lineRequest) {
         return new Line(lineRequest.getName(), lineRequest.getColor());
+    }
+
+    public void updateInfo(Line updateLine) {
+        this.name = updateLine.name;
+        this.color = updateLine.color;
     }
 
     public Long getId() {
@@ -60,18 +57,6 @@ public class Line {
 
     public String getColor() {
         return color;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
     }
 
 }
