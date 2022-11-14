@@ -7,6 +7,10 @@ import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
+    public static final String MESSAGE_STATION_SHOULD_NOT_EMPTY = "지하철역은 비어있을 수 없습니다";
+    public static final String MESSAGE_STATION_SHOULD_HAS_ID = "지하철역은 식별자가 있어야 합니다.";
+    public static final String MESSAGE_STATION_SHOULD_BE_DIFFERENT = "상/하행역은 같을 수 없습니다";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -38,11 +42,30 @@ public class Line extends BaseEntity {
     }
 
     public void setStations(Station upStation, Station downStation) {
-        if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
-            throw new IllegalArgumentException("지하철역은 비어있을 수 없습니다");
-        }
+        validateNotNullStation(upStation, downStation);
+        validateStationId(upStation);
+        validateStationId(downStation);
+        validateNotSameStation(upStation,downStation);
         this.upStation = upStation;
         this.downStation = downStation;
+    }
+
+    private void validateNotSameStation(Station upStation, Station downStation) {
+        if(upStation.equals(downStation)){
+            throw new IllegalArgumentException(MESSAGE_STATION_SHOULD_BE_DIFFERENT);
+        }
+    }
+
+    private void validateStationId(Station station) {
+        if(!station.hasId()){
+            throw new IllegalArgumentException(MESSAGE_STATION_SHOULD_HAS_ID);
+        }
+    }
+
+    private static void validateNotNullStation(Station upStation, Station downStation) {
+        if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
+            throw new IllegalArgumentException(MESSAGE_STATION_SHOULD_NOT_EMPTY);
+        }
     }
 
     public Station getUpStation() {
@@ -76,5 +99,18 @@ public class Line extends BaseEntity {
         if (StringUtils.hasText(color) && !this.color.equals(color)) {
             this.color = color;
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(upStation, line.upStation) && Objects.equals(downStation, line.downStation) && Objects.equals(distance, line.distance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, upStation, downStation, distance);
     }
 }
