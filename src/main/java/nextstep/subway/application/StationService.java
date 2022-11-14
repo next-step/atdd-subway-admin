@@ -1,15 +1,17 @@
 package nextstep.subway.application;
 
+import nextstep.subway.common.exception.NotFoundDataException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
-import nextstep.subway.common.exception.NotFoundDataException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.common.type.StationExceptionType.NOT_FOUND_STATION;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,7 +38,7 @@ public class StationService {
 
     public Station findStation(Long stationId) {
         return stationRepository.findById(stationId)
-                .orElseThrow(() -> new NotFoundDataException("존재하지 않는 역이에요"));
+                .orElseThrow(() -> new NotFoundDataException(NOT_FOUND_STATION.getMessage()));
     }
 
     @Transactional

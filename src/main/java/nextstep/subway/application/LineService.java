@@ -13,10 +13,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
-@Transactional(readOnly = true)
-public class LineService {
+import static nextstep.subway.common.type.LineExceptionType.NOT_FOUND_LINE;
 
+@Service
+public class LineService {
     private final StationService stationService;
     private final LineRepository lineRepository;
 
@@ -25,6 +25,7 @@ public class LineService {
         this.lineRepository = lineRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest request) {
         Station upStation = stationService.findStation(request.getUpStationId());
         Station downStation = stationService.findStation(request.getDownStationId());
@@ -36,6 +37,7 @@ public class LineService {
         return LineResponse.of(saveLine);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> line = lineRepository.findAll();
 
@@ -44,23 +46,26 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public LineResponse findLine(Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundDataException("존재하지 않는 라인이에요"));
+        Line line = findByLineId(lineId);
 
         return LineResponse.of(line);
     }
 
+    private Line findByLineId(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new NotFoundDataException(NOT_FOUND_LINE.getMessage()));
+    }
+
+    @Transactional
     public void updateLine(UpdateLineRequest request, Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundDataException("존재하지 않는 라인이에요"));
+        Line line = findByLineId(lineId);
         line.updateNameAndColor(request.getName(), request.getColor());
     }
 
+    @Transactional
     public void deleteLine(Long lineId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new NotFoundDataException("존재하지 않는 라인이에요"));
-
-        lineRepository.deleteById(line.getId());
+        lineRepository.deleteById(lineId);
     }
 }
