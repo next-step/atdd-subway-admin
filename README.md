@@ -90,7 +90,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   
   {
     "name" : "신분당선",
-    "coler" : "bg-red-600",
+    "color" : "bg-red-600",
     "upStationId" : "1",
     "downStationId" : "2",
     "distance" : "10",
@@ -108,7 +108,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   {
     "id" : 1,
     "name" : "신분당선",
-    "coler" : "bg-red-600",
+    "color" : "bg-red-600",
     "stations" : [ {
       "id" : 1,
       "name" : "지하철역"
@@ -141,7 +141,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   [ {
     "id" : 1,
     "name" : "신분당선",
-    "coler" : "bg-red-600",
+    "color" : "bg-red-600",
     "stations" : [ {
       "id" : 1,
       "name" : "지하철역"
@@ -152,7 +152,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   } , {
     "id" : 1,
     "name" : "분당선",
-    "coler" : "bg-red-600",
+    "color" : "bg-red-600",
     "stations" : [ {
       "id" : 1,
       "name" : "지하철역"
@@ -185,7 +185,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   {
     "id" : 1,
     "name" : "신분당선",
-    "coler" : "bg-red-600",
+    "color" : "bg-red-600",
     "stations" : [ {
       "id" : 1,
       "name" : "지하철역"
@@ -224,7 +224,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   {
     "id" : 1,
     "name" : "신분당선",
-    "coler" : "bg-red-600",
+    "color" : "bg-red-600",
     "stations" : [ {
       "id" : 1,
       "name" : "지하철역"
