@@ -47,4 +47,8 @@ public class LineStation {
     public void updateFirstNode(Long preStationId) {
         this.station = new Station(preStationId);
     }
+
+    public void updatePreStationId(Long id) {
+        this.preStationId = id;
+    }
 }

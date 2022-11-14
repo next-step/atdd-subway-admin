@@ -34,12 +34,13 @@ public class SectionAcceptanceTest {
         preDataUtil.truncate();
         preDataUtil.line(1L, "2호선");
         preDataUtil.station(1L, "서초역");
-        preDataUtil.station(2L, "강남");
+        preDataUtil.station(2L, "선릉역");
         preDataUtil.lineStation(1L, 1L, null, 1L, null);
         preDataUtil.lineStation(2L, 2L, 1L, 1L, 10);
 
-        preDataUtil.station(3L, "역삼역");
-        preDataUtil.station(5L, "방배역");
+        preDataUtil.station(3L, "삼성역"); // 하행종점 추가
+        preDataUtil.station(4L, "방배역"); // 상행종점 추가
+        preDataUtil.station(5L, "강남역"); // 역사이 추가
     }
 
     /**
@@ -73,7 +74,7 @@ public class SectionAcceptanceTest {
     void createSectionHighest() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .body(new SectionRequestDto(5L, 1L, 5))
+            .body(new SectionRequestDto(4L, 1L, 5))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/1/sections")
             .then().log().all()
@@ -83,7 +84,29 @@ public class SectionAcceptanceTest {
         // then
         ExtractableResponse<Response> fetchResponse = LineAcceptanceTest.fetchLine(1L);
         assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
-        assertThat(fetchResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(5L, 1L, 2L);
+        assertThat(fetchResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(4L, 1L, 2L);
+    }
+
+    /**
+     * When 노선에 신규 지하철 역을 등록하면
+     * Then 노선 조회 시 생성한 역이 포함된 것을 확인할 수 있다
+     */
+    @DisplayName("노선에 구간을 등록한다(역사이)")
+    @Test
+    void createSectionMiddle() {
+        // when
+        ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
+            .body(new SectionRequestDto(1L, 5L, 5))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+        assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(OK);
+
+        // then
+        ExtractableResponse<Response> fetchResponse = LineAcceptanceTest.fetchLine(1L);
+        assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
+        assertThat(fetchResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(1L, 5L, 2L);
     }
 
     static class SectionRequestDto {

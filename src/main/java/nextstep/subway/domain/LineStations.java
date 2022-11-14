@@ -38,7 +38,9 @@ public class LineStations {
 
     public void add(LineStation lineStation) {
         findStation(lineStation.getStation().getId())
-            .ifPresent(lineStation1 -> lineStation1.updateFirstNode(lineStation.getPreStationId()));
+            .ifPresent(ls -> ls.updateFirstNode(lineStation.getPreStationId()));
+        findPreStation(lineStation.getPreStationId())
+            .ifPresent(ls -> ls.updatePreStationId(lineStation.getStation().getId()));
         lineStations.add(lineStation);
     }
 
