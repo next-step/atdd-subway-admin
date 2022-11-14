@@ -119,7 +119,7 @@ public class LineStations {
             return false;
         }
 
-        return lineStation.getDownStation().getId().equals(candidate.getUpStation().getId());
+        return lineStation.getDownStation() == candidate.getUpStation();
     }
 
     public boolean contains(LineStation lineStation) {
