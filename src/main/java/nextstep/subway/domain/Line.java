@@ -1,8 +1,10 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -54,8 +56,12 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.stream()
-                .map(Section::getUpStation)
+        Set<Station> stations = new HashSet<>();
+        sections.forEach(section -> {
+                    stations.add(section.getUpStation());
+                    stations.add(section.getDownStation());
+                });
+        return stations.stream()
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
     }

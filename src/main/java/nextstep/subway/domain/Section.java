@@ -53,4 +53,8 @@ public class Section extends BaseEntity {
     public Station getUpStation() {
         return upStation;
     }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }
