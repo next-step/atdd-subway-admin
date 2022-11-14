@@ -1,6 +1,7 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Sections;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,11 +28,13 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
+        Sections sections = line.getSections();
         return new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                Arrays.asList(StationResponse.of(line.getUpStation()), StationResponse.of(line.getDownStation()))
+                null // TODO: 구간은 리스트로 들어올 수 있어야함(구간을 추가한 경우 추가됨)
+//                Arrays.asList(StationResponse.of(line.getUpStation()), StationResponse.of(line.getDownStation()))
         );
     }
 
