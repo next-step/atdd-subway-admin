@@ -4,11 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.Isolationer;
-import nextstep.subway.dto.LineDto;
 
 import static nextstep.subway.line.acceptance.LineAcceptance.*;
 
-import nextstep.subway.line.acceptance.LineAcceptance;
+import nextstep.subway.line.dto.LineDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

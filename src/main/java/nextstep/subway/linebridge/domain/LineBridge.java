@@ -1,10 +1,15 @@
-package nextstep.subway.domain;
+package nextstep.subway.linebridge.domain;
+
+import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.distance.Distance;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.line.domain.Line;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-public class LineBridge extends BaseEntity{
+public class LineBridge extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

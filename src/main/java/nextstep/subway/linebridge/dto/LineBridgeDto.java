@@ -1,8 +1,6 @@
-package nextstep.subway.dto;
+package nextstep.subway.linebridge.dto;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineBridge;
-import nextstep.subway.domain.Station;
+import nextstep.subway.linebridge.domain.LineBridge;
 
 public class LineBridgeDto {
 

@@ -1,7 +1,7 @@
-package nextstep.subway.ui;
+package nextstep.subway.line.ui;
 
-import nextstep.subway.application.LineService;
-import nextstep.subway.dto.LineDto;
+import nextstep.subway.line.application.LineService;
+import nextstep.subway.line.dto.LineDto;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

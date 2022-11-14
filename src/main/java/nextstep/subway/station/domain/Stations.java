@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.station.domain;
 
 import java.util.ArrayList;
 import java.util.List;

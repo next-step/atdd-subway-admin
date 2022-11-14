@@ -1,10 +1,14 @@
-package nextstep.subway.domain;
+package nextstep.subway.line.domain;
+
+import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.linebridge.domain.LineBridge;
+import nextstep.subway.linebridge.domain.LineBridges;
 
 import javax.persistence.*;
 import java.util.*;
 
 @Entity
-public class Line extends BaseEntity{
+public class Line extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

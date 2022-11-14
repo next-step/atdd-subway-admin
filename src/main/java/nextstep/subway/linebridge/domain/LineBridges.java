@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.linebridge.domain;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;

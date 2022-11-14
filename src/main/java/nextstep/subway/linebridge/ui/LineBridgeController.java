@@ -1,7 +1,7 @@
-package nextstep.subway.ui;
+package nextstep.subway.linebridge.ui;
 
-import nextstep.subway.application.LineBridgeService;
-import nextstep.subway.dto.LineBridgeDto;
+import nextstep.subway.linebridge.dto.LineBridgeDto;
+import nextstep.subway.linebridge.application.LineBridgeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +21,7 @@ public class LineBridgeController {
 
     @PostMapping("/lines/{id}/bridges")
     public ResponseEntity<LineBridgeDto.Response> createLineBridge(@PathVariable Long id,
-                                                         @RequestBody LineBridgeDto.Request lineBridgeRequest) {
+                                                                   @RequestBody LineBridgeDto.Request lineBridgeRequest) {
         LineBridgeDto.Response lineBridgeResponse = lineBridgeService.createLineBridge(id, lineBridgeRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineBridgeResponse.getId())).body(lineBridgeResponse);
     }

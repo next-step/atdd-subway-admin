@@ -1,4 +1,4 @@
-package nextstep.subway.ui;
+package nextstep.subway.common.ui;
 
 
 import nextstep.subway.exception.CannotFindStationException;
