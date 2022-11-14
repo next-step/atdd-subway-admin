@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,7 +28,7 @@ public class Line extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String color;
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
     private List<Section> sections = new ArrayList<>();
 
     protected Line() {
@@ -41,18 +42,6 @@ public class Line extends BaseEntity {
 
         this.name = name;
         this.color = color;
-    }
-
-    private static void validColor(String color) {
-        if (StringUtils.isBlank(color)) {
-            throw new IllegalArgumentException("노선의 색을 입력하세요.");
-        }
-    }
-
-    private static void validName(String name) {
-        if (StringUtils.isBlank(name)) {
-            throw new IllegalArgumentException("노선의 이름을 입력하세요.");
-        }
     }
 
     public List<Station> getStations() {
@@ -83,11 +72,32 @@ public class Line extends BaseEntity {
         this.color = newColor;
     }
 
-    public void addInitialSections(List<Section> sections) {
-        this.sections = sections;
-    }
-
     public List<Section> getSections() {
         return sections;
+    }
+
+    public void addSection(Section section) {
+        if (!this.sections.contains(section)) {
+            this.sections.add(section);
+        }
+        if (section.getLine() != this) {
+            section.setLine(this);
+        }
+    }
+
+    public void addSections(List<Section> sections) {
+        sections.forEach(this::addSection);
+    }
+
+    private static void validColor(String color) {
+        if (StringUtils.isBlank(color)) {
+            throw new IllegalArgumentException("노선의 색을 입력하세요.");
+        }
+    }
+
+    private static void validName(String name) {
+        if (StringUtils.isBlank(name)) {
+            throw new IllegalArgumentException("노선의 이름을 입력하세요.");
+        }
     }
 }

@@ -43,11 +43,23 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public static List<Section> makeInitialSections(Line line, Station upStation, Station downStation, Integer distance) {
+    private Section(Station upStation, Station downStation, Integer distance) {
+        this(null, upStation, downStation, distance);
+    }
+
+    public void setLine(Line line) {
+        if (this.line != null) {
+            this.line.getSections().remove(this);
+        }
+        this.line = line;
+        line.addSection(this);
+    }
+
+    public static List<Section> makeInitialSections(Station upStation, Station downStation, Integer distance) {
         return Arrays.asList(
-                new Section(line, null, upStation, END_SECTION_DISTANCE),
-                new Section(line, upStation, downStation, distance),
-                new Section(line, downStation, null, END_SECTION_DISTANCE));
+                new Section(null, upStation, END_SECTION_DISTANCE),
+                new Section(upStation, downStation, distance),
+                new Section(downStation, null, END_SECTION_DISTANCE));
     }
 
     public Station getUpStation() {
@@ -56,5 +68,9 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public Line getLine() {
+        return line;
     }
 }
