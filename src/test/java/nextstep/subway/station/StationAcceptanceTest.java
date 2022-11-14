@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import static nextstep.subway.station.StationAcceptanceTestFixture.*;
+import static nextstep.subway.utils.JsonPathUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -16,18 +18,28 @@ import org.springframework.http.HttpStatus;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.utils.DatabaseCleaner;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+    public static final String GANGNAM = "강남역";
+    public static final String WANGSIPLI = "왕십리역";
+    public static final String JUKJUN = "죽전역";
+    public static final String BUNDANG = "분당역";
+
     @LocalServerPort
     int port;
+
+    @Autowired
+    DatabaseCleaner databaseCleaner;
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        databaseCleaner.execute();
     }
 
     /**
@@ -39,14 +51,14 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = 지하철역_생성("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성(GANGNAM);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = 지하철역_조회().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+        List<String> stationNames = extractList(지하철역_조회(), "$[*].name");
+        assertThat(stationNames).containsAnyOf(GANGNAM);
     }
 
     /**
@@ -58,10 +70,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        지하철역_생성("강남역");
+        지하철역_생성(GANGNAM);
 
         // when
-        ExtractableResponse<Response> response = 지하철역_생성("강남역");
+        ExtractableResponse<Response> response = 지하철역_생성(GANGNAM);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -76,10 +88,10 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        지하철역_생성("강남역");
+        지하철역_생성(GANGNAM);
 
         // given
-        지하철역_생성("분당역");
+        지하철역_생성(BUNDANG);
 
         // when
         ExtractableResponse<Response> response = 지하철역_조회();
@@ -87,9 +99,8 @@ public class StationAcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.body().jsonPath().getList("$")).hasSize(2),
-            () -> assertThat(response.body().jsonPath().getList("name", String.class))
-                .containsExactly("강남역", "분당역")
+            () -> assertThat(extractList(response, "$")).hasSize(2),
+            () -> assertThat(extractList(response, "$[*].name")).containsExactly(GANGNAM, BUNDANG)
         );
     }
 
@@ -102,7 +113,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Integer id = 지하철역_생성("강남역").body().jsonPath().get("id");
+        Integer id = extractInteger(지하철역_생성(GANGNAM), "$.id");
 
         // when
         지하철역_삭제(id);
@@ -111,7 +122,7 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_조회();
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(response.body().jsonPath().getList("$")).hasSize(0)
+            () -> assertThat(extractList(response, "$")).hasSize(0)
         );
     }
 }
