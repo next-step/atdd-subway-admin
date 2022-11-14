@@ -21,8 +21,8 @@ import nextstep.subway.utils.JsonPathUtils;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final String LINE_2 = "2호선";
-    private static final String LINE_BUNDANG = "분당선";
+    public static final String LINE_2 = "2호선";
+    public static final String LINE_BUNDANG = "분당선";
 
     private Integer GANGNAM_ID;
     private Integer WANGSIPLI_ID;
