@@ -5,10 +5,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.Isolationer;
 import nextstep.subway.dto.LineDto;
-
-import static nextstep.subway.line.acceptance.LineAcceptance.*;
-
-import nextstep.subway.line.acceptance.LineAcceptance;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +16,7 @@ import org.springframework.http.MediaType;
 
 import java.util.List;
 
-import static nextstep.subway.station.acceptance.StationAcceptaneRequest.지하철역을_생성한다;
+import static nextstep.subway.common.Common.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -50,13 +46,22 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // given
-        LineDto.CreateRequest 라인요청파라미터 = 라인_생성_요청_파라미터();
+        int upStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
+        int downStationId = 지하철역을_생성한다("양재역").jsonPath().get("id");
+        String lineName = "신분당선";
+        LineDto.CreateRequest lineCreateRequest = new LineDto.CreateRequest()
+                .setName(lineName)
+                .setColor("bg-red-600")
+                .setUpStationId(upStationId)
+                .setDownStationId(downStationId)
+                .setDistance(10);
+
         //when
-        노선을_생성한다(라인요청파라미터);
+        노선을_생성한다(lineCreateRequest);
 
         // then
         List<String> lineNames = 노선을_조회한다_노선아이디가_없으면_모든_노선이_조회된다("").jsonPath().getList("name", String.class);
-        생성한_노선을_찾을_수_있다(lineNames, 라인요청파라미터.getName());
+        생성한_노선을_찾을_수_있다(lineNames, lineName);
     }
 
     /**
@@ -87,13 +92,21 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineDto.CreateRequest 라인요청파라미터 = 라인_생성_요청_파라미터();
+        int upStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
+        int downStationId = 지하철역을_생성한다("양재역").jsonPath().get("id");
+        String lineName = "신분당선";
+        LineDto.CreateRequest expect = new LineDto.CreateRequest()
+                .setName(lineName)
+                .setColor("bg-red-600")
+                .setUpStationId(upStationId)
+                .setDownStationId(downStationId)
+                .setDistance(10);
 
         // when
-        ExtractableResponse<Response> actual = 노선을_생성한다(라인요청파라미터);
+        ExtractableResponse<Response> actual = 노선을_생성한다(expect);
 
         // then
-        생성한_지하철_노선의_정보를_응답받을_수_있다(actual, 라인요청파라미터);
+        생성한_지하철_노선의_정보를_응답받을_수_있다(actual, expect);
     }
 
     /**
@@ -105,8 +118,16 @@ public class LineAcceptanceTest {
     @Test
     void modifyLine() {
         // given
-        LineDto.CreateRequest 라인요청파라미터 = 라인_생성_요청_파라미터();
-        int id = 노선을_생성한다(라인요청파라미터).jsonPath().get("id");
+        int upStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
+        int downStationId = 지하철역을_생성한다("양재역").jsonPath().get("id");
+        String lineName = "신분당선";
+        LineDto.CreateRequest lineCreateRequest = new LineDto.CreateRequest()
+                .setName(lineName)
+                .setColor("bg-red-600")
+                .setUpStationId(upStationId)
+                .setDownStationId(downStationId)
+                .setDistance(10);
+        int id = 노선을_생성한다(lineCreateRequest).jsonPath().get("id");
 
         // when
         LineDto.UpdateRequest expect = new LineDto.UpdateRequest()
@@ -128,8 +149,16 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineDto.CreateRequest 라인요청파라미터 = 라인_생성_요청_파라미터();
-        int id = 노선을_생성한다(라인요청파라미터).jsonPath().get("id");
+        int upStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
+        int downStationId = 지하철역을_생성한다("양재역").jsonPath().get("id");
+        String lineName = "신분당선";
+        LineDto.CreateRequest lineCreateRequest = new LineDto.CreateRequest()
+                .setName(lineName)
+                .setColor("bg-red-600")
+                .setUpStationId(upStationId)
+                .setDownStationId(downStationId)
+                .setDistance(10);
+        int id = 노선을_생성한다(lineCreateRequest).jsonPath().get("id");
 
         // when
         해당_노선을_제거한다(id);
@@ -208,7 +237,8 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(response.jsonPath().get("id").toString()).isEqualTo("1"),
                 () -> assertThat(response.jsonPath().get("name").toString()).isEqualTo(expect.getName()),
-                ()-> assertThat(response.jsonPath().get("color").toString()).isEqualTo(expect.getColor())
+                ()-> assertThat(response.jsonPath().get("color").toString()).isEqualTo(expect.getColor()),
+                ()-> assertThat(response.jsonPath().get("distance").toString()).isEqualTo(String.valueOf(expect.getDistance()))
         );
     }
 
