@@ -1,5 +1,7 @@
 package nextstep.subway.dto;
 
+import static java.util.stream.Collectors.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,8 +18,8 @@ public class LineResponse {
         response.id = line.getId();
         response.name = line.getName();
         response.color = line.getColor();
-        response.stations.add(new StationResponse(line.getUpStation().getId(), line.getUpStation().getName()));
-        response.stations.add(new StationResponse(line.getDownStation().getId(), line.getDownStation().getName()));
+        response.stations = line.getLineStations().getStationsInOrder()
+            .stream().map(lineStation -> StationResponse.of(lineStation.getStation())).collect(toList());
         return response;
     }
 

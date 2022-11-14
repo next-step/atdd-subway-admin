@@ -37,10 +37,10 @@ public class LineAcceptanceTest {
             RestAssured.port = port;
         }
         preDataUtil.truncate();
-        preDataUtil.station(1L, "역1", null);
-        preDataUtil.station(2L, "역2", null);
-        preDataUtil.station(3L, "역3", null);
-        preDataUtil.station(4L, "역4", null);
+        preDataUtil.station(1L, "역1");
+        preDataUtil.station(2L, "역2");
+        preDataUtil.station(3L, "역3");
+        preDataUtil.station(4L, "역4");
     }
 
     /**

@@ -21,13 +21,12 @@ public class PreDataUtil {
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE", new EmptySqlParameterSource());
     }
 
-    public void station(Long id, String name, Long lineId) {
+    public void station(Long id, String name) {
         jdbcTemplate.update(
-            "insert into station (id, name, line_id, created_date, modified_date) values (:id, :name, :line_id, sysdate, sysdate)",
+            "insert into station (id, name, created_date, modified_date) values (:id, :name, sysdate, sysdate)",
             new MapSqlParameterSource()
                 .addValue("id", id)
-                .addValue("name", name)
-                .addValue("line_id", lineId));
+                .addValue("name", name));
     }
 
     public void line(Long id, String name) {
@@ -36,5 +35,16 @@ public class PreDataUtil {
             new MapSqlParameterSource()
                 .addValue("id", id)
                 .addValue("name", name));
+    }
+
+    public void lineStation(Long id, Long stationId, Long preStationId, Long lineId, Integer distance) {
+        jdbcTemplate.update(
+            "insert into line_station (id, station_id, pre_station_id, distance, line_id) values (:id, :stationId, :preStationId, :distance, :lineId)",
+            new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("stationId", stationId)
+                .addValue("preStationId", preStationId)
+                .addValue("distance", distance)
+                .addValue("lineId", lineId));
     }
 }

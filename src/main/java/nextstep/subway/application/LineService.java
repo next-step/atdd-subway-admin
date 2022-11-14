@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineChange;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -34,14 +33,12 @@ public class LineService {
             throw new SameStationException();
         }
 
-        Station upStation = stationService.findStationById(lineRequest.getUpStationId(),
+        stationService.findStationById(lineRequest.getUpStationId(),
             new NoStationException(lineRequest.getUpStationId()));
-        Station downStation = stationService.findStationById(lineRequest.getDownStationId(),
+        stationService.findStationById(lineRequest.getDownStationId(),
             new NoStationException(lineRequest.getDownStationId()));
 
         Line persistLine = lineRepository.save(Line.of(lineRequest));
-        upStation.updateLine(persistLine);
-        downStation.updateLine(persistLine);
 
         return LineResponse.of(persistLine);
     }

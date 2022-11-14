@@ -1,14 +1,11 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 
 import org.springframework.util.StringUtils;
 
@@ -23,27 +20,19 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String name;
     private String color;
-    @OneToMany(mappedBy = "line")
-    private List<Station> stations = new ArrayList<>();
 
-    public Line() {
-    }
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
-    public Line(String name) {
-        this.name = name;
+    protected Line() {
     }
 
     public static Line of(LineRequest lineRequest) {
         Line line = new Line();
         line.name = lineRequest.getName();
         line.color = lineRequest.getColor();
+        line.lineStations.init(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
         return line;
-    }
-
-    public void addStation(Station station) {
-        if (!stations.contains(station)) {
-            stations.add(station);
-        }
     }
 
     public void update(LineChange lineChange) {
@@ -56,9 +45,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeStations() {
-        for (Station station : stations) {
-            station.resetLine();
-        }
+        this.lineStations.remove();
     }
 
     public Long getId() {
@@ -73,12 +60,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return stations.get(0);
+    public LineStations getLineStations() {
+        return lineStations;
     }
-
-    public Station getDownStation() {
-        return stations.get(1);
-    }
-
 }

@@ -33,9 +33,9 @@ public class SectionAcceptanceTest {
         }
         preDataUtil.truncate();
         preDataUtil.line(1L, "2호선");
-        preDataUtil.station(1L, "강남역", 1L);
-        preDataUtil.station(2L, "서초역", 1L);
-        preDataUtil.station(3L, "교대역", null);
+        preDataUtil.station(1L, "강남역");
+        preDataUtil.station(2L, "서초역");
+        preDataUtil.station(3L, "교대역");
     }
 
     /**
