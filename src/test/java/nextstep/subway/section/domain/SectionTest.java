@@ -81,11 +81,11 @@ class SectionTest {
     @Test
     void update() {
         Section section = Section.of(upStation, downStation, distance);
-        section.update(Station.from("강남역"), 5);
+        section.update(Station.from("강남역"), Distance.from(5));
 
         assertAll(
                 () -> assertThat(section.getUpStation()).isEqualTo(Station.from("강남역")),
-                () -> assertThat(section.getDistance()).isEqualTo(5)
+                () -> assertThat(section.getDistance()).isEqualTo(Distance.from(5))
         );
     }
 }

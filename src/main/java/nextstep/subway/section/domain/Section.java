@@ -58,14 +58,14 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance.getDistance();
+    public Distance getDistance() {
+        return distance;
     }
 
-    public void update(Station station, int distance) {
+    public void update(Station station, Distance distance) {
         validateStationIsNotNull(station);
         this.upStation = station;
-        this.distance = Distance.from(distance);
+        this.distance = distance;
     }
 
     private static void validateStations(Station upStation, Station downStation) {

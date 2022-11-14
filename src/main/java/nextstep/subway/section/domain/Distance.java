@@ -33,8 +33,8 @@ public class Distance {
         }
     }
 
-    public int getDistance() {
-        return distance;
+    public Distance subtract(Distance distance) {
+        return Distance.from(this.distance - distance.distance);
     }
 
     @Override

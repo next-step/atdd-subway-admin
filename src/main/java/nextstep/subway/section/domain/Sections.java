@@ -54,7 +54,8 @@ public class Sections {
         sections.stream()
                 .filter(it -> it.getUpStation().equals(section.getUpStation()))
                 .findAny()
-                .ifPresent(it -> it.update(section.getDownStation(), it.getDistance() - section.getDistance()));
+                .ifPresent(it -> it.update(section.getDownStation(),
+                        it.getDistance().subtract(section.getDistance())));
     }
 
     public List<Station> getStationsInOrder() {

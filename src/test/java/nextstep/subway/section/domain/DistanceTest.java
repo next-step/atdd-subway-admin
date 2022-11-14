@@ -44,4 +44,15 @@ class DistanceTest {
 
         Assertions.assertThat(distance1).isEqualTo(distance2);
     }
+
+    @DisplayName("Distance 객체의 subtract 메소드를 호출하면 두 거리의 차이를 구할 수 있다.")
+    @Test
+    void subtract() {
+        Distance d1 = Distance.from(10);
+        Distance d2 = Distance.from(6);
+
+        Distance result = d1.subtract(d2);
+
+        Assertions.assertThat(result).isEqualTo(Distance.from(4));
+    }
 }
