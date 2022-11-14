@@ -12,37 +12,25 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.utils.DatabaseCleaner;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.utils.JsonPathUtils;
 
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
+public class LineAcceptanceTest extends AcceptanceTest {
     private static final String LINE_2 = "2호선";
     private static final String LINE_BUNDANG = "분당선";
-    @LocalServerPort
-    int port;
-    @Autowired
-    DatabaseCleaner databaseCleaner;
+
     private Integer GANGNAM_ID;
     private Integer WANGSIPLI_ID;
     private Integer JUKJUN_ID;
 
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleaner.execute();
-
+        super.setUp();
         GANGNAM_ID = ID_추출(지하철역_생성(GANGNAM));
         WANGSIPLI_ID = ID_추출(지하철역_생성(WANGSIPLI));
         JUKJUN_ID = ID_추출(지하철역_생성(JUKJUN));

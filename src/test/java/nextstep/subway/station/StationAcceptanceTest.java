@@ -7,40 +7,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.utils.DatabaseCleaner;
+import nextstep.subway.AcceptanceTest;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+public class StationAcceptanceTest extends AcceptanceTest {
     public static final String GANGNAM = "강남역";
     public static final String WANGSIPLI = "왕십리역";
     public static final String JUKJUN = "죽전역";
     public static final String BUNDANG = "분당역";
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    DatabaseCleaner databaseCleaner;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleaner.execute();
-    }
 
     /**
      * When 지하철역을 생성하면
@@ -125,6 +105,7 @@ public class StationAcceptanceTest {
             () -> assertThat(결과_목록_추출(response)).hasSize(0)
         );
     }
+
     private Integer ID_추출(ExtractableResponse<Response> response) {
         return extractInteger(response, "$.id");
     }
