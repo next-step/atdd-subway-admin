@@ -1,6 +1,9 @@
 package nextstep.subway.domain;
 
+import java.util.Collections;
+import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -16,32 +19,37 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String name;
+    @Embedded
+    private Name name;
 
-    @Column(unique = true, nullable = false)
-    private String color;
+    @Embedded
+    private Color color;
 
-    @Column(nullable = false)
-    private int distance;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
 
-    public Line(String name, String color, int distance, Station upStation, Station downStation) {
+    private Line(Name name, Color color, Distance distance, Station upStation, Station downStation) {
+        Section section = Section.from(upStation, downStation, this, distance);
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.sections = Sections.from(Collections.singletonList(section));
+    }
+
+    public static Line from(Name name, Color color, Distance distance, Station upStation, Station downStation) {
+        return new Line(name, color, distance, upStation, downStation);
+    }
+
+    public void modify(String name, String color) {
+        this.name = Name.of(name);
+        this.color = Color.of(color);
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+        section.setLine(this);
     }
 
     public Long getId() {
@@ -49,27 +57,14 @@ public class Line extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return name.value();
     }
 
     public String getColor() {
-        return color;
+        return color.value();
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public void modify(String name, String color) {
-        this.name = name;
-        this.color = color;
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 }
