@@ -16,8 +16,6 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @Column
-    private long distance;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", nullable = false)
     private Station upStation;
@@ -28,19 +26,21 @@ public class Line extends BaseEntity {
     public Line() {
     }
 
-    public Line(String name, String color, long distance, Station upStation, Station downStation) {
+    public Line(String name, String color, Station upStation, Station downStation) {
         validateLine(name, upStation, downStation);
         this.name = name;
         this.color = color;
-        this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
     }
 
     private void validateLine(String name, Station upStation, Station downStation) {
-        if (name == null || name.isEmpty()) throw new LineException(EMPTY_LINE_NAME.getMessage());
-        if (upStation == null || downStation == null) throw new LineException(EMPTY_STATION.getMessage());
+        if (name == null || name.isEmpty()) {
+            throw new LineException(EMPTY_LINE_NAME.getMessage());
+        }
+        if (upStation == null || downStation == null) {
+            throw new LineException(EMPTY_STATION.getMessage());
+        }
     }
 
     public Long getId() {
@@ -61,10 +61,6 @@ public class Line extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
-    }
-
-    public long getDistance() {
-        return distance;
     }
 
     public void modifyLine(String name, String color) {

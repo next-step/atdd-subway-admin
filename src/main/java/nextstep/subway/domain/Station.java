@@ -23,7 +23,9 @@ public class Station extends BaseEntity {
     }
 
     private void validateStation(String name) {
-        if (name == null || name.isEmpty()) throw new StationException(EMPTY_STATION_NAME.getMessage());
+        if (name == null || name.isEmpty()) {
+            throw new StationException(EMPTY_STATION_NAME.getMessage());
+        }
     }
 
     public Long getId() {
