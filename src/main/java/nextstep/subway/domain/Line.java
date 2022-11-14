@@ -32,6 +32,7 @@ public class Line extends BaseEntity {
 
     public void addLineStation(LineStation lineStation) {
         this.lineStations.add(lineStation);
+        lineStation.addLine(this);
     }
 
     public List<Station> getStations() {
