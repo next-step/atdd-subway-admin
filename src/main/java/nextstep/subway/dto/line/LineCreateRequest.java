@@ -22,4 +22,24 @@ public class LineCreateRequest {
 	public static LineCreateRequest of(String name, String color, Long upStationId, Long downStationId, int distance) {
 		return new LineCreateRequest(name, color, upStationId, downStationId, distance);
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public Long getUpStationId() {
+		return upStationId;
+	}
+
+	public Long getDownStationId() {
+		return downStationId;
+	}
+
+	public int getDistance() {
+		return distance;
+	}
 }
