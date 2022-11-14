@@ -1,13 +1,13 @@
 package nextstep.subway.domain;
 
+import java.util.Collections;
+import java.util.List;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Entity
 public class Line {
@@ -17,15 +17,9 @@ public class Line {
     @Column(unique = true, nullable = false)
     private String name;
     @Column(nullable = false)
-    private int distance;
-    @Column(nullable = false)
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-    @ManyToOne
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
@@ -33,9 +27,8 @@ public class Line {
     private Line(Builder builder) {
         this.name = builder.name;
         this.color = builder.color;
-        this.distance = builder.distance;
-        this.upStation = builder.upStation;
-        this.downStation = builder.downStation;
+        Section section = Section.from(builder.upStation, builder.downStation, Distance.from(builder.distance), this);
+        this.sections = new Sections(Collections.singletonList(section));
     }
 
     public void changeName(String name) {
@@ -62,12 +55,8 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
+    public List<Station> findAssignedStations() {
+        return sections.assignedStations();
     }
 
     public static class Builder {
