@@ -46,6 +46,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(findLine(lineId).jsonPath().getList("stations")).hasSize(3);
     }
 
     /**
