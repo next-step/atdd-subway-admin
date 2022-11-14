@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.dto.LineUpdateRequest;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -15,26 +16,23 @@ public class Line extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
-
     @Column(name = "distance", nullable = false)
     private int distance;
+
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color, int distance) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void initLineStations(List<LineStation> lineStations) {
+        this.lineStations = new LineStations(lineStations);
     }
 
     public void update(LineUpdateRequest lineUpdateRequest) {
@@ -44,6 +42,13 @@ public class Line extends BaseEntity {
         if (lineUpdateRequest.getColor() != null) {
             this.color = lineUpdateRequest.getColor();
         }
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        if (lineStations.contains(lineStation)) {
+            throw new IllegalArgumentException("이미 등록된 구간입니다.");
+        }
+        lineStations.add(lineStation);
     }
 
     public Long getId() {
@@ -58,15 +63,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public int getDistance() {
         return distance;
+    }
+
+    public LineStations getLineStation() {
+        return lineStations;
     }
 }

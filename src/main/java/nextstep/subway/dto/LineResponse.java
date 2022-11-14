@@ -19,10 +19,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line saved) {
-        return new LineResponse(saved.getId(), saved.getName(), saved.getColor(), Arrays.asList(
-                StationResponse.of(saved.getUpStation()),
-                StationResponse.of(saved.getDownStation())
-        ));
+        return new LineResponse(saved.getId(), saved.getName(), saved.getColor(), StationResponse.of(saved.getLineStation()));
     }
 
     public Long getId() {
