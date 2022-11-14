@@ -3,8 +3,10 @@ package nextstep.subway.ui;
 import nextstep.subway.application.LineStationService;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineStationRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,4 +27,15 @@ public class LineStationController {
         LineResponse line = lineStationService.addLineStation(lineId, lineStationRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(line);
     }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Void> handleDataIntegrityViolationException() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgsException() {
+        return ResponseEntity.badRequest().build();
+    }
+
 }

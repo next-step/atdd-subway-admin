@@ -32,7 +32,23 @@ public class LineStations {
     }
 
     public void add(LineStation newLineStation) {
+        if (lineStations.isEmpty()) {
+            lineStations.add(newLineStation);
+            return;
+        }
+
+        validate(newLineStation);
         lineStations.forEach(lineStation -> lineStation.update(newLineStation));
         lineStations.add(newLineStation);
+    }
+
+    private void validate(LineStation lineStation) {
+        validateHasStations(lineStation);
+    }
+
+    private void validateHasStations(LineStation newLineStation) {
+        if (new HashSet<>(getStations()).containsAll(newLineStation.findStations())) {
+            throw new IllegalArgumentException("등록하려는 역이 모두 존재합니다.");
+        }
     }
 }

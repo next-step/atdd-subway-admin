@@ -34,6 +34,9 @@ public class LineStation extends BaseEntity {
     public LineStation(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
+        if(distance <= 0){
+            throw new IllegalArgumentException("노선의 길이는 0보다 커야합니다.");
+        }
         this.distance = distance;
     }
 

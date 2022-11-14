@@ -1,6 +1,5 @@
 package nextstep.subway.dto;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;

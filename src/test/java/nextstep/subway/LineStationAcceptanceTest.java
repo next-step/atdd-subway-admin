@@ -60,7 +60,13 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
     @Test
     void 새로운_역을_상행_종점으로_등록() {
+        // When
+        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신사역");
+        Long 신규역_ID = 객체_응답_ID(신규역);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID, 상행역_ID, 3);
 
+        // Then
+        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "신사역", "강남역", "광교역");
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
@@ -81,5 +87,27 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
     void test5() {
+    }
+
+    private void 지하철_노선에_지하철역_등록_확인(ExtractableResponse<Response> response, String upStationsName,
+                                    String downStationName, String newStationName) {
+
+        List<String> list = response.jsonPath().getList("stations.name", String.class);
+        assertThat(list).contains(upStationsName, downStationName, newStationName);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선에_지하철역_생성_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("lineId", lineId);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines/{lineId}/stations", lineId)
+                .then().log().all()
+                .extract();
     }
 }
