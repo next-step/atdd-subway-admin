@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import com.google.common.collect.Lists;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;

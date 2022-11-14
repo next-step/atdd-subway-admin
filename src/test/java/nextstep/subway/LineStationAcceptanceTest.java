@@ -72,19 +72,46 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     @Test
     void 새로운_역을_하행_종점으로_등록() {
+        // When
+        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("동천역");
+        Long 신규역_ID = 객체_응답_ID(신규역);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID, 상행역_ID, 3);
+
+        // Then
+        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "강남역", "광교역", "동천역");
     }
 
-    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @DisplayName("예외 테스트 : 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @ParameterizedTest
+    @ValueSource(ints = {12, 13})
+    void 기존_역_사이_길이보다_크거나_같은_길이_등록_예외(int distance) {
+        // When
+        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("양재역");
+        Long 신규역_ID = 객체_응답_ID(신규역);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 하행역_ID, 신규역_ID, distance);
+
+        // Then
+        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "강남역", "광교역", "양재역");
+
+
+    }
+
+    @DisplayName("예외 테스트 : 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
-    void test3() {
+    void 상행역과_하행역이_이미_노선에_등록_예외() {
+        // When
+        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("양재역");
+        Long 신규역_ID = 객체_응답_ID(신규역);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 하행역_ID, 신규역_ID, 4);
+
+        // Then
+        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "강남역", "광교역", "양재역");
+
+        assertThat(지하철_노선에_지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
     }
 
-    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
-    @Test
-    void test4() {
-    }
-
-    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @DisplayName("예외 테스트 : 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
     void test5() {
     }
