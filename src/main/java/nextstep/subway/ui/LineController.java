@@ -3,20 +3,22 @@ package nextstep.subway.ui;
 import java.net.URI;
 import java.util.List;
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.UpdateLineRequest;
-import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/lines")
@@ -24,9 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LineController {
 
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -57,8 +61,15 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Void> handleDataIntegrityViolationException() {
-        return ResponseEntity.badRequest().build();
+    @PostMapping(value = "/{id}/sections")
+    public ResponseEntity<LineResponse> addSectionInLine(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        LineResponse lineResponse = sectionService.addSection(id, sectionRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body(lineResponse);
+    }
+
+    @DeleteMapping(value = "/{id}/sections")
+    public ResponseEntity<Void> deleteStationInLine(@PathVariable Long id, @RequestParam Long stationId) {
+        sectionService.deleteStationInLine(id, stationId);
+        return ResponseEntity.noContent().build();
     }
 }

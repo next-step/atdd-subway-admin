@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -80,25 +81,45 @@ public class Section {
         return stations;
     }
 
-    public boolean isSameUpStation(Section section) {
-        return upStation.isSameStation(section.upStation);
+    public boolean isSameUpStation(Station station) {
+        return upStation.isSameStation(station);
     }
 
-    public boolean isSameDownStation(Section section) {
-        return downStation.isSameStation(section.downStation);
+    public boolean isSameDownStation(Station station) {
+        return downStation.isSameStation(station);
     }
 
     public void updateUpStation(Section section) {
-        this.distance = this.distance.substract(section.distance);
+        this.distance = this.distance.subtract(section.distance);
         this.upStation = section.downStation;
     }
 
     public void updateDownStation(Section section) {
-        this.distance = this.distance.substract(section.distance);
+        this.distance = this.distance.subtract(section.distance);
         this.downStation = section.upStation;
     }
 
-    public void updateLineDistance() {
-        this.line.addDistance(this.distance);
+    public Distance addDistance(Section section) {
+        return this.distance.add(section.distance);
+    }
+
+    public Distance getDistance() {
+        return distance;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public boolean isSameSection(Section section) {
+        return Objects.equals(this.id, section.id);
     }
 }

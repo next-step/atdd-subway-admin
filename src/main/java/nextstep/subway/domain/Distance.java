@@ -7,6 +7,8 @@ import nextstep.subway.constant.ErrorCode;
 @Embeddable
 public class Distance {
 
+    private static final Long ZERO = 0L;
+
     @Column(nullable = false)
     private Long distance;
 
@@ -26,20 +28,20 @@ public class Distance {
         if(distance == null) {
             throw new IllegalArgumentException(ErrorCode.노선거리는_비어있을_수_없음.getErrorMessage());
         }
-        if(distance <= 0) {
+        if(distance <= ZERO) {
             throw new IllegalArgumentException(ErrorCode.노선거리는_0보다_작거나_같을_수_없음.getErrorMessage());
         }
     }
 
-    public Long value() {
-        return distance;
-    }
-
-    public Distance substract(Distance distance) {
+    public Distance subtract(Distance distance) {
         return new Distance(this.distance - distance.distance);
     }
 
     public Distance add(Distance distance) {
         return new Distance(this.distance + distance.distance);
+    }
+
+    public Long value() {
+        return distance;
     }
 }

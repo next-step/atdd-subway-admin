@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import static nextstep.subway.station.CreateFactory.지하철노선_등록_요청;
+import static nextstep.subway.station.ReadFactory.지하철노선_조회_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -48,7 +49,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      * When 기존에 존재하는 지하철노선 이름으로 지하철노선을 생성하면
      * Then 지하철노선 생성이 안된다
      */
-    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성한다.")
+    @DisplayName("기존에 존재하는 지하철노선 이름으로 지하철노선을 생성하면 지하철노선이 생성되지 않는다.")
     @Test
     void createLineWithDuplicateName() {
         // given
@@ -161,15 +162,6 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     private ExtractableResponse<Response> 지하철노선_목록_조회_요청() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-    }
-
-    private ExtractableResponse<Response> 지하철노선_조회_요청(Long id) {
-        return RestAssured.given().log().all()
-                .pathParam("id", id)
-                .when().get("/lines/{id}")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract();

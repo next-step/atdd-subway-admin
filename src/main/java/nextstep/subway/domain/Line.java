@@ -56,8 +56,8 @@ public class Line extends BaseEntity {
         this.color = Color.from(color);
     }
 
-    private void validateUpStation(Station upstation) {
-        if(upstation == null) {
+    private void validateUpStation(Station upStation) {
+        if(upStation == null) {
             throw new IllegalArgumentException(ErrorCode.상행종착역은_비어있을_수_없음.getErrorMessage());
         }
     }
@@ -66,6 +66,20 @@ public class Line extends BaseEntity {
         if(downStation == null) {
             throw new IllegalArgumentException(ErrorCode.하행종착역은_비어있을_수_없음.getErrorMessage());
         }
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+        this.distance = Distance.from(sections.totalDistance());
+    }
+
+    public List<Station> findInOrderStations() {
+        return sections.findInOrderStations();
+    }
+
+    public void deleteStationInLine(Station station) {
+        sections.deleteStationInLine(station);
+        this.distance = Distance.from(sections.totalDistance());
     }
 
     public Long getId() {
@@ -82,17 +96,5 @@ public class Line extends BaseEntity {
 
     public Distance getDistance() {
         return distance;
-    }
-
-    public List<Station> findStations() {
-        return sections.findStations();
-    }
-
-    public void addSection(Section section) {
-        sections.addSection(section);
-    }
-
-    public void addDistance(Distance distance) {
-        this.distance = this.distance.add(distance);
     }
 }

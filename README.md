@@ -279,3 +279,44 @@ Content-Length: 230
     } ]
 }
 ```
+
+## 4단계 - 구간 제거 기능
+### 요구 사항
+* 제시된 인수 조건 기반으로 기능 구현
+  * 기능 구현 전 인수 조건을 만족하는지 검증하는 인수 테스트를 먼저 만들고 기능 구현
+#### 기능 요구사항
+* 지하철 구간 제거 기능 구현
+* 요구사항을 정의한 인수 조건 추출
+* 인수 조건을 검증하는 인수 테스트 작성
+  * 예외 케이스에 대한 검증 포함
+* [x] 상행 종점을 제거하는 경우 -> 제거하고자 하는 역이 포함된 section이 1개(UpStation으로 포함)
+  * 상행 종점이 제거될 경우, 해당 역 다음역이 상행 종점이 됨 -> A - B - C가 있을 때 A를 제거하면 line의 distance도 바뀌어야 하고, A가 속한 section도 제거되야 함
+* [x] 하행 종점을 제거하는 경우 -> 제거하고자 하는 역이 포함된 section이 1개(DownStation으로 포함)
+  * 하행 종점이 제거될 경우, 해당 역 전역이 하행 종점이 됨 -> A - B - C가 있을 때 C를 제거하면 line의 distance도 바뀌어야 하고, C가 속한 section도 제거되야 함
+* [x] 가운데 역을 제거하는 경우 -> 제거하고자 하는 역이 포함된 section이 2개인 상황
+  * 중간역이 제거될 경우, section 재배치 -> A - B - C가 있을 때 B가 제거되면, A - B section은 제거하고, B - C section은 upStation이 A로 바뀌어야 하고, A - B, B - C간 distance로 section의 distane 변경 필요
+* [x] 구간이 하나인 노선에서 역을 제거하려 할 경우 제거할 수 없음
+* [x] 존재하지 않는 구간(노선에 존재하지 않는 역)을 제거하려 한다면 제거할 수 없음
+#### 프로그래밍 요구사항
+* 인수 테스트 주도 개발 프로세스에 맞추어 기능 구현할 것
+  * [x] 요구사항 설명을 참고해 인수 조건 정의
+  * [x] 인수 조건을 검증하는 인수 테스트 작성
+  * [x] 인수 테스트를 충족하는 기능 구현
+* [x] 인수 조건은 인수 테스트 메소드 상단에 주석 작성
+  * 뼈대 코드의 인수 테스트 참고
+  * 인수 테스트 서로 격리 및 재사용성과 가독성, 빠른 테스트 의도 파악을 위해 리팩토링
+
+### API 명세
+**[ HTTP request ]**
+```json
+DELETE /lines/1/sections?stationId=2 HTTP/1.1
+accept: */*
+host: localhost:52165
+```
+[ HTTP response ]
+```json
+HTTP/1.1 204 No Content
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+```

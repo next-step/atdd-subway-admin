@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -13,8 +14,10 @@ import nextstep.subway.constant.ErrorCode;
 @Embeddable
 public class Sections {
 
+    private static final int ONLY_ONE_SECTION = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    private List<Section> sections;
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
@@ -35,18 +38,70 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public List<Station> findInOrderStations() {
+        Map<Station, Station> stations = sections.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+        return sortStations(findLineUpStation(stations), stations);
+    }
+
+    private Station findLineUpStation(Map<Station, Station> stations) {
+        return stations.keySet()
+                .stream()
+                .filter(upStation -> !stations.containsValue(upStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.상행종착역은_비어있을_수_없음.getErrorMessage()));
+    }
+
+    private List<Station> sortStations(Station lineUpStation, Map<Station, Station> stations) {
+        List<Station> sortStations = new ArrayList<>();
+        sortStations.add(lineUpStation);
+        Station currentStation = lineUpStation;
+        while(stations.get(currentStation) != null) {
+            currentStation = stations.get(currentStation);
+            sortStations.add(currentStation);
+        }
+        return sortStations;
+    }
+
+    public Long totalDistance() {
+        return sections.stream()
+                .map(Section::getDistance)
+                .mapToLong(Distance::value).sum();
+    }
+
     public void addSection(Section newSection) {
         validateDuplicateSection(newSection);
         validateNotContainAnySection(newSection);
 
-        Optional<Section> updateUpStationSection = findUpdateUpStationSection(newSection);
-        Optional<Section> updateDownStationSection = findUpdateDownStationSection(newSection);
-        if(!updateUpStationSection.isPresent() && !updateDownStationSection.isPresent()) {
-            updateLineDistance(newSection);
-        }
-        updateUpStationSection.ifPresent(section -> section.updateUpStation(newSection));
-        updateDownStationSection.ifPresent(section -> section.updateDownStation(newSection));
+        Optional<Section> upStationSection = findSectionByUpStation(newSection.getUpStation());
+        Optional<Section> downStationSection = findSectionByDownStation(newSection.getDownStation());
+        upStationSection.ifPresent(section -> section.updateUpStation(newSection));
+        downStationSection.ifPresent(section -> section.updateDownStation(newSection));
         sections.add(newSection);
+    }
+
+    public void deleteStationInLine(Station deleteStation) {
+        Optional<Section> upStationSection = findSectionByUpStation(deleteStation);
+        Optional<Section> downStationSection = findSectionByDownStation(deleteStation);
+
+        validateNotContainAnySection(upStationSection.isPresent(), downStationSection.isPresent());
+        validateIfOnlyOneSection();
+
+        if(isInTheMiddleOfLine(upStationSection.isPresent(), downStationSection.isPresent())) {
+            addCombineSection(downStationSection.get(), upStationSection.get());
+        }
+        upStationSection.ifPresent(this::deleteSection);
+        downStationSection.ifPresent(this::deleteSection);
+    }
+
+    private void addCombineSection(Section upSection, Section downSection) {
+        Distance distance = upSection.addDistance(downSection);
+        Section section = Section.of(upSection.getUpStation(), downSection.getDownStation(), upSection.getLine(), distance.value());
+        sections.add(section);
+    }
+
+    private void deleteSection(Section deleteSection) {
+        sections.removeIf(section -> section.isSameSection(deleteSection));
     }
 
     private void validateDuplicateSection(Section section) {
@@ -55,31 +110,50 @@ public class Sections {
         }
     }
 
+    private boolean isAllContainStations(Section section) {
+        return findStations().containsAll(section.stations());
+    }
+
     private void validateNotContainAnySection(Section section) {
         if(isNotContainAnyStation(section)) {
             throw new IllegalArgumentException(ErrorCode.구간의_상행역과_하행역이_모두_노선에_포함되지_않음.getErrorMessage());
         }
     }
 
-    private boolean isAllContainStations(Section section) {
-        return findStations().containsAll(section.stations());
-    }
-
     private boolean isNotContainAnyStation(Section section) {
-        return findStations().stream().noneMatch(station -> section.stations().contains(station));
+        return findStations().stream()
+                .noneMatch(station -> section.stations().contains(station));
     }
 
-    private void updateLineDistance(Section section) {
-        section.updateLineDistance();
+    private void validateNotContainAnySection(boolean hasUpStationSection, boolean hasDownStationSection) {
+        if(hasNotBothUpAnddownStationSection(hasUpStationSection, hasDownStationSection)) {
+            throw new IllegalArgumentException(ErrorCode.노선_내_존재하지_않는_역.getErrorMessage());
+        }
     }
 
-    private Optional<Section> findUpdateUpStationSection(Section newSection) {
-        return sections.stream().filter(section -> section.isSameUpStation(newSection))
+    private Optional<Section> findSectionByUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(station))
                 .findFirst();
     }
 
-    private Optional<Section> findUpdateDownStationSection(Section newSection) {
-        return sections.stream().filter(section -> section.isSameDownStation(newSection))
+    private Optional<Section> findSectionByDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameDownStation(station))
                 .findFirst();
+    }
+
+    private boolean hasNotBothUpAnddownStationSection(boolean hasUpStationSection, boolean hasDownStationSection) {
+        return !hasUpStationSection && !hasDownStationSection;
+    }
+
+    private void validateIfOnlyOneSection() {
+        if(sections.size() == ONLY_ONE_SECTION) {
+            throw new IllegalArgumentException(ErrorCode.노선에_속한_구간이_하나이면_제거_불가.getErrorMessage());
+        }
+    }
+
+    private boolean isInTheMiddleOfLine(boolean hasUpStationSection, boolean hasDownStationSection) {
+        return hasUpStationSection && hasDownStationSection;
     }
 }
