@@ -32,4 +32,8 @@ public class Section extends BaseEntity {
 
     protected Section() {
     }
+
+    public Station getUpStation() {
+        return upStation;
+    }
 }

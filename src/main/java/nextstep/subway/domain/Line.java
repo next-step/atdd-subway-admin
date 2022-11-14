@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -49,6 +51,13 @@ public class Line extends BaseEntity {
         if (StringUtils.isBlank(name)) {
             throw new IllegalArgumentException("노선의 이름을 입력하세요.");
         }
+    }
+
+    public List<Station> getStations() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {
