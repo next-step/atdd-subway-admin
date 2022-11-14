@@ -66,12 +66,9 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-    public void changeInformation(String name, String color, int distance, Station upStation, Station downStation) {
+    public void changeInformation(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
     }
 
     @Override

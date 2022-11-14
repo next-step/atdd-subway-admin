@@ -48,10 +48,8 @@ public class LineService {
 
     @Transactional
     public void updateLine(String name, LineRequest lineRequest) {
-        setUpDownStation(lineRequest);
         Line line = lineRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
-        line.changeInformation(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance(),
-                lineRequest.getUpStation(), lineRequest.getDownStation());
+        line.changeInformation(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional

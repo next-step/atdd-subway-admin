@@ -25,4 +25,4 @@
 * [ ] 과한 상속을 피하도록 TestFixtures 의 사용을 개선
 * [ ] LineResponse 에 StationResponse 를 갖도록 수정
 * [x] dto 에서 repository 를 의존하지 않도록 수정
-* [ ] 변경이 필요한 값에 대해서만 오픈하도록 수정
+* [x] 변경이 필요한 값에 대해서만 오픈하도록 수정

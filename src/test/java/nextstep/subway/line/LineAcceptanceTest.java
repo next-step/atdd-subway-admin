@@ -106,7 +106,7 @@ class LineAcceptanceTest extends LineTestFixtures {
 
         //when
         ExtractableResponse<Response> response =
-                노선_수정("신분당선", "bg-green-600", stationId1, stationId2, "10", "/{name}", "신분당선");
+                노선_수정("신분당선2", "bg-green-600", stationId1, stationId2, "10", "/{name}", "신분당선");
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());

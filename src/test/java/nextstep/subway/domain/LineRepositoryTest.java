@@ -44,12 +44,11 @@ class LineRepositoryTest {
     @Test
     void update() {
         Line saveLine = repository.save(getLineRequest());
-        saveLine.changeInformation("신분당선2", "bg-green-600", 20, station1, station2);
+        saveLine.changeInformation("신분당선2", "bg-green-600");
         flushAndClear();
         Line findLine = repository.findById(saveLine.getId()).get();
         assertThat(findLine.getName()).isEqualTo("신분당선2");
         assertThat(findLine.getColor()).isEqualTo("bg-green-600");
-        assertThat(findLine.getDistance()).isEqualTo(20);
     }
 
     private Line getLineRequest() {
