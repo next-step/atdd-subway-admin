@@ -11,8 +11,6 @@ import nextstep.subway.util.RequestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -224,6 +222,7 @@ class LineAcceptanceTest {
     }
 
     private void 응답에_요청했던_정보가_모두_포함되어_있다(ExtractableResponse<Response> response, String 노선이름, String color, long distance, List<Long> stationIds) {
+        assertStatus(response,HttpStatus.CREATED);
         assertThat(response.jsonPath().getLong("id")).isPositive();
         assertThat(response.jsonPath().getString("name")).isEqualTo(노선이름);
         assertThat(response.jsonPath().getString("color")).isEqualTo(color);
