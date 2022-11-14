@@ -38,11 +38,6 @@ class SectionCommandServiceTest {
         Station 강남역 = stationRepository.save(Station.from("강남역"));
         sectionCommandService.addSection(line.getId(), SectionRequest.of(신사역.getId(), 강남역.getId(), 5));
 
-        Assertions.assertThat(line.getStationsInOrder())
-                .containsExactly(
-                        Station.from("신사역"),
-                        Station.from("강남역"),
-                        Station.from("광교역")
-                );
+        Assertions.assertThat(line.getStationsInOrder()).containsExactly(신사역, 강남역, 광교역);
     }
 }
