@@ -8,20 +8,24 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sections = Lists.newArrayList();
+    private List<Section> sections;
 
     protected Sections() {
     }
 
-    public static Sections createEmpty() {
-        return new Sections();
+    private Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public static Sections from(Section section) {
+        return new Sections(Lists.newArrayList(section));
     }
 
     public void add(Section section) {
@@ -41,10 +45,6 @@ public class Sections {
     private void validateIncludingUpStationOrDownStation(Section section) {
         List<Station> stations = this.getStationsInOrder();
 
-        if (stations.isEmpty()) {
-            return;
-        }
-
         if (!stations.contains(section.getUpStation()) && !stations.contains(section.getDownStation())) {
             throw new IllegalArgumentException(ExceptionMessage.NOT_INCLUDE_UP_STATION_AND_DOWN_STATION);
         }
@@ -58,34 +58,29 @@ public class Sections {
     }
 
     public List<Station> getStationsInOrder() {
-        Optional<Section> preSection = findSectionIncludingUpStation();
+        Station currentStation = findLineUpStation();
+        List<Station> results = Lists.newArrayList(currentStation);
 
-        List<Station> results = Lists.newArrayList();
+        Map<Station, Station> downStationByUpStation = sections.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
 
-        preSection.ifPresent(section -> results.add(section.getUpStation()));
-        addDownStationsOfSection(preSection, results);
+        while (downStationByUpStation.get(currentStation) != null) {
+            currentStation = downStationByUpStation.get(currentStation);
+            results.add(currentStation);
+        }
 
         return results;
     }
 
-    private void addDownStationsOfSection(Optional<Section> preSection, List<Station> results) {
-        while (preSection.isPresent()) {
-            Section section = preSection.get();
-            results.add(section.getDownStation());
-
-            preSection = sections.stream()
-                    .filter(it -> it.getUpStation().equals(section.getDownStation()))
-                    .findAny();
-        }
-    }
-
-    private Optional<Section> findSectionIncludingUpStation() {
+    private Station findLineUpStation() {
         List<Station> downStationsOfSection = sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
 
         return sections.stream()
-                .filter(section -> !downStationsOfSection.contains(section.getUpStation()))
-                .findAny();
+                .map(Section::getUpStation)
+                .filter(upStation -> !downStationsOfSection.contains(upStation))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.UP_STATION_NOT_EXIST_IN_LINE));
     }
 }

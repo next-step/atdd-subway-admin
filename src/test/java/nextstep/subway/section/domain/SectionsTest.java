@@ -6,16 +6,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 class SectionsTest {
 
     private Sections sections;
 
     @BeforeEach
     void setUp() {
-        sections = Sections.createEmpty();
-        sections.add(Section.of(Station.from("신사역"), Station.from("광교역"), 10));
+        sections = Sections.from(Section.of(Station.from("신사역"), Station.from("광교역"), 10));
     }
 
     @DisplayName("지하철 구간 추가하기")
