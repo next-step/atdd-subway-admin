@@ -58,6 +58,8 @@ public class LineService {
 
     @Transactional
     public void deleteById(Long id) {
+        Line line = findLineById(id);
+        sectionRepository.deleteByLine(line);
         lineRepository.delete(findLineById(id));
     }
 
