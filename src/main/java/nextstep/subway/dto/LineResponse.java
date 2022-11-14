@@ -8,30 +8,21 @@ public class LineResponse {
     private String name;
     private String color;
     private int distance;
-    private String upStationName;
-    private String downStationName;
-    private Long upStationId;
-    private Long downStationId;
+    private StationResponse upStation;
+    private StationResponse downStation;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, String upStationName, String downStationName, int distance,
-                        Long upStationId, Long downStationId) {
+    public LineResponse(Long id, String name, String color, int distance) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.distance = distance;
-        this.upStationName = upStationName;
-        this.downStationName = downStationName;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation().getName(),
-                line.getDownStation().getName(), line.getDistance(), line.getUpStation().getId(),
-                line.getDownStation().getId());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance());
     }
 
     public Long getId() {
@@ -46,7 +37,15 @@ public class LineResponse {
         return name;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public String getColor() {
+        return color;
+    }
+
+    public void setUpStation(StationResponse upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(StationResponse downStation) {
+        this.downStation = downStation;
     }
 }

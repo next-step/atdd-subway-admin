@@ -8,6 +8,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,16 +35,18 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(LineResponse::of)
+                .map(this::getLineResponse)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow(EntityNotFoundException::new));
+        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return getLineResponse(line);
     }
 
     public LineResponse findByName(String name) {
-        return LineResponse.of(lineRepository.findByName(name).orElseThrow(EntityNotFoundException::new));
+        Line line = lineRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
+        return getLineResponse(line);
     }
 
     @Transactional
@@ -55,6 +58,13 @@ public class LineService {
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private LineResponse getLineResponse(Line line) {
+        LineResponse lineResponse = LineResponse.of(line);
+        lineResponse.setUpStation(StationResponse.of(line.getUpStation()));
+        lineResponse.setDownStation(StationResponse.of(line.getDownStation()));
+        return lineResponse;
     }
 
     private void setUpDownStation(LineRequest lineRequest) {

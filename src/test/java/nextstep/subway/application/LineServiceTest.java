@@ -31,7 +31,6 @@ class LineServiceTest {
 
     Station station1 = null;
     Station station2 = null;
-    Station station3 = null;
 
     @Test
     void saveLine() {
@@ -63,11 +62,11 @@ class LineServiceTest {
     @Test
     void updateLine() {
         Long id = service.saveLine(getLineRequest());
-        LineRequest request = new LineRequest("신분당선2", "bg-red-600", 10, station1.getId(), station3.getId());
+        LineRequest request = new LineRequest("신분당선2", "bg-green-600", 10, station1.getId(), station2.getId());
         service.updateLine("신분당선", request);
         LineResponse findLine = service.findById(id);
         assertThat(findLine.getName()).isEqualTo("신분당선2");
-        assertThat(findLine.getDownStationId()).isEqualTo(station3.getId());
+        assertThat(findLine.getColor()).isEqualTo("bg-green-600");
     }
 
     @Test
@@ -80,7 +79,6 @@ class LineServiceTest {
     private LineRequest getLineRequest() {
         station1 = stationRepository.save(new Station("경기 광주역"));
         station2 = stationRepository.save(new Station("중앙역"));
-        station3 = stationRepository.save(new Station("모란역"));
         return new LineRequest("신분당선", "bg-red-600", 10, station1.getId(), station2.getId());
     }
 }
