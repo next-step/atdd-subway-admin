@@ -1,4 +1,4 @@
-import LinePage from '@/views/line/LinePage'
+import LinePage from '@/views/controller/LinePage'
 
 const lineRoutes = [
   {
