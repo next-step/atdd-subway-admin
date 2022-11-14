@@ -10,23 +10,34 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.TestConstructor;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.util.DatabaseCleanUpUtils;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class StationAcceptanceTest {
 	@LocalServerPort
 	int port;
+
+	private final DatabaseCleanUpUtils cleanUpUtils;
+
+	public StationAcceptanceTest(DatabaseCleanUpUtils cleanUpUtils) {
+		this.cleanUpUtils = cleanUpUtils;
+	}
 
 	@BeforeEach
 	public void setUp() {
 		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
 			RestAssured.port = port;
+			cleanUpUtils.afterPropertiesSet();
 		}
+		cleanUpUtils.cleanUp();
 	}
 
 	/**
@@ -82,7 +93,7 @@ class StationAcceptanceTest {
 	@Test
 	void getStations() {
 		// given
-		지하철역_생성_요청("삼성역");
+		지하철역_생성_요청("강남역");
 		지하철역_생성_요청("역삼역");
 
 		// when
@@ -92,7 +103,7 @@ class StationAcceptanceTest {
 		JsonPath jsonPath = inquiryStationsResponse.jsonPath();
 		assertAll(
 			() -> assertThat(inquiryStationsResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-			() -> assertThat(jsonPath.getList("name", String.class)).containsExactly("삼성역", "역삼역"),
+			() -> assertThat(jsonPath.getList("name", String.class)).containsExactly("강남역", "역삼역"),
 			() -> assertThat(jsonPath.getList("id", Long.class)).hasSize(2)
 		);
 	}

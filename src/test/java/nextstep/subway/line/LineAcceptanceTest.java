@@ -10,29 +10,40 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.TestConstructor;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.util.DatabaseCleanUpUtils;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
 class LineAcceptanceTest {
 	@LocalServerPort
 	int port;
+
+	private final DatabaseCleanUpUtils cleanUpUtils;
+
+	public LineAcceptanceTest(DatabaseCleanUpUtils cleanUpUtils) {
+		this.cleanUpUtils = cleanUpUtils;
+	}
 
 	@BeforeEach
 	public void setUp() {
 		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
 			RestAssured.port = port;
+			cleanUpUtils.afterPropertiesSet();
 		}
+		cleanUpUtils.cleanUp();
 	}
 
 	/**
-	 *  When 지하철 노선을 생성하면</br>
-	 *  Then 지하철 노선이 생성된다</br>
+	 * When 지하철 노선을 생성하면
+	 * Then 지하철 노선이 생성된다
 	 * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다.
 	 */
 	@DisplayName("노선을 생성한다.")
@@ -59,5 +70,6 @@ class LineAcceptanceTest {
 			() -> assertThat(allLinesResponseBody.getList("name")).contains(name)
 		);
 	}
+
 
 }
