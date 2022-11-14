@@ -24,7 +24,6 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
 
     @BeforeEach
     public void setUpData() {
-        System.out.println("======setUpData======");
         stationId1 = 지하철역_신규_생성_및_아이디_요청("강남역");
         stationId2 = 지하철역_신규_생성_및_아이디_요청("양재역");
         stationId3 = 지하철역_신규_생성_및_아이디_요청("교대역");
@@ -112,6 +111,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      * given 지하철 노선 한개 등록하고
      * when 생성한 지하철 노선을 조회하면
      * then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     * then 노선에 등록되 역 정보를 응답 받을 수 잇다.
      */
     @DisplayName("지하철 노선 조회하면 등록한 노선을 조회할 수 있다.")
     @Test
@@ -120,10 +120,13 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         int id = 지하철_노선_신규_생성_요청("신분당선", "red", stationId1, stationId2).jsonPath().get("id");
 
         //when
-        int responseId = 지하철_노선_단일_조회(id).getInt("id");
+        JsonPath response = 지하철_노선_단일_조회(id);
+        int responseId = response.getInt("id");
+        List<Long> stationsIds = response.getList("$.stations.id");
 
         //then
         assertThat(id).isEqualTo(responseId);
+        assertThat(stationsIds).containsExactlyInAnyOrder(stationId1, stationId2);
     }
 
     /**
