@@ -103,6 +103,20 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> response = createStation("강남역");
+
+        // when
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(BASE_URL + "/{id}", 1)
+                .then().log().all();
+
+        // then
+        List<Station> station = retrieveStationByName("강남역");
+
+        assertThat(station).isEmpty();
+
     }
 
     public static ExtractableResponse<Response> createStation(String stationName) {
