@@ -1,7 +1,10 @@
 package nextstep.subway.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -27,21 +30,22 @@ public class Section {
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_to_downstation"), nullable = false)
     private Station downStation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
     protected Section() {
     }
 
-    private Section(Station upStation, Station downStation, Distance distance) {
+    private Section(Station upStation, Station downStation, Line line, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
+        this.line = line;
         this.distance = distance;
     }
 
-    public static Section from(Station upStation, Station downStation, Distance distance) {
-        return new Section(upStation, downStation, distance);
+    public static Section from(Station upStation, Station downStation, Line line, Distance distance) {
+        return new Section(upStation, downStation, line, distance);
     }
 
     public Long getId() {
@@ -60,7 +64,15 @@ public class Section {
         return downStation;
     }
 
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
     public Line getLine() {
         return line;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
     }
 }

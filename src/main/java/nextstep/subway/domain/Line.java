@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.Collections;
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -24,25 +26,16 @@ public class Line extends BaseEntity {
     private Color color;
 
     @Embedded
-    private Distance distance;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
+    private Sections sections;
 
     protected Line() {
     }
 
     private Line(Name name, Color color, Distance distance, Station upStation, Station downStation) {
+        Section section = Section.from(upStation, downStation, this, distance);
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.sections = Sections.from(Collections.singletonList(section));
     }
 
     public static Line from(Name name, Color color, Distance distance, Station upStation, Station downStation) {
@@ -52,6 +45,10 @@ public class Line extends BaseEntity {
     public void modify(String name, String color) {
         this.name = Name.of(name);
         this.color = Color.of(color);
+    }
+
+    public void addSection(Section section) {
+        section.setLine(this);
     }
 
     public Long getId() {
@@ -66,15 +63,7 @@ public class Line extends BaseEntity {
         return color.value();
     }
 
-    public Distance getDistance() {
-        return distance;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 }

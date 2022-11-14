@@ -1,15 +1,19 @@
 package nextstep.subway.application;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
 import nextstep.subway.domain.Color;
 import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Name;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
@@ -52,6 +56,9 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
+
+        System.out.println(lines.size());
+
         return lines.stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
@@ -74,5 +81,10 @@ public class LineService {
     @Transactional
     public void removeLine(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public void addSection(Long id, SectionRequest sectionRequest) {
+
     }
 }
