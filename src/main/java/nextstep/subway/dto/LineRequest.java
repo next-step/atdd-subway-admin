@@ -1,9 +1,7 @@
 package nextstep.subway.dto;
 
-import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 
 public class LineRequest {
 
@@ -26,9 +24,7 @@ public class LineRequest {
         this.downStationId = downStationId;
     }
 
-    public Line toLine(StationRepository stationRepository) {
-        defineUpStation(stationRepository);
-        defineDownStation(stationRepository);
+    public Line toLine() {
         return new Line(name, color, distance, upStation, downStation);
     }
 
@@ -60,15 +56,15 @@ public class LineRequest {
         return upStation;
     }
 
-    public void defineUpStation(StationRepository stationRepository) {
-        this.upStation = stationRepository.findById(getUpStationId()).orElseThrow(EntityNotFoundException::new);
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
     }
 
     public Station getDownStation() {
         return downStation;
     }
 
-    public void defineDownStation(StationRepository stationRepository) {
-        this.downStation = stationRepository.findById(getDownStationId()).orElseThrow(EntityNotFoundException::new);
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 }

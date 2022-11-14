@@ -25,7 +25,8 @@ public class LineService {
 
     @Transactional
     public Long saveLine(LineRequest lineRequest) {
-        Line persistLine = lineRepository.save(lineRequest.toLine(stationRepository));
+        setUpDownStation(lineRequest);
+        Line persistLine = lineRepository.save(lineRequest.toLine());
         return persistLine.getId();
     }
 
@@ -59,7 +60,9 @@ public class LineService {
     }
 
     private void setUpDownStation(LineRequest lineRequest) {
-        lineRequest.defineUpStation(stationRepository);
-        lineRequest.defineDownStation(stationRepository);
+        lineRequest.setUpStation(
+                stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new));
+        lineRequest.setDownStation(
+                stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new));
     }
 }
