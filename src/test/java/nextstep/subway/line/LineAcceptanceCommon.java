@@ -24,8 +24,8 @@ public class LineAcceptanceCommon {
         long downStationId = 지하철_역_등록(downStationName).jsonPath().getLong("id");
         return RestAssured.given().log().all()
                 .body(LineRequest.builder()
-                        .name("2호선")
-                        .color("green")
+                        .name(name)
+                        .color(color)
                         .upStationId(upstationId)
                         .downStationId(downStationId)
                         .distance(distance)
