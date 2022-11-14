@@ -103,10 +103,7 @@ class LineStationAcceptanceTest {
     void 새로운_역을_하행_종점으로_등록() {
         // when
         JsonPath 삼성역 = 지하철_역_생성("삼성역");
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("upStationId", getId(선릉역));
-        paramMap.put("downStationId", getId(삼성역));
-        paramMap.put("distance", 5);
+        Map<String, Object> paramMap = 지하철_구간_추가_파라미터_생성(getId(선릉역), getId(삼성역), 5);
         ExtractableResponse<Response> postResponse = 지하철_구간_추가(getId(이호선), paramMap);
 
         // then
@@ -127,10 +124,7 @@ class LineStationAcceptanceTest {
     void 기존_역_사이와_같거나_긴_역_등록() {
         // when
         JsonPath 역삼역 = 지하철_역_생성("역삼역");
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("upStationId", getId(역삼역));
-        paramMap.put("downStationId", getId(선릉역));
-        paramMap.put("distance", DISTANCE);
+        Map<String, Object> paramMap = 지하철_구간_추가_파라미터_생성(getId(역삼역), getId(선릉역), DISTANCE);
         ExtractableResponse<Response> postResponse = 지하철_구간_추가(getId(이호선), paramMap);
 
         // then
@@ -148,10 +142,7 @@ class LineStationAcceptanceTest {
     @Test
     void 이미_등록된_상행역_하행역을_등록() {
         // when
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("upStationId", getId(강남역));
-        paramMap.put("downStationId", getId(선릉역));
-        paramMap.put("distance", 5);
+        Map<String, Object> paramMap = 지하철_구간_추가_파라미터_생성(getId(강남역), getId(선릉역), 5);
         ExtractableResponse<Response> postResponse = 지하철_구간_추가(getId(이호선), paramMap);
 
         // then
@@ -170,10 +161,7 @@ class LineStationAcceptanceTest {
         // when
         JsonPath 신도림역 = 지하철_역_생성("신도림역");
         JsonPath 대림역 = 지하철_역_생성("대림역");
-        Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("upStationId", getId(신도림역));
-        paramMap.put("downStationId", getId(대림역));
-        paramMap.put("distance", 5);
+        Map<String, Object> paramMap = 지하철_구간_추가_파라미터_생성(getId(신도림역), getId(대림역), 5);
         ExtractableResponse<Response> postResponse = 지하철_구간_추가(getId(이호선), paramMap);
 
         // then
@@ -206,6 +194,15 @@ class LineStationAcceptanceTest {
                 .then().log().all()
                 .extract()
                 .jsonPath();
+    }
+
+    private Map<String, Object> 지하철_구간_추가_파라미터_생성(Long upStationId, Long downStationId, int distance) {
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("upStationId", upStationId);
+        paramMap.put("downStationId", downStationId);
+        paramMap.put("distance", distance);
+
+        return paramMap;
     }
 
     private ExtractableResponse<Response> 지하철_구간_추가(Long lineId, Map<String, Object> paramMap) {
