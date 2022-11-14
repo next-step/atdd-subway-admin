@@ -1,5 +1,8 @@
 package nextstep.subway.application.line;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,5 +37,11 @@ public class LineService {
 	@Transactional
 	public void deleteLineById(Long id) {
 		lineRepository.deleteById(id);
+	}
+
+	public List<LineResponse> findLines() {
+		return lineRepository.findAll().stream()
+			.map(LineResponse::of)
+			.collect(Collectors.toList());
 	}
 }

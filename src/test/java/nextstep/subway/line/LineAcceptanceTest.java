@@ -39,19 +39,24 @@ class LineAcceptanceTest {
 	@Test
 	void createLineTest() {
 		// when
-		String name = "신분당선";
-		ExtractableResponse<Response> response = 지하철_노선_생성_요청(name, "bg-red-600", "강남역", "역삼역");
+		final String name = "신분당선";
+		final String upStationName = "강남역";
+		final String downStationName = "역삼역";
+		ExtractableResponse<Response> response = 지하철_노선_생성_요청(name, "bg-red-600", upStationName, downStationName);
 
 		// then
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
 		// then
 		ExtractableResponse<Response> allLinesResponse = 지하철_노선_목록_조회_요청();
-		JsonPath responseBody = allLinesResponse.jsonPath();
+		JsonPath createLineResponseBody = response.jsonPath();
+		JsonPath allLinesResponseBody = allLinesResponse.jsonPath();
 		assertAll(
+			() -> assertThat(createLineResponseBody.getList("stations", LineResponse.class)).hasSize(2),
+			() -> assertThat(createLineResponseBody.getList("stations.name"))
+				.containsAnyOf(upStationName, downStationName),
 			() -> assertThat(allLinesResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-			() -> assertThat(responseBody.getList(".", LineResponse.class)).hasSize(1),
-			() -> assertThat(responseBody.getList(".", LineResponse.class).get(0).getName()).isEqualTo(name)
+			() -> assertThat(allLinesResponseBody.getList("name")).contains(name)
 		);
 	}
 
