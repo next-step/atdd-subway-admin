@@ -21,9 +21,13 @@ public class LineRepositoryTest {
         String color = "분홍색";
         Station upStation = new Station("잠실역");
         Station downStation = new Station("장지역");
-        Line line = Line.of(name, color, upStation, downStation);
+        Integer distance = 10;
+        Line line = Line.of(name, color, upStation, downStation, distance);
 
-        // expect
-        assertThat(lineRepository.save(line)).isNotNull();
+        // when
+        Line persistLine = lineRepository.save(line);
+
+        // then
+        assertThat(persistLine).isNotNull();
     }
 }

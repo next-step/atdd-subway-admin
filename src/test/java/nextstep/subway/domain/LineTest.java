@@ -17,9 +17,10 @@ public class LineTest {
         String color = "분홍색";
         Station upStation = new Station("잠실역");
         Station downStation = new Station("장지역");
+        Integer distance = 10;
 
         // when
-        Line line = Line.of(name, color, upStation, downStation);
+        Line line = Line.of(name, color, upStation, downStation, distance);
 
         // then
         assertThat(line).isNotNull();
@@ -34,8 +35,8 @@ public class LineTest {
 
         // expect
         assertAll(
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> Line.of("이름", null, upStation, downStation)),
-                () -> assertThatIllegalArgumentException().isThrownBy(() -> Line.of(null, "색깔", upStation, downStation))
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> Line.of("이름", null, upStation, downStation, 10)),
+                () -> assertThatIllegalArgumentException().isThrownBy(() -> Line.of(null, "색깔", upStation, downStation, 10))
         );
     }
 
@@ -47,7 +48,8 @@ public class LineTest {
         String color = "분홍색";
         Station upStation = new Station("잠실역");
         Station downStation = new Station("장지역");
-        Line line = Line.of(name, color, upStation, downStation);
+        Integer distance = 10;
+        Line line = Line.of(name, color, upStation, downStation, 10);
 
         // when
         String newName = "1호선";

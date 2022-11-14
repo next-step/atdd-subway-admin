@@ -24,11 +24,12 @@ public class Line extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
+    private Integer distance;
 
     protected Line() {
     }
 
-    private Line(Long id, String name, String color, Station upStation, Station downStation) {
+    private Line(Long id, String name, String color, Station upStation, Station downStation, Integer distance) {
         validateName(name);
         validateColor(color);
         this.id = id;
@@ -36,10 +37,11 @@ public class Line extends BaseEntity {
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
     }
 
-    public static Line of(String name, String color, Station upStation, Station downStation) {
-        return new Line(null, name, color, upStation, downStation);
+    public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
+        return new Line(null, name, color, upStation, downStation, distance);
     }
 
     private void validateName(String name) {

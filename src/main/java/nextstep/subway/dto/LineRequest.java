@@ -32,6 +32,6 @@ public class LineRequest {
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        return Line.of(name, color, upStation, downStation);
+        return Line.of(name, color, upStation, downStation, distance);
     }
 }
