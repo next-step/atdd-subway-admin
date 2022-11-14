@@ -10,6 +10,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import nextstep.subway.dto.LineRequest;
 
 @Entity
 public class Line extends BaseEntity {
@@ -35,7 +36,7 @@ public class Line extends BaseEntity {
         cascade = CascadeType.REMOVE,
         orphanRemoval = true
     )
-    private final List<Station> stations = new ArrayList<>();
+    private List<Station> stations = new ArrayList<>();
 
     protected Line() {
     }
@@ -53,6 +54,11 @@ public class Line extends BaseEntity {
         stations.add(station);
     }
 
+    public void updateLine(LineRequest request){
+        this.name = request.getName();
+        this.color = request.getColor();
+    }
+
     public Long getId() {
         return id;
     }
@@ -63,9 +69,5 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public List<Station> getStations() {
-        return stations;
     }
 }

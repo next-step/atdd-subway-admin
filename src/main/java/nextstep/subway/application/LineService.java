@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
@@ -9,6 +10,7 @@ import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.NotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,13 +52,30 @@ public class LineService {
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
-        return lines.stream()
-                .map(LineResponse::of)
-                .collect(Collectors.toList());
+        List<LineResponse> lineResponses = new ArrayList<>();
+        for(Line line : lines){
+            LineResponse lineResponse = LineResponse.of(line);
+            lineResponse.setStations(findStationsByLineId(line.getId()));
+            lineResponses.add(lineResponse);
+        }
+        return lineResponses;
+    }
+
+    public LineResponse findById(Long lineId) {
+        LineResponse lineResponse = LineResponse.of(lineRepository.findById(lineId).orElseThrow(NotFoundException::new));
+        lineResponse.setStations(findStationsByLineId(lineId));
+        return lineResponse;
     }
 
     @Transactional
-    public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
+    public void updateLineById(Long lineId, LineRequest lineRequest) {
+        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+        line.updateLine(lineRequest);
+    }
+
+    @Transactional
+    public void deleteLineById(Long lineId) {
+        findById(lineId);
+        lineRepository.deleteById(lineId);
     }
 }
