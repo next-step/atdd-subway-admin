@@ -70,10 +70,6 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    private Line findLineById(Long id, RuntimeException exception) {
-        return lineRepository.findById(id).orElseThrow(() -> exception);
-    }
-
     @Transactional
     public void registerSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findLine(lineId).orElseThrow(NotFoundException::new);
@@ -82,4 +78,9 @@ public class LineService {
                 sectionRequest.getDistance()));
 
     }
+
+    private Line findLineById(Long id, RuntimeException exception) {
+        return lineRepository.findById(id).orElseThrow(() -> exception);
+    }
+
 }

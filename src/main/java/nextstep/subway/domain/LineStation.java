@@ -44,4 +44,7 @@ public class LineStation {
         return distance;
     }
 
+    public void updateFirstNode(Long preStationId) {
+        this.station = new Station(preStationId);
+    }
 }

@@ -37,12 +37,20 @@ public class LineStations {
     }
 
     public void add(LineStation lineStation) {
+        findStation(lineStation.getStation().getId())
+            .ifPresent(lineStation1 -> lineStation1.updateFirstNode(lineStation.getPreStationId()));
         lineStations.add(lineStation);
     }
 
     private Optional<LineStation> findPreStation(Long id) {
         return lineStations.stream()
             .filter(lineStation -> lineStation.getPreStationId() == id)
+            .findFirst();
+    }
+
+    private Optional<LineStation> findStation(Long id) {
+        return lineStations.stream()
+            .filter(lineStation -> lineStation.getStation().getId() == id)
             .findFirst();
     }
 

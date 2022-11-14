@@ -39,15 +39,16 @@ public class SectionAcceptanceTest {
         preDataUtil.lineStation(2L, 2L, 1L, 1L, 10);
 
         preDataUtil.station(3L, "역삼역");
+        preDataUtil.station(5L, "방배역");
     }
 
     /**
      * When 노선에 신규 지하철 역을 등록하면
      * Then 노선 조회 시 생성한 역이 포함된 것을 확인할 수 있다
      */
-    @DisplayName("노선에 구간을 등록한다")
+    @DisplayName("노선에 구간을 등록한다(하행종점)")
     @Test
-    void createSection() {
+    void createSectionLowest() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
             .body(new SectionRequestDto(2L, 3L, 5))
@@ -60,7 +61,29 @@ public class SectionAcceptanceTest {
         // then
         ExtractableResponse<Response> fetchResponse = LineAcceptanceTest.fetchLine(1L);
         assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
-        assertThat(fetchResponse.jsonPath().getList("stations.id", Long.class)).contains(3L);
+        assertThat(fetchResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(1L, 2L, 3L);
+    }
+
+    /**
+     * When 노선에 신규 지하철 역을 등록하면
+     * Then 노선 조회 시 생성한 역이 포함된 것을 확인할 수 있다
+     */
+    @DisplayName("노선에 구간을 등록한다(상행종점)")
+    @Test
+    void createSectionHighest() {
+        // when
+        ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
+            .body(new SectionRequestDto(5L, 1L, 5))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+        assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(OK);
+
+        // then
+        ExtractableResponse<Response> fetchResponse = LineAcceptanceTest.fetchLine(1L);
+        assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
+        assertThat(fetchResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(5L, 1L, 2L);
     }
 
     static class SectionRequestDto {

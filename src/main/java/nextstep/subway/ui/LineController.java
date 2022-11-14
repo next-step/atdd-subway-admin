@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.application.LineService;
+import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.ErrorResponse;
 import nextstep.subway.dto.LineChange;
 import nextstep.subway.dto.LineRequest;
@@ -25,10 +26,12 @@ import nextstep.subway.exception.NotFoundException;
 
 @RestController
 public class LineController {
-    private LineService lineService;
+    private final LineService lineService;
+    private final LineRepository lineRepository;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, LineRepository lineRepository) {
         this.lineService = lineService;
+        this.lineRepository = lineRepository;
     }
 
     @PostMapping("/lines")

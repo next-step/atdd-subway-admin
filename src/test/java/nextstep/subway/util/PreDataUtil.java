@@ -18,6 +18,7 @@ public class PreDataUtil {
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE", new EmptySqlParameterSource());
         jdbcTemplate.update("truncate table station", new EmptySqlParameterSource());
         jdbcTemplate.update("truncate table line", new EmptySqlParameterSource());
+        jdbcTemplate.update("truncate table line_station", new EmptySqlParameterSource());
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE", new EmptySqlParameterSource());
     }
 
