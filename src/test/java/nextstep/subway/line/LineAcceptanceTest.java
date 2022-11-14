@@ -36,7 +36,6 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
         지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
-                .distance(10l)
                 .upStationId(gangnamStationId)
                 .downStationId(nonhyunStationId)
                 .build());
