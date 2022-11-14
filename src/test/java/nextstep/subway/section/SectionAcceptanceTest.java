@@ -235,6 +235,7 @@ public class SectionAcceptanceTest {
 
         assertAll(
                 () -> assertThat(lineName).isEqualTo(expectLineName),
+                () -> assertThat(stationNames.size()).isEqualTo(expectStationNames.length),
                 () -> assertThat(stationNames).containsAll(Arrays.asList(expectStationNames))
         );
     }
