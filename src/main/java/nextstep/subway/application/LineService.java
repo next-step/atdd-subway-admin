@@ -56,4 +56,11 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundDataException("존재하지 않는 라인이에요"));
         line.updateNameAndColor(request.getName(), request.getColor());
     }
+
+    public void deleteLine(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new NotFoundDataException("존재하지 않는 라인이에요"));
+
+        lineRepository.deleteById(line.getId());
+    }
 }
