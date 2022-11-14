@@ -31,7 +31,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
 
     /**
      * When 지하철 노선을 생성하면
-     * then 지하철 노선에 등록된고,
+     * then 지하철 노선에 등록되고,
      * then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
     @DisplayName("지하철 노선 생성을 생성한다.")
@@ -122,11 +122,11 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         //when
         JsonPath response = 지하철_노선_단일_조회(id);
         int responseId = response.getInt("id");
-        List<Long> stationsIds = response.getList("$.stations.id");
+        List<Integer> stationsIds = response.getList("stations.id");
 
         //then
         assertThat(id).isEqualTo(responseId);
-        assertThat(stationsIds).containsExactlyInAnyOrder(stationId1, stationId2);
+        assertThat(stationsIds).containsExactlyInAnyOrder((int)(long)stationId1, (int)(long)stationId2);
     }
 
     /**

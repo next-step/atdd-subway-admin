@@ -76,4 +76,12 @@ public class Line extends BaseEntity {
         this.name = newName;
         this.color = newColor;
     }
+
+    public void addInitialSections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
 }

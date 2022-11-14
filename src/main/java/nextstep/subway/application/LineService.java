@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.NoResultException;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.repository.LineRepository;
+import nextstep.subway.repository.SectionRepository;
 import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,27 +19,30 @@ public class LineService {
 
     private LineRepository lineRepository;
     private StationRepository stationRepository;
+    private SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
     public void updateNameAndColor(Long id, LineRequest lineRequest) {
         Line originLine = findLineById(id);
         originLine.changeNameAndColor(lineRequest.getName(), lineRequest.getColor());
-        lineRepository.save(originLine);
-
     }
 
     @Transactional
     public LineResponse save(LineRequest lineRequest) {
-        Line line = lineRequest.toLine(
+        Line line = lineRepository.save(lineRequest.toLine());
+        line.addInitialSections(Section.makeInitialSections(line,
                 findStationById(lineRequest.getUpStationId()),
-                findStationById(lineRequest.getDownStationId()));
+                findStationById(lineRequest.getDownStationId()),
+                lineRequest.getDistance()));
+        sectionRepository.saveAll(line.getSections());
 
-        return LineResponse.of(lineRepository.save(line));
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> findAllLines() {

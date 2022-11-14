@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import java.util.Arrays;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -12,6 +14,7 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Section extends BaseEntity {
 
+    public static final int END_SECTION_DISTANCE = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -31,6 +34,20 @@ public class Section extends BaseEntity {
     Integer distance;
 
     protected Section() {
+    }
+
+    public Section(Line line, Station upStation, Station downStation, Integer distance) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public static List<Section> makeInitialSections(Line line, Station upStation, Station downStation, Integer distance) {
+        return Arrays.asList(
+                new Section(line, null, upStation, END_SECTION_DISTANCE),
+                new Section(line, upStation, downStation, distance),
+                new Section(line, downStation, null, END_SECTION_DISTANCE));
     }
 
     public Station getUpStation() {
