@@ -11,6 +11,9 @@ public class LineResponse {
     private String color;
     private List<LineStationResponse> stations;
 
+    private LineResponse() {
+    }
+
     private LineResponse(Long id, String name, String color, List<LineStationResponse> stations) {
         this.id = id;
         this.name = name;

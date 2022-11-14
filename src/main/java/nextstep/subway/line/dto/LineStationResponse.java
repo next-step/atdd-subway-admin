@@ -8,6 +8,9 @@ public class LineStationResponse {
     private Long id;
     private String name;
 
+    private LineStationResponse() {
+    }
+
     private LineStationResponse(Long id, String name) {
         this.id = id;
         this.name = name;
