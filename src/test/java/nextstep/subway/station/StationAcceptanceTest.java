@@ -1,41 +1,23 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import org.assertj.core.api.AbstractIntegerAssert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static nextstep.subway.station.StationAcceptanceFixture.지하철_생성_결과에서_지하철역_번호를_조회한다;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_삭제한다;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_생성한다;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철역_목록을_조회한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import java.util.List;
+import nextstep.subway.AcceptanceTest;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.http.HttpStatus;
 
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
+@DisplayName("지하철역 관련 기능")
+public class StationAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -108,7 +90,7 @@ public class StationAcceptanceTest {
     void deleteStation(String 지하철_역명) {
         // given
         ExtractableResponse<Response> 지하철_생성_결과 = 지하철_역을_생성한다(지하철_역명);
-        String 지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(지하철_생성_결과);
+        Long 지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(지하철_생성_결과);
 
         // when
         지하철_역을_삭제한다(지하철역_번호);
@@ -118,8 +100,8 @@ public class StationAcceptanceTest {
         지하철역_목록중_해당_지하철을_찾을_수_없다(지하철_역명, 지하철역_목록);
     }
 
-    private AbstractIntegerAssert<?> 지하철역_생성상태가_정상임을_확인할_수_있다(ExtractableResponse<Response> 지하철역_생성결과) {
-        return assertThat(지하철역_생성결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    private void 지하철역_생성상태가_정상임을_확인할_수_있다(ExtractableResponse<Response> 지하철역_생성결과) {
+        assertThat(지하철역_생성결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     private void 지하철역_목록중_해당_지하철을_찾을_수_있다(String 지하철_역명, List<String> 지하철_목록) {
