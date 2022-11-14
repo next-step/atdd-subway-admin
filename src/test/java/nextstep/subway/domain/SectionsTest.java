@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SectionsTest {
 
@@ -52,6 +52,24 @@ class SectionsTest {
                         new Section(노선, 상행역, 새로운_하행역, 6),
                         new Section(노선, 새로운_하행역, 기준_하행역, 4)
                         ));
+
+    }
+
+    @Test
+    void 구간_조회시_순서가_정렬됨() {
+        Sections sections = new Sections(
+                new Section(노선, new Station("st2"), new Station("st3"), 10),
+                new Section(노선, new Station("st1"), new Station("st2"), 10),
+                new Section(노선, new Station("st3"), new Station("st4"), 10)
+        );
+
+        assertThat(sections.getStations())
+                .containsExactly(
+                        new Station("st1"),
+                        new Station("st2"),
+                        new Station("st3"),
+                        new Station("st4")
+        );
 
     }
 

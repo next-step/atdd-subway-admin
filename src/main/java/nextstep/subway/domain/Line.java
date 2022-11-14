@@ -55,7 +55,7 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public Sections getLineStations() {
+	public Sections getSections() {
 		return sections;
 	}
 }

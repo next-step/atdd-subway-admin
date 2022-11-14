@@ -22,7 +22,7 @@ class LineTest {
 
         노선.addSection(상행종점역, 홍대역, 구간_거리);
 
-        assertThat(노선.getLineStations())
+        assertThat(노선.getSections())
                 .isEqualTo(new Sections(
                         new Section(노선, 상행종점역, 홍대역, 4),
                         new Section(노선, 홍대역, 하행종점역, 6)
@@ -39,7 +39,7 @@ class LineTest {
 
         노선.addSection(홍대역, 하행종점역, 구간_거리);
 
-        assertThat(노선.getLineStations())
+        assertThat(노선.getSections())
                 .isEqualTo(new Sections(
                         new Section(노선, 상행종점역, 홍대역, 6),
                         new Section(노선, 홍대역, 하행종점역, 4)
@@ -55,7 +55,7 @@ class LineTest {
 
         노선.addSection(홍대역, 상행종점역, 구간_거리);
 
-        assertThat(노선.getLineStations())
+        assertThat(노선.getSections())
                 .isEqualTo(new Sections(
                         new Section(노선, 홍대역, 상행종점역, 11),
                         new Section(노선, 상행종점역, 하행종점역, 10)
@@ -71,7 +71,7 @@ class LineTest {
 
         노선.addSection(하행종점역, 홍대역, 구간_거리);
 
-        assertThat(노선.getLineStations())
+        assertThat(노선.getSections())
                 .isEqualTo(new Sections(
                         new Section(노선, 상행종점역, 하행종점역, 10),
                         new Section(노선, 하행종점역, 홍대역, 11)
