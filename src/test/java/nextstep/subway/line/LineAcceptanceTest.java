@@ -1,5 +1,15 @@
 package nextstep.subway.line;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.SubwayAcceptanceTest;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
+
+import java.util.List;
+
 import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선_삭제됨;
 import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선_생성됨;
 import static nextstep.subway.line.LineAcceptanceTestAssertions.지하철_노선_존재함;
@@ -9,16 +19,6 @@ import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_�
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_수정;
 import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_조회;
 
-import java.util.List;
-
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
-
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import nextstep.subway.SubwayAcceptanceTest;
 
 @DisplayName("지하철 노선 관련 기능 ")
 class LineAcceptanceTest extends SubwayAcceptanceTest {
@@ -29,7 +29,6 @@ class LineAcceptanceTest extends SubwayAcceptanceTest {
 	 */
 	@Test
 	void 지하철노선을_생성한다() {
-
 		// when
 		ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성("신분당선", "상행역", "하행역");
 

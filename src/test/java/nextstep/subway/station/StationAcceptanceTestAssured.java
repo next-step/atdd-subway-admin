@@ -1,13 +1,12 @@
 package nextstep.subway.station;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.groovy.util.Maps;
-
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.RestAssuredUtils;
+import org.apache.groovy.util.Maps;
+
+import java.util.List;
+import java.util.Map;
 
 public class StationAcceptanceTestAssured {
 
@@ -32,7 +31,7 @@ public class StationAcceptanceTestAssured {
         RestAssuredUtils.delete(REQUEST_PATH, 지하철역_식별자);
     }
 
-    public static Long 지하철역_식별자(ExtractableResponse<Response> 지하철역_생성_응답) {
+    public static long 지하철역_식별자(ExtractableResponse<Response> 지하철역_생성_응답) {
         return 지하철역_생성_응답.response().getBody().jsonPath().getLong(ID);
     }
 

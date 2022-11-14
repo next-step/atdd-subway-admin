@@ -1,12 +1,12 @@
 package nextstep.subway.domain;
 
+
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Entity
 public class Line extends BaseEntity {
@@ -21,27 +21,22 @@ public class Line extends BaseEntity {
 	@Column(nullable = false)
 	private String color;
 
-	@ManyToOne
-	@JoinColumn(name = "down_station_id")
-	private Station upStation;
-
-	@ManyToOne
-	@JoinColumn(name = "up_station_id")
-	private Station downStation;
+	@Embedded
+	private Sections sections = new Sections();
 
 	protected Line() {
 	}
 
-	public Line(String name, String color, Station upStation, Station downStation) {
+	public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
 		this.name = name;
 		this.color = color;
-		setStation(upStation, downStation);
+		addSection(upStation, downStation, distance);
 	}
 
-	public void setStation(Station upStation, Station downStation) {
-		this.upStation = upStation;
-		this.downStation = downStation;
+	public void addSection(Station upStation, Station downStation, Integer distance) {
+		sections.addSection(this, upStation, downStation, Distance.valueOf(distance));
 	}
+
 
 	public void update(String name, String color) {
 		this.name = name;
@@ -60,11 +55,7 @@ public class Line extends BaseEntity {
 		return color;
 	}
 
-	public Station getUpStation() {
-		return upStation;
-	}
-
-	public Station getDownStation() {
-		return downStation;
+	public Sections getLineStations() {
+		return sections;
 	}
 }
