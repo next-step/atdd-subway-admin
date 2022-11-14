@@ -8,10 +8,10 @@ import java.util.Map;
 import org.springframework.http.MediaType;
 
 public class SectionAcceptanceTestFixture {
-    public static ExtractableResponse<Response> addSection(Long lineId, Long downStationId, Long upStationId, int distance) {
+    public static ExtractableResponse<Response> addSection(Long lineId, Long upStationId, Long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
-        params.put("downStationId", downStationId);
         params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
         params.put("distance", distance);
 
         return RestAssured.given().log().all()

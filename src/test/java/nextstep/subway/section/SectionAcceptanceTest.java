@@ -1,6 +1,8 @@
 package nextstep.subway.section;
 
 import static nextstep.subway.helper.JsonPathExtractor.getId;
+import static nextstep.subway.helper.JsonPathExtractor.getStationNames;
+import static nextstep.subway.helper.JsonPathExtractor.getStations;
 import static nextstep.subway.line.LineAcceptanceTestFixture.createLine;
 import static nextstep.subway.line.LineAcceptanceTestFixture.findLine;
 import static nextstep.subway.section.SectionAcceptanceTestFixture.addSection;
@@ -42,11 +44,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         Long 교대역 = getId(createStation("교대역"));
-        ExtractableResponse<Response> createSectionResponse = addSection(lineId, 교대역, 서초역, 10);
+        ExtractableResponse<Response> createSectionResponse = addSection(lineId, 서초역, 교대역, 10);
         assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        assertThat(findLine(lineId).jsonPath().getList("stations")).hasSize(3);
+        ExtractableResponse<Response> findLineResponse = findLine(lineId);
+        assertThat(getStations((findLineResponse))).hasSize(3);
+        assertThat(getStationNames(findLineResponse)).contains("서초역", "교대역", "강남역");
     }
 
     /**
@@ -62,11 +66,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // when
         Long 방배역 = getId(createStation("방배역"));
-        ExtractableResponse<Response> createSectionResponse = addSection(lineId, 방배역, 서초역, 10);
+        ExtractableResponse<Response> createSectionResponse = addSection(lineId, 방배역, 서초역,10);
         assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        assertThat(findLine(lineId).jsonPath().getList("stations")).hasSize(3);
+        ExtractableResponse<Response> findLineResponse = findLine(lineId);
+        assertThat(getStations((findLineResponse))).hasSize(3);
+        assertThat(getStationNames(findLineResponse)).contains("방배역", "서초역", "강남역");
     }
 
     /**

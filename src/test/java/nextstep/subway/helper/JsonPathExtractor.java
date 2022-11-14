@@ -22,4 +22,12 @@ public class JsonPathExtractor {
     public static List<String> getNames(ExtractableResponse<Response> response) {
         return response.body().jsonPath().getList("name");
     }
+
+    public static List<Object> getStations(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getList("stations");
+    }
+
+    public static List<Object> getStationNames(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getList("stations.name");
+    }
 }
