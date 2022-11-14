@@ -102,7 +102,24 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        //Given
+        Long statinId = createStation("강남역").extract().jsonPath().getLong("id");
 
+        //When
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("id", statinId)
+                .when().delete("/stations/{id}")
+                .then().log().all()
+                .extract();
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        List<String> stationNames =
+                RestAssured.given().log().all()
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract().jsonPath().getList("name", String.class);
+        assertThat(stationNames).isNotIn("강남역");
     }
 
     private ValidatableResponse createStation(String name) {
