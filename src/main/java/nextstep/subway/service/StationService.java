@@ -4,17 +4,20 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
-import nextstep.subway.exception.EntityNotFoundException;
+import nextstep.subway.exception.ErrorMessage;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.exception.ErrorMessage.STATION_ID_NOT_FOUND;
+
 @Service
 @Transactional(readOnly = true)
 public class StationService {
-    private StationRepository stationRepository;
+    private final StationRepository stationRepository;
 
     public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
@@ -41,6 +44,6 @@ public class StationService {
 
     public Station findById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("지하철역을 찾을 수 없습니다. id: " + id));
+                .orElseThrow(() -> new DataIntegrityViolationException(STATION_ID_NOT_FOUND.getMessage()));
     }
 }

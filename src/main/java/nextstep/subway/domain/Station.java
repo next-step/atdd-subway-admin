@@ -4,8 +4,6 @@ import javax.persistence.*;
 
 @Entity
 public class Station extends BaseEntity {
-    protected Station() {
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,6 +14,9 @@ public class Station extends BaseEntity {
 
     public Station(String name) {
         this.name = name;
+    }
+
+    protected Station() {
     }
 
     public Long getId() {
