@@ -13,15 +13,18 @@ import nextstep.subway.line.LineAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 역 등록 관련 기능")
 public class LineStationAcceptanceTest extends BaseAcceptanceTest {
 
     int distance;
-    Long 신분당선_ID;
-    Long 강남역_ID;
-    Long 광교역_ID;
+    Long 노선_ID;
+    Long 상행역_ID;
+    Long 하행역_ID;
     LineResponse 신분당선;
 
     @BeforeEach
@@ -31,9 +34,9 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
         // Given
         distance = 12;
         신분당선 = LineAcceptanceTest.지하철노선_생성_요청("신분당선", "bg-red-600", "강남역", "광교역", distance).as(LineResponse.class);
-        신분당선_ID = 신분당선.getId();
-        강남역_ID = 신분당선.getStations().get(0).getId(); // TODO: index 접근이 아닌 다른 방법 생각하기
-        광교역_ID = 신분당선.getStations().get(1).getId();
+        노선_ID = 신분당선.getId();
+        상행역_ID = 신분당선.getStations().get(0).getId(); // TODO: index 접근이 아닌 다른 방법 생각하기
+        하행역_ID = 신분당선.getStations().get(1).getId();
     }
 
     /**
@@ -43,36 +46,14 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
      */
     @DisplayName("노선에 구간을 등록한다.")
     @Test
-    void addSection() {
+    void 새로운_역_등록() {
         // When
-        ExtractableResponse<Response> 판교역 = 지하철역_생성_요청("판교역");
-        Long 판교역_ID = 객체_응답_ID(판교역);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(신분당선_ID, 강남역_ID, 판교역_ID, 4);
+        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
+        Long 신규역_ID = 객체_응답_ID(신규역);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 상행역_ID, 신규역_ID, 4);
 
         // Then
-        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답);
-    }
-
-    private void 지하철_노선에_지하철역_등록_확인(ExtractableResponse<Response> response) {
-        List<String> list = response.jsonPath().getList("stations.name", String.class);
-        assertThat(list).contains("강남역", "판교역", "광교역");
-        // TODO: 기존 길이 확인.
-        // TODO: 변경된 길이 확인.
-    }
-
-    private ExtractableResponse<Response> 지하철_노선에_지하철역_생성_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
-        HashMap<String, Object> params = new HashMap<>();
-        params.put("lineId", lineId);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", distance);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/{lineId}/stations", lineId)
-                .then().log().all()
-                .extract();
+        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "강남역", "신규역", "광교역");
     }
 
     // TODO: 메서드명과 display name이 같은 경우는 Display name을 제거하는지?
