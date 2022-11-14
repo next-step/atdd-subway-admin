@@ -75,7 +75,7 @@ class LineTest {
                 );
     }
 
-    @DisplayName("지하철 노선 동등성 테스트")
+    @DisplayName("지하철 이름, 색상 동일한 지하철 노선은 동등하다.")
     @Test
     void equals1() {
         Line actual = Line.of("신분당선", "bg-red-500", Section.of(upStation, downStation, distance));
@@ -84,11 +84,20 @@ class LineTest {
         assertThat(actual).isEqualTo(expected);
     }
 
-    @DisplayName("지하철 노선 동등성 테스트2")
+    @DisplayName("지하철 이름이 다른 지하철 노선은 동등하지 않다.")
     @Test
     void equals2() {
         Line actual = Line.of("신분당선", "bg-red-500", Section.of(upStation, downStation, distance));
         Line expected = Line.of("분당선", "bg-red-500", Section.of(upStation, downStation, distance));
+
+        assertThat(actual).isNotEqualTo(expected);
+    }
+
+    @DisplayName("지하철 색상이 다른 지하철 노선은 동등하지 않다.")
+    @Test
+    void equals3() {
+        Line actual = Line.of("신분당선", "bg-red-500", Section.of(upStation, downStation, distance));
+        Line expected = Line.of("신분당선", "bg-yellow-500", Section.of(upStation, downStation, distance));
 
         assertThat(actual).isNotEqualTo(expected);
     }

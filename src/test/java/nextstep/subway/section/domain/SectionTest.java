@@ -1,5 +1,6 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +24,7 @@ class SectionTest {
         this.distance = 10;
     }
 
-    @DisplayName("동등성 실패")
+    @DisplayName("상행역이 다른 지하철 구간은 동등하지 않다.")
     @Test
     void equalsFail() {
         Section actual = Section.of(upStation, downStation, distance);
@@ -32,11 +33,35 @@ class SectionTest {
         assertThat(actual).isNotEqualTo(expected);
     }
 
-    @DisplayName("동등성 성공")
+    @DisplayName("하행역이 다른 지하철 구간은 동등하지 않다.")
+    @Test
+    void equalsFail2() {
+        Section actual = Section.of(upStation, downStation, distance);
+        Section expected = Section.of(upStation, Station.from("강남역"), distance);
+
+        assertThat(actual).isNotEqualTo(expected);
+    }
+
+    @DisplayName("속해있는 지하철 노선이 다른 지하철 구간은 동등하지 않다.")
+    @Test
+    void equalsFail3() {
+        Section actual = Section.of(upStation, downStation, distance);
+        actual.addTo(Line.of("신분당선", "red", actual));
+
+        Section expected = Section.of(upStation, downStation, distance);
+        expected.addTo(Line.of("분당선", "yellow", expected));
+
+        assertThat(actual).isNotEqualTo(expected);
+    }
+
+    @DisplayName("상행역, 하행역, 속한 지하철 노선이 같은 지하철 구간은 동등하다.")
     @Test
     void equalsSuccess() {
         Section actual = Section.of(upStation, downStation, distance);
+        actual.addTo(Line.of("신분당선", "red", actual));
+
         Section expected = Section.of(upStation, downStation, distance);
+        expected.addTo(Line.of("신분당선", "red", expected));
 
         assertThat(actual).isEqualTo(expected);
     }
@@ -77,7 +102,7 @@ class SectionTest {
         assertThat(section).isNotNull();
     }
 
-    @DisplayName("지하철 구간 수정")
+    @DisplayName("지하철 구간의 상행역과 거리가 수정되는 것을 확인한다.")
     @Test
     void update() {
         Section section = Section.of(upStation, downStation, distance);
