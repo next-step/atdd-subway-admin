@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,8 @@ public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
-    private static final Map<String, String> 강남역 = new HashMap<String, String>() {{ put("name", "강남역"); }};
-    private static final Map<String, String> 역삼역 = new HashMap<String, String>() {{ put("name", "역삼역"); }};
+    private final Map<String, String> 강남역 = new HashMap<String, String>() {{ put("name", "강남역"); }};
+    private final Map<String, String> 역삼역 = new HashMap<String, String>() {{ put("name", "역삼역"); }};
 
     @BeforeEach
     public void setUp() {
@@ -122,6 +123,14 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> createResponse = 지하철역을_생성한다(강남역);
+
+        // when
+        지하철역을_삭제한다(createResponse);
+
+        // then
+        지하철역_목록_조회시_생성한_역이_조회되지_않는다();
     }
 
     private ExtractableResponse<Response> 지하철역을_생성한다(Map<String, String> params) {
@@ -144,5 +153,21 @@ public class StationAcceptanceTest {
     private void 지하철역_목록이_정상적으로_조회된다(
         ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private static void 지하철역을_삭제한다(ExtractableResponse<Response> createResponse) {
+        String id = createResponse.body().jsonPath().getString("id");
+        RestAssured.given().log().all()
+            .when().delete("/stations/{id}", id)
+            .then().log().all();
+    }
+
+    private static void 지하철역_목록_조회시_생성한_역이_조회되지_않는다() {
+        RestAssured.given().log().all()
+            .when().get("/stations")
+            .then().log().all()
+            .assertThat()
+            .statusCode(HttpStatus.OK.value())
+            .body("$", Matchers.hasSize(0));
     }
 }
