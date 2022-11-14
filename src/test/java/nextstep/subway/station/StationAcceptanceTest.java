@@ -23,6 +23,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+
+    private static final String LOCATION_HEADER = "LOCATION";
     @LocalServerPort
     int port;
 
@@ -97,7 +99,7 @@ public class StationAcceptanceTest {
         params.put("name", stationName.getName());
 
         /* 지하철역 생성 */
-        지하철역_생성_성공(params);
+        String getUrl = 지하철역_생성_성공(params).headers().get(LOCATION_HEADER).getValue();
 
         /* 지하철역 조회 */
         //when:
