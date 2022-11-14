@@ -6,6 +6,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Distance {
     private static final int ZERO = 0;
+    private static final String INVALID_VALUE_MESSAGE = "거리는 0보다 커야 합니다.";
 
     @Column(nullable = false)
     private int distance;
@@ -19,7 +20,7 @@ public class Distance {
 
     private void validate(int distance) {
         if (distance <= ZERO) {
-            throw new IllegalArgumentException("거리는 0보다 커야 합니다.");
+            throw new IllegalArgumentException(INVALID_VALUE_MESSAGE);
         }
     }
 
