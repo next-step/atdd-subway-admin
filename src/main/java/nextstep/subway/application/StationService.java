@@ -37,9 +37,9 @@ public class StationService {
     }
 
     public StationResponse findStationById(Long id) {
-        Station stations = stationRepository.findById(id)
+        Station station = stationRepository.findById(id)
                 .orElseThrow(() -> new CannotFindException(NOT_FOUND_STATION_ERR));
-        return StationResponse.of(stations);
+        return StationResponse.of(station);
     }
 
     @Transactional

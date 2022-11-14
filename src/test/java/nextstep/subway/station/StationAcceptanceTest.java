@@ -46,17 +46,18 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
+        // given
+        지하철역_생성_호출("강남역");
+
         // when
-        String stationName = "강남역";
-        ExtractableResponse<Response> response = createStationWithName(stationName);
+        List<String> allStationNames = 모든_지하철역_이름을_조회한다("name");
 
         // then
-        checkStatusCode(response.statusCode(), HttpStatus.CREATED.value());
-
-        List<String> allStationNames = findAllStationNames("name");
-        checkContainName(allStationNames, stationName);
+        지하철역_이름이_조회된다(allStationNames, "강남역");
 
     }
+
+
 
     /**
      * Given 지하철역을 생성하고
@@ -67,15 +68,13 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        String stationName = "강남역";
-        createStationWithName(stationName);
+        지하철역_생성_호출("강남역");
 
         // when
-        String duplicatedName = "강남역";
-        ExtractableResponse<Response> response = createStationWithName(duplicatedName);
+        ExtractableResponse<Response> response = 지하철역을_생성한다("강남역");
 
         // then
-        checkStatusCode(response.statusCode(), HttpStatus.BAD_REQUEST.value());
+        상태코드를_체크한다(response.statusCode(), HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -87,16 +86,15 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        createStationWithName("강남역");
-        createStationWithName("역삼역");
+        지하철역을_생성한다("강남역");
+        지하철역을_생성한다("잠실역");
 
         // when
-        ExtractableResponse<Response> response = findAllStations();
+        ExtractableResponse<Response> response = 모든_지하철역을_조회한다();
 
         // then
-        assertThat(response.jsonPath().getList("name", String.class)).hasSize(2);
+        조회된_지하철역의_수가_일치한다(response, 2);
     }
-
 
     /**
      * Given 지하철역을 생성하고
@@ -107,8 +105,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        String name = "강남역";
-        ExtractableResponse<Response> response = createStationWithName(name);
+        ExtractableResponse<Response> response = 지하철역을_생성한다("강남역");
         int id = response.jsonPath().getInt("id");
 
         // when
@@ -149,13 +146,18 @@ public class StationAcceptanceTest {
     }
 
 
+    private void 지하철역_생성_호출(String 강남역) {
+        ExtractableResponse<Response> response = 지하철역을_생성한다("강남역");
+        상태코드를_체크한다(response.statusCode(), HttpStatus.CREATED.value());
+    }
+
     /**
      * 지하철역 생성
      *
      * @param stationName
      * @return
      */
-    private ExtractableResponse<Response> createStationWithName(String stationName) {
+    public static ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
@@ -173,7 +175,7 @@ public class StationAcceptanceTest {
      *
      * @return
      */
-    private ExtractableResponse<Response> findAllStations() {
+    private ExtractableResponse<Response> 모든_지하철역을_조회한다() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
@@ -187,7 +189,7 @@ public class StationAcceptanceTest {
      * @param statusCode
      * @param value
      */
-    private static void checkStatusCode(int statusCode, int value) {
+    private static void 상태코드를_체크한다(int statusCode, int value) {
         assertThat(statusCode).isEqualTo(value);
     }
 
@@ -197,7 +199,7 @@ public class StationAcceptanceTest {
      * @param target
      * @return
      */
-    private List<String> findAllStationNames(String target) {
+    private List<String> 모든_지하철역_이름을_조회한다(String target) {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
@@ -211,7 +213,11 @@ public class StationAcceptanceTest {
      * @param allStationNames
      * @param stationName
      */
-    private void checkContainName(List<String> allStationNames, String stationName) {
+    private void 지하철역_이름이_조회된다(List<String> allStationNames, String stationName) {
         assertThat(allStationNames).containsAnyOf(stationName);
+    }
+
+    private void 조회된_지하철역의_수가_일치한다(ExtractableResponse<Response> response, int size) {
+        assertThat(response.jsonPath().getList("name", String.class)).hasSize(size);
     }
 }

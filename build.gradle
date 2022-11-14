@@ -23,6 +23,15 @@ dependencies {
 	// log
 	implementation 'net.rakugakibox.spring.boot:logback-access-spring-boot-starter:2.7.1'
 
+	// lombok
+	implementation group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
+	implementation 'org.projectlombok:lombok:1.18.2'
+	// annotationProcessor 설정해야 cannot find symbol 에러 해결
+	annotationProcessor('org.projectlombok:lombok')
+	testAnnotationProcessor('org.projectlombok:lombok')
+
+
+
 	testImplementation 'io.rest-assured:rest-assured:3.3.0'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 

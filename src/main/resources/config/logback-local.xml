@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds">
+	<appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+		<withJansi>true</withJansi>
+		<encoder>
+			<pattern>%-30(%d{HH:mm:ss.SSS} [%thread] %highlight(%-5level) %logger{36}) - %msg%n</pattern>
+		</encoder>
+	</appender>
+
+	<logger name="org.springframework" level="info"/>
+	<logger name="jdbc.resultset" level="info"/>
+	<logger name="jdbc.audit" level="info"/>
+	<logger name="jdbc.sqltiming" level="info"/>
+	<logger name="com.netflix" level="warn"/>
+
+	<root level="info">
+		<appender-ref ref="console"/>
+	</root>
+</configuration>
