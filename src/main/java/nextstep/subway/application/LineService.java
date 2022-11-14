@@ -65,6 +65,7 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
+        Line a = getLineById(id);
         return LineResponse.of(getLineById(id));
     }
 
@@ -85,6 +86,11 @@ public class LineService {
 
     @Transactional
     public void addSection(Long id, SectionRequest sectionRequest) {
+        Station upStation = getStation(sectionRequest.getUpStationId());
+        Station downStation = getStation(sectionRequest.getDownStationId());
 
+        Line line = getLineById(id);
+        line.addSection(Section.from(upStation, downStation, line, Distance.of(sectionRequest.getDistance())));
+        lineRepository.save(line);
     }
 }
