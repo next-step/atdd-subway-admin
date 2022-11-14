@@ -49,8 +49,8 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_신규_등록_요청(신분당선.getId(), 강남역.getId(), 판교역.getId(), 4);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId())).contains(판교역.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId())).contains((int)(long)판교역.getId());
     }
 
     /**
@@ -87,7 +87,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId())).contains(신논현역.getId());
+        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId())).contains((int)(long)신논현역.getId());
     }
 
     /**
@@ -106,7 +106,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId())).contains(광교역.getId());
+        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId())).contains((int)(long)광교역.getId());
     }
 
     /**
@@ -157,12 +157,12 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
                 .extract();
     }
 
-    private List<Long> 지하철_노선_단일_조회_및_소속_역_아이디_조회(Long id) {
+    private List<Integer> 지하철_노선_단일_조회_및_소속_역_아이디_조회(Long id) {
         return RestAssured.given().log().all()
                 .when().get("/lines/" + id)
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract().jsonPath()
-                .getList("$.stations.id");
+                .getList("stations.id");
     }
 }
