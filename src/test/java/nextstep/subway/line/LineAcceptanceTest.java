@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.util.LineAcceptanceUtils.*;
+import static nextstep.subway.util.ResponseExtractUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -91,6 +92,31 @@ class LineAcceptanceTest {
 		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 		assertThat(responseBody.getList("name")).hasSize(2);
 		assertThat(responseBody.getList("name")).containsAnyOf("신분당선", "2호선");
+	}
+
+	/**
+	 * Given 지하철 노선을 생성하고
+	 * When 생성한 지하철 노선을 조회하면
+	 * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+	 */
+	@Test
+	@DisplayName("노선을 조회한다.")
+	void getLineTest() {
+		// given
+		ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600", "강남역", "양재역");
+		Long id = id(createResponse);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_조회_요청(id);
+
+		// then
+		JsonPath jsonPath = response.jsonPath();
+		assertAll(
+			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() ->assertThat(jsonPath.getString("name")).isEqualTo("신분당선"),
+			() -> assertThat(jsonPath.getList("stations.name"))
+				.containsAnyOf("강남역", "양재역")
+		);
 	}
 
 }

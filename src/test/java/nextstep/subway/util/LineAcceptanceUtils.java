@@ -28,4 +28,9 @@ public class LineAcceptanceUtils {
 	public static ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
 		return RestAssuredUtils.get(LINE_URL).extract();
 	}
+
+	public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+		return RestAssuredUtils.get(LINE_URL +"/" + id).extract();
+
+	}
 }
