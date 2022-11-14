@@ -225,7 +225,7 @@ public class LineAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> fetchLine(Long id) {
+    public static ExtractableResponse<Response> fetchLine(Long id) {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/lines/" + id)
