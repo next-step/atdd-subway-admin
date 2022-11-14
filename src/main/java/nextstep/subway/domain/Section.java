@@ -48,6 +48,25 @@ public class Section extends BaseEntity {
         return new Section(upStation, downStation, line, distance);
     }
 
+    public void updateStation(Section section) {
+        if (upStation.equals(section.upStation)) {
+            updateUpStation(section);
+        }
+        if (downStation.equals(section.downStation)) {
+            updateDownStation(section);
+        }
+    }
+
+    private void updateUpStation(Section section) {
+        upStation = section.downStation;
+        distance = distance.substract(section.distance);
+    }
+
+    private void updateDownStation(Section section) {
+        downStation = section.upStation;
+        distance = distance.substract(section.distance);
+    }
+
     public Long getId() {
         return id;
     }

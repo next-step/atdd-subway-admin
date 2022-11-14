@@ -28,11 +28,11 @@ public class Distance {
     }
 
     public Distance add(Distance distance) {
-        return new Distance(this.distance + distance.value());
+        return Distance.of(this.distance + distance.value());
     }
 
     public Distance substract(Distance distance) {
-        return new Distance(this.distance - distance.value());
+        return Distance.of(this.distance - distance.value());
     }
 
     public int value() {

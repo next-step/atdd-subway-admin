@@ -26,6 +26,7 @@ public class Sections {
     }
 
     public void add(Section section) {
+        sections.forEach(s -> s.updateStation(section));
         sections.add(section);
     }
 
