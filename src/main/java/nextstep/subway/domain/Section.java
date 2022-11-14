@@ -39,5 +39,16 @@ public class Section extends BaseEntity {
         return stations;
     }
 
+    public long getDistance() {
+        return distance;
+    }
+
+    public boolean isShortDistance(Section section){
+        if(distance <= section.getDistance()){
+            return true;
+        }
+        return false;
+    }
+
 }
 
