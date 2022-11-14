@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestConstructor;
 
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.dto.line.LineUpdateRequest;
 import nextstep.subway.generator.StationGenerator;
 
 @DataJpaTest
@@ -112,7 +113,8 @@ class LineRepositoryTest {
 		// when
 		Line actual = lineRepository.findById(savedLine.getId())
 			.orElseThrow(IllegalArgumentException::new);
-		actual.updateLine("3호선", "yellow");
+		LineUpdateRequest request = LineUpdateRequest.of("3호선", "yellow");
+		actual.updateLine(request);
 		entityManager.flush();
 
 		// then

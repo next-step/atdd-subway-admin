@@ -18,6 +18,7 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.dto.line.LineUpdateRequest;
 import nextstep.subway.util.DatabaseCleanUpUtils;
 
 @DisplayName("노선 관련 기능")
@@ -115,6 +116,35 @@ class LineAcceptanceTest {
 			() -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
 			() ->assertThat(jsonPath.getString("name")).isEqualTo("신분당선"),
 			() -> assertThat(jsonPath.getList("stations.name"))
+				.containsAnyOf("강남역", "양재역")
+		);
+	}
+
+	/**
+	 * Given 지하철 노선을 생성하고
+	 * When 생성한 지하철 노선을 수정하면
+	 * Then 해당 지하철 노선 정보는 수정된다
+	 */
+	@Test
+	@DisplayName("노선을 수정한다.")
+	void updateLineTest() {
+		// given
+		ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "bg-red-600", "강남역", "양재역");
+		Long id = id(createResponse);
+		LineUpdateRequest request = LineUpdateRequest.of("다른분당선", "bg-red-500");
+
+		// when
+		ExtractableResponse<Response> updateResponse = 지하철_노선_수정_요청(id, request);
+		ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(id);
+
+		// then
+		JsonPath responseBody = getResponse.jsonPath();
+		assertAll(
+			() -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(getResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(responseBody.getString("name")).isEqualTo("다른분당선"),
+			() -> assertThat(responseBody.getString("color")).isEqualTo("bg-red-500"),
+			() -> assertThat(responseBody.getList("stations.name"))
 				.containsAnyOf("강남역", "양재역")
 		);
 	}

@@ -40,4 +40,12 @@ public class RestAssuredUtils {
 			.delete(url)
 			.then().log().all();
 	}
+
+	public static <T> ValidatableResponse put(final String url, final T updateRequest) {
+		return requestSpecification
+			.body(updateRequest)
+			.when()
+			.put(url)
+			.then().log().all();
+	}
 }

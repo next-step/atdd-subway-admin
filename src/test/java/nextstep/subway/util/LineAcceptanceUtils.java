@@ -6,6 +6,7 @@ import static nextstep.subway.util.StationAcceptanceUtils.*;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.line.LineCreateRequest;
+import nextstep.subway.dto.line.LineUpdateRequest;
 
 public class LineAcceptanceUtils {
 
@@ -31,6 +32,11 @@ public class LineAcceptanceUtils {
 
 	public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
 		return RestAssuredUtils.get(LINE_URL +"/" + id).extract();
+
+	}
+
+	public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineUpdateRequest updateRequest) {
+		return RestAssuredUtils.put(LINE_URL +"/" + id, updateRequest).extract();
 
 	}
 }

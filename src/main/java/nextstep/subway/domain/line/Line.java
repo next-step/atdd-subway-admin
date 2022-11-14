@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.dto.line.LineUpdateRequest;
 
 @Entity
 public class Line {
@@ -61,9 +62,9 @@ public class Line {
 		return this.downStation;
 	}
 
-	public void updateLine(String name, String color) {
-		this.name = name;
-		this.color = color;
+	public void updateLine(LineUpdateRequest request) {
+		this.name = request.getName();
+		this.color = request.getColor();
 	}
 
 	public String getName() {

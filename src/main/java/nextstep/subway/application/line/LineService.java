@@ -12,6 +12,7 @@ import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.line.LineCreateRequest;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.dto.line.LineUpdateRequest;
 import nextstep.subway.exception.LineNotFoundException;
 
 @Service
@@ -48,8 +49,18 @@ public class LineService {
 	}
 
 	public LineResponse findLine(Long id) {
+		return LineResponse.of(findById(id));
+	}
+
+	@Transactional
+	public void updateLine(Long id, LineUpdateRequest request) {
+		Line line = findById(id);
+		line.updateLine(request);
+	}
+
+	private Line findById(Long id) {
 		return lineRepository.findById(id)
-			.map(LineResponse::of)
 			.orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_MESSAGE + id));
 	}
+
 }
