@@ -14,12 +14,12 @@ public class SectionRequest {
         return new Section(line, upStation, downStation, distance);
     }
 
-    public String getDownStationId() {
-        return downStationId;
+    public Long getDownStationId() {
+        return Long.parseLong(downStationId);
     }
 
-    public String getUpStationId() {
-        return upStationId;
+    public Long getUpStationId() {
+        return Long.parseLong(upStationId);
     }
 
     public Integer getDistance() {
