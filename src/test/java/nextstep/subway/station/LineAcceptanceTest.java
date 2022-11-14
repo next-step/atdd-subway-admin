@@ -11,6 +11,8 @@ import nextstep.subway.util.RequestUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -126,6 +128,32 @@ class LineAcceptanceTest {
         요청이_실패한다(response);
     }
 
+    /**
+     * When 비정상인 노선 식별자로 삭제하려고 하면
+     * Then 요청이 실패한다.
+     */
+    @Test
+    void 노선_삭제_실패() {
+        ExtractableResponse<Response> response = 지하철_노선을_삭제한다(-1);
+
+        요청이_실패한다(response);
+    }
+
+    /**
+     * When 존재하지 않는 노선 식별자로 삭제하려고 하면
+     * Then 내용이 없다고 회신됨.
+     */
+    @Test
+    void 노선_삭제_실패2() {
+        ExtractableResponse<Response> response = 지하철_노선을_삭제한다(10000);
+
+        내용이_없음(response);
+    }
+
+    private void 내용이_없음(ExtractableResponse<Response> response) {
+        assertStatus(response,HttpStatus.NO_CONTENT);
+    }
+
     private void 요청이_실패한다(ExtractableResponse<Response> response) {
         assertStatus(response,HttpStatus.BAD_REQUEST);
     }
@@ -138,6 +166,10 @@ class LineAcceptanceTest {
         long 노선_식별자 = response.jsonPath().getLong("id");
         ExtractableResponse<Response> deleteResponse = RequestUtil.deleteRequest(String.format("%s/%s",ServiceUrl.URL_LINES,노선_식별자));
         assertStatus(deleteResponse, HttpStatus.NO_CONTENT);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선을_삭제한다(int abnormalLineId) {
+        return RequestUtil.deleteRequest(String.format("%s/%s",ServiceUrl.URL_LINES,abnormalLineId));
     }
 
     private void 해당_지하철_노선_정보는_삭제된다(ExtractableResponse<Response> response) {

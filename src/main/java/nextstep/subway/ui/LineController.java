@@ -50,6 +50,8 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity IllegalArgumentException() {return ResponseEntity.badRequest().build();}
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity EntityNotFoundException() {return ResponseEntity.noContent().build();}
     @ExceptionHandler(DataIntegrityViolationException.class)

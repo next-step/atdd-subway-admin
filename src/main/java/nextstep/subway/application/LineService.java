@@ -12,11 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class LineService {
+    private static final String MESSAGE_ILLEGAL_LINE_ID = "부적절한 노선 식별자 입니다";
 
     private final LineRepository lineRepository;
 
@@ -45,18 +46,25 @@ public class LineService {
     }
 
     public LineResponse findLine(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        Line line = findLineOrThrowException(lineId);
         return LineResponse.of(line);
+    }
+
+    private Line findLineOrThrowException(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
     }
 
     @Transactional
     public void modifyLine(Long lineId, LineModifyRequest request) {
-        Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
+        Line line = findLineOrThrowException(lineId);
         line.modifyLine(request.getName(),request.getColor());
     }
 
     @Transactional
     public void deleteLine(Long lineId) {
-        lineRepository.deleteById(lineId);
+        if(Objects.isNull(lineId) || lineId <= 0){
+            throw new IllegalArgumentException(MESSAGE_ILLEGAL_LINE_ID);
+        }
+        lineRepository.delete(findLineOrThrowException(lineId));
     }
 }
