@@ -108,9 +108,7 @@ public class StationAcceptanceTest {
             .jsonPath().getLong("id");
 
         // when
-        ValidatableResponse response = RestAssured.given().log().all()
-            .when().delete("/stations/{id}", id)
-            .then().log().all();
+        ValidatableResponse response = requestApiByGetStation(id);
 
         // then
         assertStatusCode(response, HttpStatus.NO_CONTENT);
@@ -118,6 +116,12 @@ public class StationAcceptanceTest {
         // then
         assertThat(extractStations(requestApiByGetStations())).doesNotContain("강남역");
 
+    }
+
+    private static ValidatableResponse requestApiByGetStation(long id) {
+        return RestAssured.given().log().all()
+            .when().delete("/stations/{id}", id)
+            .then().log().all();
     }
 
     private static List<String> extractStations(ValidatableResponse response) {
