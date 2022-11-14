@@ -5,6 +5,7 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.UpdateLineRequest;
 import nextstep.subway.exceptions.NotFoundDataException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,5 +49,11 @@ public class LineService {
                 .orElseThrow(() -> new NotFoundDataException("존재하지 않는 라인이에요"));
 
         return LineResponse.of(line);
+    }
+
+    public void updateLine(UpdateLineRequest request, Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new NotFoundDataException("존재하지 않는 라인이에요"));
+        line.updateNameAndColor(request.getName(), request.getColor());
     }
 }

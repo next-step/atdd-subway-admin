@@ -1,9 +1,12 @@
 package nextstep.subway.domain;
 
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.springframework.util.StringUtils;
+
 
 @Entity
 public class Line extends BaseEntity {
@@ -66,5 +69,15 @@ public class Line extends BaseEntity {
 
     public List<Station> getRelationStation() {
         return Arrays.asList(this.upStation, this.downStation);
+    }
+
+    public void updateNameAndColor(String name, String color) {
+        if (StringUtils.hasText(name)) {
+            this.name = name;
+        }
+
+        if (StringUtils.hasText(color)) {
+            this.color = color;
+        }
     }
 }
