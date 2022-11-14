@@ -1,11 +1,9 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.LineException;
 import nextstep.subway.exception.StationException;
 import org.springframework.stereotype.Service;
@@ -63,5 +61,15 @@ public class LineService {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
     }
-}
 
+    @Transactional
+    public void saveSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
+                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
+                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+        line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+    }
+}
