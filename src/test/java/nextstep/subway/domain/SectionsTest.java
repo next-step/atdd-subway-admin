@@ -27,6 +27,13 @@ class SectionsTest {
         assertThat(sections.assignedStations()).contains(서초역, 교대역, 강남역);
     }
 
+    @Test
+    void 새로운_역을_상행_종점으로_등록() {
+        Station 방배역 = Station.from("방배역");
+        sections.add(Section.from(방배역, 서초역, Distance.from(5)));
+        assertThat(sections.assignedStations()).contains(방배역, 서초역, 강남역);
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {10, 11})
     void 추가하려는_구간의_길이가_기존_구간의_길이보다_크거나_같을경우_예외(int distance) {
