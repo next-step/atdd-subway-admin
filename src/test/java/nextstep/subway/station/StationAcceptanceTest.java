@@ -103,6 +103,21 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        long id = createStation("강남역").extract()
+            .jsonPath().getLong("id");
+
+        // when
+        ValidatableResponse response = RestAssured.given().log().all()
+            .when().delete("/stations/{id}", id)
+            .then().log().all();
+
+        // then
+        assertStatusCode(response, HttpStatus.NO_CONTENT);
+
+        // then
+        assertThat(extractStations(requestApiByGetStations())).doesNotContain("강남역");
+
     }
 
     private static List<String> extractStations(ValidatableResponse response) {
