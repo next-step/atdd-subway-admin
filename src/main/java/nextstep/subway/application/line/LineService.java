@@ -37,11 +37,6 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
-	@Transactional
-	public void deleteLineById(Long id) {
-		lineRepository.deleteById(id);
-	}
-
 	public List<LineResponse> findLines() {
 		return lineRepository.findAll().stream()
 			.map(LineResponse::of)
@@ -63,4 +58,8 @@ public class LineService {
 			.orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_MESSAGE + id));
 	}
 
+	@Transactional
+	public void deleteLine(Long id) {
+		lineRepository.deleteById(id);
+	}
 }

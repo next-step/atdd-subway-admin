@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -47,6 +48,12 @@ public class LineController {
 	public ResponseEntity<Void> updateLine(@PathVariable(name = "id") Long id, @RequestBody LineUpdateRequest request) {
 		lineService.updateLine(id, request);
 		return ResponseEntity.ok(null);
+	}
+
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> deleteLine(@PathVariable(name = "id") Long id) {
+		lineService.deleteLine(id);
+		return ResponseEntity.noContent().build();
 	}
 
 }

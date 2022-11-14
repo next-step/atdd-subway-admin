@@ -37,6 +37,9 @@ public class LineAcceptanceUtils {
 
 	public static ExtractableResponse<Response> 지하철_노선_수정_요청(Long id, LineUpdateRequest updateRequest) {
 		return RestAssuredUtils.put(LINE_URL +"/" + id, updateRequest).extract();
+	}
 
+	public static ExtractableResponse<Response> 지하철_노선_삭제_요청(Long id) {
+		return RestAssuredUtils.delete(LINE_URL +"/" + id).extract();
 	}
 }
