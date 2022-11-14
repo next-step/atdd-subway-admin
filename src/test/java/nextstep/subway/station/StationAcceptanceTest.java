@@ -101,6 +101,35 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        //given
+        final Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+
+        RestAssured.given().log().all()
+                .body(params1)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all();
+
+        final Map<String, String> params2 = new HashMap<>();
+        params2.put("name", "역삼역");
+
+        RestAssured.given().log().all()
+                .body(params2)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all();
+
+        //when
+        final ExtractableResponse<Response> response =
+            RestAssured.given().log().all()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().get("/stations")
+                    .then().log().all()
+                    .extract();
+
+        //then
+        assertThat(response.jsonPath().getList("").size()).isEqualTo(2);
     }
 
     /**
@@ -111,5 +140,32 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        //given
+        final Map<String, String> params1 = new HashMap<>();
+        params1.put("name", "강남역");
+
+        final ExtractableResponse<Response> insertResponse =
+                RestAssured.given().log().all()
+                    .body(params1)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/stations")
+                    .then().log().all().extract();
+
+        //when
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/" + insertResponse.jsonPath().get("id"))
+                .then().log().all();
+
+        //then
+        final ExtractableResponse<Response> listResponse =
+                RestAssured.given().log().all()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract();
+
+        assertThat(listResponse.jsonPath().getList("").size())
+                .isEqualTo(0);
     }
 }
