@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.constants.ServiceUrl;
 import nextstep.subway.dto.LineModifyRequest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.util.DatabaseCleaner;
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
+class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
@@ -116,7 +117,7 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철_노선을_삭제한다(Long 노선_식별자) {
-        ExtractableResponse<Response> response = RequestUtil.deleteRequest("/lines/" + 노선_식별자);
+        ExtractableResponse<Response> response = RequestUtil.deleteRequest(String.format("%s/%s",ServiceUrl.URL_LINES,노선_식별자));
         assertStatus(response, HttpStatus.NO_CONTENT);
     }
 
@@ -134,7 +135,7 @@ public class LineAcceptanceTest {
 
     private ExtractableResponse<Response> 지하철_노선을_수정한다(Long 노선_식별자, String 신규노선명, String 신규노선색상) {
         LineModifyRequest body = LineModifyRequest.of(신규노선명, 신규노선색상);
-        return RequestUtil.putRequest("/lines/" + 노선_식별자, body);
+        return RequestUtil.putRequest(String.format("%s/%s",ServiceUrl.URL_LINES,노선_식별자), body);
     }
 
     private void 생성한_지하철_노선의_정보를_응답받을_수_있다(ExtractableResponse<Response> response, String 신규노선, String 노선색상, long 거리, String 상행역, String 하행역) {
@@ -146,7 +147,7 @@ public class LineAcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선을_조회한다(Long 노선_식별자) {
-        return RequestUtil.getRequest("/lines/" + 노선_식별자);
+        return RequestUtil.getRequest(String.format("%s/%s",ServiceUrl.URL_LINES,노선_식별자));
     }
 
     private Long 지하철_노선을_생성한다(String 신규노선, String 노선색상, long 거리, String 상행역, String 하행역) {
@@ -160,7 +161,7 @@ public class LineAcceptanceTest {
     }
 
     private ExtractableResponse<Response> 지하철_노선_목록을_조회한다() {
-        return RequestUtil.getRequest("/lines");
+        return RequestUtil.getRequest(ServiceUrl.URL_LINES);
     }
 
     private void 지하철_노선_2개를_생성한다() {
@@ -170,11 +171,11 @@ public class LineAcceptanceTest {
         지하철_노선을_생성한다("노선2", "color2", 100L, ids2);
     }
 
-    private void 응답에_요청했던_정보가_모두_포함되어_있다(ExtractableResponse<Response> response, String 노선이름, String color, long l, List<Long> stationIds) {
+    private void 응답에_요청했던_정보가_모두_포함되어_있다(ExtractableResponse<Response> response, String 노선이름, String color, long distance, List<Long> stationIds) {
         assertThat(response.jsonPath().getLong("id")).isPositive();
         assertThat(response.jsonPath().getString("name")).isEqualTo(노선이름);
         assertThat(response.jsonPath().getString("color")).isEqualTo(color);
-        assertThat(response.jsonPath().getLong("distance")).isEqualTo(l);
+        assertThat(response.jsonPath().getLong("distance")).isEqualTo(distance);
         assertThat(response.jsonPath().getList("stations.id")).contains(stationIds.get(0).intValue(), stationIds.get(1).intValue());
 
     }
@@ -183,8 +184,9 @@ public class LineAcceptanceTest {
         Long upStationId = stationIds.get(0);
         Long downStationId = stationIds.get(1);
         LineRequest request = new LineRequest(lineName, lineColor, distance, upStationId, downStationId);
-        ExtractableResponse<Response> response = RequestUtil.postRequest("/lines", request);
+        ExtractableResponse<Response> response = RequestUtil.postRequest(ServiceUrl.URL_LINES, request);
         assertStatus(response, HttpStatus.CREATED);
+        assertThat(response.jsonPath().getLong("id")).isPositive();
         return response;
     }
 
