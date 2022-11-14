@@ -2,7 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.Arrays;
 import java.util.List;
-import javax.persistence.Column;
+import java.util.Objects;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,28 +26,68 @@ public class Section {
     @JoinColumn(name = "up_station_id", nullable = false)
     private Station upStation;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
-    @Column(nullable = false)
     @Embedded
     private Distance distance;
 
     protected Section() { }
 
-    private Section(Station upStation, Station downStation, Distance distance, Line line) {
+    private Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        this.line = line;
     }
 
-    public static Section from(Station upStation, Station downStation, Distance distance, Line line) {
-        return new Section(upStation, downStation, distance, line);
+    public static Section from(Station upStation, Station downStation, Distance distance) {
+        return new Section(upStation, downStation, distance);
     }
 
     public List<Station> stations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    public void addLine(Line line) {
+       this.line = line;
+    }
+
+    public void reorganize(Section newSection) {
+        if (isSameUpStation(newSection)) {
+            this.upStation = newSection.downStation;
+            this.distance = this.distance.subtract(newSection.distance);
+        }
+        if (isSameDownStation(newSection)) {
+            this.downStation = newSection.upStation;
+            this.distance = this.distance.subtract(newSection.distance);
+        }
+    }
+
+    private boolean isSameUpStation(Section newSection) {
+        return this.upStation.equals(newSection.upStation);
+    }
+
+    private boolean isSameDownStation(Section newSection) {
+        return this.downStation.equals(newSection.downStation);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(id, section.id) && Objects.equals(line, section.line)
+                && Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
+                section.downStation) && Objects.equals(distance, section.distance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, line, upStation, downStation, distance);
     }
 }

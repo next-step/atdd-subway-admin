@@ -12,6 +12,7 @@ import io.restassured.response.Response;
 import nextstep.subway.base.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpStatus;
@@ -34,6 +35,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      *  Then 노선에 새로운 역이 추가된다.
      */
     @DisplayName("역 사이에 새로운 역을 등록한다.")
+    @Test
     void addSectionBetweenLine() {
         // given
         Long lineId = getId(createLine("2호선", "bg-green-600", 20, 서초역, 강남역));

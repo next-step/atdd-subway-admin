@@ -17,7 +17,7 @@ public class SectionAcceptanceTestFixture {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/{id}", lineId)
+                .when().post("/lines/{id}/sections", lineId)
                 .then().log().all()
                 .extract();
     }

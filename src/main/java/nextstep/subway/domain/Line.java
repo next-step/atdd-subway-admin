@@ -27,8 +27,9 @@ public class Line {
     private Line(Builder builder) {
         this.name = builder.name;
         this.color = builder.color;
-        Section section = Section.from(builder.upStation, builder.downStation, Distance.from(builder.distance), this);
-        this.sections = new Sections(Collections.singletonList(section));
+        Section section = Section.from(builder.upStation, builder.downStation, Distance.from(builder.distance));
+        section.addLine(this);
+        this.sections = Sections.from(Collections.singletonList(section));
     }
 
     public void changeName(String name) {
@@ -57,6 +58,11 @@ public class Line {
 
     public List<Station> findAssignedStations() {
         return sections.assignedStations();
+    }
+
+    public void addSection(Section section) {
+        this.sections.add(section);
+        section.addLine(this);
     }
 
     public static class Builder {

@@ -3,8 +3,11 @@ package nextstep.subway.ui;
 import java.net.URI;
 import java.util.List;
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,9 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("lines")
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -51,5 +56,11 @@ public class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable("id") Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping(value = "/{id}/sections", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Void> addSection(@PathVariable("id") Long id, @RequestBody SectionRequest sectionRequest) {
+        sectionService.addSection(id, sectionRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

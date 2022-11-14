@@ -1,11 +1,13 @@
 package nextstep.subway.domain;
 
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance {
     private static final int MIN_DISTANCE = 0;
+    @Column(name = "distance", nullable = false)
     private int value;
 
     protected Distance() {}

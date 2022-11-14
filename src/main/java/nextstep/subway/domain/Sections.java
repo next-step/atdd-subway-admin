@@ -16,14 +16,24 @@ public class Sections {
 
     protected Sections() { }
 
-    public Sections(List<Section> sections) {
+    private Sections(List<Section> sections) {
         this.sections = new LinkedList<>(sections);
+    }
+
+    public static Sections from(List<Section> sections) {
+        return new Sections(sections);
     }
 
     public List<Station> assignedStations() {
         return this.sections.stream()
                 .map(Section::stations)
                 .flatMap(Collection::stream)
+                .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void add(Section newSection) {
+        sections.forEach(section -> section.reorganize(newSection));
+        sections.add(newSection);
     }
 }
