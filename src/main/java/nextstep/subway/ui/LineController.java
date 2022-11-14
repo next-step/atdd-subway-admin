@@ -47,8 +47,8 @@ public class LineController {
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity<?> changeLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        lineService.changeLine(id, LineChange.of(lineRequest));
+    public ResponseEntity<?> changeLine(@PathVariable Long id, @RequestBody LineChange lineChange) {
+        lineService.changeLine(id, lineChange);
         return ResponseEntity.ok().build();
     }
 
