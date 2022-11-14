@@ -43,9 +43,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         Long 교대역 = getId(createStation("교대역"));
         ExtractableResponse<Response> createSectionResponse = addSection(lineId, 교대역, 서초역, 10);
+        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(findLine(lineId).jsonPath().getList("stations")).hasSize(3);
     }
 
@@ -55,8 +55,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      *  Then 노선의 상행 종점이 변경된다.
      */
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @Test
     void addSectionHeadOfLine() {
+        // given
+        Long lineId = getId(createLine("2호선", "bg-green-600", 20, 서초역, 강남역));
 
+        // when
+        Long 방배역 = getId(createStation("방배역"));
+        ExtractableResponse<Response> createSectionResponse = addSection(lineId, 방배역, 서초역, 10);
+        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        assertThat(findLine(lineId).jsonPath().getList("stations")).hasSize(3);
     }
 
     /**
