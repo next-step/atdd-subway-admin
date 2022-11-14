@@ -16,37 +16,16 @@ public class Line extends BaseEntity{
     @Column(nullable = false)
     private String color;
 
-    @Column(nullable = false)
-    private int distance;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name="fk_line_up_station_to_station"))
-    private Station upStation;
-
-    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name="fk_line_down_station_to_station"))
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Station downStation;
+    @Embedded
+    private LineBridges lineBridges = new LineBridges();
 
     public Line (Builder builder){
-        this.id = builder.id;
         this.name = builder.name;
         this.color = builder.color;
-        this.distance = builder.distance;
-        this.upStation = builder.upStation;
-        this.downStation = builder.downStation;
+        addLineBridge(builder.lineBridge);
     }
 
     protected Line() {
-    }
-
-    public Line setUpStation(Station upStation) {
-        this.upStation = upStation;
-        return this;
-    }
-
-    public Line setDownStation(Station downStation) {
-        this.downStation = downStation;
-        return this;
     }
 
     public Line update(String name, String color){
@@ -71,16 +50,17 @@ public class Line extends BaseEntity{
         return color;
     }
 
-    public int getDistance() {
-        return distance;
+    public void addLineBridge(LineBridge lineBridge) {
+        Objects.requireNonNull(lineBridge, "구간 정보가 필요합니다.");
+        lineBridges.add(lineBridge);
+
+        if (lineBridge.getLine() != this) {
+            lineBridge.updateLine(this);
+        }
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public List<Station> getStations() {
-        return new ArrayList(Arrays.asList(upStation, downStation));
+    public List<LineBridge> getLineBridges() {
+        return lineBridges.getLineBridges();
     }
 
     @Override
@@ -101,9 +81,7 @@ public class Line extends BaseEntity{
         private Long id;
         private String name;
         private String color;
-        private int distance;
-        private Station upStation;
-        private Station downStation;
+        private LineBridge lineBridge;
 
         public Builder setId(Long id) {
             this.id = id;
@@ -120,18 +98,12 @@ public class Line extends BaseEntity{
             return this;
         }
 
-        public Builder setDistance(int distance) {
-            this.distance = distance;
-            return this;
+        public LineBridge getLineBridge() {
+            return lineBridge;
         }
 
-        public Builder setUpStation(Station upStation) {
-            this.upStation = upStation;
-            return this;
-        }
-
-        public Builder setDownStation(Station downStation) {
-            this.downStation = downStation;
+        public Builder setLineBridge(LineBridge lineBridge) {
+            this.lineBridge = lineBridge;
             return this;
         }
 

@@ -1,10 +1,14 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineBridge;
 import nextstep.subway.domain.Station;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class LineDto {
 
@@ -20,9 +24,7 @@ public class LineDto {
             return new Line.Builder()
                     .setName(name)
                     .setColor(color)
-                    .setDistance(distance)
-                    .setUpStation(up)
-                    .setDownStation(down)
+                    .setLineBridge(new LineBridge(up, down, distance))
                     .build();
         }
 
@@ -101,14 +103,12 @@ public class LineDto {
         public String name;
         public String color;
         public List<StationResponse> stations;
-        public int distance;
 
-        public Response(long id, String name, String color, List<StationResponse> stations, int distance) {
+        public Response(long id, String name, String color, List<StationResponse> stations) {
             this.id = id;
             this.name = name;
             this.color = color;
             this.stations = stations;
-            this.distance = distance;
         }
 
         public Long getId() {
@@ -127,19 +127,32 @@ public class LineDto {
             return stations;
         }
 
-        public int getDistance() {
-            return distance;
-        }
-
         public static Response of (Line line) {
             return new LineDto.Response(line.getId(),
                     line.getName(),
                     line.getColor(),
-                    line.getStations().stream()
-                            .map(StationResponse::of)
-                            .collect(Collectors.toList()),
-                    line.getDistance());
+                    mapToStationResponse(line)
+            );
         }
+
+        private static List<StationResponse> mapToStationResponse(Line line) {
+            return line.getLineBridges()
+                    .stream()
+                    .flatMap(LineDto.Response::toStationResponse)
+                    .collect(Collectors.toList());
+        }
+
+        private static Stream<StationResponse> toStationResponse(LineBridge section) {
+            Set<StationResponse> stationResponses = new HashSet<>();
+
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+
+            stationResponses.add(StationResponse.of(upStation));
+            stationResponses.add(StationResponse.of(downStation));
+            return stationResponses.stream();
+        }
+
     }
 
 }
