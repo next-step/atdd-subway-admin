@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+
     @LocalServerPort
     int port;
 
@@ -97,7 +98,7 @@ public class StationAcceptanceTest {
         // then: 등록되어있는 지하철역의 리스트 정보를 응답 받는다.
         List<String> stationNames =
                 response.response().body().jsonPath().getList("name", String.class);
-        assertAll(
+        assertAll (
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(stationNames.contains("강남역")).isTrue(),
                 () -> assertThat(stationNames.contains("홍대역")).isTrue(),
