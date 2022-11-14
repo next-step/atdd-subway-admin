@@ -1,6 +1,6 @@
 package nextstep.subway.line.domain;
 
-import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.common.domain.*;
 import nextstep.subway.linebridge.domain.LineBridge;
 import nextstep.subway.linebridge.domain.LineBridges;
 

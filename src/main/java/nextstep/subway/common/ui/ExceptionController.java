@@ -1,7 +1,5 @@
 package nextstep.subway.common.ui;
 
-
-import nextstep.subway.exception.CannotFindStationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
