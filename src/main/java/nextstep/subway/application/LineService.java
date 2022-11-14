@@ -6,7 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.UpdateLineRequest;
-import nextstep.subway.exceptions.NotFoundDataException;
+import nextstep.subway.common.exception.NotFoundDataException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
