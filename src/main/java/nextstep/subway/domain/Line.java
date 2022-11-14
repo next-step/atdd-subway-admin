@@ -18,11 +18,11 @@ public class Line extends BaseEntity {
     private String color;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id",nullable = false)
+    @JoinColumn(name = "up_station_id", nullable = false)
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id",nullable = false)
+    @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
     @Column(nullable = false)
@@ -37,8 +37,8 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
-    public void setStations(Station upStation, Station downStation){
-        if(Objects.isNull(upStation) || Objects.isNull(downStation)){
+    public void setStations(Station upStation, Station downStation) {
+        if (Objects.isNull(upStation) || Objects.isNull(downStation)) {
             throw new IllegalArgumentException("지하철역은 비어있을 수 없습니다");
         }
         this.upStation = upStation;
@@ -70,10 +70,10 @@ public class Line extends BaseEntity {
     }
 
     public void modifyLine(String name, String color) {
-        if(StringUtils.hasText(name) && !this.name.equals(name)){
+        if (StringUtils.hasText(name) && !this.name.equals(name)) {
             this.name = name;
         }
-        if(StringUtils.hasText(color) && !this.color.equals(color)){
+        if (StringUtils.hasText(color) && !this.color.equals(color)) {
             this.color = color;
         }
     }

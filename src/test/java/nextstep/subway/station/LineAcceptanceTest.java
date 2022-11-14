@@ -75,11 +75,11 @@ class LineAcceptanceTest {
      */
     @Test
     void 지하철_노선_조회() {
-        Long 노선_식별자 = 지하철_노선을_생성한다();
+        ExtractableResponse<Response> response = 지하철_노선을_생성한다();
 
-        ExtractableResponse<Response> response = 지하철_노선을_조회한다(노선_식별자);
+        ExtractableResponse<Response> queryResponse = 지하철_노선을_조회한다(response);
 
-        생성한_지하철_노선의_정보를_응답받을_수_있다(response, "노선", "색생", 1000L, "상행역", "하행역");
+        생성한_지하철_노선의_정보를_응답받을_수_있다(queryResponse, "노선", "색생", 1000L, "상행역", "하행역");
     }
 
 
@@ -91,11 +91,11 @@ class LineAcceptanceTest {
      */
     @Test
     void 지하철노선_수정() {
-        Long 노선_식별자 = 지하철_노선을_생성한다();
+        ExtractableResponse<Response> createResponse = 지하철_노선을_생성한다();
 
-        ExtractableResponse<Response> response = 지하철_노선을_수정한다(노선_식별자, "신규노선명", "신규노선색상");
+        ExtractableResponse<Response> modifyResponse = 지하철_노선을_수정한다(createResponse, "신규노선명", "신규노선색상");
 
-        해당_지하철_노선_정보는_수정된다(response, 노선_식별자, "신규노선명", "신규노선색상");
+        해당_지하철_노선_정보는_수정된다(modifyResponse,createResponse, "신규노선명", "신규노선색상");
     }
 
     /**
@@ -105,36 +105,56 @@ class LineAcceptanceTest {
      */
     @Test
     void 지하철노선_삭제() {
-        Long 노선_식별자 = 지하철_노선을_생성한다();
+        ExtractableResponse<Response> response = 지하철_노선을_생성한다();
 
-        지하철_노선을_삭제한다(노선_식별자);
+        지하철_노선을_삭제한다(response);
 
-        해당_지하철_노선_정보는_삭제된다(노선_식별자);
+        해당_지하철_노선_정보는_삭제된다(response);
     }
 
-    private Long 지하철_노선을_생성한다() {
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 동일한 이름의 노선을 생성하면
+     * Then 요청이 실패한다.
+     */
+    @Test
+    void 지하철노선_중복_생성() {
+        지하철_노선을_생성한다();
+
+        ExtractableResponse<Response> response = 지하철_노선을_생성한다("노선", "색생2", 1000L, "다른상행역", "다른하행역");
+
+        요청이_실패한다(response);
+    }
+
+    private void 요청이_실패한다(ExtractableResponse<Response> response) {
+        assertStatus(response,HttpStatus.BAD_REQUEST);
+    }
+
+    private ExtractableResponse<Response> 지하철_노선을_생성한다() {
         return 지하철_노선을_생성한다("노선", "색생", 1000L, "상행역", "하행역");
     }
 
-    private void 지하철_노선을_삭제한다(Long 노선_식별자) {
-        ExtractableResponse<Response> response = RequestUtil.deleteRequest(String.format("%s/%s",ServiceUrl.URL_LINES,노선_식별자));
-        assertStatus(response, HttpStatus.NO_CONTENT);
+    private void 지하철_노선을_삭제한다(ExtractableResponse<Response> response) {
+        long 노선_식별자 = response.jsonPath().getLong("id");
+        ExtractableResponse<Response> deleteResponse = RequestUtil.deleteRequest(String.format("%s/%s",ServiceUrl.URL_LINES,노선_식별자));
+        assertStatus(deleteResponse, HttpStatus.NO_CONTENT);
     }
 
-    private void 해당_지하철_노선_정보는_삭제된다(Long 노선_식별자) {
-        ExtractableResponse<Response> response = 지하철_노선을_조회한다(노선_식별자);
-        assertStatus(response, HttpStatus.NO_CONTENT);
+    private void 해당_지하철_노선_정보는_삭제된다(ExtractableResponse<Response> response) {
+        ExtractableResponse<Response> queryResponse = 지하철_노선을_조회한다(response);
+        assertStatus(queryResponse, HttpStatus.NO_CONTENT);
     }
 
-    private void 해당_지하철_노선_정보는_수정된다(ExtractableResponse<Response> response, Long 노선_식별자, String 노선명, String 색상) {
-        assertStatus(response, HttpStatus.OK);
-        ExtractableResponse<Response> queryResponse = 지하철_노선을_조회한다(노선_식별자);
+    private void 해당_지하철_노선_정보는_수정된다(ExtractableResponse<Response> modifyResponse, ExtractableResponse<Response> response, String 노선명, String 색상) {
+        assertStatus(modifyResponse,HttpStatus.OK);
+        ExtractableResponse<Response> queryResponse = 지하철_노선을_조회한다(response);
         assertThat(queryResponse.jsonPath().getString("name")).isEqualTo(노선명);
         assertThat(queryResponse.jsonPath().getString("color")).isEqualTo(색상);
     }
 
-    private ExtractableResponse<Response> 지하철_노선을_수정한다(Long 노선_식별자, String 신규노선명, String 신규노선색상) {
+    private ExtractableResponse<Response> 지하철_노선을_수정한다(ExtractableResponse<Response> response, String 신규노선명, String 신규노선색상) {
         LineModifyRequest body = LineModifyRequest.of(신규노선명, 신규노선색상);
+        long 노선_식별자 = response.jsonPath().getLong("id");
         return RequestUtil.putRequest(String.format("%s/%s",ServiceUrl.URL_LINES,노선_식별자), body);
     }
 
@@ -146,14 +166,14 @@ class LineAcceptanceTest {
         assertThat(response.jsonPath().getList("stations.name")).contains(상행역, 하행역);
     }
 
-    private ExtractableResponse<Response> 지하철_노선을_조회한다(Long 노선_식별자) {
+    private ExtractableResponse<Response> 지하철_노선을_조회한다(ExtractableResponse<Response> response) {
+        long 노선_식별자 = response.jsonPath().getLong("id");
         return RequestUtil.getRequest(String.format("%s/%s",ServiceUrl.URL_LINES,노선_식별자));
     }
 
-    private Long 지하철_노선을_생성한다(String 신규노선, String 노선색상, long 거리, String 상행역, String 하행역) {
+    private ExtractableResponse<Response> 지하철_노선을_생성한다(String 신규노선, String 노선색상, long 거리, String 상행역, String 하행역) {
         List<Long> 신규노선역_식별자 = 두개의_지하철_역이_등록되어_있음(상행역, 하행역);
-        ExtractableResponse<Response> response = 지하철_노선을_생성한다(신규노선, 노선색상, 거리, 신규노선역_식별자);
-        return response.jsonPath().getLong("id");
+        return 지하철_노선을_생성한다(신규노선, 노선색상, 거리, 신규노선역_식별자);
     }
 
     private void 지하철_노선_목록을_2개_조회할_수_있다(ExtractableResponse<Response> response) {
@@ -184,10 +204,7 @@ class LineAcceptanceTest {
         Long upStationId = stationIds.get(0);
         Long downStationId = stationIds.get(1);
         LineRequest request = new LineRequest(lineName, lineColor, distance, upStationId, downStationId);
-        ExtractableResponse<Response> response = RequestUtil.postRequest(ServiceUrl.URL_LINES, request);
-        assertStatus(response, HttpStatus.CREATED);
-        assertThat(response.jsonPath().getLong("id")).isPositive();
-        return response;
+        return RequestUtil.postRequest(ServiceUrl.URL_LINES, request);
     }
 
     private List<Long> 두개의_지하철_역이_등록되어_있음(String upStationName, String downStationName) {
