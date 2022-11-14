@@ -71,5 +71,26 @@ class LineAcceptanceTest {
 		);
 	}
 
+	/**
+	 * Given 2 개의 지하철 노선을 생성하고
+	 * When 지하철 노선 목록을 조회하면
+	 * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+	 */
+	@DisplayName("노선 목록을 조회한다.")
+	@Test
+	void getLinesTest() {
+		// given
+		지하철_노선_생성_요청("신분당선", "bg-red-600", "강남역", "양재역");
+		지하철_노선_생성_요청("2호선", "bg-green-600", "역삼역", "삼성역");
+
+		// when
+		ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
+
+		// then
+		JsonPath responseBody = response.jsonPath();
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+		assertThat(responseBody.getList("name")).hasSize(2);
+		assertThat(responseBody.getList("name")).containsAnyOf("신분당선", "2호선");
+	}
 
 }
