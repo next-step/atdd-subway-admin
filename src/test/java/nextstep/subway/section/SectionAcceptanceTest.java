@@ -37,4 +37,26 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(result).hasSize(3)
             .contains("강남역", "광교역", "양재역");
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 상행 종점에 지하철 구간을 등록하면
+     * Then 노선에 새로운 지하철 역이 추가된다
+     */
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @Test
+    void addUpStationSection() {
+        // given
+        Long 강남역_ID = 지하철역_생성("강남역").jsonPath().getLong("id");
+        Long 광교역_ID = 지하철역_생성("광교역").jsonPath().getLong("id");
+        Long 신사역_ID = 지하철역_생성("신사역").jsonPath().getLong("id");
+
+        Long 신분당선_ID = 지하철_노선_생성("신분당선", "주황색", 강남역_ID, 광교역_ID, 12).jsonPath().getLong("id");
+
+        // when
+        지하철_노선_구간_추가(신분당선_ID, 신사역_ID, 강남역_ID, 3);
+        List<String> result = 지하철_노선_조회(신분당선_ID).jsonPath().getList("stations.name");
+        assertThat(result).hasSize(3)
+            .contains("강남역", "광교역", "신사역");
+    }
 }
