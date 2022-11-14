@@ -11,6 +11,10 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
+    private static final String SECTION_DUPLICATION_ERROR = "상행선과 하행선이 모두 존재합니다.";
+
+    private static final String SECTION_NOT_EXIST_ERROR = "상행선과 하행선이 모두 존재하지 않습니다.";
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
 
@@ -34,13 +38,13 @@ public class Sections {
 
     private void validateDuplicate(Section section) {
         if (getStations().containsAll(section.getStations())) {
-            throw new IllegalArgumentException("상행선과 하행선이 모두 존재합니다.");
+            throw new IllegalArgumentException(SECTION_DUPLICATION_ERROR);
         }
     }
 
     private void validateNotExist(Section section) {
         if (isNotExist(section)) {
-            throw new IllegalArgumentException("상행선과 하행선이 모두 존재하지 않습니다.");
+            throw new IllegalArgumentException(SECTION_NOT_EXIST_ERROR);
         }
     }
 
