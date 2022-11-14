@@ -13,8 +13,6 @@ public class LineStation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    // @Column(nullable = false)
-    // private Long stationId;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "station_id", nullable = false)
     private Station station;
@@ -24,12 +22,10 @@ public class LineStation {
     protected LineStation() {
     }
 
-    public static LineStation of(Long preStationId, Long stationId, Integer distance) {
-        LineStation lineStation = new LineStation();
-        lineStation.station = new Station(stationId);
-        lineStation.preStationId = preStationId;
-        lineStation.distance = distance;
-        return lineStation;
+    public LineStation(Station station, Long preStationId, Integer distance) {
+        this.station = station;
+        this.preStationId = preStationId;
+        this.distance = distance;
     }
 
     public Long getId() {
@@ -47,4 +43,5 @@ public class LineStation {
     public Integer getDistance() {
         return distance;
     }
+
 }

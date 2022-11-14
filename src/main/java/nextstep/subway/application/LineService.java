@@ -8,9 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.LineStation;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineChange;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.AlreadyDeletedException;
 import nextstep.subway.exception.NoStationException;
 import nextstep.subway.exception.NotFoundException;
@@ -50,7 +53,7 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = findLineById(id, new NotFoundException());
+        Line line = lineRepository.findLine(id).orElseThrow(NotFoundException::new);
         return LineResponse.of(line);
     }
 
@@ -69,5 +72,14 @@ public class LineService {
 
     private Line findLineById(Long id, RuntimeException exception) {
         return lineRepository.findById(id).orElseThrow(() -> exception);
+    }
+
+    @Transactional
+    public void registerSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findLine(lineId).orElseThrow(NotFoundException::new);
+        line.addLineStation(
+            new LineStation(new Station(sectionRequest.getDownStationId()), sectionRequest.getUpStationId(),
+                sectionRequest.getDistance()));
+
     }
 }

@@ -33,9 +33,12 @@ public class SectionAcceptanceTest {
         }
         preDataUtil.truncate();
         preDataUtil.line(1L, "2호선");
-        preDataUtil.station(1L, "강남역");
-        preDataUtil.station(2L, "서초역");
-        preDataUtil.station(3L, "교대역");
+        preDataUtil.station(1L, "서초역");
+        preDataUtil.station(2L, "강남");
+        preDataUtil.lineStation(1L, 1L, null, 1L, null);
+        preDataUtil.lineStation(2L, 2L, 1L, 1L, 10);
+
+        preDataUtil.station(3L, "역삼역");
     }
 
     /**
@@ -47,11 +50,12 @@ public class SectionAcceptanceTest {
     void createSection() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .body(new SectionRequestDto(2L, 3L, 10))
+            .body(new SectionRequestDto(2L, 3L, 5))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/1/sections")
             .then().log().all()
             .extract();
+        assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(OK);
 
         // then
         ExtractableResponse<Response> fetchResponse = LineAcceptanceTest.fetchLine(1L);

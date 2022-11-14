@@ -16,8 +16,8 @@ public class LineStations {
     private List<LineStation> lineStations = new ArrayList<>();
 
     public void init(Long upStationId, Long downStationId, Integer distance) {
-        lineStations.add(LineStation.of(null, upStationId, null));
-        lineStations.add(LineStation.of(upStationId, downStationId, distance));
+        lineStations.add(new LineStation(new Station(upStationId), null, null));
+        lineStations.add(new LineStation(new Station(downStationId), upStationId, distance));
     }
 
     public void remove() {
@@ -25,20 +25,25 @@ public class LineStations {
     }
 
     public List<LineStation> getStationsInOrder() {
-        Optional<LineStation> optionalPreLineStation = findFirst(null);
+        Optional<LineStation> optionalPreLineStation = findPreStation(null);
 
         List<LineStation> result = new ArrayList<>();
         while (optionalPreLineStation.isPresent()) {
             LineStation preLineStation = optionalPreLineStation.get();
             result.add(preLineStation);
-            optionalPreLineStation = findFirst(preLineStation.getStation().getId());
+            optionalPreLineStation = findPreStation(preLineStation.getStation().getId());
         }
         return result;
     }
 
-    private Optional<LineStation> findFirst(Long preStationId) {
+    public void add(LineStation lineStation) {
+        lineStations.add(lineStation);
+    }
+
+    private Optional<LineStation> findPreStation(Long id) {
         return lineStations.stream()
-            .filter(lineStation -> lineStation.getPreStationId() == preStationId)
+            .filter(lineStation -> lineStation.getPreStationId() == id)
             .findFirst();
     }
+
 }

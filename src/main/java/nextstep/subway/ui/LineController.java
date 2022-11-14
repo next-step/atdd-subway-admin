@@ -18,6 +18,7 @@ import nextstep.subway.dto.ErrorResponse;
 import nextstep.subway.dto.LineChange;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.AlreadyDeletedException;
 import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.exception.NotFoundException;
@@ -56,6 +57,12 @@ public class LineController {
     public ResponseEntity<?> removeLine(@PathVariable Long id) {
         lineService.removeLine(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/lines/{id}/sections")
+    public ResponseEntity<?> registerSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
+        lineService.registerSection(id, sectionRequest);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(NotFoundException.class)
