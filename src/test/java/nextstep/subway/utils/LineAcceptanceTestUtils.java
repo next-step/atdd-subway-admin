@@ -15,8 +15,11 @@ public class LineAcceptanceTestUtils {
     public static final String 신분당선 = "신분당선";
     public static final String 경춘선 = "경춘선";
     public static final String 수인분당선 = "수인분당선";
-    public static final String 강남역 = "강남역";
+    public static final String 신사역 = "신사역";
+    public static final String 논현역 = "논현역";
     public static final String 신논현역 = "신논현역";
+    public static final String 판교역 = "판교역";
+    public static final String 강남역 = "강남역";
     public static final String 대성리역 = "대성리역";
     public static final String 가평역 = "가평역";
 
