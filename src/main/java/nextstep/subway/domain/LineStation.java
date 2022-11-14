@@ -50,5 +50,30 @@ public class LineStation extends BaseEntity {
     }
 
     public void update(LineStation newLineStation) {
+        if (isEqualUpStation(newLineStation)) {
+            updateUpStation(newLineStation);
+        }
+
+        if (isEqualDownStation(newLineStation)) {
+            updateDownStation(newLineStation);
+        }
+    }
+
+    private boolean isEqualUpStation(LineStation newLineStation) {
+        return upStation.equals(newLineStation.upStation);
+    }
+
+    private void updateUpStation(LineStation newLineStation) {
+        upStation = newLineStation.upStation;
+        distance = distance - newLineStation.distance; // TODO: 중복코드
+    }
+
+    private boolean isEqualDownStation(LineStation newLineStation) {
+        return downStation.equals(newLineStation.downStation);
+    }
+
+    private void updateDownStation(LineStation newLineStation) {
+        downStation = newLineStation.upStation;
+        distance = distance - newLineStation.distance;
     }
 }

@@ -47,7 +47,7 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
         // When
         ExtractableResponse<Response> 판교역 = 지하철역_생성_요청("판교역");
         Long 판교역_ID = 객체_응답_ID(판교역);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(신분당선_ID, 강남역_ID, 판교역_ID, 1);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(신분당선_ID, 강남역_ID, 판교역_ID, 4);
 
         // Then
         지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답);
@@ -56,6 +56,8 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     private void 지하철_노선에_지하철역_등록_확인(ExtractableResponse<Response> response) {
         List<String> list = response.jsonPath().getList("stations.name", String.class);
         assertThat(list).contains("강남역", "판교역", "광교역");
+        // TODO: 기존 길이 확인.
+        // TODO: 변경된 길이 확인.
     }
 
     private ExtractableResponse<Response> 지하철_노선에_지하철역_생성_요청(Long lineId, Long upStationId, Long downStationId, int distance) {

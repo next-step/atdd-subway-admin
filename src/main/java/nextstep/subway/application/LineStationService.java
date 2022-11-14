@@ -20,6 +20,7 @@ public class LineStationService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse addLineStation(Long lineId, LineStationRequest lineStationRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new RuntimeException("지하철 노선이 존재하지 않습니다."));
         Station upStation = stationRepository.findById(lineStationRequest.getUpStationId()).get(); // TODO: optional 사용 어떻게 하는게 좋은 코드인지?
