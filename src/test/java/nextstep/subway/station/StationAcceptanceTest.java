@@ -4,41 +4,17 @@ import static nextstep.subway.util.StationAcceptanceUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.TestConstructor;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.util.DatabaseCleanUpUtils;
+import nextstep.subway.config.BaseAcceptanceTest;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class StationAcceptanceTest {
-	@LocalServerPort
-	int port;
-
-	private final DatabaseCleanUpUtils cleanUpUtils;
-
-	public StationAcceptanceTest(DatabaseCleanUpUtils cleanUpUtils) {
-		this.cleanUpUtils = cleanUpUtils;
-	}
-
-	@BeforeEach
-	public void setUp() {
-		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-			RestAssured.port = port;
-			cleanUpUtils.afterPropertiesSet();
-		}
-		cleanUpUtils.cleanUp();
-	}
+class StationAcceptanceTest extends BaseAcceptanceTest {
 
 	/**
 	 * When 지하철역을 생성하면

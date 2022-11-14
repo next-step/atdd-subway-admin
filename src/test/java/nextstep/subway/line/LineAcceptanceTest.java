@@ -5,43 +5,19 @@ import static nextstep.subway.util.ResponseExtractUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.TestConstructor;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.config.BaseAcceptanceTest;
 import nextstep.subway.dto.line.LineResponse;
 import nextstep.subway.dto.line.LineUpdateRequest;
-import nextstep.subway.util.DatabaseCleanUpUtils;
 
 @DisplayName("노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestConstructor(autowireMode = TestConstructor.AutowireMode.ALL)
-class LineAcceptanceTest {
-	@LocalServerPort
-	int port;
-
-	private final DatabaseCleanUpUtils cleanUpUtils;
-
-	public LineAcceptanceTest(DatabaseCleanUpUtils cleanUpUtils) {
-		this.cleanUpUtils = cleanUpUtils;
-	}
-
-	@BeforeEach
-	public void setUp() {
-		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-			RestAssured.port = port;
-			cleanUpUtils.afterPropertiesSet();
-		}
-		cleanUpUtils.cleanUp();
-	}
+class LineAcceptanceTest extends BaseAcceptanceTest {
 
 	/**
 	 * When 지하철 노선을 생성하면
@@ -165,8 +141,6 @@ class LineAcceptanceTest {
 		ExtractableResponse<Response> deleteResponse = 지하철_노선_삭제_요청(id);
 		ExtractableResponse<Response> getResponse = 지하철_노선_조회_요청(id);
 
-		System.out.println("getResponse = " + getResponse);
-		JsonPath jsonPath = getResponse.jsonPath();
 		// then
 		assertAll(
 			() -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
