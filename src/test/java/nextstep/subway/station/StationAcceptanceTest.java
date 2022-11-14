@@ -50,11 +50,7 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = getStationsResponse().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -85,11 +81,7 @@ public class StationAcceptanceTest {
         createStation("역삼역");
 
         //when
-        ExtractableResponse<Response> response = RestAssured.given()
-                .accept(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = getStationsResponse();
 
         //then
         List<StationResponse> stations = response.jsonPath().getList(".", StationResponse.class);
@@ -102,23 +94,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        //Given
+        //given
         Long statinId = createStation("강남역").extract().jsonPath().getLong("id");
 
-        //When
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("id", statinId)
-                .when().delete("/stations/{id}")
-                .then().log().all()
-                .extract();
+        //when
+        ExtractableResponse<Response> response = deleteStationResponse(statinId);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        List<String> stationNames =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> stationNames = getStationsResponse().jsonPath().getList("name", String.class);
         assertThat(stationNames).isNotIn("강남역");
     }
 
@@ -131,5 +115,21 @@ public class StationAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all();
+    }
+
+    private ExtractableResponse<Response> getStationsResponse() {
+        return RestAssured.given()
+                .accept(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteStationResponse(Long stationId) {
+        return RestAssured.given().log().all()
+                .pathParam("id", stationId)
+                .when().delete("/stations/{id}")
+                .then().log().all()
+                .extract();
     }
 }
