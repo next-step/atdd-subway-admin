@@ -57,7 +57,7 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = extractList(지하철역_조회(), "$[*].name");
+        List<String> stationNames = 역목록_이름_추출(지하철역_조회());
         assertThat(stationNames).containsAnyOf(GANGNAM);
     }
 
@@ -99,8 +99,8 @@ public class StationAcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(extractList(response, "$")).hasSize(2),
-            () -> assertThat(extractList(response, "$[*].name")).containsExactly(GANGNAM, BUNDANG)
+            () -> assertThat(결과_목록_추출(response)).hasSize(2),
+            () -> assertThat(역목록_이름_추출(response)).containsExactly(GANGNAM, BUNDANG)
         );
     }
 
@@ -113,7 +113,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Integer id = extractInteger(지하철역_생성(GANGNAM), "$.id");
+        Integer id = ID_추출(지하철역_생성(GANGNAM));
 
         // when
         지하철역_삭제(id);
@@ -122,7 +122,18 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = 지하철역_조회();
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(extractList(response, "$")).hasSize(0)
+            () -> assertThat(결과_목록_추출(response)).hasSize(0)
         );
+    }
+    private Integer ID_추출(ExtractableResponse<Response> response) {
+        return extractInteger(response, "$.id");
+    }
+
+    private List<Object> 결과_목록_추출(ExtractableResponse<Response> response) {
+        return extractList(response, "$");
+    }
+
+    private List<String> 역목록_이름_추출(ExtractableResponse<Response> response) {
+        return extractList(response, "$[*].name");
     }
 }
