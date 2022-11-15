@@ -47,7 +47,7 @@ public class LineStations {
         validateHasStations(lineStation);
     }
 
-    private void validateHasStations(LineStation newLineStation) {
+    private void validateHasLineStations(LineStation newLineStation) {
         if (new HashSet<>(getStations()).containsAll(newLineStation.findStations())) {
             throw new IllegalArgumentException("등록하려는 역이 모두 존재합니다.");
         }

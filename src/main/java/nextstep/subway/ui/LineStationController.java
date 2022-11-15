@@ -3,7 +3,6 @@ package nextstep.subway.ui;
 import nextstep.subway.application.LineStationService;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineStationRequest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -28,14 +27,9 @@ public class LineStationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(line);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Void> handleDataIntegrityViolationException() {
-        return ResponseEntity.badRequest().build();
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Void> handleIllegalArgsException() {
+        // TODO: 로그에 exception이 출력되지 않으므로 추가 작업이 필요함
         return ResponseEntity.badRequest().build();
     }
-
 }

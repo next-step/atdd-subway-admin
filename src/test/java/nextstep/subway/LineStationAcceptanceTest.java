@@ -21,7 +21,7 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철 노선 역 등록 관련 기능")
 public class LineStationAcceptanceTest extends BaseAcceptanceTest {
 
-    int distance;
+    int 초기_노선_길이;
     Long 노선_ID;
     Long 상행역_ID;
     Long 하행역_ID;
@@ -32,8 +32,8 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
         super.setUp();
 
         // Given
-        distance = 12;
-        신분당선 = LineAcceptanceTest.지하철노선_생성_요청("신분당선", "bg-red-600", "강남역", "광교역", distance).as(LineResponse.class);
+        초기_노선_길이 = 12;
+        신분당선 = LineAcceptanceTest.지하철노선_생성_요청("신분당선", "bg-red-600", "강남역", "광교역", 초기_노선_길이).as(LineResponse.class);
         노선_ID = 신분당선.getId();
         상행역_ID = 신분당선.getStations().get(0).getId(); // TODO: index 접근이 아닌 다른 방법 생각하기
         하행역_ID = 신분당선.getStations().get(1).getId();
@@ -102,13 +102,10 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
         // When
         ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("양재역");
         Long 신규역_ID = 객체_응답_ID(신규역);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 하행역_ID, 신규역_ID, 4);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 상행역_ID, 하행역_ID, 4);
 
         // Then
-        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "강남역", "광교역", "양재역");
-
         assertThat(지하철_노선에_지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     @DisplayName("예외 테스트 : 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
@@ -116,8 +113,11 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     void test5() {
     }
 
-    private void 지하철_노선에_지하철역_등록_확인(ExtractableResponse<Response> response, String upStationsName,
-                                    String downStationName, String newStationName) {
+    private void 지하철_노선에_지하철역_등록_확인(
+                ExtractableResponse<Response> response,
+                String upStationsName,
+                String downStationName,
+                String newStationName) {
 
         List<String> list = response.jsonPath().getList("stations.name", String.class);
         assertThat(list).contains(upStationsName, downStationName, newStationName);

@@ -56,7 +56,6 @@ public class LineStation extends BaseEntity {
         if (isEqualUpStation(newLineStation)) {
             updateUpStation(newLineStation);
         }
-
         if (isEqualDownStation(newLineStation)) {
             updateDownStation(newLineStation);
         }
