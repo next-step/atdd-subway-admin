@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
@@ -29,6 +30,17 @@ class SectionTest {
 
         assertThrows(IllegalArgumentException.class, () -> Section.of(null, station, distance));
         assertThrows(IllegalArgumentException.class, () -> Section.of(station, null, distance));
+    }
+
+    @Test
+    @DisplayName("기존역과 상행/하행역이 모두 같으면 구간 생성 불가능")
+    void sameSection() {
+        Line line = Line.of("신분당선", "bg-red-600", Section.of(Station.from("논현역"), Station.from("강남역"), Distance.from(10)));
+        Station upStation = Station.from("논현역");
+        Station downStation = Station.from("강남역");
+        Distance distance = Distance.from(5);
+        assertThatThrownBy(() -> line.addSection(Section.of(upStation, downStation, distance)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
