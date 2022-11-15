@@ -50,4 +50,12 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("Distance는 0이하의 값일 수 없습니다.");
     }
+
+    @Test
+    void 추가하려는_상행역과_하행역이_모두_등록되어_있는경우_등록_불가() {
+        Section newSection = Section.from(서초역, 강남역, Distance.from(15));
+        assertThatThrownBy(() -> sections.add(newSection))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역이 이미 모두 노선에 등록되어 있습니다.");
+    }
 }

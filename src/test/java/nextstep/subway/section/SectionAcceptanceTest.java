@@ -122,8 +122,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      *  Then 등록할 수 없다
      */
     @DisplayName("이미 노선에 존재하는 구간을 등록 할 수 없다")
+    @Test
     void addSectionDuplicateInLine() {
+        // given
+        Long lineId = getId(createLine("2호선", "bg-green-600", 20, 서초역, 강남역));
 
+        // when
+        ExtractableResponse<Response> createSectionResponse = addSection(lineId, 서초역, 강남역, 15);
+
+        // then
+        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
