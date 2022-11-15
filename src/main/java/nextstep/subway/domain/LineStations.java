@@ -44,12 +44,26 @@ public class LineStations {
     }
 
     private void validate(LineStation lineStation) {
-        validateHasStations(lineStation);
+        validateHasLineStations(lineStation);
+        validateHasNotBothStations(lineStation);
     }
 
     private void validateHasLineStations(LineStation newLineStation) {
         if (new HashSet<>(getStations()).containsAll(newLineStation.findStations())) {
             throw new IllegalArgumentException("등록하려는 역이 모두 존재합니다.");
         }
+    }
+
+    private void validateHasNotBothStations(LineStation newLineStation) {
+        if (hasNotBothStations(newLineStation)) {
+            throw new IllegalArgumentException("상행성과 하행선 모두 존재하지 않습니다.");
+        }
+    }
+
+    private boolean hasNotBothStations(LineStation lineStation) {
+        List<Station> stations = getStations();
+        return lineStation.findStations()
+                .stream()
+                .noneMatch(stations::contains);
     }
 }

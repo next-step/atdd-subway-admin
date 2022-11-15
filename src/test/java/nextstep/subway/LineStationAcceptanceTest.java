@@ -110,7 +110,16 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
 
     @DisplayName("예외 테스트 : 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
-    void test5() {
+    void 상행역과_하행역이_노선에_모두_존재하지않는_경우_예외() {
+        // When
+        ExtractableResponse<Response> 신규역1 = 지하철역_생성_요청("없는역1");
+        Long 신규역1_ID = 객체_응답_ID(신규역1);
+        ExtractableResponse<Response> 신규역2 = 지하철역_생성_요청("없는역2");
+        Long 신규역2_ID = 객체_응답_ID(신규역2);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역1_ID, 신규역2_ID, 4);
+
+        // Then
+        assertThat(지하철_노선에_지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 지하철_노선에_지하철역_등록_확인(
