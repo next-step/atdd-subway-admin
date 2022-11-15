@@ -62,7 +62,7 @@ public class LineService {
 
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new CannotFindException(NOT_FOUND_UP_STATION_ERR));
+                .orElseThrow(() -> new CannotFindException(NOT_FOUND_STATION_ERR));
     }
 
     @Transactional

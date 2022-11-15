@@ -40,7 +40,7 @@ public class LineSectionStep {
                 .build();
     }
 
-    public static ExtractableResponse<Response> 중복_구간_생성_요청(int lineId, Long upStationId, Long downStationId, int distance) {
+    public static ExtractableResponse<Response> 비정상_구간_생성_요청(int lineId, Long upStationId, Long downStationId, int distance) {
         SectionRequest request = SectionRequest.builder()
                 .upStationId(upStationId)
                 .downStationId(downStationId)
@@ -56,6 +56,12 @@ public class LineSectionStep {
                 .extract();
     }
 
+    public static void 추가_역을_3개_생성한다() {
+        지하철역을_생성한다("판교역");
+        지하철역을_생성한다("건대역");
+        지하철역을_생성한다("교대역");
+    }
+
 
     public static void 구간_등록_성공_확인(ExtractableResponse<Response> savedSection) {
         assertThat(savedSection.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -65,4 +71,6 @@ public class LineSectionStep {
         // 500
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
+
+
 }

@@ -3,9 +3,6 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import javassist.NotFoundException;
-import nextstep.subway.domain.Section;
-import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -14,12 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static nextstep.subway.line.LineAcceptanceStep.*;
 import static nextstep.subway.section.LineSectionStep.*;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -73,11 +65,28 @@ public class LineSectionTest {
         // given -> beforeEach
 
         // when
-        ExtractableResponse<Response> response = 중복_구간_생성_요청(lineId, 1L, 2L, 2);
+        ExtractableResponse<Response> response = 비정상_구간_생성_요청(lineId, 1L, 2L, 2);
 
         // then
         구간_등록_실패(response);
+    }
 
+    /**
+     * Given 2개의 지하철역이 등록되어 있고, 노선이 등록되어있다
+     * When 지하철 역 중 하나도 포함되어있지 않으면
+     * Then 예외를 던진다
+     */
+    @DisplayName("지하철 역 중 하나도 포함되어있지 않으면 예외를 던진다")
+    @Test
+    void 구간_생성_포함_예외() {
+        // given -> beforeEach
+        추가_역을_3개_생성한다();
+
+        // when
+        ExtractableResponse<Response> response = 비정상_구간_생성_요청(lineId, 4L, 5L, 10);
+
+        // then
+        구간_등록_실패(response);
     }
 
 
