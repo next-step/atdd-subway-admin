@@ -48,4 +48,8 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
     }
+
+    public void deleteSection(Station station) {
+        sections.delete(station);
+    }
 }

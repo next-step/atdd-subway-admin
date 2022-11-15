@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceTest.생성된_지하철_노선_ID_조회;
+import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_조회;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -209,13 +210,14 @@ public class SectionAcceptanceTest {
         강남역_ID = 생성된_지하철_역_ID_조회("강남역");
         신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
         신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 판교역_ID, 4);
+        지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 판교역_ID, 4);
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_삭제(신분당선_구간_ID, 신규_역_ID);
+        지하철_구간_삭제(신분당선_구간_ID, 신규_역_ID);
 
         // then
-        지하철_추가된_구간_조회_확인(지하철_구간_추가_결과, lineName, "판교역", "강남역");
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회(신분당선_구간_ID);
+        지하철_추가된_구간_조회_확인(지하철_노선_조회_결과, lineName, "판교역", "강남역");
     }
 
     private ExtractableResponse<Response> 지하철_구간_추가(

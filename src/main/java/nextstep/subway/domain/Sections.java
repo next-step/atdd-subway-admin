@@ -5,11 +5,12 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -59,5 +60,26 @@ public class Sections {
         return section.findStations()
                 .stream()
                 .noneMatch(stations::contains);
+    }
+
+    public void delete(Station station) {
+        Optional<Section> upStation = sections.stream()
+                .filter(section -> section.isEqualUpStation(station))
+                .findFirst();
+
+        Optional<Section> downStation = sections.stream()
+                .filter(section -> section.isEqualDownStation(station))
+                .findFirst();
+
+        if (upStation.isPresent() && downStation.isPresent()) {
+            // 추후 처리
+        }
+
+        deleteEndSection(upStation, downStation);
+    }
+
+    private void deleteEndSection(Optional<Section> upStation, Optional<Section> downStation) {
+        upStation.ifPresent(sections::remove);
+        downStation.ifPresent(sections::remove);
     }
 }
