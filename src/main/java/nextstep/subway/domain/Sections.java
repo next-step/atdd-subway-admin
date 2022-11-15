@@ -63,23 +63,41 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        Optional<Section> upStation = sections.stream()
-                .filter(section -> section.isEqualUpStation(station))
-                .findFirst();
+        Optional<Section> prevSection = findPrevSection(station);
+        Optional<Section> nextSection = findNextSection(station);
 
-        Optional<Section> downStation = sections.stream()
-                .filter(section -> section.isEqualDownStation(station))
-                .findFirst();
-
-        if (upStation.isPresent() && downStation.isPresent()) {
-            // 추후 처리
+        if (isMiddleSection(prevSection, nextSection)) {
+            deleteMiddleSection(prevSection.get(), nextSection.get());
+            return;
         }
 
-        deleteEndSection(upStation, downStation);
+        deleteEndSection(prevSection, nextSection);
     }
 
-    private void deleteEndSection(Optional<Section> upStation, Optional<Section> downStation) {
-        upStation.ifPresent(sections::remove);
-        downStation.ifPresent(sections::remove);
+    private Optional<Section> findPrevSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isEqualDownStation(station))
+                .findFirst();
+    }
+
+    private Optional<Section> findNextSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.isEqualUpStation(station))
+                .findFirst();
+    }
+
+    private boolean isMiddleSection(Optional<Section> prevSection, Optional<Section> nextSection) {
+        return prevSection.isPresent() && nextSection.isPresent();
+    }
+
+    private void deleteMiddleSection(Section prevSection, Section nextSection) {
+        sections.add(prevSection.merge(nextSection));
+        sections.remove(prevSection);
+        sections.remove(nextSection);
+    }
+
+    private void deleteEndSection(Optional<Section> prevSection, Optional<Section> nextSection) {
+        prevSection.ifPresent(sections::remove);
+        nextSection.ifPresent(sections::remove);
     }
 }
