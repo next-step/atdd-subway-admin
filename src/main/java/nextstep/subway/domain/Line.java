@@ -36,36 +36,44 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getName() {
         return name;
     }
 
-    public Long getId() {
-        return id;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getColor() {
         return color;
     }
 
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public Station getUpStation() {
         return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Integer getDistance() {
-        return distance;
     }
 
     public void setUpStation(Station upStation) {
         this.upStation = upStation;
     }
 
+    public Station getDownStation() {
+        return downStation;
+    }
+
     public void setDownStation(Station downStation) {
         this.downStation = downStation;
+    }
+
+    public Integer getDistance() {
+        return distance;
     }
 
     @Override

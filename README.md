@@ -196,7 +196,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   }
   ```
 
-- [ ] 지하철 노선 수정
+- [x] 지하철 노선 수정
   ```text
   Given 지하철 노선을 생성하고
   When 생성한 지하철 노선을 수정하면
@@ -218,21 +218,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   Vary: Origin
   Vary: Access-Control-Request-Method
   Vary: Access-Control-Request-Headers
-  Content-Type: application/json
-  Content-Length: 193
-  
-  {
-    "id" : 1,
-    "name" : "신분당선",
-    "color" : "bg-red-600",
-    "stations" : [ {
-      "id" : 1,
-      "name" : "지하철역"
-    }, {
-      "id" : 2,
-      "name" : "새로운지하철역"
-    } ]
-  }
   ```
 
 - [ ] 지하철 노선 삭제

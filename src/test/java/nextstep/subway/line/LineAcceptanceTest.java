@@ -115,7 +115,7 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선조회_성공() {
         // given
-        Long id = createLine("신사역", "bg-red-600", upStationId, downStationId, "200")
+        Long id = createLine("신분당선", "bg-red-600", upStationId, downStationId, "200")
                 .jsonPath()
                 .getLong("id");
 
@@ -129,5 +129,27 @@ public class LineAcceptanceTest {
                 () -> assertThat(lineId).isEqualTo(id),
                 () -> assertThat(stationNames).containsExactly("신사역", "광교(경기대)역")
         );
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선을 수정하여 조회하면 수정된 노선 정보를 확인한다.")
+    @Test
+    void 지하철노선수정_성공() {
+        // given
+        Long id = createLine("신분당선", "bg-red-600", upStationId, downStationId, "200")
+                .jsonPath()
+                .getLong("id");
+
+        // when
+        String newName = "다른신분당선";
+        String newColor = "blue darken-2";
+        ExtractableResponse<Response> response = LineAcceptanceTestUtil.updateLine(newName, newColor, id);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

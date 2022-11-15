@@ -3,13 +3,13 @@ package nextstep.subway.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static nextstep.subway.utils.RestAssuredRequestBuilder.get;
-import static nextstep.subway.utils.RestAssuredRequestBuilder.post;
+import static nextstep.subway.utils.RestAssuredRequestBuilder.*;
 
 public class LineAcceptanceTestUtil {
     private static final String REQUEST_PATH_FOR_LINE = "/lines";
@@ -29,6 +29,13 @@ public class LineAcceptanceTestUtil {
 
     public static ExtractableResponse<Response> getLines(Long id) {
         return get(REQUEST_PATH_FOR_LINE + "/{id}", id);
+    }
+
+    public static ExtractableResponse<Response> updateLine(String newName, String newColor, Long id) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", newName);
+        params.put("color", newColor);
+        return put(params, MediaType.APPLICATION_JSON_VALUE, REQUEST_PATH_FOR_LINE + "/{id}", id, HttpStatus.OK);
     }
 
     private static Map<String, String> getParams(String name, String color, String upStationId, String downStationId, String distance) {

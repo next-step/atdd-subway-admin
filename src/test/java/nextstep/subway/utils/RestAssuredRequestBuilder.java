@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.Map;
 
@@ -43,7 +42,13 @@ public class RestAssuredRequestBuilder {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> put(Map params, String path, MediaType mediaType) {
-        return null;
+    public static ExtractableResponse<Response> put(Map params, String mediaType, String path, Long id, HttpStatus status) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(mediaType)
+                .when().put(path, id)
+                .then().log().all()
+                .statusCode(status.value())
+                .extract();
     }
 }

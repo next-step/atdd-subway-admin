@@ -42,4 +42,13 @@ public class LineService {
     public LineResponse findLineById(Long lineId) {
         return LineResponse.of(lineRepository.findById(lineId).get());
     }
+
+    @Transactional
+    public void updateLine(Long lineId, LineRequest lineRequest) {
+        Line line = lineRepository.findById(lineId).get();
+        line.setName(lineRequest.getName());
+        line.setColor(lineRequest.getColor());
+
+        lineRepository.save(line);
+    }
 }
