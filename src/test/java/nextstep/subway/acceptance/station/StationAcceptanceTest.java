@@ -118,5 +118,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // Given
+        ExtractableResponse<Response> createResponse = 지하철역_생성(GANGNAM_STATION);
+        // When
+        지하철역_삭제(createResponse.jsonPath().getLong("id"));
+        // Then
+        역_삭제_검증(GANGNAM_STATION);
     }
 }
