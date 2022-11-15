@@ -1,10 +1,11 @@
 package nextstep.subway.dto;
 
-import com.google.common.collect.Lists;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
 
@@ -13,20 +14,18 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
-    private LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    private LineResponse(Long id, String name, String color, Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = stations;
+        this.stations = sections.getStations()
+                .stream()
+                .map(StationResponse::from)
+                .collect(Collectors.toList());
     }
 
     public static LineResponse from(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(),
-                Lists.newArrayList(
-                        StationResponse.from(line.getUpStation()),
-                        StationResponse.from(line.getDownStation())
-                )
-        );
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getSections());
     }
 
     public Long getId() {
