@@ -15,9 +15,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 class LineServiceTest {
-
-
-
     @Autowired
     private StationRepository stationRepository;
 
@@ -60,24 +57,36 @@ class LineServiceTest {
 
         lineRepository.findAll();
         assertThat(lineRepository.findAll()).hasSize(2);
-
-
-
-    }
-
-    @Test
-    @Transactional
-    void findLineById() {
     }
 
     @Test
     @Transactional
     void deleteLineById() {
+        Station station1 = stationRepository.save(강남역.toStation());
+        Station station2 = stationRepository.save(역삼역.toStation());
+        LineDto.CreateRequest 이호선 = new LineDto.CreateRequest()
+            .setColor("green")
+            .setName("2호선")
+            .setDistance(10);
+
+        Line expect = lineRepository.save(이호선.of(station1, station2));
+        lineRepository.delete(expect);
+        assertThat(lineRepository.findById(expect.getId()).isPresent()).isFalse();
     }
 
     @Test
     @Transactional
     void updateLine() {
+        Station station1 = stationRepository.save(강남역.toStation());
+        Station station2 = stationRepository.save(역삼역.toStation());
+        LineDto.CreateRequest 이호선 = new LineDto.CreateRequest()
+            .setColor("green")
+            .setName("2호선")
+            .setDistance(10);
+
+        Line expect = lineRepository.save(이호선.of(station1, station2));
+        expect.update(expect.getName(), "red");
+        assertThat(lineRepository.findById(expect.getId()).get().getColor()).isEqualTo("red");
     }
 
 }
