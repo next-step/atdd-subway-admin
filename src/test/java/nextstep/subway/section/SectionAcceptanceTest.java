@@ -103,8 +103,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      *  Then 등록할 수 없다
      */
     @DisplayName("추가하려는 역 사이의 거리가 기존 역 사이의 거리보다 크거나 같다면 등록할 수 없다")
+    @Test
     void addSectionGreaterThanExistDistance() {
+        // given
+        Long lineId = getId(createLine("2호선", "bg-green-600", 20, 서초역, 강남역));
 
+        // when
+        Long 교대역 = getId(createStation("교대역"));
+        ExtractableResponse<Response> createSectionResponse = addSection(lineId, 서초역, 교대역, 20);
+
+        // then
+        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
