@@ -121,8 +121,8 @@ public class Sections {
         removeSection(section2);
     }
 
-    private int connectDistance(final Section A, final Section B) {
-        return A.getDistance() + B.getDistance();
+    private int connectDistance(final Section section1, final Section section2) {
+        return section1.getDistance() + section2.getDistance();
     }
 
     private void removeSection(final Section section) {
