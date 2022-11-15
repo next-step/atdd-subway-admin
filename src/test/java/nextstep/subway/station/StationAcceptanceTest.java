@@ -83,7 +83,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청("강남역");
 
         // when
-        지하철역_삭제_요청(객체_응답_ID(지하철역_생성_응답));
+        지하철역_삭제_요청(응답_ID(지하철역_생성_응답));
 
         // then
         assertThat(지하철역_조회_요청("강남역")).isEmpty();

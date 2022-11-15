@@ -70,7 +70,7 @@ public class LineStation extends BaseEntity {
 
     private void updateUpStation(LineStation newLineStation) {
         upStation = newLineStation.upStation;
-        distance = distance - newLineStation.distance; // TODO: 중복코드
+        distance = distance - newLineStation.distance;
     }
 
     private boolean isEqualDownStation(LineStation newLineStation) {

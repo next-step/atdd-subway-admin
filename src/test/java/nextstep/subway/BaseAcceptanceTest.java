@@ -26,7 +26,7 @@ public class BaseAcceptanceTest {
         databaseCleanup.execute();
     }
 
-    public static Long 객체_응답_ID(ExtractableResponse<Response> response) {
+    public static Long 응답_ID(ExtractableResponse<Response> response) {
         return response.body()
                 .jsonPath()
                 .getLong("id");

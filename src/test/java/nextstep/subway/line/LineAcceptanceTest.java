@@ -68,10 +68,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ResponseAssertTest.생성_확인(createResponse);
 
         // When
-        ExtractableResponse<Response> 지하철노선_조회_응답 = 지하철노선_조회_요청(객체_응답_ID(createResponse));
+        ExtractableResponse<Response> 지하철노선_조회_응답 = 지하철노선_조회_요청(응답_ID(createResponse));
 
         // Then
-        노선_정보_확인(지하철노선_조회_응답, 객체_응답_ID(createResponse));
+        노선_정보_확인(지하철노선_조회_응답, 응답_ID(createResponse));
     }
 
     /**
@@ -87,7 +87,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ResponseAssertTest.생성_확인(지하철노선_생성_응답);
 
         // When
-        Long id = 객체_응답_ID(지하철노선_생성_응답);
+        Long id = 응답_ID(지하철노선_생성_응답);
         ExtractableResponse<Response> 지하철노선_수정_응답 = 지하철노선_수정_요청(id, "분당선", "bg-red-600");
 
         // Then
@@ -107,10 +107,10 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
         ResponseAssertTest.생성_확인(지하철노선_생성_응답);
 
         // When
-        ExtractableResponse<Response> 지하철노선_삭제_응답 = 지하철노선_삭제_요청(객체_응답_ID(지하철노선_생성_응답));
+        ExtractableResponse<Response> 지하철노선_삭제_응답 = 지하철노선_삭제_요청(응답_ID(지하철노선_생성_응답));
 
         // Then
-        지하철노선_삭제_확인(객체_응답_ID(지하철노선_생성_응답), 지하철노선_삭제_응답);
+        지하철노선_삭제_확인(응답_ID(지하철노선_생성_응답), 지하철노선_삭제_응답);
     }
 
     private void 지하철노선_삭제_확인(Long id, ExtractableResponse<Response> response) {
@@ -120,8 +120,8 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철노선_생성_요청(String lineName, String color, String upStationName, String downStationName, int distance) {
-        Long upStationId = 객체_응답_ID(지하철역_생성_요청(upStationName));
-        Long downStationId = 객체_응답_ID(지하철역_생성_요청(downStationName));
+        Long upStationId = 응답_ID(지하철역_생성_요청(upStationName));
+        Long downStationId = 응답_ID(지하철역_생성_요청(downStationName));
 
         HashMap<String, Object> lineMap = new HashMap<>();
         lineMap.put("name", lineName);

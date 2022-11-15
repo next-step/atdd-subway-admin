@@ -35,7 +35,7 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
         초기_노선_길이 = 12;
         신분당선 = LineAcceptanceTest.지하철노선_생성_요청("신분당선", "bg-red-600", "강남역", "광교역", 초기_노선_길이).as(LineResponse.class);
         노선_ID = 신분당선.getId();
-        상행역_ID = 신분당선.getStations().get(0).getId(); // TODO: index 접근이 아닌 다른 방법 생각하기
+        상행역_ID = 신분당선.getStations().get(0).getId();
         하행역_ID = 신분당선.getStations().get(1).getId();
     }
 
@@ -49,7 +49,7 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     void 새로운_역_등록() {
         // When
         ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
-        Long 신규역_ID = 객체_응답_ID(신규역);
+        Long 신규역_ID = 응답_ID(신규역);
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 상행역_ID, 신규역_ID, 4);
 
         // Then
@@ -67,7 +67,7 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     void 새로운_역을_상행_종점으로_등록() {
         // When
         ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신사역");
-        Long 신규역_ID = 객체_응답_ID(신규역);
+        Long 신규역_ID = 응답_ID(신규역);
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID, 상행역_ID, 3);
 
         // Then
@@ -84,7 +84,7 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     void 새로운_역을_하행_종점으로_등록() {
         // When
         ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("동천역");
-        Long 신규역_ID = 객체_응답_ID(신규역);
+        Long 신규역_ID = 응답_ID(신규역);
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID, 상행역_ID, 3);
 
         // Then
@@ -102,7 +102,7 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     void 기존_역_사이_길이보다_크거나_같은_길이_등록_예외(int distance) {
         // When
         ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("양재역");
-        Long 신규역_ID = 객체_응답_ID(신규역);
+        Long 신규역_ID = 응답_ID(신규역);
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 하행역_ID, 신규역_ID, distance);
 
         // Then
@@ -137,9 +137,9 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     void 상행역과_하행역이_노선에_모두_존재하지않는_경우_예외() {
         // When
         ExtractableResponse<Response> 신규역1 = 지하철역_생성_요청("없는역1");
-        Long 신규역1_ID = 객체_응답_ID(신규역1);
+        Long 신규역1_ID = 응답_ID(신규역1);
         ExtractableResponse<Response> 신규역2 = 지하철역_생성_요청("없는역2");
-        Long 신규역2_ID = 객체_응답_ID(신규역2);
+        Long 신규역2_ID = 응답_ID(신규역2);
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역1_ID, 신규역2_ID, 4);
 
         // Then
