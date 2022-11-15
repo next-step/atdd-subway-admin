@@ -170,6 +170,50 @@ class LineStationAcceptanceTest {
         assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
+    /**
+     * Given 역 3개와 노선을 생성하고
+     * When 종점을 제거하면
+     * Then 노선에 역 2개가 남는다.
+     */
+    @DisplayName("노선에서 종점을 제거한다.")
+    @Test
+    void 노선에서_종점_제거() {
+
+    }
+
+    /**
+     * Given 역 3개와 노선을 생성하고
+     * When 가운데 역을 제거하면
+     * Then 노선에 역 2개가 남는다.
+     */
+    @DisplayName("노선에서 가운데 역을 제거한다.")
+    @Test
+    void 노선에서_가운데_역_제거() {
+
+    }
+
+    /**
+     * Given 역 2개와 노선을 생성하고
+     * When 역을 제거하면
+     * Then 제거가 안된다.
+     */
+    @DisplayName("구간이 하나인 노선에서 역을 제거한다.")
+    @Test
+    void 구간이_하나인_노선에서_역_제거() {
+
+    }
+
+    /**
+     * Given 역 2개와 노선을 생성하고
+     * When 노선에 등록되지 않은 역을 제거하면
+     * Then 예외가 발생한다.
+     */
+    @DisplayName("노선에 등록되지 않은 역을 제거한다.")
+    @Test
+    void 노선에_등록되지_않은_역_제거() {
+
+    }
+
     private JsonPath 지하철_역_생성(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
