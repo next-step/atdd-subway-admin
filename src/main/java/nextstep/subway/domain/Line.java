@@ -1,12 +1,11 @@
 package nextstep.subway.domain;
 
+import java.util.List;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 
 @Entity
 public class Line {
@@ -16,34 +15,16 @@ public class Line {
     private Long id;
     private String name;
     private String color;
-    private int distance;
-    @ManyToOne
-    @Fetch(FetchMode.JOIN)
-    private Station upStation;
-    @ManyToOne
-    @Fetch(FetchMode.JOIN)
-    private Station downStation;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
 
-    public Line(Long id, String name, String color, int distance,
-        Station upStation, Station downStation) {
-        this.id = id;
+    public Line(String name, String color, Sections sections) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
-    }
-
-    public Line(String name, String color, int distance, Station upStation,
-        Station downStation) {
-        this.name = name;
-        this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.sections = sections;
     }
 
     public Line(String name, String color) {
@@ -68,11 +49,7 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
+    public List<Station> stations() {
+        return sections.stations();
     }
 }
