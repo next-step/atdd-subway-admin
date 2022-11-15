@@ -29,15 +29,15 @@ public class LineStations {
     }
 
     public List<LineStation> getStationsInOrder() {
-        Optional<LineStation> optionalPreLineStation = findPreStation(null);
+        Optional<LineStation> preLineStation = findPreStation(null);
 
-        List<LineStation> result = new ArrayList<>();
-        while (optionalPreLineStation.isPresent()) {
-            LineStation preLineStation = optionalPreLineStation.get();
-            result.add(preLineStation);
-            optionalPreLineStation = findPreStation(preLineStation.getStation().getId());
+        List<LineStation> list = new ArrayList<>();
+        while (preLineStation.isPresent()) {
+            LineStation lineStation = preLineStation.get();
+            list.add(lineStation);
+            preLineStation = findPreStation(lineStation.getStation().getId());
         }
-        return result;
+        return list;
     }
 
     public void add(LineStation newLineStation) {

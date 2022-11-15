@@ -105,7 +105,7 @@ public class LineAcceptanceTest {
      * When 존재하지 않는 노선을 조회하면
      * Then 404 응답코드를 받는다
      */
-    @DisplayName("존재하지 않는 노선을 조회한")
+    @DisplayName("존재하지 않는 노선을 조회한다")
     @Test
     void notFoundLine() {
         // when

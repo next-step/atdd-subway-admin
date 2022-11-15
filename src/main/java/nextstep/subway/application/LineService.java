@@ -41,9 +41,9 @@ public class LineService {
         stationService.findStationById(lineRequest.getDownStationId(),
             new NoStationException(lineRequest.getDownStationId()));
 
-        Line persistLine = lineRepository.save(Line.of(lineRequest));
+        Line line = lineRepository.save(Line.of(lineRequest));
 
-        return LineResponse.of(persistLine);
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> findAllLines() {
