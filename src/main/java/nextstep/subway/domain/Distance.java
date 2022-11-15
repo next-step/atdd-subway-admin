@@ -47,6 +47,10 @@ public class Distance {
         return Distance.valueOf(value - otherDistance.value);
     }
 
+    public Distance add(Distance otherDistance) {
+        return Distance.valueOf(value + otherDistance.value);
+    }
+
     private void verifyDistanceShorter(Distance otherDistance) {
         if (isLessThan(otherDistance)) {
             throw new CannotAddSectionException(CannotAddSectionException.LONGER_THAN_SECTION);

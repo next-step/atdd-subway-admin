@@ -6,15 +6,11 @@ import nextstep.subway.exception.CannotAddSectionException;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.CannotAddSectionException.NO_MATCHED_STATION;
+import static nextstep.subway.exception.CannotAddSectionException.UP_AND_DOWN_STATION_ALL_EXISTS;
 
 @Embeddable
 public class Sections {
@@ -34,28 +30,58 @@ public class Sections {
             sectionList.add(new Section(line, upStation, downStation, distance));
             return;
         }
-        Section previousSection = getPreviousSection(upStation, downStation);
-        List<Section> appendedSections = previousSection.addSection(upStation, downStation, distance);
+        validate(upStation, downStation);
 
-        replaceSection(previousSection, appendedSections);
+        List<Section> splitSections = splitSection(upStation, downStation, distance);
+        sectionList.clear();
+        sectionList.addAll(splitSections);
     }
 
-    private Section getPreviousSection(Station upStation, Station downStation) {
+    public void validate(Station upStation, Station downStation) {
+        boolean isDownStationExistsOnUpStation = isUpStationExists(downStation);
+        boolean isUpStationExistsOnDownStation = isDownStationExists(upStation);
+
+        boolean isUpStationExists = isUpStationExists(upStation);
+        boolean isDownStationExists = isDownStationExists(downStation);
+
+        if (canAddOnLastUpStation(isDownStationExistsOnUpStation, isUpStationExists) ||
+                canAddOnLastDownStation(isUpStationExistsOnDownStation, isDownStationExists)) {
+            return;
+        }
+        if (!isUpStationExists && !isDownStationExists) {
+            throw new CannotAddSectionException(NO_MATCHED_STATION);
+        }
+        if (isUpStationExists && isDownStationExists) {
+            throw new CannotAddSectionException(UP_AND_DOWN_STATION_ALL_EXISTS);
+        }
+    }
+
+    private static boolean canAddOnLastUpStation(boolean isDownStationExistsOnUpStation, boolean isUpStationExsists) {
+        return isDownStationExistsOnUpStation && !isUpStationExsists;
+    }
+
+    private static boolean canAddOnLastDownStation(boolean isUpStationExistsOnDownStation, boolean isDownStationExists) {
+        return isUpStationExistsOnDownStation && !isDownStationExists;
+    }
+
+    private boolean isUpStationExists(Station upStation) {
+        return sectionList.stream().anyMatch(section -> section.isUpStation(upStation));
+    }
+    private boolean isDownStationExists(Station downStation) {
+        return sectionList.stream().anyMatch(section -> section.isDownStation(downStation));
+    }
+
+    private List<Section> splitSection(Station upStation, Station downStation, Distance distance) {
         return sectionList.stream()
-                .filter(section -> section.canAddSection(upStation, downStation))
-                .findFirst()
-                .orElseThrow(() -> new CannotAddSectionException(NO_MATCHED_STATION));
+                .map(section -> section.splitSection(upStation, downStation, distance))
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
-    private void replaceSection(Section previousSection, List<Section> appendedSections) {
-        int previousLineStationIndex = sectionList.indexOf(previousSection);
-        sectionList.remove(previousLineStationIndex);
-        sectionList.addAll(previousLineStationIndex, appendedSections);
-    }
-
-    public List<Station> getStations() {
+    public Stations getStations() {
         if (sectionList.isEmpty()) {
-            return Collections.emptyList();
+            return Stations.EMPTY;
         }
         Deque<Section> sections = new ArrayDeque<>(sectionList);
         Deque<Station> orderedStations = new ArrayDeque<>();
@@ -63,7 +89,7 @@ public class Sections {
         orderedStations.add(firstSection.getUpStation());
         orderedStations.add(firstSection.getDownStation());
 
-        return new ArrayList<>(getOrderedStations(sections, orderedStations));
+        return new Stations(new ArrayList<>(getOrderedStations(sections, orderedStations)));
     }
 
     private Deque<Station> getOrderedStations(Deque<Section> sections, Deque<Station> orderedStations) {
@@ -87,6 +113,38 @@ public class Sections {
         return getOrderedStations(sections, orderedStations);
     }
 
+    public void removeStation(Station station) {
+        List<Section> sections = findSections(station);
+        collapseSections(sections);
+    }
+
+    private void collapseSections(List<Section> sections) {
+        Section upSection = sections.get(0);
+        Section downSection = sections.get(1);
+
+        Station upStation = upSection.getUpStation();
+        Station downStation = downSection.getDownStation();
+
+        Section section = new Section(upSection.getLine(),
+                upStation,
+                downStation,
+                upSection.addDistance(downSection));
+
+        sections.add(section);
+        removeSections(upSection, downSection);
+    }
+
+    private void removeSections(Section ...sections) {
+        Arrays.stream(sections)
+                .forEach(section -> sectionList.remove(section));
+    }
+
+    private List<Section> findSections(Station station) {
+        return sectionList.stream()
+                .filter(section -> section.hasStation(station))
+                .collect(Collectors.toList());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -98,16 +156,15 @@ public class Sections {
         Sections that = (Sections) o;
         return sectionList.equals(that.sectionList);
     }
-
     @Override
     public int hashCode() {
         return Objects.hash(sectionList);
     }
+
     @Override
     public String toString() {
         return "LineStations{" +
                 "lineStationList=" + sectionList +
                 '}';
     }
-
 }

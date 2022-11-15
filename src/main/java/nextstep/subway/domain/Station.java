@@ -1,11 +1,7 @@
 package nextstep.subway.domain;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
@@ -48,5 +44,12 @@ public class Station extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(name);
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                " name='" + name + '\'' +
+                '}';
     }
 }

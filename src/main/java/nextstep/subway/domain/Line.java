@@ -1,12 +1,7 @@
 package nextstep.subway.domain;
 
 
-import javax.persistence.Column;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Line extends BaseEntity {
@@ -57,5 +52,13 @@ public class Line extends BaseEntity {
 
 	public Sections getSections() {
 		return sections;
+	}
+
+    public void removeSection(Station station) {
+		sections.removeStation(station);
+    }
+
+	public Stations getStation() {
+		return sections.getStations();
 	}
 }

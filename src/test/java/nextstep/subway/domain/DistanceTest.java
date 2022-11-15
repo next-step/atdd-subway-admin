@@ -35,4 +35,9 @@ class DistanceTest {
         assertThatThrownBy(() -> Distance.valueOf(4).subtract(Distance.valueOf(4)))
                 .isInstanceOf(CannotAddSectionException.class);
     }
+
+    @Test
+    void add() {
+        assertThat(Distance.valueOf(4).add(Distance.valueOf(1))).isEqualTo(Distance.valueOf(5));
+    }
 }

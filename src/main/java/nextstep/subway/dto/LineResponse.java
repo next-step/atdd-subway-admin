@@ -44,6 +44,7 @@ public class LineResponse {
 
 	public static List<StationResponse> toStations(Sections sections) {
 		return sections.getStations()
+				.getStationList()
 				.stream()
 				.map(StationResponse::of)
 				.collect(Collectors.toList());
