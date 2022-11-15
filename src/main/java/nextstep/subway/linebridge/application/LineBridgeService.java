@@ -37,7 +37,7 @@ public class LineBridgeService {
         return LineBridgeDto.Response.of(lineBridge);
     }
 
-    public void deleteLineBridge(Long id) {
+    public void deleteLineBridgeByStationId(Long id) {
 
 
     }

@@ -30,7 +30,7 @@ public class LineBridgeController {
 
     @DeleteMapping("/lines/{id}/sections")
     public ResponseEntity<LineBridgeDto.Response> deleteLineBridge(@PathVariable Long id, @PathParam("stationId") Long stationId) {
-        lineBridgeService.deleteLineBridge(id);
+        lineBridgeService.deleteLineBridgeByStationId(id);
         return ResponseEntity.ok().build();
     }
 
