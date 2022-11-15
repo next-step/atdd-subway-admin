@@ -38,13 +38,13 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ValidatableResponse response = requestRegister("강남역");
+        ValidatableResponse response = createStation("강남역");
 
         // then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = requestFetch().extract()
+        List<String> stationNames = fetchStation().extract()
                 .jsonPath()
                 .getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
@@ -59,10 +59,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        requestRegister("강남역");
+        createStation("강남역");
 
         // when
-        ValidatableResponse response = requestRegister("강남역");
+        ValidatableResponse response = createStation("강남역");
 
         // then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -77,11 +77,11 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        requestRegister("강남역");
-        requestRegister("양재역");
+        createStation("강남역");
+        createStation("양재역");
 
         // when
-        List<String> stationNames = requestFetch()
+        List<String> stationNames = fetchStation()
                 .extract()
                 .jsonPath()
                 .getList("name", String.class);
@@ -99,24 +99,24 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        long stationId = requestRegister("강남역").extract()
+        long stationId = createStation("강남역").extract()
                 .jsonPath()
                 .getLong("id");
 
         // when
-        int statusCode = requestDelete(stationId).extract()
+        int statusCode = deleteStation(stationId).extract()
                 .response()
                 .statusCode();
         assertThat(statusCode).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
-        List<String> stationNames = requestFetch().extract()
+        List<String> stationNames = fetchStation().extract()
                 .jsonPath()
                 .getList("name", String.class);
         assertThat(stationNames).isEmpty();
     }
 
-    private ValidatableResponse requestRegister(String name) {
+    private ValidatableResponse createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -127,14 +127,14 @@ public class StationAcceptanceTest {
                 .then().log().all();
     }
 
-    private ValidatableResponse requestDelete(long id) {
+    private ValidatableResponse deleteStation(long id) {
         return RestAssured.given().log().all()
                 .pathParam("id", id)
                 .when().delete("/stations/{id}")
                 .then().log().all();
     }
 
-    private ValidatableResponse requestFetch() {
+    private ValidatableResponse fetchStation() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all();
