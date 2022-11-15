@@ -11,7 +11,7 @@ public class SectionAcceptanceTestFixture {
 
     public static ExtractableResponse<Response> 지하철_노선_구간_추가(Long id, Long upStationId,
         Long downStationId, int distance) {
-        SectionRequest sectionRequest = SectionRequest.from(upStationId, downStationId, distance);
+        SectionRequest sectionRequest = SectionRequest.of(upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()
             .body(sectionRequest)

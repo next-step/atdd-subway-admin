@@ -20,7 +20,7 @@ public class Distance {
         this.distance = distance;
     }
 
-    public static Distance of(int distance) {
+    public static Distance from(int distance) {
         if (distance < MIN) {
             throw new IllegalArgumentException(String.format(ROUTE_DISTANCE_ERROR, MIN));
         }
@@ -28,7 +28,7 @@ public class Distance {
     }
 
     public Distance substract(Distance distance) {
-        return Distance.of(this.distance - distance.value());
+        return Distance.from(this.distance - distance.value());
     }
 
     public int value() {

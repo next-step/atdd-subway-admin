@@ -24,11 +24,11 @@ public class LineResponse {
         this.name = name;
         this.color = color;
         this.stations = stations.stream()
-            .map(StationResponse::of)
+            .map(StationResponse::from)
             .collect(Collectors.toList());
     }
 
-    public static LineResponse of(Line line) {
+    public static LineResponse from(Line line) {
         return new LineResponse(
             line.getId(),
             line.getName(),
