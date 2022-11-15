@@ -7,6 +7,7 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Distance {
     private static final int MIN_DISTANCE = 0;
+    private static final String CAN_NOT_LESS_THAN_ZERO = "Distance는 0이하의 값일 수 없습니다.";
     @Column(name = "distance", nullable = false)
     private int value;
 
@@ -19,7 +20,7 @@ public class Distance {
 
     public void validate(int value) {
         if (value <= MIN_DISTANCE) {
-            throw new IllegalArgumentException("Distance는 0이하의 값일 수 없습니다.");
+            throw new IllegalArgumentException(CAN_NOT_LESS_THAN_ZERO);
         }
     }
 
