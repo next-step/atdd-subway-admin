@@ -13,7 +13,6 @@ import nextstep.subway.BaseAcceptanceTest;
 import nextstep.subway.ResponseAssertTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
