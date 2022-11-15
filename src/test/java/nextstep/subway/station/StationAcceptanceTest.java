@@ -1,37 +1,33 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.station.StationTestFixtures.지하철역_목록조회;
+import static nextstep.subway.station.StationTestFixtures.지하철역_삭제;
+import static nextstep.subway.station.StationTestFixtures.지하철역_생성;
+import static nextstep.subway.station.StationTestFixtures.지하철역_생성_값_리턴;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import nextstep.subway.fixtures.TestFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
+class StationAcceptanceTest extends TestFixtures {
 
     @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
+    void beforeEach() {
+        setUp();
     }
 
     /**
      * When 지하철역을 생성하면
+     * <p>
      * Then 지하철역이 생성된다
+     * <p>
      * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
     @DisplayName("지하철역을 생성한다.")
@@ -45,6 +41,7 @@ public class StationAcceptanceTest {
 
         // then
         List<String> stationNames = 지하철역_목록조회("name");
+
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -97,39 +94,9 @@ public class StationAcceptanceTest {
         String id = 지하철역_생성_값_리턴("경기 광주역", "id");
 
         //when
-        ExtractableResponse<Response> response = 지하철역_삭제(id);
+        ExtractableResponse<Response> response = 지하철역_삭제("/{id}", id);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ExtractableResponse<Response> 지하철역_생성(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private String 지하철역_생성_값_리턴(String stationName, String value) {
-        return 지하철역_생성(stationName).jsonPath().getString(value);
-    }
-
-    private ExtractableResponse<Response> 지하철역_삭제(String id) {
-        return RestAssured.given().log().all()
-                .when().delete("/stations/{id}", id)
-                .then().log().all()
-                .extract();
-    }
-
-    private List<String> 지하철역_목록조회(String information) {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract().jsonPath().getList(information, String.class);
     }
 }
