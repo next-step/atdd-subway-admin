@@ -35,4 +35,13 @@ public class Sections {
             .distinct()
             .collect(Collectors.toList());
     }
+
+    public void addSection(Section newSection) {
+        Section prevSection = sections.stream()
+            .filter(section -> section.prevSection(newSection))
+            .findFirst()
+            .get();
+        prevSection.change(newSection);
+        sections.add(newSection);
+    }
 }

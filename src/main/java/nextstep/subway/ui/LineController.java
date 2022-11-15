@@ -5,6 +5,7 @@ import java.util.List;
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.UpdateLineRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -50,6 +51,13 @@ public class LineController {
     @DeleteMapping("/lines/{id}")
     public ResponseEntity<Void> deleteLine(@PathVariable Long id) {
         lineService.deleteLine(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/lines/{id}/sections")
+    public ResponseEntity<Void> createSection(@PathVariable Long id,
+        @RequestBody SectionRequest request) {
+        lineService.addSection(id, request);
         return ResponseEntity.noContent().build();
     }
 }

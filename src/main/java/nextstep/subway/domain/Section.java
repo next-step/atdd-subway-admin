@@ -36,4 +36,13 @@ public class Section {
     public List<Station> stations() {
         return Arrays.asList(upStation, downStation);
     }
+
+    public boolean prevSection(Section newSection) {
+        return this.upStation == newSection.upStation;
+    }
+
+    public void change(Section newSection) {
+        this.distance -= newSection.distance;
+        this.upStation = newSection.downStation;
+    }
 }

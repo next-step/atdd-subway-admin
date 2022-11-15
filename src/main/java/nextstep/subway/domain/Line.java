@@ -37,6 +37,10 @@ public class Line {
         this.color = otherLine.color;
     }
 
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
     public Long getId() {
         return id;
     }
@@ -52,4 +56,5 @@ public class Line {
     public List<Station> stations() {
         return sections.stations();
     }
+
 }

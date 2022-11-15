@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.UpdateLineRequest;
 import nextstep.subway.exception.NoLineException;
 import nextstep.subway.exception.NoStationException;
@@ -43,8 +45,7 @@ public class LineService {
     }
 
     public LineResponse getLine(final Long id) {
-        Line line = findLine(id);
-        return LineResponse.of(line);
+        return LineResponse.of(findLine(id));
     }
 
     @Transactional
@@ -58,6 +59,14 @@ public class LineService {
         lineRepository.delete(findLine(id));
     }
 
+    @Transactional
+    public void addSection(final Long id, final SectionRequest request) {
+        Line line = findLine(id);
+        Section section = new Section(findStation(request.getUpStationId()),
+            findStation(request.getDownStationId()), request.getDistance());
+        line.addSection(section);
+    }
+
     private Line findLine(Long id) {
         return lineRepository.findById(id).orElseThrow(NoLineException::new);
     }
@@ -66,4 +75,5 @@ public class LineService {
         return stationRepository.findById(stationId)
             .orElseThrow(NoStationException::new);
     }
+
 }
