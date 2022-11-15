@@ -4,6 +4,7 @@ import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
@@ -34,6 +35,9 @@ class LineServiceTest {
 
     @Mock
     private LineRepository lineRepository;
+
+    @Mock
+    private SectionRepository sectionRepository;
 
     @Mock
     private StationService stationService;
@@ -117,20 +121,35 @@ class LineServiceTest {
 
     @Test
     void 지하철_구간_수정() {
+        Station 교대역 = new Station("교대역");
         Station 강남역 = new Station("강남역");
         Station 역삼역 = new Station("역삼역");
-        Station 교대역 = new Station("교대역");
 
         Line line = new Line("2호선", "bg-green-600");
-        line.addSection(new Section(강남역, 역삼역, 10));
+        Section section = new Section(교대역, 강남역, 10);
+        line.addSection(section);
         SectionRequest request = new SectionRequest(2L, 3L, 10);
 
-        when(stationService.findById(2L)).thenReturn(역삼역);
-        when(stationService.findById(3L)).thenReturn(교대역);
+        when(stationService.findById(2L)).thenReturn(강남역);
+        when(stationService.findById(3L)).thenReturn(역삼역);
+        when(sectionRepository.findAllByRequestedSection(강남역, 역삼역)).thenReturn(Arrays.asList(section));
         when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
 
         lineService.updateSection(1L, request);
 
         assertThat(line.getSections()).hasSize(2);
+    }
+
+    @Test
+    void 특정_노선의_전체_지하철_구간_목록_검색() {
+        Station upStation = new Station("강남역");
+        Station downStation = new Station("역삼역");
+        Line line = new Line("2호선", "bg-green-600");
+        line.addSection(new Section(upStation, downStation, 10));
+
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+        when(sectionRepository.findAllByLine(line)).thenReturn(line.getSections());
+
+        assertThat(lineService.findAllByLine(1L)).hasSize(1);
     }
 }
