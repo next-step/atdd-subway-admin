@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -12,28 +10,25 @@ public class Line extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
+    @Column(unique = true)
     private String color;
-    @OneToMany(mappedBy = "line")
-    private List<Station> stations;
+    @OneToOne
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
+    @OneToOne
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
     private Integer distance;
 
     protected Line() {
-        this.stations = new ArrayList<>();
     }
 
-    public Line(String name, String color, Integer distance) {
-        this(name, color, new ArrayList<>(), distance);
-    }
-
-    public Line(String name, String color, List<Station> stations, Integer distance) {
+    public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
         this.name = name;
         this.color = color;
-        this.stations = stations;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
-    }
-
-    public void addStation(Station station) {
-        station.toLine(this);
     }
 
     public String getName() {
@@ -48,12 +43,24 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     public Integer getDistance() {
         return distance;
+    }
+
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    public void setDownStation(Station downStation) {
+        this.downStation = downStation;
     }
 
     @Override

@@ -8,9 +8,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 public class LineTest {
@@ -20,12 +20,14 @@ public class LineTest {
     private StationRepository stationRepository;
     @Autowired
     private TestEntityManager entityManager;
-    private List<Station> stations;
+    private Station upStation;
+    private Station downStation;
 
     @BeforeEach
     void setUp() {
-        stations = Arrays.asList(new Station("신사역"), new Station("광교(경기대)역"));
-        stationRepository.saveAll(stations);
+        upStation = new Station("신사역");
+        downStation = new Station("광교(경기대)역");
+        stationRepository.saveAll(Arrays.asList(upStation, downStation));
         flushAndClear();
     }
 
@@ -33,7 +35,7 @@ public class LineTest {
     @Test
     void 생성() {
         // given
-        Line shinbundang = new Line("신분당선", "bg-red-600", stations, 10);
+        Line shinbundang = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
 
         // when
         lineRepository.save(shinbundang);
@@ -48,20 +50,23 @@ public class LineTest {
     @Test
     void 라인생성_성공_addStation테스트() {
         // given
-        Line shinbundang = new Line("신분당선", "bg-red-600", 10);
         Station gangNam = new Station("강남역");
         Station seongSoo = new Station("성수역");
         stationRepository.saveAll(Arrays.asList(gangNam, seongSoo));
 
         // when
-        shinbundang.addStation(gangNam);
-        shinbundang.addStation(seongSoo);
-        lineRepository.save(shinbundang);
+        Line line = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+        line.setUpStation(gangNam);
+        line.setDownStation(seongSoo);
+        lineRepository.save(line);
         flushAndClear();
 
         // then
-        Line line = lineRepository.findById(1L).get();
-        assertThat(line.getStations()).contains(gangNam);
+        Line responseLine = lineRepository.findById(1L).get();
+        assertAll(
+                () -> assertThat(responseLine.getUpStation()).isEqualTo(gangNam),
+                () -> assertThat(responseLine.getDownStation()).isEqualTo(seongSoo)
+        );
     }
 
     private void flushAndClear() {
