@@ -40,10 +40,18 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        validateIncludingStation(station);
         validateRemoveStation();
+
         removeStationBetweenUpStationAndDownStation(station);
         removeDownStation(station);
         removeUpStation(station);
+    }
+
+    private void validateIncludingStation(Station station) {
+        if (!this.getStationsInOrder().contains(station)) {
+            throw new DataRemoveException(ExceptionMessage.NOT_FOUND_STATION);
+        }
     }
 
     private void validateRemoveStation() {

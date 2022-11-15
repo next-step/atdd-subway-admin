@@ -131,4 +131,19 @@ class SectionRemoveAcceptanceTest {
 
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Given 새로운 지하철역을 생성한다.
+     * When 지하철 노선에 없는 새로운 지하철역(구간)을 제거헌다.
+     * Then 지하철 역을 제거할 수 없다.
+     */
+    @DisplayName("지하철 노선에 등록되어있지 않은 역을 제거할 수 없다.")
+    @Test
+    void deleteStationFail2() {
+        StationResponse 수원역 = 지하철역_생성("수원역").as(StationResponse.class);
+
+        ExtractableResponse<Response> response = 지하철_노선에서_지하철역_제거(신분당선.getId(), 수원역.getId());
+
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

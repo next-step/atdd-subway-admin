@@ -162,4 +162,17 @@ class LineTest {
                 .isInstanceOf(DataRemoveException.class)
                 .hasMessageStartingWith(ExceptionMessage.FAIL_TO_REMOVE_STATION_FROM_ONE_SECTION);
     }
+
+    @DisplayName("지하철 노선에 존재하지않는 자하철 구간 제거시 예외가 발생한다.")
+    @Test
+    void removeSectionException2() {
+        Line line = Line.of("신분당선", "red", Section.of(upStation, downStation, distance));
+        Section 신사역_강남역_구간 = Section.of(upStation, Station.from("강남역"), 5);
+        line.addSection(신사역_강남역_구간);
+
+        Station 수원역 = Station.from("수원역");
+        Assertions.assertThatThrownBy(() -> line.removeSection(수원역))
+                .isInstanceOf(DataRemoveException.class)
+                .hasMessageStartingWith(ExceptionMessage.NOT_FOUND_STATION);
+    }
 }

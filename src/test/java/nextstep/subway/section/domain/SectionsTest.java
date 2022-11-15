@@ -145,4 +145,14 @@ class SectionsTest {
                 .isInstanceOf(DataRemoveException.class)
                 .hasMessageStartingWith(ExceptionMessage.FAIL_TO_REMOVE_STATION_FROM_ONE_SECTION);
     }
+
+    @DisplayName("지하철 구간에 존재하지 않는 지하철역 제거 시 예외가 발생한다.")
+    @Test
+    void removeStationException2() {
+        Station 수원역 = Station.from("수원역");
+
+        Assertions.assertThatThrownBy(() -> sections.remove(수원역))
+                .isInstanceOf(DataRemoveException.class)
+                .hasMessageStartingWith(ExceptionMessage.NOT_FOUND_STATION);
+    }
 }
