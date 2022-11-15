@@ -50,7 +50,7 @@ public class Line extends BaseEntity {
     }
 
     public void addStation(Station station){
-        station.toLine(this);
+        station.setLine(this);
         stations.add(station);
     }
 

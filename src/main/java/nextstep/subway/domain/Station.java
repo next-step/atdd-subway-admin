@@ -37,7 +37,7 @@ public class Station extends BaseEntity {
         return name;
     }
 
-    public void toLine(Line line){
+    public void setLine(Line line){
         this.line = line;
     }
 }
