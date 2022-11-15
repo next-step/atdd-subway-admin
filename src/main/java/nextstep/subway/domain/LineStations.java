@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.exception.AllRegisteredStationsException;
+import nextstep.subway.exception.NotAllIncludedStationsException;
 import nextstep.subway.exception.ShortDistanceException;
 
 @Embeddable
@@ -40,7 +41,7 @@ public class LineStations {
     }
 
     public void add(LineStation newLineStation) {
-        validate(newLineStation);
+        validate(newLineStation.getPreStationId(), newLineStation.getStation().getId());
         findStation(newLineStation.getStation().getId())
             .ifPresent(ls -> ls.updateFirstNode(newLineStation.getPreStationId()));
         findPreStation(newLineStation.getPreStationId())
@@ -51,13 +52,16 @@ public class LineStations {
         lineStations.add(newLineStation);
     }
 
-    private void validate(LineStation newLineStation) {
-        validateAllRegisteredStations(newLineStation.getPreStationId(), newLineStation.getStation().getId());
-    }
+    private void validate(Long upStationId, Long downStationId) {
+        boolean isPresentUpStation = findStation(upStationId).isPresent();
+        boolean isPresentDownStation = findStation(downStationId).isPresent();
 
-    private void validateAllRegisteredStations(Long upStationId, Long downStationId) {
-        if (findStation(upStationId).isPresent() && findStation(downStationId).isPresent()) {
+        if (isPresentUpStation && isPresentDownStation) {
             throw new AllRegisteredStationsException();
+        }
+
+        if (!isPresentDownStation && !isPresentUpStation) {
+            throw new NotAllIncludedStationsException();
         }
     }
 

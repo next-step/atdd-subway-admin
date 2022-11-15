@@ -115,7 +115,7 @@ public class SectionAcceptanceTest {
      */
     @DisplayName("기존 역사이 길이보다 길면 등록할 수 없다")
     @Test
-    void createSectionMiddleThrowException() {
+    void longerThanNowDistance() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
             .body(new SectionRequestDto(1L, 5L, 10))
@@ -136,7 +136,7 @@ public class SectionAcceptanceTest {
      */
     @DisplayName("상행역 하행역 모두 노선에 등록되어있을 시 추가할 수 없다")
     @Test
-    void createSectionWhenAllRegisteredThrowException() {
+    void alreadyRegisteredAllStations() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
             .body(new SectionRequestDto(2L, 1L, 10))
@@ -149,6 +149,27 @@ public class SectionAcceptanceTest {
         assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(BAD_REQUEST);
         assertThat(sectionsResponse.jsonPath().getString("message")).isEqualTo(
             "이미 상행역/하행역 모두 노선에 추가되어 있습니다.");
+    }
+
+    /**
+     * When 상행역/하행역 모두 포함되어있지 않으면
+     * Then 추가할 수 없다
+     */
+    @DisplayName("상행역/하행역 둘 중 하나라도 포함되어있어야한다")
+    @Test
+    void stationsNull() {
+        // when
+        ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
+            .body(new SectionRequestDto(3L, 4L, 10))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(BAD_REQUEST);
+        assertThat(sectionsResponse.jsonPath().getString("message")).isEqualTo(
+            "상행역/하행역 모두 노선에 추가되어있지 않습니다.");
     }
 
     static class SectionRequestDto {
