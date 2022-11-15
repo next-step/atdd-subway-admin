@@ -55,8 +55,8 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void updateSections(Section request) {
-        sections.updateSections(this, request);
+    public void updateSections(Section request, List<Section> matchedSections) {
+        sections.updateSections(this, request, matchedSections);
     }
 
     public Long getId() {
