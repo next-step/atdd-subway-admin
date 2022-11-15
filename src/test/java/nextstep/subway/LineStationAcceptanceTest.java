@@ -106,6 +106,7 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 하행역_ID, 신규역_ID, distance);
 
         // Then
+        printErrorMessage(지하철_노선에_지하철역_등록_응답);
         assertThat(지하철_노선에_지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -119,10 +120,10 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
     void 상행역과_하행역이_이미_노선에_등록_예외() {
         // When
         ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("양재역");
-        Long 신규역_ID = 객체_응답_ID(신규역);
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 상행역_ID, 하행역_ID, 4);
 
         // Then
+        printErrorMessage(지하철_노선에_지하철역_등록_응답);
         assertThat(지하철_노선에_지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -131,7 +132,6 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
      * When 상행역과 하행역에 둘 중 하나도 포함되어있지 않은 노선을 등록하면
      * Then 400 Bad Request를 응답한다.
      */
-    // TODO:: http 400에 error message 담기
     @DisplayName("예외 테스트 : 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
     void 상행역과_하행역이_노선에_모두_존재하지않는_경우_예외() {
@@ -143,6 +143,7 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역1_ID, 신규역2_ID, 4);
 
         // Then
+        printErrorMessage(지하철_노선에_지하철역_등록_응답);
         assertThat(지하철_노선에_지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -169,5 +170,9 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
                 .when().post("/lines/{lineId}/stations", lineId)
                 .then().log().all()
                 .extract();
+    }
+
+    private static void printErrorMessage(ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답) {
+        System.out.println(지하철_노선에_지하철역_등록_응답.jsonPath().getString("errorMessage"));
     }
 }

@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/lines")
-public class LineController {
+public class LineController extends BaseController{
     private LineService lineService;
 
     public LineController(LineService lineService) {
