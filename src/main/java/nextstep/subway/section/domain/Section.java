@@ -50,6 +50,10 @@ public class Section {
         this.line = line;
     }
 
+    public void removeFromLine() {
+        this.line = null;
+    }
+
     public Station getUpStation() {
         return upStation;
     }

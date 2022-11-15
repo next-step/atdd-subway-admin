@@ -20,4 +20,11 @@ public class SectionController {
         sectionCommandService.addSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
+
+    @DeleteMapping(value = "/{lineId}/sections")
+    public ResponseEntity<Void> removeSection(@PathVariable(name = "lineId") Long lineId,
+                                              @RequestParam(name = "stationId") Long stationId) {
+        sectionCommandService.removeSection(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
 }

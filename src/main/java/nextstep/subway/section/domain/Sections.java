@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -34,6 +35,18 @@ public class Sections {
 
         updateUpStation(section);
         sections.add(section);
+    }
+
+    public void remove(Station station) {
+        Optional<Section> sectionIncludingUpStation = sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findAny();
+
+        if (sectionIncludingUpStation.isPresent()) {
+            Section section = sectionIncludingUpStation.get();
+            section.removeFromLine();
+            sections.remove(section);
+        }
     }
 
     private void validateUniqueSection(Section section) {

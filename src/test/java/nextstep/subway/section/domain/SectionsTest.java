@@ -78,4 +78,20 @@ class SectionsTest {
                         Station.from("광교역")
                 );
     }
+
+    @DisplayName("지하철 구간에서 상행종점역을 제거하면 다음역이 상행종점역이 된다.")
+    @Test
+    void removeUpStation() {
+        Station 신사역 = Station.from("신사역");
+        Station 강남역 = Station.from("강남역");
+        sections.add(Section.of(신사역, 강남역, 5));
+
+        sections.remove(신사역);
+
+        Assertions.assertThat(sections.getStationsInOrder())
+                .containsExactly(
+                        Station.from("강남역"),
+                        Station.from("광교역")
+                );
+    }
 }
