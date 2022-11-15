@@ -54,6 +54,7 @@ public class LineService {
 
     @Transactional
     public void deleteLineById(Long id) {
+        lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         lineRepository.deleteById(id);
     }
 }
