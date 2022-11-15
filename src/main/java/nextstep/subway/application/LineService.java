@@ -35,9 +35,9 @@ public class LineService {
 
     @Transactional
     public LineResponse save(LineRequest lineRequest) {
-        Line line = lineRepository.save(lineRequest.toLine());
-        line.addSections(Section.makeInitialSections(findStationById(lineRequest.getUpStationId()),
-                findStationById(lineRequest.getDownStationId()), lineRequest.getDistance()));
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
+        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation, lineRequest.getDistance()));
         return LineResponse.of(line);
     }
 

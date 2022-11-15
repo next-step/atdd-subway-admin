@@ -27,11 +27,11 @@ public class SectionService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLineById(lineId);
         Section section = sectionRequest.toSection(findLineById(lineId),
                 findStationById(sectionRequest.getUpStationId()),
                 findStationById(sectionRequest.getDownStationId()));
-
-        sectionRepository.save(section);
+        line.addSection(section);
     }
 
     private Line findLineById(Long lineId) {

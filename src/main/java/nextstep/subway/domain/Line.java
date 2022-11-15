@@ -31,12 +31,17 @@ public class Line extends BaseEntity {
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
     private List<Section> sections = new ArrayList<>();
 
+    public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
+        Line line = new Line(name, color);
+        line.addInitialSections(Section.makeInitialSections(upStation, downStation, distance));
+        return line;
+    }
+
     protected Line() {
 
     }
 
     public Line(String name, String color) {
-
         validName(name);
         validColor(color);
 
@@ -85,7 +90,7 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void addSections(List<Section> sections) {
+    private void addInitialSections(List<Section> sections) {
         sections.forEach(this::addSection);
     }
 
