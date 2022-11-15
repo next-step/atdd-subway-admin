@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    public static final int ONE_SECTION = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
 
@@ -33,12 +35,12 @@ public class Sections {
             return;
         }
 
-        validate(newSection);
+        validateAddtion(newSection);
         sections.forEach(section -> section.update(newSection));
         sections.add(newSection);
     }
 
-    private void validate(Section section) {
+    private void validateAddtion(Section section) {
         validateHasBothStations(section);
         validateHasNotBothStations(section);
     }
@@ -63,6 +65,7 @@ public class Sections {
     }
 
     public void delete(Station station) {
+        validateDeletion(station);
         Optional<Section> prevSection = findPrevSection(station);
         Optional<Section> nextSection = findNextSection(station);
 
@@ -72,6 +75,23 @@ public class Sections {
         }
 
         deleteEndSection(prevSection, nextSection);
+    }
+
+    public void validateDeletion(Station station) {
+        validateNotExistStation(station);
+        validateOneSection();
+    }
+
+    private void validateNotExistStation(Station station) {
+        if (!getStations().contains(station)) {
+            throw new IllegalArgumentException("삭제하려는 지하철이 노선에 존재하지 않습니다");
+        }
+    }
+
+    private void validateOneSection() {
+        if (sections.size() == ONE_SECTION) {
+            throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다.");
+        }
     }
 
     private Optional<Section> findPrevSection(Station station) {

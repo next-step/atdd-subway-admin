@@ -247,7 +247,7 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선을 생성하고
+     * Given 지하철 노선과 구간 2개를 생성하고
      * When 노선에 존재하지 않는 역을 삭제하면
      * Then 삭제되지 않는다
      */
@@ -260,7 +260,10 @@ public class SectionAcceptanceTest {
         판교역_ID = 생성된_지하철_역_ID_조회("판교역");
         강남역_ID = 생성된_지하철_역_ID_조회("강남역");
         신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
-        Long 노선에_없는_신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+
+        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 4);
+        Long 노선에_없는_신규_역_ID = 생성된_지하철_역_ID_조회("안드로메다역");
 
         // when
         지하철_구간_삭제_결과 = 지하철_구간_삭제(신분당선_구간_ID, 노선에_없는_신규_역_ID);
@@ -270,13 +273,13 @@ public class SectionAcceptanceTest {
     }
 
     /**
-     * Given 지하철 노선을 생성하고
+     * Given 지하철 노선과 구간을 생성하고
      * When 마지막 구간을 삭제하면
      * Then 삭제되지 않는다
      */
     @DisplayName("마지막 구간은 삭제할 수 없다")
     @Test
-    void deleteOneLineStationException() {
+    void deleteOneSectionStationException() {
         // given
         int distance = 10;
         String lineName = "신분당선";
