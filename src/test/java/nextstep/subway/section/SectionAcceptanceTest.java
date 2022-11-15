@@ -81,8 +81,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      *  Then 노선의 하행 종점이 변경된다.
      */
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    @Test
     void addSectionEndOfLine() {
+        // given
+        Long lineId = getId(createLine("2호선", "bg-green-600", 20, 서초역, 강남역));
 
+        // when
+        Long 역삼역 = getId(createStation("역삼역"));
+        ExtractableResponse<Response> createSectionResponse = addSection(lineId, 강남역, 역삼역, 10);
+        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        ExtractableResponse<Response> findLineResponse = findLine(lineId);
+        assertThat(getStations(findLineResponse)).hasSize(3);
+        assertThat(getStationNames(findLineResponse)).contains("서초역", "강남역", "역삼역");
     }
 
     /**
