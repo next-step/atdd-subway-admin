@@ -91,9 +91,9 @@ public class Sections {
     private void removeEndPoint(final List<Section> sections) {
         Section section = sections.get(0);
         if (section.isAscentEndpoint()) {
-            section.getDownStation().changeAscentEndPoint(true);
+            section.changeAscentEndPoint(true);
         } else if (section.isDeAscentEndpoint()) {
-            section.getUpStation().changeAscentEndPoint(false);
+            section.changeAscentEndPoint(false);
         }
         removeSection(section);
     }
@@ -110,7 +110,7 @@ public class Sections {
 
     private void connect(final Section A, final Section B) {
         int distance = connectDistance(A, B);
-        if (A.getDownStation().isDeAscentEndPoint()) {
+        if (A.isDeAscentEndpoint()) {
             B.setDownStation(A.getDownStation());
             B.changeDistance(distance);
             removeSection(A);

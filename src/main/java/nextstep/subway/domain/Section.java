@@ -1,10 +1,14 @@
 package nextstep.subway.domain;
 
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.DynamicInsert;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@DynamicInsert
 @Entity
 public class Section extends BaseEntity {
     @Id
@@ -22,6 +26,10 @@ public class Section extends BaseEntity {
     private Station downStation;
     @Embedded
     private Distance distance;
+    @ColumnDefault("false")
+    private boolean isAscentEndPoint;
+    @ColumnDefault("false")
+    private boolean isDeAscentEndPoint;
 
     protected Section() {
 
@@ -89,17 +97,8 @@ public class Section extends BaseEntity {
     }
 
     public void registerEndPoint() {
-        registerAscentEndPoint();
-        registerDeAscentEndPoint();
-    }
-
-    private void registerAscentEndPoint() {
-        upStation.changeAscentEndPoint(true);
-
-    }
-
-    private void registerDeAscentEndPoint() {
-        downStation.changeDeAscentEndPoint(true);
+        changeAscentEndPoint(true);
+        changeDeAscentEndPoint(true);
     }
 
 
@@ -112,11 +111,19 @@ public class Section extends BaseEntity {
     }
 
     public boolean isAscentEndpoint() {
-        return upStation.isAscentEndPoint();
+        return isAscentEndPoint;
     }
 
     public boolean isDeAscentEndpoint() {
-        return downStation.isDeAscentEndPoint();
+        return isDeAscentEndPoint;
+    }
+
+    public void changeAscentEndPoint(final Boolean ascentEndPoint) {
+        isAscentEndPoint = ascentEndPoint;
+    }
+
+    public void changeDeAscentEndPoint(final Boolean deAscentEndPoint) {
+        isDeAscentEndPoint = deAscentEndPoint;
     }
 
     @Override
@@ -148,11 +155,11 @@ public class Section extends BaseEntity {
             changeDownStation(newSection.getUpStation());
             minusDistanceOf(newSection);
         } else if (isAscentEndpoint(newSection)) {
-            getUpStation().changeAscentEndPoint(false);
-            newSection.getUpStation().changeAscentEndPoint(true);
+            changeAscentEndPoint(false);
+            changeAscentEndPoint(true);
         } else if (isDeAscentEndpoint(newSection)) {
-            getDownStation().changeDeAscentEndPoint(false);
-            newSection.getDownStation().changeDeAscentEndPoint(true);
+            changeDeAscentEndPoint(false);
+            changeDeAscentEndPoint(true);
         }
     }
 
