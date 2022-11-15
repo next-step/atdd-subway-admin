@@ -49,7 +49,7 @@ class SectionRemoveAcceptanceTest {
     }
 
     /**
-     * Given 주어진 자하철 노선에 지하철역(구간)을 추가한다.
+     * Given 주어진 지하철 노선에 지하철역(구간)을 추가한다.
      * When 지하철 노선에서 상행 종점역을 제거한다.
      * Then 제거된 상행종점역 다음 역이 새로운 상행종점역이 된다.
      */
@@ -68,6 +68,29 @@ class SectionRemoveAcceptanceTest {
                 .containsExactly(
                         LineStationResponse.from(강남역),
                         LineStationResponse.from(광교역)
+                );
+    }
+
+    /**
+     * Given 주어진 지하철 노선에 지하철역(구간)을 추가한다.
+     * When 지하철 노선에서 하행종점역을 제거한다.
+     * Then 제거된 하행종점역 전의 역이 새로운 하행종점역이 된다.
+     */
+    @DisplayName("하행종점역이 제거될 경우 이전에 오던 역이 하행종점역이 된다.")
+    @Test
+    void deleteDownStation() {
+        StationResponse 강남역 = 지하철역_생성("강남역").as(StationResponse.class);
+        SectionRequest 신사역_강남역_구간 = SectionRequest.of(신사역.getId(), 강남역.getId(), 5);
+        지하철_노선에_지하철역_등록(신분당선.getId(), 신사역_강남역_구간);
+
+        지하철_노선에서_지하철역_제거(신분당선.getId(), 광교역.getId());
+
+        LineResponse 변경된_신분당선 = 지하철_노선_조회(신분당선.getId()).as(LineResponse.class);
+
+        Assertions.assertThat(변경된_신분당선.getStations())
+                .containsExactly(
+                        LineStationResponse.from(신사역),
+                        LineStationResponse.from(강남역)
                 );
     }
 }

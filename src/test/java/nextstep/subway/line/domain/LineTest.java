@@ -117,4 +117,20 @@ class LineTest {
                         Station.from("광교역")
                 );
     }
+
+    @DisplayName("지하철 노선에서 하행종점역을 제거하면 이전역이 하행종점역이 된다.")
+    @Test
+    void removeSection2() {
+        Line line = Line.of("신분당선", "red", Section.of(upStation, downStation, distance));
+        Section 신사역_강남역_구간 = Section.of(upStation, Station.from("강남역"), 5);
+        line.addSection(신사역_강남역_구간);
+
+        line.removeSection(downStation);
+
+        assertThat(line.getStationsInOrder())
+                .containsExactly(
+                        Station.from("신사역"),
+                        Station.from("강남역")
+                );
+    }
 }
