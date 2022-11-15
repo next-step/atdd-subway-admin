@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -12,10 +15,12 @@ public class Line extends BaseEntity {
     private String name;
     @Column(unique = true)
     private String color;
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Fetch(FetchMode.JOIN)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
     private Integer distance;
