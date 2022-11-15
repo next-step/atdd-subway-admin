@@ -91,9 +91,7 @@ public class LineStationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 하행역_ID, 신규역_ID, distance);
 
         // Then
-        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "강남역", "광교역", "양재역");
-
-
+        assertThat(지하철_노선에_지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("예외 테스트 : 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
