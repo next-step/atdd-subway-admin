@@ -3,7 +3,6 @@ package nextstep.subway.controller;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.service.StationService;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -31,7 +30,7 @@ public class StationController {
     }
 
     @DeleteMapping("/stations/{id}")
-    public ResponseEntity deleteStation(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
         return ResponseEntity.noContent().build();
     }

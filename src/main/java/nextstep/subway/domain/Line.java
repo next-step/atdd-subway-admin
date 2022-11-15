@@ -16,7 +16,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -24,18 +24,17 @@ public class Line extends BaseEntity {
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.sections = new Sections();
-    }
-
-    public Line(String name, String color, Section section) {
-        this(name, color);
-        sections.addSection(section);
-        section.addLine(this);
     }
 
     public void update(Line line) {
         this.name = line.getName();
         this.color = line.getColor();
+    }
+
+    public void addSection(Section section) {
+        // TODO: 지하철 구간 관련 유효성 처리
+        sections.addSection(section);
+        section.changeLine(this);
     }
 
     public Long getId() {
@@ -53,4 +52,5 @@ public class Line extends BaseEntity {
     public Sections getSections() {
         return sections;
     }
+
 }

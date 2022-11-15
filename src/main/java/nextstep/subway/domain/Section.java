@@ -32,7 +32,6 @@ public class Section {
 
     public Section(Station upStation, Station downStation, int distance) {
         validateSection(upStation, downStation, distance);
-
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -42,12 +41,13 @@ public class Section {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException(SAME_SUBWAY_SECTION_ERROR.getMessage());
         }
-        if (distance < 0) {
+        if (distance <= 0) {
             throw new IllegalArgumentException(DISTANCE_CANNOT_BE_ZERO.getMessage());
         }
     }
 
-    public void setLine(Line line) {
+    public void changeLine(Line line) {
         this.line = line;
     }
+
 }

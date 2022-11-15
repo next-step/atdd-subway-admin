@@ -6,6 +6,8 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.exception.ErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,6 +32,7 @@ public class LineService {
     @Transactional
     public LineResponse create(LineRequest request) {
         Line line = request.toLine();
+        line.addSection(getSection(request));
         Line savedLine = lineRepository.save(line);
         return LineResponse.of(savedLine);
     }
@@ -65,9 +68,20 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    @Transactional
+    public void addSection(Long id, SectionRequest request) {
+        Line line = findById(id);
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        line.addSection(new Section(upStation, downStation, request.getDistance()));
+    }
+
     private Line findById(Long id) {
         return lineRepository.findById(id)
-                .orElseThrow(() -> new DataIntegrityViolationException(LINE_ID_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new DataIntegrityViolationException(
+                        String.format(LINE_ID_NOT_FOUND.getMessage(), id))
+                );
     }
+
 
 }
