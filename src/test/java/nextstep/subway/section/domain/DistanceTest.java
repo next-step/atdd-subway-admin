@@ -55,4 +55,15 @@ class DistanceTest {
 
         Assertions.assertThat(result).isEqualTo(Distance.from(4));
     }
+
+    @DisplayName("Distance 객체의 add 메소드를 호출하면 두 거리의 합을 구할 수 있다.")
+    @Test
+    void add() {
+        Distance d1 = Distance.from(10);
+        Distance d2 = Distance.from(6);
+
+        Distance result = d1.add(d2);
+
+        Assertions.assertThat(result).isEqualTo(Distance.from(16));
+    }
 }

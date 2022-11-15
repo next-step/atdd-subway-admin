@@ -93,4 +93,27 @@ class SectionRemoveAcceptanceTest {
                         LineStationResponse.from(강남역)
                 );
     }
+
+    /**
+     * Given 지하철 노선(A-B-C)를 생성한다.
+     * When 지하철 노선(A-B-C)의 중간역(B)을 제거한다.
+     * Then 지하철 노선은 A-C로 재배치된다.
+     */
+    @DisplayName("지하철 노선의 중간역이 제거될 경우 재배치를 한다.")
+    @Test
+    void deleteStationBetweenUpStationAndDownStation() {
+        StationResponse 강남역 = 지하철역_생성("강남역").as(StationResponse.class);
+        SectionRequest 신사역_강남역_구간 = SectionRequest.of(신사역.getId(), 강남역.getId(), 5);
+        지하철_노선에_지하철역_등록(신분당선.getId(), 신사역_강남역_구간);
+
+        지하철_노선에서_지하철역_제거(신분당선.getId(), 강남역.getId());
+
+        LineResponse 변경된_신분당선 = 지하철_노선_조회(신분당선.getId()).as(LineResponse.class);
+
+        Assertions.assertThat(변경된_신분당선.getStations())
+                .containsExactly(
+                        LineStationResponse.from(신사역),
+                        LineStationResponse.from(광교역)
+                );
+    }
 }

@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -37,8 +38,35 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        removeStationBetweenUpStationAndDownStation(station);
         removeDownStation(station);
         removeUpStation(station);
+    }
+
+    private void removeStationBetweenUpStationAndDownStation(Station station) {
+        Optional<Section> sectionIncludingTargetStation = sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findAny();
+
+        if (sectionIncludingTargetStation.isPresent()) {
+            Section section = sectionIncludingTargetStation.get();
+            remove(section);
+            updateSection(station, section);
+        }
+    }
+
+    private void updateSection(Station station, Section section) {
+        Optional<Section> sectionIncludingRemovedStation = sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findAny();
+
+        if (sectionIncludingRemovedStation.isPresent()) {
+            Section toBeUpdatedSection = sectionIncludingRemovedStation.get();
+            toBeUpdatedSection.update(
+                    section.getUpStation(),
+                    section.getDistance().add(toBeUpdatedSection.getDistance())
+            );
+        }
     }
 
     private void removeDownStation(Station station) {
@@ -107,5 +135,17 @@ public class Sections {
                 .filter(upStation -> !downStationsOfSection.contains(upStation))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.UP_STATION_NOT_EXIST_IN_LINE));
+    }
+
+    public Distance getTotalDistance() {
+        Optional<Distance> distance = sections.stream()
+                .map(Section::getDistance)
+                .reduce(Distance::add);
+
+        if (distance.isPresent()) {
+            return distance.get();
+        }
+
+        throw new IllegalArgumentException(ExceptionMessage.INVALID_SECTION_DISTANCE);
     }
 }

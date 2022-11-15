@@ -68,4 +68,16 @@ class SectionCommandServiceTest {
 
         Assertions.assertThat(신분당선.getStationsInOrder()).containsExactly(신사역, 강남역);
     }
+
+
+    @DisplayName("지하철 구간에서 중간역을 제거하면 구간이 재배치된다.")
+    @Test
+    void removeStationBetweenUpStationAndDownStation() {
+        Station 강남역 = stationRepository.save(Station.from("강남역"));
+        sectionCommandService.addSection(신분당선.getId(), SectionRequest.of(신사역.getId(), 강남역.getId(), 5));
+
+        sectionCommandService.removeSection(신분당선.getId(), 강남역.getId());
+
+        Assertions.assertThat(신분당선.getStationsInOrder()).containsExactly(신사역, 광교역);
+    }
 }

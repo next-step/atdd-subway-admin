@@ -6,6 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 class SectionsTest {
 
     private Sections sections;
@@ -110,5 +113,24 @@ class SectionsTest {
                         Station.from("신사역"),
                         Station.from("강남역")
                 );
+    }
+
+    @DisplayName("지하철 구간에서 중간역을 제거하면 구간이 재배치되고, 거리는 기존 구간 거리의 합이 된다.")
+    @Test
+    void removeStationBetweenUpStationAndDownStation() {
+        Station 신사역 = Station.from("신사역");
+        Station 강남역 = Station.from("강남역");
+        sections.add(Section.of(신사역, 강남역, 5));
+
+        sections.remove(Station.from("강남역"));
+
+        assertAll(
+                () -> assertThat(sections.getTotalDistance()).isEqualTo(Distance.from(10)),
+                () -> assertThat(sections.getStationsInOrder())
+                        .containsExactly(
+                                Station.from("신사역"),
+                                Station.from("광교역")
+                        )
+        );
     }
 }
