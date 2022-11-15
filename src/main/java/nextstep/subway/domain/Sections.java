@@ -16,6 +16,7 @@ public class Sections {
 
     public void addSection(Section addSection) {
         validDuplicateSection(addSection);
+        validNotContainSection(addSection);
         sections.add(addSection);
     }
 
@@ -30,6 +31,16 @@ public class Sections {
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet())
                 .containsAll(compareSection.stations());
+    }
+
+    private void validNotContainSection(Section compareSection) {
+        if (sections.isEmpty()) {
+            return;
+        }
+
+        if (getStations().stream().noneMatch(station -> compareSection.stations().contains(station))) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public List<Station> getStations() {

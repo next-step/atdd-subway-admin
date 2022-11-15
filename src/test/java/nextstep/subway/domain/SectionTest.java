@@ -44,6 +44,17 @@ class SectionTest {
     }
 
     @Test
+    @DisplayName("기존역과 일치하는 상행역 또는 하행역이 없을경우 구간 생성 불가능")
+    void notContainSection() {
+        Line line = Line.of("신분당선", "bg-red-600", Section.of(Station.from("논현역"), Station.from("강남역"), Distance.from(10)));
+        Station upStation = Station.from("신논현역");
+        Station downStation = Station.from("판교역");
+        Distance distance = Distance.from(5);
+        assertThatThrownBy(() -> line.addSection(Section.of(upStation, downStation, distance)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
     @DisplayName("역과 역 사이에 구간 추가")
     void addSectionBetweenStations() {
         Line line = Line.of("신분당선", "bg-red-600", Section.of(Station.from("논현역"), Station.from("강남역"), Distance.from(10)));
