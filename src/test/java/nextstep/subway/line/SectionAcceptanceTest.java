@@ -2,9 +2,8 @@ package nextstep.subway.line;
 
 import static nextstep.subway.utils.CommonTestFixture.응답_ID_추출;
 import static nextstep.subway.utils.LineAcceptanceTestUtils.*;
-import static nextstep.subway.utils.LineStationAcceptanceTestUtils.*;
+import static nextstep.subway.utils.SectionAcceptanceTestUtils.*;
 import static nextstep.subway.utils.StationAcceptanceTestUtils.지하철역을_생성한다;
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
@@ -16,10 +15,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 구간 관련 기능")
-class LineStationAcceptanceTest extends AcceptanceTest {
+class SectionAcceptanceTest extends AcceptanceTest {
     private Long 신분당선ID;
     private Long 신사역ID;
     private Long 논현역ID;
@@ -55,7 +53,9 @@ class LineStationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 조회된_신분당선 = 지하철노선을_조회한다(추가된_신분당선);
 
         assertAll(
-                () -> assertThat(추가된_신분당선.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+                () -> 노선_새로운_지하철역_등록_성공_검증(추가된_신분당선),
+                () -> 지하철노선_거리_검증(조회된_신분당선, 15),
+                () -> 지하철노선_저장된_지하철역_목록_검증(조회된_신분당선, 논현역, 신논현역, 강남역)
         );
     }
 
@@ -74,7 +74,9 @@ class LineStationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertAll(
-                () -> assertThat(추가된_신분당선.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+                () -> 노선_새로운_지하철역_등록_성공_검증(추가된_신분당선),
+                () -> 지하철노선_거리_검증(조회된_신분당선, 15),
+                () -> 지하철노선_저장된_지하철역_목록_검증(조회된_신분당선, 신사역, 논현역, 강남역)
         );
     }
 
@@ -93,7 +95,9 @@ class LineStationAcceptanceTest extends AcceptanceTest {
 
         // then
         assertAll(
-                () -> assertThat(추가된_신분당선.statusCode()).isEqualTo(HttpStatus.CREATED.value())
+                () -> 노선_새로운_지하철역_등록_성공_검증(추가된_신분당선),
+                () -> 지하철노선_거리_검증(조회된_신분당선, 15),
+                () -> 지하철노선_저장된_지하철역_목록_검증(조회된_신분당선, 논현역, 강남역, 판교역)
         );
     }
 

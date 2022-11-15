@@ -5,12 +5,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class LineStationAcceptanceTestUtils {
+public class SectionAcceptanceTestUtils {
     public static final int SAFE_DISTANCE = 5;
     public static final int BASE_DISTANCE = 10;
     public static final int OVER_DISTANCE = 15;
@@ -30,7 +31,19 @@ public class LineStationAcceptanceTestUtils {
                 .extract();
     }
 
+    public static void 노선_새로운_지하철역_등록_성공_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
     public static void 노선_새로운_지하철역_등록_실패_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static void 지하철노선_저장된_지하철역_목록_검증(ExtractableResponse<Response> response, String... stations) {
+        assertThat(response.jsonPath().getList("stations.name")).containsAll(Arrays.asList(stations));
+    }
+
+    public static void 지하철노선_거리_검증(ExtractableResponse<Response> response, int distance) {
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(distance);
     }
 }

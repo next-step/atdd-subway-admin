@@ -1,14 +1,13 @@
 package nextstep.subway.domain;
 
+import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,29 +18,43 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
     @Embedded
-    private Distance distance;
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Distance distance) {
+    private Line(String name, String color) {
+        validNameAndColor(name, color);
+
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
     }
 
-    public void updateLine(String name, String color) {
-        this.name = name;
-        this.color = color;
+    public static Line of(String name, String color) {
+        return new Line(name, color);
+    }
+
+    public static Line of(String name, String color, Section section) {
+        Line line = new Line(name, color);
+        line.addSection(section);
+        return line;
+    }
+
+    private void validNameAndColor(String name, String color) {
+        if (StringUtils.isBlank(name) || StringUtils.isBlank(color)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    public void updateLine(Line line) {
+        this.name = line.name;
+        this.color = line.color;
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+        section.toLine(this);
     }
 
     public Long getId() {
@@ -56,11 +69,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public int totalDistance() {
+        return sections.totalDistance();
     }
 }
