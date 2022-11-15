@@ -50,5 +50,19 @@ public class SectionAcceptanceTest extends RestAssuredSetUp {
 
     }
 
+    @DisplayName("상행역과 하행역이 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void createSectionWithNotContainsAnyStation() {
+        long upStationId = 지하철_역_등록("서대문역").jsonPath().getLong("id");
+        long downStationId = 지하철_역_등록("굽은다리역").jsonPath().getLong("id");
+        long lineId = 지하철_노선_등록("2호선", "green", "강남역", "잠실역", 10)
+                .jsonPath()
+                .getLong("id");
+
+        ExtractableResponse<Response> response = 지하철_구간_등록(lineId, new SectionRequest(upStationId, downStationId, 4));
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
 
 }
