@@ -28,13 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest {
-    private Long 판교역_ID;
-    private Long 강남역_ID;
-    private Long 신분당선_구간_ID;
-    private Long 신규_역_ID;
-    private ExtractableResponse<Response> 지하철_구간_추가_결과;
-    private ExtractableResponse<Response> 지하철_구간_삭제_결과;
-
     @LocalServerPort
     int port;
 
@@ -61,13 +54,13 @@ public class SectionAcceptanceTest {
         // given
         int distance = 10;
         String lineName = "신분당선";
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 5);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 5);
 
         // then
         지하철_구간_추가_성공_확인(지하철_구간_추가_결과);
@@ -87,13 +80,13 @@ public class SectionAcceptanceTest {
         // given
         int distance = 10;
         String lineName = "신분당선";
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 판교역_ID, 5);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 판교역_ID, 5);
 
         // then
         지하철_구간_추가_성공_확인(지하철_구간_추가_결과);
@@ -113,13 +106,13 @@ public class SectionAcceptanceTest {
         // given
         int distance = 10;
         String lineName = "신분당선";
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 강남역_ID, 신규_역_ID, 5);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 강남역_ID, 신규_역_ID, 5);
 
         // then
         지하철_구간_추가_성공_확인(지하철_구간_추가_결과);
@@ -139,13 +132,13 @@ public class SectionAcceptanceTest {
     void addSectionException(int newDistance) {
         // given
         int distance = 10;
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, newDistance);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, newDistance);
 
         // then
         지하철_구간_추가_실패(지하철_구간_추가_결과);
@@ -161,12 +154,12 @@ public class SectionAcceptanceTest {
     void addExistSectionException() {
         // given
         int distance = 10;
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 판교역_ID, 강남역_ID, 4);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 판교역_ID, 강남역_ID, 4);
 
         // then
         지하철_구간_추가_실패(지하철_구간_추가_결과);
@@ -182,15 +175,15 @@ public class SectionAcceptanceTest {
     void addNotExistSectionException() {
         // given
         int distance = 10;
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
 
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
         Long 두번째_신규_역_ID = 생성된_지하철_역_ID_조회("양재시민의숲");
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 두번째_신규_역_ID, 4);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 두번째_신규_역_ID, 4);
 
         // then
         지하철_구간_추가_실패(지하철_구간_추가_결과);
@@ -207,10 +200,10 @@ public class SectionAcceptanceTest {
         // given
         int distance = 10;
         String lineName = "신분당선";
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
         지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 판교역_ID, 4);
 
         // when
@@ -232,10 +225,10 @@ public class SectionAcceptanceTest {
         // given
         int distance = 10;
         String lineName = "신분당선";
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
         지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 4);
 
         // when
@@ -257,16 +250,16 @@ public class SectionAcceptanceTest {
         // given
         int distance = 10;
         String lineName = "신분당선";
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
 
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
         지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 4);
         Long 노선에_없는_신규_역_ID = 생성된_지하철_역_ID_조회("안드로메다역");
 
         // when
-        지하철_구간_삭제_결과 = 지하철_구간_삭제(신분당선_구간_ID, 노선에_없는_신규_역_ID);
+        ExtractableResponse<Response> 지하철_구간_삭제_결과 = 지하철_구간_삭제(신분당선_구간_ID, 노선에_없는_신규_역_ID);
 
         // then
         지하철_구간_삭제_실패(지하철_구간_삭제_결과);
@@ -283,12 +276,12 @@ public class SectionAcceptanceTest {
         // given
         int distance = 10;
         String lineName = "신분당선";
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
 
         // when
-        지하철_구간_삭제_결과 = 지하철_구간_삭제(신분당선_구간_ID, 강남역_ID);
+        ExtractableResponse<Response> 지하철_구간_삭제_결과 = 지하철_구간_삭제(신분당선_구간_ID, 강남역_ID);
 
         // then
         지하철_구간_삭제_실패(지하철_구간_삭제_결과);
