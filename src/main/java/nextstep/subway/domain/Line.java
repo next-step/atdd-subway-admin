@@ -1,18 +1,12 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import org.apache.commons.lang3.StringUtils;
 
 @Entity
@@ -28,8 +22,8 @@ public class Line extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    Sections sections = new Sections();
 
     public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
         Line line = new Line(name, color);
@@ -50,14 +44,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        Set<Station> stations = new HashSet<>();
-        sections.forEach(section -> {
-                    stations.add(section.getUpStation());
-                    stations.add(section.getDownStation());
-                });
-        return stations.stream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        return sections.getStations();
     }
 
     public Long getId() {
@@ -78,13 +65,11 @@ public class Line extends BaseEntity {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return sections.getSections();
     }
 
     public void addSection(Section section) {
-        if (!this.sections.contains(section)) {
-            this.sections.add(section);
-        }
+        sections.addSection(section);
         if (section.getLine() != this) {
             section.setLine(this);
         }
