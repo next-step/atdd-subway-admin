@@ -205,7 +205,7 @@ public class LineAcceptanceTest {
         assertThat(lineIds).isEmpty();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_생성(
+    public static ExtractableResponse<Response> 지하철_노선_생성(
             String name,
             String color,
             Long upStationId,
@@ -227,6 +227,17 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .statusCode(HttpStatus.CREATED.value())
                 .extract();
+    }
+
+    public static Long 생성된_지하철_노선_ID_조회(
+            String name,
+            String color,
+            Long upStationId,
+            Long downStationId,
+            int distance
+    ) {
+        return 지하철_노선_생성(name, color, upStationId, downStationId, distance).jsonPath()
+                .getLong("id");
     }
 
     private ExtractableResponse<Response> 지하철_노선_수정(Long id, String name, String color) {
