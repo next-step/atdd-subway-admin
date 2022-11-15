@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -79,11 +80,13 @@ public class LineAcceptanceTest extends BaseTest {
 
         ExtractableResponse<Response> response = getLine(lineId);
 
-        assertThat(response.jsonPath().getLong("id")).isEqualTo(1L);
-        assertThat(response.jsonPath().getString("name")).isEqualTo("2호선");
-        assertThat(response.jsonPath().getString("color")).isEqualTo("bg-green-800");
-        assertThat(response.jsonPath().getString("stations[0].name")).isEqualTo("서울대입구역");
-        assertThat(response.jsonPath().getString("stations[1].name")).isEqualTo("낙성대역");
+        assertAll(
+            () -> assertThat(response.jsonPath().getLong("id")).isEqualTo(1L),
+            () -> assertThat(response.jsonPath().getString("name")).isEqualTo("2호선"),
+            () -> assertThat(response.jsonPath().getString("color")).isEqualTo("bg-green-800"),
+            () -> assertThat(response.jsonPath().getString("stations[0].name")).isEqualTo("서울대입구역"),
+            () -> assertThat(response.jsonPath().getString("stations[1].name")).isEqualTo("낙성대역")
+        );
     }
 
     /**
