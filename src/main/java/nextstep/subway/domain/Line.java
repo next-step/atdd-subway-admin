@@ -26,15 +26,16 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     public Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.sections = new Sections(new Section(upStation, downStation));
+        // Line과 매핑하기 위해 this를 넘겨줌
+        this.sections = new Sections(new Section(upStation, downStation, this, distance));
     }
 
     public Long getId() {

@@ -16,7 +16,6 @@ import static nextstep.subway.constant.Message.*;
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
-    private SectionRepository sectionRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -27,6 +26,9 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = findStationById(Long.valueOf(lineRequest.getUpLastStationId()));
         Station downStation = findStationById(Long.valueOf(lineRequest.getDownLastStationId()));
+
+
+        Line temp = lineRequest.toLine(upStation, downStation);
 
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
@@ -75,13 +77,7 @@ public class LineService {
         Section section = sectionRequest.toSection(upStation, downStation, line);
         line.addSection(section);
 
-        Section persistSection  = sectionRepository.save(section);
-        return SectionResponse.of(persistSection);
-    }
 
-    public SectionResponse.Section findSectionById(Long id) {
-        Section section = sectionRepository.findById(id)
-                .orElseThrow(() -> new CannotFindException(NOT_FOUND_SECTION_ERR));
         return SectionResponse.of(section);
     }
 }

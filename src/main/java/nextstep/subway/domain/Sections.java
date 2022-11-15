@@ -11,7 +11,6 @@ public class Sections {
     private List<Section> sections = new ArrayList<>();
 
     public Sections() {
-
     }
 
     public Sections(Section section) {

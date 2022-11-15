@@ -26,6 +26,6 @@ public class LineRequest {
     private int downLastStationId = 0;
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation);
+        return new Line(name, color, upStation, downStation, distance);
     }
 }

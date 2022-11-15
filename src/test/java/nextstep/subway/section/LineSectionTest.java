@@ -14,8 +14,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceStep.*;
-import static nextstep.subway.section.LineSectionStep.역_2개와_노선을_생성한다;
-import static nextstep.subway.section.LineSectionStep.역_사이에_새로운_역을_등록한다;
+import static nextstep.subway.section.LineSectionStep.*;
 
 @DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -46,13 +45,14 @@ public class LineSectionTest {
     @Test
     void createSection() {
         //given
-        역_2개와_노선을_생성한다();
+        ExtractableResponse<Response> savedLine = 역_2개와_노선을_생성한다();
+        int lineId = savedLine.jsonPath().get("id");
 
         //when
-        역_사이에_새로운_역을_등록한다();
+        ExtractableResponse<Response> savedSection = 역_사이에_새로운_역을_등록한다(lineId);
 
         //then
-        노선_이름이_조회된다(allLineNames, "2호선");
+        구간_추가_성공_확인(savedSection);
     }
 
 
