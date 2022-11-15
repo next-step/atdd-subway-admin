@@ -59,13 +59,12 @@ public class LineAcceptanceTest {
         // when
         ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", upStationId, downStationId, "10");
         String lineName = response.jsonPath().getString("name");
-        List<String> stations = response.jsonPath().getList("stations.name", String.class);
+        List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
 
         // then
         assertAll(
                 () -> assertThat(lineName).isEqualTo("신분당선"),
-                () -> assertThat(stations).containsAnyOf("신사역"),
-                () -> assertThat(stations).containsAnyOf("광교(경기대)역")
+                () -> assertThat(stationNames).containsExactly("신사역", "광교(경기대)역")
         );
     }
 
@@ -104,6 +103,31 @@ public class LineAcceptanceTest {
         assertAll(
                 () -> assertThat(lineNames).containsAnyOf("신분당선"),
                 () -> assertThat(lineNames).containsAnyOf("경강선")
+        );
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 노선을 1개를 조회한다.")
+    @Test
+    void 지하철노선조회_성공() {
+        // given
+        Long id = createLine("신사역", "bg-red-600", upStationId, downStationId, "200")
+                .jsonPath()
+                .getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = getLines(id);
+        Long lineId = response.jsonPath().getLong("id");
+        List<String> stationNames = response.jsonPath().getList("stations.name", String.class);
+
+        // then
+        assertAll(
+                () -> assertThat(lineId).isEqualTo(id),
+                () -> assertThat(stationNames).containsExactly("신사역", "광교(경기대)역")
         );
     }
 }

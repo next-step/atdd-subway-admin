@@ -27,6 +27,10 @@ public class LineAcceptanceTestUtil {
         return get(REQUEST_PATH_FOR_LINE);
     }
 
+    public static ExtractableResponse<Response> getLines(Long id) {
+        return get(REQUEST_PATH_FOR_LINE + "/{id}", id);
+    }
+
     private static Map<String, String> getParams(String name, String color, String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);

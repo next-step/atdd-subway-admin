@@ -28,6 +28,13 @@ public class RestAssuredRequestBuilder {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> get(String path, Long id) {
+        return RestAssured.given().log().all()
+                .when().get(path, id)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> delete(String path, Long id, HttpStatus status) {
         return RestAssured.given().log().all()
                 .when().delete(path, id)

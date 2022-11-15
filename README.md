@@ -163,7 +163,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   } ]
   ```
 
-- [ ] 지하철 노선 조회
+- [x] 지하철 노선 조회
   ```text
   Given 지하철 노선을 생성하고
   When 생성한 지하철 노선을 조회하면
