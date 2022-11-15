@@ -3,6 +3,7 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.response.ValidatableResponse;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.StationResponse;
 import org.assertj.core.api.PredicateAssert;
@@ -27,6 +28,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class StationAcceptanceTest {
     private static final String DELIMITER = "/";
 
+    private static Map<String, String> of(String stationName) {
+        Map<String, String> map = new HashMap<>();
+        map.put("name", stationName);
+        return map;
+    }
+
     @LocalServerPort
     int port;
 
@@ -46,8 +53,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params = StationAcceptanceTest.of("강남역");
 
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
@@ -109,8 +115,7 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        Map<String, String> params = StationAcceptanceTest.of("강남역");
 
         RestAssured.given().log().all()
                 .body(params)
@@ -146,34 +151,23 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-        long deleteTargetStationIdx;
-        String deleteTargetStationName = "";
+        Map<String, String> params = StationAcceptanceTest.of("강남역");
 
-        RestAssured.given().log().all()
+        ExtractableResponse saveResponse = RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
-                .then().log().all();
+                .then().log().all()
+                .extract();
 
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .when().get("/stations")
-                        .then().log().all()
-                        .extract();
-
-        List<StationResponse> stations = response.jsonPath().getList(".", StationResponse.class);
-        Map<Long, String> stationsMap = stations.stream().collect(Collectors.toMap(StationResponse::getId, StationResponse::getName));
-        deleteTargetStationIdx = findDeleteStationIndex(stationsMap, "강남역");
-        deleteTargetStationName = stationsMap.get(deleteTargetStationIdx);
-
+        long deleteTargetStationId = saveResponse.body().jsonPath().getLong("id");
+        String deleteTargetStationName = saveResponse.body().jsonPath().getString("name");
 
         // when
         RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations" + DELIMITER + deleteTargetStationIdx)
+                .when().delete("/stations" + DELIMITER + deleteTargetStationId)
                 .then().log().all();
 
         // then
@@ -184,12 +178,5 @@ public class StationAcceptanceTest {
                         .extract().jsonPath().getList("name", String.class);
 
         assertThat(stationNames).doesNotContain(deleteTargetStationName);
-    }
-
-    private <K, V> K findDeleteStationIndex(Map<K, V> map, V value) {
-        return map.entrySet().stream()
-                .filter(entry -> value.equals(entry.getValue()))
-                .findFirst().map(Map.Entry::getKey)
-                .orElse(null);
     }
 }
