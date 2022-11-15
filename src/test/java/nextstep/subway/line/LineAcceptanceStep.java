@@ -53,8 +53,8 @@ public class LineAcceptanceStep {
     public static ExtractableResponse<Response> 노선_한개_생성한다(int upLastStationId, int downLastStationId) {
         LineRequest request = LineRequest.builder()
                 .name("2호선")
-                .color("red darken-2")
-                .distance(100)
+                .color("green darken-2")
+                .distance(7)
                 .upLastStationId(upLastStationId)
                 .downLastStationId(downLastStationId)
                 .build();

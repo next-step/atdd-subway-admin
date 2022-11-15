@@ -17,6 +17,7 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
 
@@ -26,13 +27,8 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private int distance;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_last_station_id", foreignKey = @ForeignKey(name = "fk_line_up_last_station_to_station"))
-    private Station upLastStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_last_station_id", foreignKey = @ForeignKey(name = "fk_line_down_last_station_to_station"))
-    private Station downLastStation;
+    @Embedded
+    private Sections sections = new Sections();
 
     public Line() {
     }
