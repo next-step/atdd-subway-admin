@@ -149,7 +149,7 @@ Vary: Access-Control-Request-Headers
 노선 생성 시 상행종점역과 하행종점역을 등록합니다. 
 따라서 이번 단계에서는 지하철 노선에 역을 맵핑하는 기능은 아직 없지만 노선 조회시 포함된 역 목록이 함께 응답됩니다.
 </pre>
-![img.png](img.png)
+![img.png](step2_api_desc.png)
 #### 기능 요구사항 및 인수조건
 - [ ] 지하철 노선 생성
   * When 지하철 노선을 생성하면
