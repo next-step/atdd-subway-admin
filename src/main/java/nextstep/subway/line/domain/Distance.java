@@ -21,7 +21,7 @@ public class Distance {
     }
 
     private void validateDistance(int distance) {
-        if(!NumberUtil.isPositiveNumber(distance)) {
+        if(NumberUtil.isNotPositiveNumber(distance)) {
             throw new IllegalArgumentException(
                     SectionExceptionCode.DO_NOT_ALLOW_NEGATIVE_NUMBER_DISTANCE.getMessage());
         }
