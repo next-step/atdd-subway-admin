@@ -9,6 +9,8 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.ShortDistanceException;
+
 @Embeddable
 public class LineStations {
     @OneToMany(cascade = CascadeType.ALL)
@@ -40,7 +42,12 @@ public class LineStations {
         findStation(lineStation.getStation().getId())
             .ifPresent(ls -> ls.updateFirstNode(lineStation.getPreStationId()));
         findPreStation(lineStation.getPreStationId())
-            .ifPresent(ls -> ls.updatePreStationId(lineStation.getStation().getId()));
+            .ifPresent(ls -> {
+                if (ls.getDistance() <= lineStation.getDistance()) {
+                    throw new ShortDistanceException(ls.getDistance(), lineStation.getDistance());
+                }
+                ls.updatePreStationId(lineStation.getStation().getId());
+            });
         lineStations.add(lineStation);
     }
 

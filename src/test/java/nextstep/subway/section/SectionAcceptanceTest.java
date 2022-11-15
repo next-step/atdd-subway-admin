@@ -109,6 +109,27 @@ public class SectionAcceptanceTest {
         assertThat(fetchResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(1L, 5L, 2L);
     }
 
+    /**
+     * When 역사이에 새로운 역 등록할 때
+     * Then 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다
+     */
+    @DisplayName("기존 역사이 길이보다 길면 등록할 수 없다")
+    @Test
+    void createSectionMiddleThrowException() {
+        // when
+        ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
+            .body(new SectionRequestDto(1L, 5L, 10))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(BAD_REQUEST);
+        assertThat(sectionsResponse.jsonPath().getString("message")).isEqualTo(
+            "신규 역사이 길이[10]가 기존 역사이 길이[10]보다 크거나 같습니다.");
+    }
+
     static class SectionRequestDto {
         private Long upStationId;
         private Long downStationId;
