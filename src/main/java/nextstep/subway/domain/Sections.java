@@ -26,8 +26,8 @@ public class Sections {
         validateNotMatchedStaton(newSection);
         validateDistance(newSection);
         validateDuplicated(newSection);
-        changeSections(newSection);
 
+        changeSections(newSection);
     }
 
 
@@ -60,5 +60,11 @@ public class Sections {
         if (duplicate.isPresent()) {
             throw new IllegalArgumentException(NOT_VALID_DUPLICATED_SECTION_STATIONS);
         }
+    }
+
+    private void changeSections(Section newSection) {
+        sections.forEach(s -> {
+            s.change(newSection);
+        });
     }
 }

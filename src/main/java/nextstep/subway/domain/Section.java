@@ -106,4 +106,36 @@ public class Section extends BaseEntity {
     public boolean isDownStation(Station station) {
         return this.downStation.equals(station);
     }
+
+    public void change(Section newSection) {
+        if (Objects.isNull(newSection)) {
+            return;
+        }
+
+        changeStation(newSection);
+        changeDistance(newSection);
+    }
+
+    private void changeDistance(Section newSection) {
+        this.distance -= newSection.getDistance();
+    }
+
+    private void changeStation(Section newSection) {
+
+        if (isUpStation(newSection.upStation)) {
+            changeUpStation(newSection);
+            return;
+        }
+
+        if (isDownStation(newSection.downStation)) {
+            changeDownStation(newSection);
+        }
+    }
+
+    private void changeUpStation(Section newSection) {
+        this.upStation = newSection.downStation;
+    }
+    private void changeDownStation(Section newSection) {
+        this.downStation = newSection.upStation;
+    }
 }
