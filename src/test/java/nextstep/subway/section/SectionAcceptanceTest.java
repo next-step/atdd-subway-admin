@@ -1,4 +1,4 @@
-package nextstep.subway;
+package nextstep.subway.section;
 
 import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -8,6 +8,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
+import nextstep.subway.common.BaseAcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.LineAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
