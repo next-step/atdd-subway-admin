@@ -9,6 +9,8 @@ import nextstep.subway.station.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.NoSuchElementException;
+
 @Service
 public class LineBridgeService {
 
@@ -36,9 +38,17 @@ public class LineBridgeService {
 
         return LineBridgeDto.Response.of(lineBridge);
     }
+    private Line findById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 노선을 찾을 수 없습니다."));
+    }
 
-    public void deleteLineBridgeByStationId(Long id) {
+    @Transactional
+    public void deleteLineBridgeByStationId(Long lineId, Long stationId) {
+        Line findLine = findById(lineId);
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 지하철역을 찾을 수 없습니다."));
 
-
+        findLine.removeStation(station);
     }
 }

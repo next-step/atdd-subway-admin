@@ -65,12 +65,5 @@ public class LineService {
         lineRepository.save(line);
     }
 
-    @Transactional
-    public void removeSectionByStationId(Long lineId, Long stationId) {
-        Line findLine = findById(lineId);
-        Station station = stationRepository.findById(stationId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 지하철역을 찾을 수 없습니다."));
 
-        findLine.removeStation(station);
-    }
 }

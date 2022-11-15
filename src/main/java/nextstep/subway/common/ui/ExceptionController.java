@@ -14,6 +14,6 @@ class ExceptionController {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity illegalArgumentException(IllegalArgumentException e){
         log.info(e.getMessage());
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.badRequest().build();
     }
 }

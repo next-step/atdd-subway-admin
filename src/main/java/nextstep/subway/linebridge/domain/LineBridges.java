@@ -74,7 +74,6 @@ public class LineBridges {
         lineBridges.remove(lineBridge);
     }
 
-
     private void validateRemoval() {
         if (isLastSection()) {
             throw new IllegalArgumentException("노선의 마지막 구간은 삭제할 수 없습니다.");
