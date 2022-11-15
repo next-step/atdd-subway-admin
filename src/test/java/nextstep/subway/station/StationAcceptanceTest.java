@@ -19,12 +19,11 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.http.HttpHeaders.LOCATION;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
-
-    private static final String LOCATION_HEADER = "LOCATION";
     @LocalServerPort
     int port;
 
@@ -99,7 +98,7 @@ public class StationAcceptanceTest {
         params.put("name", stationName.getName());
 
         /* 지하철역 생성 */
-        String getUrl = 지하철역_생성_성공(params).headers().get(LOCATION_HEADER).getValue();
+        String getUrl = 지하철역_생성_성공(params).headers().get(LOCATION).getValue();
 
         /* 지하철역 조회 */
         //when:
@@ -136,7 +135,7 @@ public class StationAcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ExtractableResponse<Response> 지하철역_생성_성공(Map<String, String> params) {
+    static ExtractableResponse<Response> 지하철역_생성_성공(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -145,7 +144,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철역_조회_성공() {
+    static ExtractableResponse<Response> 지하철역_조회_성공() {
         return RestAssured.given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
@@ -153,7 +152,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철역_삭제_성공(long stationId) {
+    static private ExtractableResponse<Response> 지하철역_삭제_성공(long stationId) {
         return RestAssured.given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/stations/{id}", stationId)
