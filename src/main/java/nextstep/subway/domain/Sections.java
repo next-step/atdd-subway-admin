@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.constant.ErrorCode;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -47,13 +49,13 @@ public class Sections {
 
     private void validateHasBothStations(Section section) {
         if (getStations().containsAll(section.findStations())) {
-            throw new IllegalArgumentException("추가하려는 역이 모두 존재합니다.");
+            throw new IllegalArgumentException(ErrorCode.BOTH_STATION_EXIST.getMessage());
         }
     }
 
     private void validateHasNotBothStations(Section section) {
         if (hasNotBothStations(section)) {
-            throw new IllegalArgumentException("상행성 하행선 모두 존재하지 않습니다.");
+            throw new IllegalArgumentException(ErrorCode.BOTH_STATION_NOT_EXIST.getMessage());
         }
     }
 
@@ -84,13 +86,13 @@ public class Sections {
 
     private void validateNotExistStation(Station station) {
         if (!getStations().contains(station)) {
-            throw new IllegalArgumentException("삭제하려는 지하철이 노선에 존재하지 않습니다");
+            throw new IllegalArgumentException(ErrorCode.STATION_IS_NOT_EXIST.getMessage());
         }
     }
 
     private void validateOneSection() {
         if (sections.size() == ONE_SECTION) {
-            throw new IllegalArgumentException("마지막 구간은 삭제할 수 없습니다.");
+            throw new IllegalArgumentException(ErrorCode.LAST_SECTION_CAN_NOT_DELETE.getMessage());
         }
     }
 
