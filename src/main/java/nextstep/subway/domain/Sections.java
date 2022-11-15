@@ -101,9 +101,9 @@ public class Sections {
     private void connect(final List<Section> sections) {
         Section section1 = sections.get(0);
         Section section2 = sections.get(1);
-        if (section1.getUpStation().getId().equals(section2.getDownStation().getId())) {
+        if (section1.isConnectableWith(section2)) {
             connect(section1, section2);
-        } else if (section2.getUpStation().getId().equals(section1.getDownStation().getId())) {
+        } else if (section2.isConnectableWith(section1)) {
             connect(section2, section1);
         }
     }

@@ -168,10 +168,14 @@ public class Section extends BaseEntity {
     }
 
     public boolean isSameDownStation(final Section newSection) {
-        return getDownStation().equals(newSection.getDownStation());
+        return downStation.equals(newSection.getDownStation());
     }
 
     public boolean isSameUpStation(final Section newSection) {
-        return getUpStation().equals(newSection.getUpStation());
+        return upStation.equals(newSection.getUpStation());
+    }
+
+    public boolean isConnectableWith(final Section other) {
+        return upStation.equals(other.getDownStation());
     }
 }
