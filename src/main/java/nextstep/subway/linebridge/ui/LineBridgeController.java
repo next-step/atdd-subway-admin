@@ -19,7 +19,7 @@ public class LineBridgeController {
         this.lineBridgeService = lineBridgeService;
     }
 
-    @PostMapping("/lines/{id}/bridges")
+    @PostMapping("/lines/{id}/sections")
     public ResponseEntity<LineBridgeDto.Response> createLineBridge(@PathVariable Long id,
                                                                    @RequestBody LineBridgeDto.Request lineBridgeRequest) {
         LineBridgeDto.Response lineBridgeResponse = lineBridgeService.createLineBridge(id, lineBridgeRequest);

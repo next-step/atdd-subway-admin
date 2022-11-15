@@ -30,7 +30,7 @@ public class LineBridgeAcceptanceRequest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
-                .when().post("/lines/1/bridges")
+                .when().post("/lines/1/sections")
                 .then().log().all()
                 .extract();
     }
@@ -44,7 +44,7 @@ public class LineBridgeAcceptanceRequest {
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
-                .when().post("/lines/1/bridges")
+                .when().post("/lines/1/sections")
                 .then().log().all()
                 .extract();
     }
