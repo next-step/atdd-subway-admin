@@ -9,8 +9,8 @@ import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -25,11 +25,17 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        List<Station> stations = stationRepository.findAllById(Arrays.asList(
-                lineRequest.getUpStationId(),
-                lineRequest.getDownStationId()
-        ));
-        Line persistLine = lineRepository.save(lineRequest.toLine(stations));
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).get();
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).get();
+
+        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
+    }
+
+    public List<LineResponse> findAllLines() {
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
+                .map(line -> LineResponse.of(line))
+                .collect(Collectors.toList());
     }
 }

@@ -3,8 +3,6 @@ package nextstep.subway.dto;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
-import java.util.List;
-
 public class LineRequest {
     private String name;
     private String color;
@@ -32,7 +30,7 @@ public class LineRequest {
         return distance;
     }
 
-    public Line toLine(List<Station> stations) {
-        return new Line(name, color, stations, distance);
+    public Line toLine(Station upStation, Station downStation) {
+        return new Line(name, color, upStation, downStation, distance);
     }
 }

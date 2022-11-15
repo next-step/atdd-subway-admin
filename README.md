@@ -76,7 +76,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 > - 기능 구현 전에 **_인수 조건을 만족하는 지 검증하는 인수 테스트를 먼저 만들고 기능 구현_**
 
 ### 구현 기능 목록
-- [ ] 지하철 노선 생성
+- [x] 지하철 노선 생성
   ```text
   When 지하철 노선을 생성하면
   Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
@@ -119,7 +119,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   }
   ```
 
-- [ ] 지하철 노선 목록 조회
+- [x] 지하철 노선 목록 조회
   ```text
   Given 2개의 지하철 노선을 생성하고
   When 지하철 노선 목록을 조회하면
