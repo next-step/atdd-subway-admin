@@ -4,10 +4,13 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.repository.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -22,8 +25,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
 
-    private final static LineRequest line_1 = new LineRequest("1호선", "빨간색", 10);
-    private final static LineRequest line_2 = new LineRequest("2호선", "노색", 15);
+    private final static LineRequest line_1 = new LineRequest("1호선", "빨간색", 1L, 2L, 10);
+    private final static LineRequest line_2 = new LineRequest("2호선", "노색", 3L, 4L, 15);
+
+    @Autowired
+    private StationRepository stationRepository;
 
     @LocalServerPort
     int port;
@@ -33,6 +39,14 @@ public class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        initStations();
+    }
+
+    private void initStations(){
+        stationRepository.save(new Station("우장산역"));
+        stationRepository.save(new Station("화곡역"));
+        stationRepository.save(new Station("까치산역"));
+        stationRepository.save(new Station("마곡나루역"));
     }
 
     /**
