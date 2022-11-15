@@ -1,8 +1,6 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,7 +17,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItems;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -108,7 +105,7 @@ public class StationAcceptanceTest {
             .jsonPath().getLong("id");
 
         // when
-        ValidatableResponse response = requestApiByGetStation(id);
+        ValidatableResponse response = requestApiByDeleteStation(id);
 
         // then
         assertStatusCode(response, HttpStatus.NO_CONTENT);
@@ -118,7 +115,7 @@ public class StationAcceptanceTest {
 
     }
 
-    private static ValidatableResponse requestApiByGetStation(long id) {
+    private static ValidatableResponse requestApiByDeleteStation(long id) {
         return RestAssured.given().log().all()
             .when().delete("/stations/{id}", id)
             .then().log().all();
