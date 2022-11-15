@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.SectionsException;
-import nextstep.subway.exception.SectionsExceptionMessage;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -20,26 +19,46 @@ public class Sections {
 
     }
 
-    public void addSection(Section section) {
-        validationDistance(section);
-        validationSection(section);
-        sections.add(section);
+    public void addSection(Section newSection) {
+        validationSection(newSection);
+        modifyUpStation(newSection);
+        modifyDownStation(newSection);
+        sections.add(newSection);
     }
 
-    private void validationDistance(Section newSection) {
-        boolean isNotAllowDistance = sections.stream().anyMatch(section -> section.isShortDistance(newSection));
-        if(isNotAllowDistance){
+    private void validationDistance(Section section, Section newSection) {
+        if (section.isShortDistance(newSection)) {
             throw new SectionsException(LONGER_THAN_OHTER.getMessage());
         }
     }
 
     private void validationSection(Section newSection) {
-        if(isContainsAllStation(newSection)){
+        if (isContainsAllStation(newSection)) {
             throw new SectionsException(ALREADY_CONTAINS_SECTION.getMessage());
         }
-        if(isNotContainsAnyStation(newSection)){
+        if (isNotContainsAnyStation(newSection)) {
             throw new SectionsException(NOT_CONSTAINS_ANY_SECTION.getMessage());
         }
+    }
+
+    private void modifyUpStation(Section newSection) {
+        Section findSection = sections.stream().filter(section -> section.isSameUpStation(newSection))
+                .findFirst().orElse(null);
+        if (findSection == null) {
+            return;
+        }
+        validationDistance(findSection, newSection);
+        findSection.modifyUpStation(newSection);
+    }
+
+    private void modifyDownStation(Section newSection) {
+        Section findSection = sections.stream().filter(section -> section.isSameDownStation(newSection))
+                .findFirst().orElse(null);
+        if (findSection == null) {
+            return;
+        }
+        validationDistance(findSection, newSection);
+        findSection.modifyDownStation(newSection);
     }
 
     public List<Station> getStations() {
@@ -49,11 +68,13 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private boolean isContainsAllStation(Section newSection){
-        return sections.stream().anyMatch(section -> section.isContainsAllStation(newSection));
+    private boolean isContainsAllStation(Section newSection) {
+        boolean isSameSection = sections.stream().anyMatch(section -> section.isSameSection(newSection));
+        boolean isContainsAllStation = newSection.isComponentAllOfStations(getStations());
+        return isSameSection || isContainsAllStation;
     }
 
-    private boolean isNotContainsAnyStation(Section newSection){
-        return !sections.isEmpty() && sections.stream().anyMatch(section -> section.isContainsAllStation(newSection));
+    private boolean isNotContainsAnyStation(Section newSection) {
+        return !sections.isEmpty() && !newSection.isComponentAnyOfStations(getStations());
     }
 }
