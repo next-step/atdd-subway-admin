@@ -72,4 +72,13 @@ public class LineService {
                 .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
+
+    @Transactional
+    public void deleteSection(Long lineId,Long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
+        Station station = stationRepository.findById(stationId)
+                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+        line.deleteSection(station);
+    }
 }

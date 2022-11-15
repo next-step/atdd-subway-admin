@@ -77,4 +77,17 @@ public class Sections {
     private boolean isNotContainsAnyStation(Section newSection) {
         return !sections.isEmpty() && !newSection.isComponentAnyOfStations(getStations());
     }
+
+    public void deleteSection(Station deleteStation) {
+        //validateEmptySection
+        //validateSingleSection
+        if (isEdgeStation(deleteStation)) {
+            return;
+        }
+    }
+
+    public boolean isEdgeStation(Station deleteStation) {
+        return getStations().stream().filter(station -> station.equals(deleteStation))
+                .count() == 1;
+    }
 }
