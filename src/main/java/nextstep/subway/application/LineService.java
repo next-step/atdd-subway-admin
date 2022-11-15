@@ -69,7 +69,7 @@ public class LineService {
     }
 
     @Transactional
-    public void deleteLineById(Long lineId) {
+    public void delete(Long lineId) {
         findById(lineId);
         lineRepository.deleteById(lineId);
     }
