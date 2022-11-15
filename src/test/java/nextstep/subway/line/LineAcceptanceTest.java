@@ -114,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_삭제 = 지하철_노선_삭제(지하철_노선_생성.jsonPath().getLong("id"));
 
         // then
-        응답코드가_일치한다(지하철_노선_삭제.statusCode(), HttpStatus.OK);
+        응답코드가_일치한다(지하철_노선_삭제.statusCode(), HttpStatus.NO_CONTENT);
         지하철_노선_목록에서_삭제되었는지_검증한다(지하철_노선_이름_전체_목록());
     }
 }
