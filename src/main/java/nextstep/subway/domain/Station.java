@@ -6,6 +6,7 @@ import javax.persistence.*;
 public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "station_id")
     private Long id;
     @Column(unique = true)
     private String name;
