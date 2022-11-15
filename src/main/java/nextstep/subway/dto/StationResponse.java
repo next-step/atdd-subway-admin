@@ -1,17 +1,30 @@
 package nextstep.subway.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import nextstep.subway.domain.Station;
+import org.springframework.lang.Nullable;
 
 import java.time.LocalDateTime;
 
 public class StationResponse {
     private Long id;
     private String name;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private LocalDateTime createdDate;
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    @Nullable
     private LocalDateTime modifiedDate;
 
     public static StationResponse of(Station station) {
-        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
+        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(),
+                station.getModifiedDate());
+    }
+
+    public static StationResponse toLineResponse(Station station) {
+        return new StationResponse(station.getId(), station.getName(), null, null);
     }
 
     public StationResponse() {
