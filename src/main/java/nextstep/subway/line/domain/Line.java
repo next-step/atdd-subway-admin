@@ -57,19 +57,14 @@ public class Line extends BaseEntity {
 
     public void addLineBridge(LineBridge lineBridge) {
         Objects.requireNonNull(lineBridge, "구간 정보가 필요합니다.");
-//        lineBridges.add(lineBridge);
-        lineBridges.getLineBridges().add(lineBridge);
+        lineBridges.add(lineBridge);
         if (lineBridge.getLine() != this) {
             lineBridge.updateLine(this);
         }
     }
 
-    public void removeLineBridge(LineBridge lineBridge) {
-        Objects.requireNonNull(lineBridge, "구간 정보가 필요합니다.");
-        lineBridges.getLineBridges().remove(lineBridge);
-        if (lineBridge.getLine() == this) {
-            lineBridge.removeLine();
-        }
+    public void removeStation(Station station) {
+        lineBridges.remove(station);
     }
 
     public List<LineBridge> getLineBridges() {

@@ -6,14 +6,14 @@ import javax.persistence.Embeddable;
 @Embeddable
 public class Distance {
     @Column
-    private int distance;
+    private int value;
 
     protected Distance() {
     }
 
     public Distance(int distance) {
         validate(distance);
-        this.distance = distance;
+        this.value = distance;
     }
 
     private void validate(int distance) {
@@ -23,10 +23,14 @@ public class Distance {
     }
 
     public int getValue() {
-        return distance;
+        return value;
     }
 
     public Distance subtract(int distance) {
-        return new Distance(this.distance - distance);
+        return new Distance(this.value - distance);
+    }
+
+    public void add(Distance distance) {
+        this.value += distance.value;
     }
 }

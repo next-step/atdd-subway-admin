@@ -1,19 +1,18 @@
 package nextstep.subway.linebridge.domain;
 
-import java.util.ArrayDeque;
-import java.util.Collection;
-import java.util.Deque;
+import nextstep.subway.station.domain.Station;
+
 import java.util.LinkedList;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Embeddable
 public class LineBridges {
+
+    public static final int ONLY_HAS_ONE_ENTRY = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<LineBridge> lineBridges = new LinkedList<>();
@@ -56,5 +55,54 @@ public class LineBridges {
 
     public LinkedList<LineBridge> getLineBridges() {
         return new LinkedList(lineBridges);
+    }
+
+    public void remove(Station station) {
+        validateRemoval();
+        if (isEndStation(station)) {
+            lineBridges.remove(findLineBridge(station));
+            return;
+        }
+        LineBridge lineBridge = findSectionByDownStation(station);
+        removeIntermediateSection(lineBridge);
+    }
+
+    private void removeIntermediateSection(LineBridge lineBridge) {
+        for (LineBridge element : lineBridges) {
+            element.remove(lineBridge);
+        }
+        lineBridges.remove(lineBridge);
+    }
+
+
+    private void validateRemoval() {
+        if (isLastSection()) {
+            throw new IllegalArgumentException("노선의 마지막 구간은 삭제할 수 없습니다.");
+        }
+    }
+
+    private LineBridge findSectionByDownStation(Station station) {
+        return lineBridges.stream()
+                .filter(lineBridge -> lineBridge.isSameDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당역을 포함하는 구간이 존재하지 않습니다."));
+    }
+
+    private LineBridge findLineBridge(Station station) {
+        return lineBridges.stream()
+                .filter(lineBridge -> lineBridge.hasStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당역을 포함하는 구간이 존재하지 않습니다."));
+    }
+
+    private boolean isEndStation(Station station) {
+        long stationCount = lineBridges.stream()
+                .filter(lineBridge -> lineBridge.hasStation(station))
+                .count();
+        return stationCount == ONLY_HAS_ONE_ENTRY;
+    }
+
+    private boolean isLastSection() {
+        return lineBridges.size() == ONLY_HAS_ONE_ENTRY;
     }
 }

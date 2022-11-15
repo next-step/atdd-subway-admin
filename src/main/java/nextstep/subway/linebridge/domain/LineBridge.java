@@ -75,6 +75,13 @@ public class LineBridge extends BaseEntity {
         this.line = null;
     }
 
+    public void remove(LineBridge lineBridge) {
+        if (isSameUpStation(lineBridge.downStation)) {
+            this.upStation = lineBridge.upStation;
+            distance.add(lineBridge.distance);
+        }
+    }
+
 
     public void repair(LineBridge lineBridge) {
         if (Objects.isNull(lineBridge)) {
@@ -127,7 +134,7 @@ public class LineBridge extends BaseEntity {
         return this.upStation.equals(station);
     }
 
-    private boolean isSameDownStation(Station station) {
+    boolean isSameDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
@@ -142,5 +149,9 @@ public class LineBridge extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    public boolean hasStation(Station station) {
+        return isSameUpStation(station) || isSameDownStation(station);
     }
 }

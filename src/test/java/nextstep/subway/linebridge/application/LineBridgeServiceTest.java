@@ -12,10 +12,14 @@ import nextstep.subway.station.repository.StationRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-@SpringBootTest
+import javax.persistence.EntityManager;
+
+@DataJpaTest
 class LineBridgeServiceTest {
     @Autowired
     private StationRepository stationRepository;
@@ -43,13 +47,13 @@ class LineBridgeServiceTest {
         Station downStation = stationRepository.save(지하철_생성("역삼역"));
         LineBridge lineBridge = new LineBridge(upStation, downStation, new Distance(10).getValue());
         Line line = 노선_생성(lineBridge);
-
+        Line expect = lineRepository.save(line);
         Station upStation2 = stationRepository.save(지하철_생성("교대역"));
 
         LineBridge lineBridge2 = new LineBridge(upStation2, downStation, new Distance(5).getValue());
         line.addLineBridge(lineBridge2);
         lineRepository.findById(line.getId());
-//        assertThat(lineRepository.findById(line.getId()).get().getLineBridges()).hasSize(2);
+        assertThat(lineRepository.findById(expect.getId()).get().getLineBridges()).hasSize(2);
     }
 
     @Test
@@ -77,15 +81,20 @@ class LineBridgeServiceTest {
         Station upStation = stationRepository.save(지하철_생성("강남역"));
         Station downStation = stationRepository.save(지하철_생성("역삼역"));
         LineBridge lineBridge = new LineBridge(upStation, downStation, new Distance(10).getValue());
-
         Line line = 노선_생성(lineBridge);
         Station upStation2 = stationRepository.save(지하철_생성("교대역"));
         LineBridge lineBridge2 = new LineBridge(upStation2, downStation, new Distance(5).getValue());
         line.addLineBridge(lineBridge2);
 
-        line.removeLineBridge(lineBridge2);
+        Line expect = lineRepository.save(line);
+        assertThat(lineRepository.findById(line.getId()).get().getLineBridges()).hasSize(2);
 
+        line.removeStation(upStation2);
         assertThat(lineRepository.findById(line.getId()).get().getLineBridges()).hasSize(1);
+        Assertions.assertThrows(IllegalArgumentException.class, () ->{
+            line.removeStation(upStation);
+        });
+
     }
 
 
