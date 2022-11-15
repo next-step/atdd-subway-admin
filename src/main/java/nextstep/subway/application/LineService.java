@@ -30,9 +30,7 @@ public class LineService {
         Line persistLine = lineRepository.save(lineRequest.toLine());
         addStation(persistLine, lineRequest.getUpStationId());
         addStation(persistLine, lineRequest.getDownStationId());
-        LineResponse lineResponse = LineResponse.of(persistLine);
-        lineResponse.setStations(findStationsByLineId(persistLine.getId()));
-        return lineResponse;
+        return LineResponse.of(persistLine, findStationsByLineId(persistLine.getId()));
     }
 
     private void addStation(Line line, Long stationId){
@@ -54,17 +52,14 @@ public class LineService {
 
         List<LineResponse> lineResponses = new ArrayList<>();
         for(Line line : lines){
-            LineResponse lineResponse = LineResponse.of(line);
-            lineResponse.setStations(findStationsByLineId(line.getId()));
+            LineResponse lineResponse = LineResponse.of(line, findStationsByLineId(line.getId()));
             lineResponses.add(lineResponse);
         }
         return lineResponses;
     }
 
     public LineResponse findById(Long lineId) {
-        LineResponse lineResponse = LineResponse.of(lineRepository.findById(lineId).orElseThrow(NotFoundException::new));
-        lineResponse.setStations(findStationsByLineId(lineId));
-        return lineResponse;
+        return LineResponse.of(lineRepository.findById(lineId).orElseThrow(NotFoundException::new), findStationsByLineId(lineId));
     }
 
     @Transactional
