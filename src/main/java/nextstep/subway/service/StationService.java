@@ -4,7 +4,6 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
-import nextstep.subway.exception.ErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,8 +24,8 @@ public class StationService {
 
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
+        Station savedStation = stationRepository.save(stationRequest.toStation());
+        return StationResponse.of(savedStation);
     }
 
     public List<StationResponse> findAllStations() {

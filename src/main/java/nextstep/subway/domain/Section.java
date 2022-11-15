@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 
+import java.util.stream.Stream;
+
 import static nextstep.subway.exception.ErrorMessage.DISTANCE_CANNOT_BE_ZERO;
 import static nextstep.subway.exception.ErrorMessage.SAME_SUBWAY_SECTION_ERROR;
 
@@ -50,4 +52,27 @@ public class Section {
         this.line = line;
     }
 
+    public Stream<Station> streamOfStation() {
+        return Stream.of(upStation, downStation);
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public Line getLine() {
+        return line;
+    }
 }

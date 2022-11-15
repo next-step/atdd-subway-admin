@@ -8,6 +8,8 @@ public enum ErrorMessage {
     INTERNAL_SERVER_ERROR("알 수 없는 오류입니다."),
     SAME_SUBWAY_SECTION_ERROR("상행선과 하행선이 동일할 수 없습니다."),
     DISTANCE_CANNOT_BE_ZERO("거리는 0이하가 될 수 없습니다."),
+    UP_STATION_AND_DOWN_STATION_ENROLLMENT("상행역과 하행역이 모두 등록되어 있습니다."),
+    UP_STATION_AND_DOWN_STATION_NOT_FOUND("상행역과 하행역이 모두 등록되어 있지 않습니다."),
     ;
     private final String message;
 
