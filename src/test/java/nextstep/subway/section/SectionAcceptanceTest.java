@@ -7,9 +7,8 @@ import static nextstep.subway.station.StationFixture.지하철역_생성후_아�
 import static org.assertj.core.api.Assertions.assertThat;
 
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
-import nextstep.subway.line.LineFixture;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -41,10 +40,30 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록(이호선, 강남역, 블루보틀역, 4);
 
         //then
-        assertThat(LineFixture.지하철_노선_조회(이호선).jsonPath().getList("stations", StationResponse.class))
-            .hasSize(3)
+        assertThat(SectionFixture.구간_목록_조회(이호선).jsonPath().getList(".", SectionResponse.class))
+            .hasSize(2)
+            .extracting(SectionResponse::getDownStation)
             .extracting(StationResponse::getName)
-            .contains("강남역", "블루보틀역", "역삼역");
+            .contains("역삼역", "블루보틀역");
+    }
+
+    /*
+    GIVEN 강남역을 상행선 역삼역을 하행선으로 있는 이호선
+    WHEN 강남역 앞에 블루보틀역 등록
+    THEN 이호선 상행종점은 블루보틀역
+     */
+    @Test
+    @DisplayName("역 사이에 새로운 역 등록")
+    void addStationFirst() {
+        //when
+        구간_등록(이호선, 블루보틀역, 강남역, 4);
+
+        //then
+        assertThat(SectionFixture.구간_목록_조회(이호선).jsonPath().getList(".", SectionResponse.class))
+            .hasSize(2)
+            .extracting(SectionResponse::getUpStation)
+            .extracting(StationResponse::getName)
+            .contains("강남역", "블루보틀역");
     }
 
 }

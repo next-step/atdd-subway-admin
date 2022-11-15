@@ -25,4 +25,13 @@ public class SectionFixture {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 구간_목록_조회(final Long lineId) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().get("/lines/" + lineId + "/sections")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .extract();
+    }
+
 }
