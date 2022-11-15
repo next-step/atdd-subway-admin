@@ -57,6 +57,14 @@ public class Line extends BaseEntity {
         section.toLine(this);
     }
 
+    public List<Station> getStations() {
+        return sections.getSortStation();
+    }
+
+    public int totalDistance() {
+        return sections.totalDistance();
+    }
+
     public Long getId() {
         return id;
     }
@@ -67,13 +75,5 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public List<Station> getStations() {
-        return sections.getStations();
-    }
-
-    public int totalDistance() {
-        return sections.totalDistance();
     }
 }

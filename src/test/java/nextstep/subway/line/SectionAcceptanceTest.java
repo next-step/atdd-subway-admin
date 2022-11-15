@@ -143,4 +143,26 @@ class SectionAcceptanceTest extends AcceptanceTest {
         // then
         노선_새로운_지하철역_등록_실패_검증(추가된_신분당선);
     }
+
+    /**
+     *  When 노선에 여러구간을 등록하면
+     *  Then 지하철역 목록이 순서대로 반환된다.
+     */
+    @Test
+    @DisplayName("노선을 등록하면 순서대로 반환된다.")
+    void addStationBetweenLineExactly() {
+        // when
+        지하철노선에_지하철역을_등록한다(신분당선ID, 논현역ID, 신논현역ID, SAFE_DISTANCE);
+        지하철노선에_지하철역을_등록한다(신분당선ID, 강남역ID, 판교역ID, SAFE_DISTANCE);
+        ExtractableResponse<Response> 추가된_신분당선 = 지하철노선에_지하철역을_등록한다(신분당선ID, 신사역ID, 논현역ID, SAFE_DISTANCE);
+
+        // then
+        ExtractableResponse<Response> 조회된_신분당선 = 지하철노선을_조회한다(추가된_신분당선);
+
+        assertAll(
+                () -> 노선_새로운_지하철역_등록_성공_검증(추가된_신분당선),
+                () -> 지하철노선_거리_검증(조회된_신분당선, 20),
+                () -> 지하철노선_저장된_지하철역_목록_순서_검증(조회된_신분당선, 신사역, 논현역, 신논현역, 강남역, 판교역)
+        );
+    }
 }

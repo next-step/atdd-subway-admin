@@ -2,14 +2,17 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -19,8 +22,8 @@ public class Sections {
         validDuplicateSection(addSection);
         validNotContainSection(addSection);
 
-        Optional<Section> upSection = sections.stream().filter(addSection::isSameUpStation).findFirst();
-        Optional<Section> downSection = sections.stream().filter(addSection::isSameDownStation).findFirst();
+        Optional<Section> upSection = findUpSection(addSection);
+        Optional<Section> downSection = findDownSection(addSection);
 
         upSection.ifPresent(section -> section.updateUpStation(addSection));
         downSection.ifPresent(section -> section.updateDownStation(addSection));
@@ -50,12 +53,49 @@ public class Sections {
         }
     }
 
+    private Optional<Section> findUpSection(Section addSection) {
+        return sections.stream().filter(addSection::isSameUpStation).findFirst();
+    }
+
+    private Optional<Section> findDownSection(Section addSection) {
+        return sections.stream().filter(addSection::isSameDownStation).findFirst();
+    }
+
     public List<Station> getStations() {
         return sections.stream()
                 .map(Section::stations)
                 .flatMap(Collection::stream)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public List<Station> getSortStation() {
+        Map<Station, Station> stationMap = sections.stream()
+                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+
+        return sortStations(findTopStation(), stationMap);
+    }
+
+    private List<Station> sortStations(Station topStation, Map<Station, Station> stationMap) {
+        List<Station> stations = new LinkedList<>();
+        stations.add(topStation);
+        Station upStation = topStation;
+        while (stationMap.get(upStation) != null) {
+            upStation = stationMap.get(upStation);
+            stations.add(upStation);
+        }
+        return stations;
+    }
+
+    private Station findTopStation() {
+        Set<Station> downStations = sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toSet());
+
+        return sections.stream().map(Section::getUpStation)
+                .filter(station -> !downStations.contains(station))
+                .findAny()
+                .orElseThrow(IllegalAccessError::new);
     }
 
     public int totalDistance() {
