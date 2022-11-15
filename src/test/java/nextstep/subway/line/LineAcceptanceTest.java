@@ -7,6 +7,7 @@ import io.restassured.response.ValidatableResponse;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.repository.StationRepository;
+import nextstep.subway.util.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -29,6 +30,9 @@ public class LineAcceptanceTest {
     private final static LineRequest line_2 = new LineRequest("2호선", "노색", 3L, 4L, 15);
 
     @Autowired
+    private DatabaseCleanup databaseCleanup;
+
+    @Autowired
     private StationRepository stationRepository;
 
     @LocalServerPort
@@ -39,6 +43,7 @@ public class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        databaseCleanup.execute();
         initStations();
     }
 
