@@ -52,3 +52,67 @@ npm run dev
 ## 📝 License
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
+
+## 인수 테스트 주도 개발(ATDD) 미션 
+* 인수 테스트는 블랙 박스 테스트 기반
+    * 클라이언트는 표면적으로 확인할 수 잇는 요소를 바탕으로 검증
+    * 실제 발생할 수 있는 **시나리오**를 바탕으로 요구사항 작성
+    * 내부 구현이나 기술에 의존적이지 않음
+* 인수 조건 예시
+~~~yml
+Feature: 최단 경로 구하기
+  Scenario: 지하철 최단 경로 조회
+    Given: 지하철역들이 등록되어 있다.
+    And: 지하철노선이 등록되어 있다.
+    And: 지하철노선에 지하철역들이 등록되어 있다.
+    When: 사용자는 출발역과 도착역의 최단 경로 조회를 요청한다.
+    Then: 사용자는 최단 경로의 역 정보를 응답받는다.
+~~~
+###  Step1 API명세 및 요구사항
+#### 지하철역 목록
+HTTP request
+<pre>
+GET /stations HTTP/1.1
+Accept: application/json
+Host: localhost:8080
+</pre>
+HTTP response
+<pre>
+HTTP/1.1 200 OK
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+Content-Type: application/json
+content-Length: 167
+[
+  {
+  "id": 1,
+  "name" "지하철역이름"
+  },
+  {
+  "id": 2,
+  "name" "지하철역이름2"
+  }
+]
+</pre>
+#### 지하철역 삭제
+HTTP request
+<pre>
+DELETE /stations/1 HTTP/1.1
+Host: localhost:8080
+</pre>
+HTTP response
+<pre>
+HTTP/1.1 204 No Content
+Vary: Origin
+Vary: Access-Control-Request-Method
+Vary: Access-Control-Request-Headers
+</pre>
+
+- [X] 지하철역 목록 조회 인수 테스트 작성하기
+    * 2개의 지하철역을 생성 후 조회하면, 등록한 2개의 지하철을 응답 받아야 함.
+    * List<Map<>> 방식으로 호출했을 때 다중 등록 가능여부 테스트 -> __불가__
+    * Map의 name 값에 ','로 구분하여 생성 요청 시 다중 등록 가능여부 테스트 -> __불가__
+    * 생성API 2번 각각 호출하여 2개의 지하철역 생성 후 조회
+- [X] 지하철역 삭제 인수 테스트 작성하기
+    * 지하철역 생성 후 삭제하면, 삭제된 지하철은 조회되지 않음
