@@ -220,6 +220,31 @@ public class SectionAcceptanceTest {
         지하철_추가된_구간_조회_확인(지하철_노선_조회_결과, lineName, "판교역", "강남역");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 가운데 역을 삭제하면
+     * Then 해당 역은 더 이상 조회되지 않는다
+     */
+    @DisplayName("가운데 역을 삭제할 수 있다")
+    @Test
+    void deleteMiddleSection() {
+        // given
+        int distance = 10;
+        String lineName = "신분당선";
+        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 4);
+
+        // when
+        지하철_구간_삭제(신분당선_구간_ID, 신규_역_ID);
+
+        // then
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회(신분당선_구간_ID);
+        지하철_추가된_구간_조회_확인(지하철_노선_조회_결과, lineName, "판교역", "강남역");
+    }
+
     private ExtractableResponse<Response> 지하철_구간_추가(
             Long lineId,
             Long upStationId,
