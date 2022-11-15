@@ -2,6 +2,7 @@ package nextstep.subway.section.domain;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -55,33 +56,61 @@ public class Section extends BaseEntity {
         return id;
     }
 
+    public int getDistance() {
+        return distance;
+    }
+
     public void update(Section newSection) {
         if(distance <= newSection.distance){
             throw new IllegalArgumentException("추가하는 노선의 길이는 기존 역 사이의 길이보다 크거나 같을 수 없습니다.");
         }
-        if (isEqualUpStation(newSection)) {
+        if (isEqualUpStation(newSection.upStation)) {
             updateUpStation(newSection);
         }
-        if (isEqualDownStation(newSection)) {
+        if (isEqualDownStation(newSection.downStation)) {
             updateDownStation(newSection);
         }
     }
 
-    private boolean isEqualUpStation(Section newSection) {
-        return upStation.equals(newSection.upStation);
+    public boolean isEqualUpStation(Station station) {
+        return upStation.equals(station);
     }
 
-    private void updateUpStation(Section newSection) {
+    public boolean isEqualDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public void updateUpStation(Section newSection) {
         upStation = newSection.upStation;
         distance = distance - newSection.distance;
-    }
-
-    private boolean isEqualDownStation(Section newSection) {
-        return downStation.equals(newSection.downStation);
     }
 
     private void updateDownStation(Section newSection) {
         downStation = newSection.upStation;
         distance = distance - newSection.distance;
+    }
+
+    public Section merge(Section nextSection) {
+        int distance = this.distance + nextSection.getDistance();
+        Section section = new Section(upStation, nextSection.downStation, distance);
+        section.addLine(line);
+        return section;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

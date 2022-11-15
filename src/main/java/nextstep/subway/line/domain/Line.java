@@ -64,4 +64,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
+    public void deleteSection(Station station) {
+        sections.delete(station);
+    }
 }
