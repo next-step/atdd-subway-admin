@@ -1,6 +1,9 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -123,7 +126,20 @@ public class StationAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        createStation("강남역");
+        createStation("양재역");
+        List<Long> stationsIds = fetchStation()
+                .extract()
+                .jsonPath()
+                .getList("id", Long.class);
 
+        // When
+        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", stationsIds.get(0), stationsIds.get(1), 10).extract();
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        JsonPath responseBody = response.jsonPath();
+        System.out.println(responseBody.toString());
     }
 
     /*
@@ -168,6 +184,21 @@ public class StationAcceptanceTest {
     @Test
     void deleteLine() {
 
+    }
+
+    private ValidatableResponse createLine(String name, String color, long upStationId, long downStationId, int distance) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all();
     }
 
     private ValidatableResponse createStation(String name) {

@@ -35,4 +35,12 @@ public class Section {
     public void toLine(Line line) {
         this.line = line;
     }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }

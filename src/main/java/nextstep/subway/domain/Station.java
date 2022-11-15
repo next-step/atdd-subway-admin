@@ -1,17 +1,19 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
     @Column(unique = true)
     private String name;
 
-    public Station() {
-    }
+    protected Station() { }
 
     public Station(String name) {
         this.name = name;
@@ -23,5 +25,12 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public Map<String, Object> toMapForOpen() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", id);
+        map.put("name", name);
+        return map;
     }
 }

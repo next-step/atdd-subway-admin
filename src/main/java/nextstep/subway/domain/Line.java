@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -27,8 +29,33 @@ public class Line {
         this.color = color;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public List<Section> getSections() {
+        return sections;
+    }
+
     public void addSection(Section section) {
         section.toLine(this);
         sections.add(section);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<Map<String, Object>> getStations() {
+        List<Map<String, Object>> stations = sections.stream()
+                .map(section -> section.getUpStation().toMapForOpen())
+                .collect(Collectors.toList());
+        Section lastSection = sections.get(sections.size() - 1);
+        stations.add(lastSection.getDownStation().toMapForOpen());
+        return stations;
     }
 }
