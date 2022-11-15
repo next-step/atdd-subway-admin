@@ -47,7 +47,8 @@ class SectionTest {
         Station downStation = Station.from("신논현역");
         Distance distance = Distance.from(10);
         assertThatThrownBy(() -> line.addSection(Section.of(upStation, downStation, distance)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("기존 노선의 거리보다 작거나 같을 수 없습니다.");
     }
 
 
@@ -58,7 +59,8 @@ class SectionTest {
         Station downStation = Station.from("강남역");
         Distance distance = Distance.from(5);
         assertThatThrownBy(() -> line.addSection(Section.of(upStation, downStation, distance)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("동일한 상행/하행선을 등록할 수 없습니다.");
     }
 
     @Test
@@ -68,7 +70,8 @@ class SectionTest {
         Station downStation = Station.from("판교역");
         Distance distance = Distance.from(5);
         assertThatThrownBy(() -> line.addSection(Section.of(upStation, downStation, distance)))
-                .isInstanceOf(IllegalArgumentException.class);
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행/하행선은 하나라도 입력되어야 합니다.");
     }
 
     @Test
@@ -80,7 +83,7 @@ class SectionTest {
         line.addSection(Section.of(upStation, downStation, distance));
 
         assertThat(line.getStations()).hasSize(3);
-        assertThat(line.totalDistance()).isEqualTo(15);
+        assertThat(line.totalDistance()).isEqualTo(10);
     }
 
     @Test

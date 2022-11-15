@@ -12,7 +12,11 @@ import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
 
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
+    private static final String ERROR_MESSAGE_DUPLICATE_UP_DOWN_STATION = "동일한 상행/하행선을 등록할 수 없습니다.";
+    private static final String ERROR_MESSAGE_NONE_MATCH_UP_DOWN_STATION = "상행/하행선은 하나라도 입력되어야 합니다.";
+    private static final String ERROR_MESSAGE_NOT_NULL_UP_STATION = "상행종점은 필수입니다.";
+
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -32,7 +36,7 @@ public class Sections {
 
     private void validDuplicateSection(Section compareSection) {
         if (isContainsAllStation(compareSection)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(ERROR_MESSAGE_DUPLICATE_UP_DOWN_STATION);
         }
     }
 
@@ -49,7 +53,7 @@ public class Sections {
         }
 
         if (getStations().stream().noneMatch(station -> compareSection.stations().contains(station))) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(ERROR_MESSAGE_NONE_MATCH_UP_DOWN_STATION);
         }
     }
 
@@ -95,7 +99,7 @@ public class Sections {
         return sections.stream().map(Section::getUpStation)
                 .filter(station -> !downStations.contains(station))
                 .findAny()
-                .orElseThrow(IllegalAccessError::new);
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_NULL_UP_STATION));
     }
 
     public int totalDistance() {
