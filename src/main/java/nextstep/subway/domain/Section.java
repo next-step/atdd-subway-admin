@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Objects;
 
 @Entity
@@ -34,6 +32,15 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
     }
 
+    public Section (Station upStation, Station downStation, Line line, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.line = line;
+        this.distance = distance;
+    }
+
+
+
     public Long getId() {
         return id;
     }
@@ -48,6 +55,10 @@ public class Section extends BaseEntity {
 
     public Line getLine() {
         return line;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     @Override
@@ -72,5 +83,27 @@ public class Section extends BaseEntity {
                 ", line=" + line +
                 ", distance=" + distance +
                 '}';
+    }
+
+    public boolean isContainSameStations(Section section) {
+        if (Objects.isNull(section)) {
+            return false;
+        }
+        return isUpStation(section.upStation) && isDownStation(section.downStation);
+    }
+
+    public boolean isContainAnyStaion(Section section) {
+        if (Objects.isNull(section)) {
+            return false;
+        }
+        return isUpStation(section.upStation) || isDownStation(section.downStation)
+                || isUpStation(section.getDownStation()) || isDownStation(section.getDownStation());
+    }
+
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+    public boolean isDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 }

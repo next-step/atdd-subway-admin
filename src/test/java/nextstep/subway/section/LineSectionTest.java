@@ -48,8 +48,7 @@ public class LineSectionTest {
         역_2개와_노선을_생성한다();
 
         //when
-//        역_사이에_새로운_역을_등록한다();
-        List<String> allLineNames = 모든_노선_이름을_조회한다();
+        역_사이에_새로운_역을_등록한다();
 
         //then
         노선_이름이_조회된다(allLineNames, "2호선");

@@ -15,9 +15,16 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class LineAcceptanceStep {
 
-    public static void 해당_노선의_정보가_삭제된다(int id) {
-        ExtractableResponse<Response> response = 특정_노선을_조회한다(id);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    public static ExtractableResponse<Response> 노선_한개_생성한다(int upLastStationId, int downLastStationId) {
+        LineRequest request = LineRequest.builder()
+                .name("2호선")
+                .color("green darken-2")
+                .distance(7)
+                .upLastStationId(upLastStationId)
+                .downLastStationId(downLastStationId)
+                .build();
+
+        return 노선을_생성한다(request);
     }
 
 
@@ -48,18 +55,6 @@ public class LineAcceptanceStep {
                 .extract();
     }
 
-
-    public static ExtractableResponse<Response> 노선_한개_생성한다(int upLastStationId, int downLastStationId) {
-        LineRequest request = LineRequest.builder()
-                .name("2호선")
-                .color("green darken-2")
-                .distance(7)
-                .upLastStationId(upLastStationId)
-                .downLastStationId(downLastStationId)
-                .build();
-
-        return 노선을_생성한다(request);
-    }
     public static ExtractableResponse<Response> 노선을_생성한다(LineRequest request) {
         return RestAssured.given()
                 .body(request).log().all()
@@ -138,6 +133,12 @@ public class LineAcceptanceStep {
                 .then().log().all()
                 .extract();
     }
+
+    public static void 해당_노선의_정보가_삭제된다(int id) {
+        ExtractableResponse<Response> response = 특정_노선을_조회한다(id);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+    }
+
 
 
 

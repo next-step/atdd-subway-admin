@@ -49,9 +49,15 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/line/{lineId}/sections")
-    public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-        return null;
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<SectionResponse.Section> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
+        SectionResponse.Section section = lineService.saveSection(lineId, sectionRequest);
+        return ResponseEntity.created(URI.create("/section/" + lineId)).body(section);
+    }
+
+    @GetMapping(value = "/section/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SectionResponse.Section> searchSection(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findSectionById(id));
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)

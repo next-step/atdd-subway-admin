@@ -1,9 +1,7 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.*;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.*;
 import nextstep.subway.exception.CannotFindException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,14 +9,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.constant.Message.NOT_FOUND_LINE_ERR;
-import static nextstep.subway.constant.Message.NOT_FOUND_UP_STATION_ERR;
+import static nextstep.subway.constant.Message.*;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
+    private SectionRepository sectionRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -51,14 +49,6 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
 
-//        if(updateRequest.getUpLastStationId() > 0) {
-//            line.changeUpStation(findStationById(Long.valueOf(updateRequest.getUpLastStationId())));
-//        }
-//
-//        if(updateRequest.getDownLastStationId() > 0) {
-//            line.changeDownStation(findStationById(Long.valueOf(updateRequest.getDownLastStationId())));
-//        }
-
         line.update(updateRequest);
 
 
@@ -74,5 +64,24 @@ public class LineService {
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new CannotFindException(NOT_FOUND_UP_STATION_ERR));
+    }
+
+    @Transactional
+    public SectionResponse.Section saveSection(Long lineId, SectionRequest sectionRequest) {
+        Station upStation = findStationById(Long.valueOf(sectionRequest.getUpStationId()));
+        Station downStation = findStationById(Long.valueOf(sectionRequest.getDownStationId()));
+        Line line = lineRepository.findById(lineId).orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
+
+        Section section = sectionRequest.toSection(upStation, downStation, line);
+        line.addSection(section);
+
+        Section persistSection  = sectionRepository.save(section);
+        return SectionResponse.of(persistSection);
+    }
+
+    public SectionResponse.Section findSectionById(Long id) {
+        Section section = sectionRepository.findById(id)
+                .orElseThrow(() -> new CannotFindException(NOT_FOUND_SECTION_ERR));
+        return SectionResponse.of(section);
     }
 }

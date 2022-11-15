@@ -9,6 +9,8 @@ import javax.persistence.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.constant.Message.*;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -67,6 +69,11 @@ public class Line extends BaseEntity {
         }
     }
 
+    public void addSection(Section newSection) {
+        Objects.requireNonNull(newSection, NOT_FOUND_SECTION_ERR);
+        sections.addSection(newSection);
+    }
+
 
     @Override
     public String toString() {
@@ -90,4 +97,6 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id, name, color, sections);
     }
+
+
 }
