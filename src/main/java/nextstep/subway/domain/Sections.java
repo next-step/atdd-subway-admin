@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -17,6 +18,12 @@ public class Sections {
     public void addSection(Section addSection) {
         validDuplicateSection(addSection);
         validNotContainSection(addSection);
+
+        Optional<Section> upSection = sections.stream().filter(addSection::isSameUpStation).findFirst();
+        Optional<Section> downSection = sections.stream().filter(addSection::isSameDownStation).findFirst();
+
+        upSection.ifPresent(section -> section.updateUpStation(addSection));
+        downSection.ifPresent(section -> section.updateDownStation(addSection));
         sections.add(addSection);
     }
 
