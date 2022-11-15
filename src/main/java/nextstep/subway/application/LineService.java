@@ -13,8 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.util.Objects.isNull;
-
 @Service
 @Transactional(readOnly = true)
 public class LineService {
@@ -37,9 +35,7 @@ public class LineService {
     }
 
     public List<LineResponse> findLines() {
-        final List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
+        return lineRepository.findAll().stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
@@ -63,9 +59,6 @@ public class LineService {
     }
 
     private Station findStation(Long stationId) {
-        if(isNull(stationId)) {
-            return null;
-        }
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("존재하지 않는 역입니다. id=%d", stationId)));
     }
