@@ -18,9 +18,13 @@ public class LineRequest {
     public LineRequest(LineRequestBuilder builder) {
         this.name = builder.name;
         this.color = builder.color;
+        this.distance = builder.distance;
         this.upStationId = builder.upStationId;
         this.downStationId = builder.downStationId;
-        this.distance = builder.distance;
+    }
+
+    public long getDistance() {
+        return distance;
     }
 
     public String getName() {
