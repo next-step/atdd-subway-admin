@@ -10,6 +10,7 @@ import static nextstep.subway.exception.StationExceptionMessage.EMPTY_STATION_NA
 
 @Entity
 public class Station extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,13 +36,12 @@ public class Station extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Station station = (Station) o;
-        return Objects.equals(id, station.id) &&
-                name.equals(station.name);
+        return name.equals(station.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name);
+        return Objects.hash(name);
     }
 
     public Long getId() {
