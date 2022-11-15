@@ -79,15 +79,27 @@ public class Sections {
     }
 
     public void deleteSection(Station deleteStation) {
-        //validateEmptySection
-        //validateSingleSection
-        if (isEdgeStation(deleteStation)) {
+        List<Section> findSections = sections.stream().filter(section -> section.hasStation(deleteStation))
+                .collect(Collectors.toList());
+        validateEmptySection(findSections);
+        validateSingleSection(sections,findSections);
+        if (isSingleSection(findSections)) {
+            sections.remove(findSections.get(0));
             return;
         }
     }
+    private void validateEmptySection(List<Section> sections){
+        if(sections.isEmpty()){
+            throw new SectionsException(NOT_REGISTER_SECTION.getMessage());
+        }
+    }
+    private void validateSingleSection(List<Section> sections,List<Section> findSections){
+        if(isSingleSection(sections) && isSingleSection(findSections)){
+            throw new SectionsException(SINGLE_SECTION.getMessage());
+        }
+    }
 
-    public boolean isEdgeStation(Station deleteStation) {
-        return getStations().stream().filter(station -> station.equals(deleteStation))
-                .count() == 1;
+    private boolean isSingleSection(List<Section> findSections){
+        return findSections.size() == 1;
     }
 }

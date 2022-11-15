@@ -60,7 +60,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean isSameDownStation(Section newSection) {
-        return downStation.equals(newSection);
+        return downStation.equals(newSection.getDownStation());
     }
 
     public Station getUpStation() {
@@ -77,6 +77,11 @@ public class Section extends BaseEntity {
 
     public boolean isComponentAnyOfStations(List<Station> stations) {
         return stations.contains(upStation) || stations.contains(downStation);
+    }
+
+    public boolean hasStation(Station station){
+        return upStation.equals(station) || downStation.equals(station);
+
     }
 
     public void modifyUpStation(Section newSection) {
