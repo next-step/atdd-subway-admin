@@ -56,9 +56,6 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
-        System.out.println(lines.size());
-
         return lines.stream()
             .map(LineResponse::of)
             .collect(Collectors.toList());
