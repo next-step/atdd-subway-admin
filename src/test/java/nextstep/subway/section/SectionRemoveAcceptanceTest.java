@@ -1,6 +1,8 @@
 package nextstep.subway.section;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.DatabaseInitializer;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineStationResponse;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.line.LineAcceptanceMethods.지하철_노선_생성;
 import static nextstep.subway.line.LineAcceptanceMethods.지하철_노선_조회;
@@ -115,5 +118,17 @@ class SectionRemoveAcceptanceTest {
                         LineStationResponse.from(신사역),
                         LineStationResponse.from(광교역)
                 );
+    }
+
+    /**
+     * When 지하철 구간이 하나인 지하철 노선에서 지하철 역을 제거한다.
+     * Then 지하철 역을 제거할 수 없다.
+     */
+    @DisplayName("구간이 하나인 노선에서는 역을 제거할 수 없다.")
+    @Test
+    void deleteStationFail() {
+        ExtractableResponse<Response> response = 지하철_노선에서_지하철역_제거(신분당선.getId(), 신사역.getId());
+
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

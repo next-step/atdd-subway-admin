@@ -1,5 +1,7 @@
 package nextstep.subway.section.application;
 
+import nextstep.subway.common.exception.DataRemoveException;
+import nextstep.subway.common.message.ExceptionMessage;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.section.domain.Section;
@@ -79,5 +81,16 @@ class SectionCommandServiceTest {
         sectionCommandService.removeSection(신분당선.getId(), 강남역.getId());
 
         Assertions.assertThat(신분당선.getStationsInOrder()).containsExactly(신사역, 광교역);
+    }
+
+    @DisplayName("지하철 구간이 하나인 경우 지하철역 제거 시 예외가 발생한다.")
+    @Test
+    void removeStationException() {
+        Long 신분당선 = this.신분당선.getId();
+        Long 신사역 = this.신사역.getId();
+
+        Assertions.assertThatThrownBy(() -> sectionCommandService.removeSection(신분당선, 신사역))
+                .isInstanceOf(DataRemoveException.class)
+                .hasMessageStartingWith(ExceptionMessage.FAIL_TO_REMOVE_STATION_FROM_ONE_SECTION);
     }
 }

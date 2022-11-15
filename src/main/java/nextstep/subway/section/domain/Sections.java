@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import com.google.common.collect.Lists;
+import nextstep.subway.common.exception.DataRemoveException;
 import nextstep.subway.common.message.ExceptionMessage;
 import nextstep.subway.station.domain.Station;
 
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final int SECTION_MIN_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
@@ -38,9 +40,16 @@ public class Sections {
     }
 
     public void remove(Station station) {
+        validateRemoveStation();
         removeStationBetweenUpStationAndDownStation(station);
         removeDownStation(station);
         removeUpStation(station);
+    }
+
+    private void validateRemoveStation() {
+        if (sections.size() == SECTION_MIN_SIZE) {
+            throw new DataRemoveException(ExceptionMessage.FAIL_TO_REMOVE_STATION_FROM_ONE_SECTION);
+        }
     }
 
     private void removeStationBetweenUpStationAndDownStation(Station station) {

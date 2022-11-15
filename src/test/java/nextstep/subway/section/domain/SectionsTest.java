@@ -1,5 +1,7 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exception.DataRemoveException;
+import nextstep.subway.common.message.ExceptionMessage;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -132,5 +134,15 @@ class SectionsTest {
                                 Station.from("광교역")
                         )
         );
+    }
+
+    @DisplayName("지하철 구간이 하나인 경우 지하철역 제거 시 예외가 발생한다.")
+    @Test
+    void removeStationException() {
+        Station 신사역 = Station.from("신사역");
+
+        Assertions.assertThatThrownBy(() -> sections.remove(신사역))
+                .isInstanceOf(DataRemoveException.class)
+                .hasMessageStartingWith(ExceptionMessage.FAIL_TO_REMOVE_STATION_FROM_ONE_SECTION);
     }
 }
