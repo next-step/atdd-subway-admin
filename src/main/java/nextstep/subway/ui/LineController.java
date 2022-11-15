@@ -8,12 +8,15 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class LineController {
@@ -39,5 +42,10 @@ public class LineController {
         Section section = sectionService.generate(upStation, downStation, distance);
         LineResponse response = lineService.register(line, section);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
+    }
+
+    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<LineResponse>> showLines() {
+        return ResponseEntity.ok().body(lineService.findAllLines());
     }
 }
