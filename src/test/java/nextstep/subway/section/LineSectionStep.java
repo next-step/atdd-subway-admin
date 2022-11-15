@@ -40,9 +40,29 @@ public class LineSectionStep {
                 .build();
     }
 
+    public static ExtractableResponse<Response> 중복_구간_생성_요청(int lineId, Long upStationId, Long downStationId, int distance) {
+        SectionRequest request = SectionRequest.builder()
+                .upStationId(upStationId)
+                .downStationId(downStationId)
+                .distance(distance)
+                .build();
 
-    public static void 구간_추가_성공_확인(ExtractableResponse<Response> savedSection) {
+        return RestAssured.given()
+                .body(request).log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/" + lineId + "/sections")
+                .then()
+                .log().all()
+                .extract();
+    }
+
+
+    public static void 구간_등록_성공_확인(ExtractableResponse<Response> savedSection) {
         assertThat(savedSection.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    public static void 구간_등록_실패(ExtractableResponse<Response> response) {
+        // 500
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
 }
