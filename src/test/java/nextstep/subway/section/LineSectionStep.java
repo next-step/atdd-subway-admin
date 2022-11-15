@@ -12,9 +12,9 @@ public class LineSectionStep {
         노선_한개_생성한다(upLastStationId, downLastStationId);
     }
 
-    public static  역_사이에_새로운_역을_등록한다() {
-
-    }
+//    public static  역_사이에_새로운_역을_등록한다() {
+//
+//    }
 
 
 

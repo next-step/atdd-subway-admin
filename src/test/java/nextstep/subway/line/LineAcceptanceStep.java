@@ -28,8 +28,7 @@ public class LineAcceptanceStep {
 
         assertAll(
                 ()-> assertThat(savedLine.jsonPath().getString("name")).isEqualTo("새로운 노선"),
-                ()-> assertThat(savedLine.jsonPath().getString("color")).isEqualTo("파란색"),
-                ()-> assertThat(savedLine.jsonPath().getInt("distance")).isEqualTo(33)
+                ()-> assertThat(savedLine.jsonPath().getString("color")).isEqualTo("파란색")
         );
     }
 

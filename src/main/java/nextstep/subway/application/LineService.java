@@ -1,9 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
@@ -54,15 +51,16 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
 
-        if(updateRequest.getUpLastStationId() > 0) {
-            line.changeUpStation(findStationById(Long.valueOf(updateRequest.getUpLastStationId())));
-        }
-
-        if(updateRequest.getDownLastStationId() > 0) {
-            line.changeDownStation(findStationById(Long.valueOf(updateRequest.getDownLastStationId())));
-        }
+//        if(updateRequest.getUpLastStationId() > 0) {
+//            line.changeUpStation(findStationById(Long.valueOf(updateRequest.getUpLastStationId())));
+//        }
+//
+//        if(updateRequest.getDownLastStationId() > 0) {
+//            line.changeDownStation(findStationById(Long.valueOf(updateRequest.getDownLastStationId())));
+//        }
 
         line.update(updateRequest);
+
 
         // save 없어도 처리
 //        lineRepository.save(line);

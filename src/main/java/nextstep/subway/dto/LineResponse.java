@@ -40,6 +40,5 @@ public class LineResponse {
         name = line.getName();
         color = line.getColor();
         stations = line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
-        distance = line.getDistance();
     }
 }

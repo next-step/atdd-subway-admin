@@ -3,12 +3,11 @@ package nextstep.subway.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Entity
 @Builder
@@ -24,13 +23,16 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @Column(nullable = false)
-    private int distance;
-
     @Embedded
-    private Sections sections = new Sections();
+    private Sections sections;
 
     public Line() {
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation) {
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections(new Section(upStation, downStation));
     }
 
     public Long getId() {
@@ -45,10 +47,15 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public int getDistance() { return distance; }
-
     public List<Station> getStations() {
-        return new ArrayList(Arrays.asList(upLastStation, downLastStation));
+        List<Station> allStations = new ArrayList<>();
+        sections.getSections().forEach(section ->  {
+            allStations.add(section.getUpStation());
+            allStations.add(section.getDownStation());
+        });
+
+        // 중복제거
+        return allStations.stream().distinct().collect(Collectors.toList());
     }
 
     public void update(LineRequest updateRequest) {
@@ -58,31 +65,6 @@ public class Line extends BaseEntity {
         if(!updateRequest.getColor().isEmpty() && updateRequest.getColor() != ""){
             this.color = updateRequest.getColor();
         }
-        if(updateRequest.getDistance() > 0) {
-            this.distance = updateRequest.getDistance();
-        }
-    }
-
-
-    public void changeUpStation(Station station) {
-        this.upLastStation = station;
-    }
-
-    public void changeDownStation(Station station) {
-        this.downLastStation = station;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Line line = (Line) o;
-        return distance == line.distance && Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(upLastStation, line.upLastStation) && Objects.equals(downLastStation, line.downLastStation);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name, color, distance, upLastStation, downLastStation);
     }
 
 
@@ -92,12 +74,20 @@ public class Line extends BaseEntity {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", distance=" + distance +
-                ", upLastStation=" + upLastStation +
-                ", downLastStation=" + downLastStation +
+                ", sections=" + sections +
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Line line = (Line) o;
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(sections, line.sections);
+    }
 
-
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, color, sections);
+    }
 }

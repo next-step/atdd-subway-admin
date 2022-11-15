@@ -51,7 +51,7 @@ public class LineController {
 
     @PostMapping("/line/{lineId}/sections")
     public ResponseEntity addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
-
+        return null;
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
