@@ -27,7 +27,7 @@ public class Line extends BaseEntity {
 
     public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
         Line line = new Line(name, color);
-        line.addInitialSections(Section.makeInitialSections(upStation, downStation, distance));
+        line.addSection(upStation, downStation, distance);
         return line;
     }
 
@@ -44,7 +44,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.getStations();
+        return sections.getStationsInOrder();
     }
 
     public Long getId() {
@@ -68,8 +68,8 @@ public class Line extends BaseEntity {
         return sections.getSections();
     }
 
-    public void insertNewSection(Station upStation, Station downStation, Integer distance) {
-        sections.insertNewSection(upStation, downStation, distance, this);
+    public void addSection(Station upStation, Station downStation, Integer distance) {
+        sections.addSection(upStation, downStation, distance, this);
 
     }
 
@@ -77,9 +77,6 @@ public class Line extends BaseEntity {
         sections.addSection(section, this);
     }
 
-    private void addInitialSections(List<Section> sections) {
-        sections.forEach(this::addSection);
-    }
 
     private static void validColor(String color) {
         if (StringUtils.isBlank(color)) {

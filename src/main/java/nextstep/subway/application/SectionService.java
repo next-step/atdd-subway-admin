@@ -2,7 +2,6 @@ package nextstep.subway.application;
 
 import javax.persistence.NoResultException;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.repository.LineRepository;
@@ -28,7 +27,7 @@ public class SectionService {
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
-        line.insertNewSection(
+        line.addSection(
                 findStationById(sectionRequest.getUpStationId()),
                 findStationById(sectionRequest.getDownStationId()),
                 sectionRequest.getDistance());

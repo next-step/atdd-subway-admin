@@ -1,11 +1,8 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.Optional;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -16,15 +13,24 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
     private List<Section> sections = new ArrayList<>();
 
-    public List<Station> getStations() {
-        Set<Station> stations = new HashSet<>();
-        sections.forEach(section -> {
-            stations.add(section.getUpStation());
-            stations.add(section.getDownStation());
-        });
-        return stations.stream()
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+
+    public List<Station> getStationsInOrder() {
+        List<Station> stations = new ArrayList<>();
+        Optional<Station> station = findDownStationByUpStation(null);
+
+        while (station.isPresent()) {
+            Station nowStation = station.get();
+            stations.add(nowStation);
+            station = findDownStationByUpStation(nowStation);
+        }
+        return stations;
+    }
+
+    private Optional<Station> findDownStationByUpStation(Station station) {
+        return sections.stream()
+                .filter(it -> it.getUpStation() == station)
+                .findFirst()
+                .map(Section::getDownStation);
     }
 
     public List<Section> getSections() {
@@ -41,7 +47,17 @@ public class Sections {
         }
     }
 
-    public void insertNewSection(Station upStation, Station downStation, Integer distance, Line line) {
+    public void addSection(Station upStation, Station downStation, Integer distance, Line line) {
+        if (sections.isEmpty()) {
+            addInitialSections(upStation, downStation, distance, line);
+            return;
+        }
         addSection(new Section(upStation, downStation, distance), line);
     }
+
+    private void addInitialSections(Station upStation, Station downStation, Integer distance, Line line) {
+        List<Section> initialSections = Section.makeInitialSections(upStation, downStation, distance);
+        initialSections.forEach(section -> addSection(section, line));
+    }
+
 }
