@@ -200,6 +200,13 @@ class LineStationAcceptanceTest {
     @DisplayName("구간이 하나인 노선에서 역을 제거한다.")
     @Test
     void 구간이_하나인_노선에서_역_제거() {
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_구간_제거(getId(이호선), getId(강남역));
+        ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(getId(이호선));
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(예외_발생());
+        assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
     /**

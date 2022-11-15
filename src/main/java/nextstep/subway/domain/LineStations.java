@@ -137,4 +137,8 @@ public class LineStations {
 
         return lineStation.isPresent();
     }
+
+    public int size() {
+        return lineStations.size();
+    }
 }
