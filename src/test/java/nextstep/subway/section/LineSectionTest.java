@@ -72,7 +72,7 @@ public class LineSectionTest {
     }
 
     /**
-     * Given 2개의 지하철역이 등록되어 있고, 노선이 등록되어있다
+     * Given 5개의 지하철역이 등록되어 있고, 노선이 등록되어있다
      * When 지하철 역 중 하나도 포함되어있지 않으면
      * Then 예외를 던진다
      */
@@ -87,6 +87,25 @@ public class LineSectionTest {
 
         // then
         구간_등록_실패(response);
+    }
+
+    /**
+     * Given 2개의 지하철역이 등록되어 있고, 노선이 등록되어있다
+     * When 새로운 구간의 길이가 기존 구간의 길이보다 크거나 같으면
+     * Then 예외를 던진다
+     */
+    @DisplayName("새로운 구간의 길이가 기존 구간 길이보다 크거나 같으면 예외를 던진다")
+    @Test
+    void 역_사이에_새로운_역_생성_예외() {
+        // given -> beforeEach
+
+        // when
+        ExtractableResponse<Response> response1 = 비정상_구간_생성_요청(lineId, 1L, 2L, 7);
+        ExtractableResponse<Response> response2 = 비정상_구간_생성_요청(lineId, 1L, 2L, 8);
+
+        // then
+        구간_등록_실패(response1);
+        구간_등록_실패(response2);
     }
 
 
