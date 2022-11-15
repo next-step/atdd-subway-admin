@@ -22,16 +22,16 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     
     private Long 광교역_ID;
     
-    private Long 신규역_1_ID;
+    private Long 양재역_ID;
     
-    private Long 신규역_2_ID;
+    private Long 신사역_ID;
     
     @BeforeEach
     void addSection() {
         강남역_ID = 지하철역_생성("강남역").jsonPath().getLong("id");
         광교역_ID = 지하철역_생성("광교역").jsonPath().getLong("id");
-        신규역_1_ID = 지하철역_생성("양재역").jsonPath().getLong("id");
-        신규역_2_ID = 지하철역_생성("신사역").jsonPath().getLong("id");
+        양재역_ID = 지하철역_생성("양재역").jsonPath().getLong("id");
+        신사역_ID = 지하철역_생성("신사역").jsonPath().getLong("id");
     }
 
     /**
@@ -46,7 +46,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         Long 신분당선_ID = 지하철_노선_생성("신분당선", "주황색", 강남역_ID, 광교역_ID, 12).jsonPath().getLong("id");
 
         // when
-        지하철_노선_구간_추가(신분당선_ID, 강남역_ID, 신규역_1_ID, 5);
+        지하철_노선_구간_추가(신분당선_ID, 강남역_ID, 양재역_ID, 5);
 
         // then
         List<String> result = 지하철_노선_조회(신분당선_ID).jsonPath().getList("stations.name");
@@ -66,7 +66,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         Long 신분당선_ID = 지하철_노선_생성("신분당선", "주황색", 강남역_ID, 광교역_ID, 12).jsonPath().getLong("id");
 
         // when
-        지하철_노선_구간_추가(신분당선_ID, 신규역_1_ID, 강남역_ID, 3);
+        지하철_노선_구간_추가(신분당선_ID, 양재역_ID, 강남역_ID, 3);
 
         // then
         List<String> result = 지하철_노선_조회(신분당선_ID).jsonPath().getList("stations.name");
@@ -86,7 +86,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         Long 신분당선_ID = 지하철_노선_생성("신분당선", "주황색", 강남역_ID, 광교역_ID, 12).jsonPath().getLong("id");
 
         // when
-        지하철_노선_구간_추가(신분당선_ID, 광교역_ID, 신규역_1_ID, 3);
+        지하철_노선_구간_추가(신분당선_ID, 광교역_ID, 양재역_ID, 3);
 
         // then
         List<String> result = 지하철_노선_조회(신분당선_ID).jsonPath().getList("stations.name");
@@ -106,7 +106,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         Long 신분당선_ID = 지하철_노선_생성("신분당선", "주황색", 강남역_ID, 광교역_ID, 5).jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_구간_추가(신분당선_ID, 강남역_ID, 신규역_1_ID, 7);
+        ExtractableResponse<Response> response = 지하철_노선_구간_추가(신분당선_ID, 강남역_ID, 양재역_ID, 7);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -142,7 +142,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         Long 신분당선_ID = 지하철_노선_생성("신분당선", "주황색", 강남역_ID, 광교역_ID, 5).jsonPath().getLong("id");
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_구간_추가(신분당선_ID, 신규역_1_ID, 신규역_2_ID, 5);
+        ExtractableResponse<Response> response = 지하철_노선_구간_추가(신분당선_ID, 양재역_ID, 신사역_ID, 5);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

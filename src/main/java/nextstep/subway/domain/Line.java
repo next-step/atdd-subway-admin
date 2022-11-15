@@ -31,14 +31,14 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private Line(Name name, Color color, Distance distance, Station upStation, Station downStation) {
+    private Line(String name, String color, int distance, Station upStation, Station downStation) {
         Section section = Section.of(upStation, downStation, this, distance);
-        this.name = name;
-        this.color = color;
+        this.name = Name.from(name);
+        this.color = Color.from(color);
         this.sections = Sections.from(Collections.singletonList(section));
     }
 
-    public static Line of(Name name, Color color, Distance distance, Station upStation, Station downStation) {
+    public static Line of(String name, String color, int distance, Station upStation, Station downStation) {
         return new Line(name, color, distance, upStation, downStation);
     }
 

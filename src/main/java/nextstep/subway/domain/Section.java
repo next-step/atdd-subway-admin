@@ -44,8 +44,8 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public static Section of(Station upStation, Station downStation, Line line, Distance distance) {
-        return new Section(upStation, downStation, line, distance);
+    public static Section of(Station upStation, Station downStation, Line line, int distance) {
+        return new Section(upStation, downStation, line, Distance.from(distance));
     }
 
     public void updateStation(Section section) {

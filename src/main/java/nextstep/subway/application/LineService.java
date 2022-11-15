@@ -42,9 +42,9 @@ public class LineService {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
         return Line.of(
-            Name.from(lineRequest.getName()),
-            Color.from(lineRequest.getColor()),
-            Distance.from(lineRequest.getDistance()),
+            lineRequest.getName(),
+            lineRequest.getColor(),
+            lineRequest.getDistance(),
             upStation,
             downStation
         );
@@ -87,7 +87,7 @@ public class LineService {
         Station downStation = getStation(sectionRequest.getDownStationId());
 
         Line line = getLineById(id);
-        line.addSection(Section.of(upStation, downStation, line, Distance.from(sectionRequest.getDistance())));
+        line.addSection(Section.of(upStation, downStation, line, sectionRequest.getDistance()));
         lineRepository.save(line);
     }
 }
