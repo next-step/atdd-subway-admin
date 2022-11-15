@@ -24,7 +24,7 @@ class StationTest {
     }
 
     @Test
-    @DisplayName("지하철역 동등성 성공 테스트")
+    @DisplayName("지하철역 이름이 같은 지하철역은 동등하다.")
     void equalsSuccess() {
         Station actual = Station.from("신사역");
         Station expected = Station.from("신사역");
@@ -32,7 +32,7 @@ class StationTest {
     }
 
     @Test
-    @DisplayName("지하철역 동등성 실패 테스트")
+    @DisplayName("지하철역 이름이 다른 지하철역은 동등하지 않다.")
     void equalsFail() {
         Station actual = Station.from("신사역");
         Station expected = Station.from("강남역");

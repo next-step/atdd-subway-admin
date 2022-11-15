@@ -1,18 +1,27 @@
 package nextstep.subway.line.dto;
 
+import nextstep.subway.station.dto.StationResponse;
+
 import java.util.Objects;
 
-public class LineEndStationResponse {
+public class LineStationResponse {
     private Long id;
     private String name;
 
-    private LineEndStationResponse(Long id, String name) {
+    private LineStationResponse() {
+    }
+
+    private LineStationResponse(Long id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public static LineEndStationResponse of(Long id, String name) {
-        return new LineEndStationResponse(id, name);
+    public static LineStationResponse of(Long id, String name) {
+        return new LineStationResponse(id, name);
+    }
+
+    public static LineStationResponse from(StationResponse stationResponse) {
+        return new LineStationResponse(stationResponse.getId(), stationResponse.getName());
     }
 
     public Long getId() {
@@ -27,7 +36,7 @@ public class LineEndStationResponse {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        LineEndStationResponse that = (LineEndStationResponse) o;
+        LineStationResponse that = (LineStationResponse) o;
         return name.equals(that.name);
     }
 

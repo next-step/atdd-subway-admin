@@ -9,12 +9,17 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class ControllerExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<Void> handleIllegalArgsException() {
+    public ResponseEntity<Void> handleDataIntegrityViolationException() {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(DataNotFoundException.class)
     public ResponseEntity<Void> handleDataNotFoundException() {
+        return ResponseEntity.badRequest().build();
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
 }

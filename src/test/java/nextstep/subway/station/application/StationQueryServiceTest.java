@@ -3,6 +3,7 @@ package nextstep.subway.station.application;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
 import nextstep.subway.station.dto.StationResponse;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +23,7 @@ class StationQueryServiceTest {
     @Autowired
     private StationRepository stationRepository;
 
+    @DisplayName("지하철역 목록 조회")
     @Test
     void findAllStations() {
         stationRepository.save(Station.from("강남역"));
@@ -34,6 +36,7 @@ class StationQueryServiceTest {
         );
     }
 
+    @DisplayName("지하철역 조회")
     @Test
     void findById() {
         Station station = Station.from("강남역");

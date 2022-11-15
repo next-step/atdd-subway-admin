@@ -1,7 +1,6 @@
 package nextstep.subway.station.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.common.message.ExceptionMessage;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -12,25 +11,18 @@ public class Station extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String name;
+    @Embedded
+    private StationName name;
 
     protected Station() {
     }
 
-    private Station(String name) {
+    private Station(StationName name) {
         this.name = name;
     }
 
     public static Station from(String name) {
-        validate(name);
-        return new Station(name);
-    }
-
-    private static void validate(String name) {
-        if (name == null || name.isEmpty()) {
-            throw new IllegalArgumentException(ExceptionMessage.REQUIRED);
-        }
+        return new Station(StationName.from(name));
     }
 
     public Long getId() {
@@ -38,7 +30,7 @@ public class Station extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     @Override
@@ -46,11 +38,11 @@ public class Station extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Station station = (Station) o;
-        return name.equals(station.name);
+        return Objects.equals(id, station.id) && name.equals(station.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(id, name);
     }
 }
