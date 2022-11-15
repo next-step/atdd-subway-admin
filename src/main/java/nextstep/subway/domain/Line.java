@@ -51,6 +51,12 @@ public class Line extends BaseEntity {
         lineStations.add(lineStation);
     }
 
+    public void deleteLineStation(Station station) {
+        if (!lineStations.contains(station)) {
+            throw new IllegalArgumentException("노선에 포함되지 않은 역은 삭제할 수 없습니다.");
+        }
+    }
+
     public Long getId() {
         return id;
     }

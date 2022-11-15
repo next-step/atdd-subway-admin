@@ -129,4 +129,12 @@ public class LineStations {
 
         return duplicate.isPresent();
     }
+
+    public boolean contains(Station station) {
+        Optional<LineStation> lineStation = lineStations.stream()
+                .filter(ls -> ls.getUpStation() == station || ls.getDownStation() == station)
+                .findFirst();
+
+        return lineStation.isPresent();
+    }
 }

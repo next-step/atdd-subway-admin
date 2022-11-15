@@ -67,6 +67,8 @@ public class LineService {
 
     @Transactional
     public void deleteLine(Long lineId) {
+        // TODO: ExceptionHandler로 예외에 맞는 statusCode 반환 찾아보기
+        // TODO: assertThatThrownBy는 단위 테스트에서 사용하기 (도메인에 대한 테스트도 구현)
         Line line = lineRepository.findById(lineId).orElseThrow(
                 () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
         );
@@ -86,5 +88,14 @@ public class LineService {
         line.addLineStation(lineStation);
 
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(
+                () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
+        );
+        Station station = stationService.findStationById(stationId);
+        line.deleteLineStation(station);
     }
 }

@@ -129,7 +129,7 @@ class LineStationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(getId(이호선));
-        assertThat(postResponse.statusCode()).isEqualTo(등록_실패());
+        assertThat(postResponse.statusCode()).isEqualTo(예외_발생());
         assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
@@ -147,7 +147,7 @@ class LineStationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(getId(이호선));
-        assertThat(postResponse.statusCode()).isEqualTo(등록_실패());
+        assertThat(postResponse.statusCode()).isEqualTo(예외_발생());
         assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
@@ -166,7 +166,7 @@ class LineStationAcceptanceTest {
 
         // then
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(getId(이호선));
-        assertThat(postResponse.statusCode()).isEqualTo(등록_실패());
+        assertThat(postResponse.statusCode()).isEqualTo(예외_발생());
         assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
@@ -200,7 +200,6 @@ class LineStationAcceptanceTest {
     @DisplayName("구간이 하나인 노선에서 역을 제거한다.")
     @Test
     void 구간이_하나인_노선에서_역_제거() {
-
     }
 
     /**
@@ -211,7 +210,12 @@ class LineStationAcceptanceTest {
     @DisplayName("노선에 등록되지 않은 역을 제거한다.")
     @Test
     void 노선에_등록되지_않은_역_제거() {
+        // when
+        JsonPath 신도림역 = 지하철_역_생성("신도림역");
+        ExtractableResponse<Response> deleteResponse = 지하철_구간_제거(getId(이호선), getId(신도림역));
 
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(예외_발생());
     }
 
     private JsonPath 지하철_역_생성(String name) {
@@ -258,6 +262,14 @@ class LineStationAcceptanceTest {
                 .extract();
     }
 
+    private ExtractableResponse<Response> 지하철_구간_제거(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
+    }
+
     private ExtractableResponse<Response> 노선_아이디로_지하철역_조회(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -270,7 +282,7 @@ class LineStationAcceptanceTest {
         return jsonPath.getLong("id");
     }
     
-    private int 등록_실패() {
+    private int 예외_발생() {
         return HttpStatus.BAD_REQUEST.value();
     }
 }

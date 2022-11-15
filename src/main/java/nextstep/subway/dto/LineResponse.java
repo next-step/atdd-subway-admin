@@ -2,13 +2,14 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class LineResponse {
     private final Long id;
     private final String name;
     private final String color;
+    // TODO : 길이 검증 추가
+    private int distance;
     private final List<StationResponse> stations;
 
     public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
