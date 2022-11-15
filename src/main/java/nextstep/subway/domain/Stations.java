@@ -19,4 +19,5 @@ public class Stations {
     public void add(Station station) {
         this.stations.add(station);
     }
+
 }

@@ -4,9 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import nextstep.subway.util.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -23,6 +25,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @LocalServerPort
     int port;
 
@@ -31,6 +36,7 @@ public class StationAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        databaseCleanup.execute();
     }
 
     /**
@@ -41,14 +47,8 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "잠실역");
-
-        ExtractableResponse<Response> response = insertStation(params).extract();
-
-        // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        // when then
+        insertStationsSuccess("잠실역");
 
         // then
         List<String> stationNames =
@@ -65,11 +65,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
+        insertStationsSuccess("잠실역");
 
         // when
-        ExtractableResponse<Response> response = insertStation(params).extract();
+        ExtractableResponse<Response> response = insertStation("잠실역").extract();
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -84,13 +83,8 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given: 2개의 지하철역이 등록되어 있다.
-        Map<String, String> param = new HashMap<>();
-
-        param.put("name", "강남역");
-        assertThat(insertStation(param).extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        param.put("name", "홍대역");
-        assertThat(insertStation(param).extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        insertStationsSuccess("잠실역");
+        insertStationsSuccess("강남역");
 
         // when: 지하철역의 리스트 정보를 조회한다.
         ExtractableResponse<Response> response = selectStations().extract();
@@ -100,8 +94,8 @@ public class StationAcceptanceTest {
                 response.response().body().jsonPath().getList("name", String.class);
         assertAll (
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(stationNames.contains("잠실역")).isTrue(),
                 () -> assertThat(stationNames.contains("강남역")).isTrue(),
-                () -> assertThat(stationNames.contains("홍대역")).isTrue(),
                 () -> assertThat(stationNames.size()).isEqualTo(2)
         );
     }
@@ -115,14 +109,10 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given: 제거할 지하철 역을 생성한다.
-        Map<String, String> param = new HashMap<>();
-
-        param.put("name", "강남역");
-        ExtractableResponse<Response> created = insertStation(param).extract();
-        assertThat(created.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        String location = insertStationsSuccess("강남역").header("Location");
 
         // when: 생성한 지하철을 삭제한다.
-        ExtractableResponse<Response> response = deleteStation(null, created.header("Location")).extract();
+        ExtractableResponse<Response> response = deleteStation(null, location).extract();
 
         // then: 정상적으로 삭제처리가 되어야 한다.
         ExtractableResponse<Response> deleted = selectStations().extract();
@@ -149,7 +139,16 @@ public class StationAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private ValidatableResponse insertStation(Map<String, String> params) {
+    private ExtractableResponse<Response> insertStationsSuccess(String name) {
+        ExtractableResponse<Response> response = insertStation(name).extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        return response;
+    }
+
+    private ValidatableResponse insertStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

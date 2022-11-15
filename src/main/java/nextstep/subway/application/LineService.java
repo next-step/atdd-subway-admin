@@ -35,7 +35,7 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse finddById(Long id) {
+    public LineResponse findById(Long id) {
         return LineResponse.of(lineRepository.getById(id));
     }
 
