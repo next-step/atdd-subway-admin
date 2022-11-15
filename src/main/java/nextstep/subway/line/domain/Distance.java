@@ -27,12 +27,12 @@ public class Distance {
         }
     }
 
-    public void calculate(int distance) {
+    public Distance minus(int distance) {
         if(this.distance <= distance) {
             throw new IllegalArgumentException(SectionExceptionCode.INVALID_DISTANCE.getMessage());
         }
 
-        this.distance = (this.distance - distance);
+        return new Distance(this.distance - distance);
     }
 
     public int getDistance() {

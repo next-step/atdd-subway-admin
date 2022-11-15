@@ -26,7 +26,7 @@ class DistanceTest {
     void 거리_계산시_입력된_거리값이_현재_거리값보다_크거나_같으면_IllegalArgumentException_발생(int current, int request) {
         assertThatThrownBy(() -> {
             Distance distance = new Distance(current);
-            distance.calculate(request);
+            distance.minus(request);
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(SectionExceptionCode.INVALID_DISTANCE.getMessage());
     }
@@ -35,7 +35,7 @@ class DistanceTest {
     @CsvSource(value = { "20:10", "50:20", "10:5" }, delimiter = ':')
     void 거리_계산(int current, int request) {
         Distance distance = new Distance(current);
-        distance.calculate(request);
+        distance = distance.minus(request);
         assertEquals((current - request), distance.getDistance());
     }
 }
