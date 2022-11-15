@@ -116,3 +116,57 @@ Vary: Access-Control-Request-Headers
     * 생성API 2번 각각 호출하여 2개의 지하철역 생성 후 조회
 - [X] 지하철역 삭제 인수 테스트 작성하기
     * 지하철역 생성 후 삭제하면, 삭제된 지하철은 조회되지 않음
+
+#### Step1 회고
+* RestAssured의 사용법을 제대로 파악하지 못하여 쓸데없는? 코드를 작성함.
+* .extract()를 수행하면 ExtractableResponse 타입의 객체로 받을 수 있음
+* .extract()를 수행하지 않으면 객체를 받지 않고 호출 API를 수행할 수 있음
+* jsonPath()는  response를 받는 동시에 사용할 수 있고, 받은 후에도 사용할 수 있음
+  * EX)
+  ~~~java
+  // 응답 받으면서 동시에 jsonpath()로 추출하는 case
+  List<String> stationNames =
+                RestAssured.given().log().all()
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract().jsonPath().getList("name", String.class);
+  
+  // 응답 받고 jsonpath()로 추출하는 case
+  ExtractableResponse saveResponse = RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all()
+                .extract();
+
+  long deleteTargetStationId = saveResponse.body().jsonPath().getLong("id");
+  String deleteTargetStationName = saveResponse.body().jsonPath().getString("name");
+  ~~~
+* 참조: https://www.programcreek.com/java-api-examples/?api=io.restassured.response.ExtractableResponse
+### step2 - 지하철 노선 기능
+#### API 명세
+<pre>
+노선 생성 시 상행종점역과 하행종점역을 등록합니다. 
+따라서 이번 단계에서는 지하철 노선에 역을 맵핑하는 기능은 아직 없지만 노선 조회시 포함된 역 목록이 함께 응답됩니다.
+</pre>
+![img.png](img.png)
+#### 기능 요구사항 및 인수조건
+- [ ] 지하철 노선 생성
+  * When 지하철 노선을 생성하면
+  * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+- [ ] 지하철 노선 목록 조회
+  * Given 2개의 지하철 노선을 생성하고
+  * When 지하철 노선 목록을 조회하면
+  * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+- [ ] 지하철 노선 조회
+  * Given 지하철 노선을 생성하고
+  * When 생성한 지하철 노선을 조회하면
+  * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+- [ ] 지하철 노선 수정
+  * Given 지하철 노선을 생성하고
+  * When 생성한 지하철 노선을 수정하면
+  * Then 해당 지하철 노선 정보는 수정된다
+- [ ] 지하철 노선 삭제
+  * Given 지하철 노선을 생성하고
+  * When 생성한 지하철 노선을 삭제하면
+  * Then 해당 지하철 노선 정보는 삭제된다
