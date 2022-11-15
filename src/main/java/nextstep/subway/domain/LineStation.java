@@ -53,6 +53,9 @@ public class LineStation extends BaseEntity {
     }
 
     public void update(LineStation newLineStation) {
+        if(distance <= newLineStation.distance){
+            throw new IllegalArgumentException("추가하는 노선의 길이는 기존 역 사이의 길이보다 크거나 같을 수 없습니다.");
+        }
         if (isEqualUpStation(newLineStation)) {
             updateUpStation(newLineStation);
         }
