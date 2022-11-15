@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.helper.JsonPathExtractor.getId;
 import static nextstep.subway.line.LineAcceptanceTestFixture.createLine;
 import static nextstep.subway.line.LineAcceptanceTestFixture.findAllLines;
 import static nextstep.subway.line.LineAcceptanceTestFixture.findLine;
@@ -12,6 +13,7 @@ import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.base.AcceptanceTest;
 import nextstep.subway.helper.JsonPathExtractor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,6 +22,18 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest extends AcceptanceTest {
+    private Long 판교역;
+    private Long 청계산역;
+    private Long 강남역;
+    private Long 교대역;
+
+    @BeforeEach
+    void lineSetUp() {
+        판교역 = getId(createStation("판교역"));
+        청계산역 = getId(createStation("청계산역"));
+        강남역 = getId(createStation("강남역"));
+        교대역 = getId(createStation("교대역"));
+    }
 
     /**
      *  When 지하철 노선을 생성하면
@@ -29,9 +43,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineTest() {
         // when
-        Long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
-        Long downStationId = JsonPathExtractor.getId(createStation("새로운지하철역"));
-        createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
+        createLine("신분당선", "bg-red-600", 10, 판교역, 청계산역);
 
         // then
         List<String> lineNames = JsonPathExtractor.getNames(findAllLines());
@@ -47,11 +59,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // given
-        Long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
-        Long downStationId =  JsonPathExtractor.getId(createStation("새로운지하철역"));
-        createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
-        Long anotherDownStationId =  JsonPathExtractor.getId(createStation("또다른지하철역"));
-        createLine("분당선", "bg-green-600", 20, upStationId, anotherDownStationId);
+        createLine("신분당선", "bg-red-600", 10, 판교역, 청계산역);
+        createLine("2호선", "bg-green-600", 20, 강남역, 교대역);
 
         // when
         ExtractableResponse<Response> findAllResponse = findAllLines();
@@ -69,9 +78,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
-        long downStationId = JsonPathExtractor.getId(createStation("새로운지하철역"));
-        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 10, 판교역, 청계산역);
 
         // when
         Long lineId = JsonPathExtractor.getId(createResponse);
@@ -91,9 +98,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLineTest() {
         // given
-        long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
-        long downStationId = JsonPathExtractor.getId(createStation("새로운지하철역"));
-        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 10, 판교역, 청계산역);
 
         // when
         Long lineId = JsonPathExtractor.getId(createResponse);
@@ -114,9 +119,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLineTest() {
         // given
-        long upStationId = JsonPathExtractor.getId(createStation("지하철역"));
-        long downStationId = JsonPathExtractor.getId(createStation("새로운지하철역"));
-        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 10, upStationId, downStationId);
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", 10, 판교역, 청계산역);
 
         // when
         Long lineId = JsonPathExtractor.getId(createResponse);
