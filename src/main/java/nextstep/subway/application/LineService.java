@@ -12,6 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.common.ErrorMessage.NOT_FOUND;
+
 @Service
 @Transactional(readOnly = true)
 public class LineService {
@@ -40,14 +42,14 @@ public class LineService {
     public LineResponse findById(Long id) {
         return lineRepository.findById(id)
                 .map(LineResponse::of)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest request) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
-        line.updateNameAndColor(request.getName(), request.getColor());
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
+        line.update(request.getName(), request.getColor());
     }
 
     @Transactional
