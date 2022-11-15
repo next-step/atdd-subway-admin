@@ -220,7 +220,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   Vary: Access-Control-Request-Headers
   ```
 
-- [ ] 지하철 노선 삭제
+- [x] 지하철 노선 삭제
   ```text
   Given 지하철 노선을 생성하고
   When 생성한 지하철 노선을 삭제하면
@@ -255,6 +255,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   2. @Sql : **_테스트 수행 시 특정 쿼리를 동작시키는 애너테이션_**
      - @DirtiesContext의 단점은 정말 말도안되게 느리다는 것이다.  
      근본적인 문제의 원인이 DB에 남아있는 데이터 때문이라면? --> 각 테스트 실행시마다 DB의 데이터를 깨끗하게 날리면 됨(`Table Truncate`)
-- [ ] 인수 테스트 리팩터링
+- [x] 인수 테스트 리팩터링
   - 중복 코드 처리 : 중복되는 부분 별도 메소드로 역할을 분리하는 식으로 리펙터링 해 볼 것
   - 프론트엔드 : 노선 관리 페이지에서 기능이 제대로 동작하는 지 확인

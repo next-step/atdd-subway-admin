@@ -38,6 +38,10 @@ public class LineAcceptanceTestUtil {
         return put(params, MediaType.APPLICATION_JSON_VALUE, REQUEST_PATH_FOR_LINE + "/{id}", id, HttpStatus.OK);
     }
 
+    public static ExtractableResponse<Response> deleteLine(Long id) {
+        return delete(REQUEST_PATH_FOR_LINE + "/{id}", id, HttpStatus.NO_CONTENT);
+    }
+
     private static Map<String, String> getParams(String name, String color, String upStationId, String downStationId, String distance) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);

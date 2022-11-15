@@ -15,8 +15,7 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.subway.line.LineAcceptanceTestUtil.createLine;
-import static nextstep.subway.line.LineAcceptanceTestUtil.getLines;
+import static nextstep.subway.line.LineAcceptanceTestUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -147,9 +146,29 @@ public class LineAcceptanceTest {
         // when
         String newName = "다른신분당선";
         String newColor = "blue darken-2";
-        ExtractableResponse<Response> response = LineAcceptanceTestUtil.updateLine(newName, newColor, id);
+        ExtractableResponse<Response> response = updateLine(newName, newColor, id);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철 노선을 삭제한다")
+    @Test
+    void 지하철노선삭제_성공() {
+        // given
+        Long id = createLine("신분당선", "bg-red-600", upStationId, downStationId, "200")
+                .jsonPath()
+                .getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = deleteLine(id);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
