@@ -9,6 +9,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.exception.AllRegisteredStationsException;
 import nextstep.subway.exception.ShortDistanceException;
 
 @Embeddable
@@ -38,17 +39,32 @@ public class LineStations {
         return result;
     }
 
-    public void add(LineStation lineStation) {
-        findStation(lineStation.getStation().getId())
-            .ifPresent(ls -> ls.updateFirstNode(lineStation.getPreStationId()));
-        findPreStation(lineStation.getPreStationId())
+    public void add(LineStation newLineStation) {
+        validate(newLineStation);
+        findStation(newLineStation.getStation().getId())
+            .ifPresent(ls -> ls.updateFirstNode(newLineStation.getPreStationId()));
+        findPreStation(newLineStation.getPreStationId())
             .ifPresent(ls -> {
-                if (ls.getDistance() <= lineStation.getDistance()) {
-                    throw new ShortDistanceException(ls.getDistance(), lineStation.getDistance());
-                }
-                ls.updatePreStationId(lineStation.getStation().getId());
+                validateDistance(newLineStation.getDistance(), ls.getDistance());
+                ls.updatePreStationId(newLineStation.getStation().getId());
             });
-        lineStations.add(lineStation);
+        lineStations.add(newLineStation);
+    }
+
+    private void validate(LineStation newLineStation) {
+        validateAllRegisteredStations(newLineStation.getPreStationId(), newLineStation.getStation().getId());
+    }
+
+    private void validateAllRegisteredStations(Long upStationId, Long downStationId) {
+        if (findStation(upStationId).isPresent() && findStation(downStationId).isPresent()) {
+            throw new AllRegisteredStationsException();
+        }
+    }
+
+    private void validateDistance(Integer newDistance, Integer nowDistance) {
+        if (nowDistance <= newDistance) {
+            throw new ShortDistanceException(nowDistance, newDistance);
+        }
     }
 
     private Optional<LineStation> findPreStation(Long id) {

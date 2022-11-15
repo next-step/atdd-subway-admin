@@ -130,6 +130,27 @@ public class SectionAcceptanceTest {
             "신규 역사이 길이[10]가 기존 역사이 길이[10]보다 크거나 같습니다.");
     }
 
+    /**
+     * When 노선에 상행역,하행역 모두 등록되어있을 때
+     * Then 추가할 수 없다
+     */
+    @DisplayName("상행역 하행역 모두 노선에 등록되어있을 시 추가할 수 없다")
+    @Test
+    void createSectionWhenAllRegisteredThrowException() {
+        // when
+        ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
+            .body(new SectionRequestDto(2L, 1L, 10))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(BAD_REQUEST);
+        assertThat(sectionsResponse.jsonPath().getString("message")).isEqualTo(
+            "이미 상행역/하행역 모두 노선에 추가되어 있습니다.");
+    }
+
     static class SectionRequestDto {
         private Long upStationId;
         private Long downStationId;
