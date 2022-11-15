@@ -3,9 +3,12 @@ package nextstep.subway.line.application;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.exception.LineExceptionCode;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
@@ -14,15 +17,19 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class LineService {
     private final LineRepository lineRepository;
+    private final SectionRepository sectionRepository;
     private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, SectionRepository sectionRepository,
+            StationService stationService) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
         this.stationService = stationService;
     }
 
@@ -41,10 +48,10 @@ public class LineService {
 
         return lines.stream()
                 .map(line -> LineResponse.of(line))
-                .collect(Collectors.toList());
+                .collect(toList());
     }
 
-    public LineResponse findByLine(Long id) {
+    public LineResponse findLineResponseById(Long id) {
         return LineResponse.of(findById(id));
     }
 
@@ -61,8 +68,6 @@ public class LineService {
     public void updateLine(Long id, LineRequest lineRequest) {
         Line line = findById(id);
         line.update(lineRequest.getName(), lineRequest.getColor());
-
-        lineRepository.save(line);
     }
 
     @Transactional
@@ -74,9 +79,17 @@ public class LineService {
     public void updateSection(Long id, SectionRequest sectionRequest) {
         Station upStation = stationService.findById(sectionRequest.getUpStationId());
         Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        List<Section> matchedSections = sectionRepository.findAllByRequestedSection(upStation, downStation);
         Line line = findById(id);
 
-        line.updateSections(sectionRequest.toSection(upStation, downStation));
-        lineRepository.save(line);
+        line.updateSections(sectionRequest.toSection(upStation, downStation), matchedSections);
+    }
+
+    public List<SectionResponse> findAllByLine(Long lineId) {
+        Line line = findById(lineId);
+
+        return sectionRepository.findAllByLine(line).stream()
+                .map(SectionResponse::of)
+                .collect(toList());
     }
 }
