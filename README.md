@@ -90,3 +90,4 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [ ] 기존 역 사이 길이보다 크거나 같을 경우 등록 불가
   - [ ] 상행역과 하행역이 이미 노선에 모두 등록되있는 경우 추가 불가
   - [ ] 상행역과 하행역 둘 중 하나도 포함되어있지 않을 경우 추가 불가
+- [X] 노선 역 목록 조회 기능 구현
