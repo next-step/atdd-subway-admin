@@ -3,6 +3,7 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.MediaType;
 
 import static nextstep.subway.line.LineAcceptanceStep.노선_한개_생성한다;
@@ -18,10 +19,8 @@ public class LineSectionStep {
     }
 
     public static ExtractableResponse<Response> 역_사이에_새로운_역을_등록한다() {
-        int newStationId =  지하철역을_생성한다("역삼역").jsonPath().get("id");
-
         return RestAssured.given()
-                .body(params).log().all()
+                .body(구간_하나를_생성한다()).log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then()
@@ -29,7 +28,15 @@ public class LineSectionStep {
                 .extract();
     }
 
+    private static SectionRequest 구간_하나를_생성한다() {
+        int newStationId =  지하철역을_생성한다("역삼역").jsonPath().get("id");
 
+        return SectionRequest.builder()
+                .upStationId(1L)
+                .downStationId(Long.valueOf(newStationId))
+                .distance(4)
+                .build();
+    }
 
 
 }

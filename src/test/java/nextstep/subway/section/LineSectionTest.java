@@ -15,6 +15,7 @@ import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceStep.*;
 import static nextstep.subway.section.LineSectionStep.역_2개와_노선을_생성한다;
+import static nextstep.subway.section.LineSectionStep.역_사이에_새로운_역을_등록한다;
 
 @DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
