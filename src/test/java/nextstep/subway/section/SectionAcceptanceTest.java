@@ -12,6 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.base.AcceptanceTest;
+import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -136,11 +137,21 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      *  Given 지하철 노선을 생성하고
-     *  When 노선에 포함되지 않는 역이 있는 구간을 등록할 경우
+     *  When 상행역, 하행역 모두 노선에 포함되지 않는 구간을 등록할 경우
      *  Then 등록할 수 없다
      */
-    @DisplayName("노선에 존재하지 않는 역을 포함한 구간은 등록할 수 없다")
+    @DisplayName("상행역, 하행역 모두 노선에 포함되지 않는 구간은 등록할 수 없다")
+    @Test
     void addSectionNotExistStationInLine() {
+        // given
+        Long lineId = getId(createLine("2호선", "bg-green-600", 20, 서초역, 강남역));
 
+        // when
+        Long 뚝섬역 = getId(createStation("뚝섬역"));
+        Long 성수역 = getId(createStation("성수역"));
+        ExtractableResponse<Response> createSectionResponse = addSection(lineId, 뚝섬역, 성수역, 15);
+
+        // then
+        assertThat(createSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

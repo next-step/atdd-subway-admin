@@ -58,4 +58,12 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역이 이미 모두 노선에 등록되어 있습니다.");
     }
+
+    @Test
+    void 상행역과_하행역_모두_노선에_포함되지_않는경우_등록_불가() {
+        Section newSection = Section.from(Station.from("뚝섬역"), Station.from("성수역"), Distance.from(15));
+        assertThatThrownBy(() -> sections.add(newSection))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("상행역과 하행역 모두 노선에 포함되어 있지 않습니다.");
+    }
 }
