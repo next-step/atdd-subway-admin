@@ -13,7 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.acceptance.station.StationSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -87,10 +89,26 @@ public class StationAcceptanceTest extends AcceptanceTest {
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
+    @DisplayName("지하철역 목록을 조회한다.")
     @Test
-    void getStations() {
+    void 지하철역_목록_조회_테스트() {
+        // given 2개의 지하철역을 생성하고
+        지하철역_생성(GANGNAM_STATION);
+        지하철역_생성(YUKSAM_STATION);
+
+        // when 지하철역 목록을 조회하면
+        List<String> stationNames = 지하철역_목록_조회().jsonPath().getList("name");
+
+        // then 2개의 지하철역을 응답 받는다
+        assertAll(
+                // then 지하철역이 생성된다
+                () -> assertThat(stationNames.size()).isEqualTo(2),
+                // then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
+                () -> assertThat(stationNames).containsAnyOf(GANGNAM_STATION),
+                () -> assertThat(stationNames).containsAnyOf(YUKSAM_STATION)
+        );
     }
+
 
     /**
      * Given 지하철역을 생성하고
