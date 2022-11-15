@@ -68,11 +68,13 @@ public class Line extends BaseEntity {
         return sections.getSections();
     }
 
+    public void insertNewSection(Station upStation, Station downStation, Integer distance) {
+        sections.insertNewSection(upStation, downStation, distance, this);
+
+    }
+
     public void addSection(Section section) {
-        sections.addSection(section);
-        if (section.getLine() != this) {
-            section.setLine(this);
-        }
+        sections.addSection(section, this);
     }
 
     private void addInitialSections(List<Section> sections) {

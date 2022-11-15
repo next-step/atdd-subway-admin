@@ -31,10 +31,17 @@ public class Sections {
         return sections;
     }
 
-    public void addSection(Section section) {
+    public void addSection(Section section, Line line) {
         if (!this.sections.contains(section)) {
             this.sections.add(section);
         }
+
+        if (section.getLine() != line) {
+            section.setLine(line);
+        }
     }
 
+    public void insertNewSection(Station upStation, Station downStation, Integer distance, Line line) {
+        addSection(new Section(upStation, downStation, distance), line);
+    }
 }

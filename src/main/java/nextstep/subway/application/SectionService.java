@@ -28,10 +28,10 @@ public class SectionService {
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineById(lineId);
-        Section section = sectionRequest.toSection(findLineById(lineId),
+        line.insertNewSection(
                 findStationById(sectionRequest.getUpStationId()),
-                findStationById(sectionRequest.getDownStationId()));
-        line.addSection(section);
+                findStationById(sectionRequest.getDownStationId()),
+                sectionRequest.getDistance());
     }
 
     private Line findLineById(Long lineId) {
