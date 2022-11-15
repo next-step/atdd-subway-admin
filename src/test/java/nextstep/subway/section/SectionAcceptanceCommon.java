@@ -17,5 +17,5 @@ public class SectionAcceptanceCommon {
                 .then().log().all()
                 .extract();
     }
-
 }
+
