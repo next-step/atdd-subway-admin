@@ -14,7 +14,8 @@ public class Sections {
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Section> sections;
 
-    protected Sections() { }
+    protected Sections() {
+    }
 
     private Sections(List<Section> sections) {
         this.sections = new LinkedList<>(sections);
@@ -33,7 +34,15 @@ public class Sections {
     }
 
     public void add(Section newSection) {
+        validateDuplicateUpDownStation(newSection);
         sections.forEach(section -> section.reorganize(newSection));
         sections.add(newSection);
+    }
+
+    public void validateDuplicateUpDownStation(Section newSection) {
+        boolean isSame = this.sections.stream().anyMatch(section -> section.isSameUpDownStation(newSection));
+        if (isSame) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 모두 노선에 등록되어 있습니다.");
+        }
     }
 }

@@ -53,6 +53,10 @@ public class Section {
        this.line = line;
     }
 
+    public boolean isSameUpDownStation(Section newSection) {
+        return isSameUpStation(newSection) && isSameDownStation(newSection);
+    }
+
     public void reorganize(Section newSection) {
         if (isSameUpStation(newSection)) {
             this.upStation = newSection.downStation;
