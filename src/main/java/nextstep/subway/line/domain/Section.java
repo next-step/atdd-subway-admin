@@ -5,6 +5,8 @@ import nextstep.subway.line.exception.SectionExceptionCode;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -64,26 +66,8 @@ public class Section extends BaseEntity {
     }
 
     public void update(Section request) {
-        if(equals(request)) {
-            throw new IllegalArgumentException(
-                    SectionExceptionCode.CANNOT_UPDATE_SAME_SECTION.getMessage());
-        }
-
-        distance.calculate(request.getDistance());
+        this.distance = distance.minus(request.getDistance());
         this.upStation = request.downStation;
-    }
-
-    public boolean hasAnyStation(Section request) {
-        return equalsUpStation(request.getUpStation()) || equalsDownStation(request.getDownStation())
-                || equalsUpStation(request.getDownStation()) || equalsDownStation(request.getUpStation());
-    }
-
-    public boolean equalsUpStation(Station station) {
-        return upStation.equals(station);
-    }
-
-    public boolean equalsDownStation(Station station) {
-        return downStation.equals(station);
     }
 
     public Station getUpStation() {
@@ -92,6 +76,10 @@ public class Section extends BaseEntity {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation);
     }
 
     public int getDistance() {
