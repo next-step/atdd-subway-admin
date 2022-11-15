@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.exception.SectionsExceptionMessage.LONGER_THAN_OHTER;
+import static nextstep.subway.exception.SectionsExceptionMessage.*;
 
 public class Sections {
 
@@ -22,6 +22,7 @@ public class Sections {
 
     public void addSection(Section section) {
         validationDistance(section);
+        validationSection(section);
         sections.add(section);
     }
 
@@ -33,8 +34,12 @@ public class Sections {
     }
 
     private void validationSection(Section newSection) {
-        boolean isContainsAll = false;
-        boolean isNotContainsAny = false;
+        if(isContainsAllStation(newSection)){
+            throw new SectionsException(ALREADY_CONTAINS_SECTION.getMessage());
+        }
+        if(isNotContainsAnyStation(newSection)){
+            throw new SectionsException(NOT_CONSTAINS_ANY_SECTION.getMessage());
+        }
     }
 
     public List<Station> getStations() {
@@ -42,5 +47,13 @@ public class Sections {
                 .flatMap(section -> section.getStations().stream())
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    private boolean isContainsAllStation(Section newSection){
+        return sections.stream().anyMatch(section -> section.isContainsAllStation(newSection));
+    }
+
+    private boolean isNotContainsAnyStation(Section newSection){
+        return !sections.isEmpty() && sections.stream().anyMatch(section -> section.isContainsAllStation(newSection));
     }
 }

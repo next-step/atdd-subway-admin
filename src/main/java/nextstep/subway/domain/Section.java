@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section extends BaseEntity {
@@ -11,7 +12,7 @@ public class Section extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @ManyToOne
-    @JoinColumn(name = "line_id")
+    @JoinColumn(name = "line_id",nullable = false)
     private Line line;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", nullable = false)
@@ -50,5 +51,21 @@ public class Section extends BaseEntity {
         return false;
     }
 
+    public boolean isContainsAllStation(Section section){
+        return upStation.equals(section.getUpStation()) && downStation.equals(section.getDownStation());
+    }
+
+    public boolean isNotContainsAnyStation(Section section){
+        return !upStation.equals(section.getUpStation()) && !downStation.equals(section.getDownStation());
+
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }
 

@@ -28,7 +28,23 @@ public class SectionAcceptanceTest extends RestAssuredSetUp {
         long downStationId = 지하철_역_등록("잠실역")
                 .jsonPath()
                 .getLong("id");
+
         ExtractableResponse<Response> response = 지하철_구간_등록(lineId, new SectionRequest(upStationId, downStationId, 10));
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void createSectionWithAlreadyExistsAllStation() {
+        long upStationId = 지하철_역_등록("강남역").jsonPath().getLong("id");
+        long downStationId = 지하철_역_등록("논현역").jsonPath().getLong("id");
+        long lineId = 지하철_노선_등록("2호선", "green", upStationId, downStationId, 10)
+                .jsonPath()
+                .getLong("id");
+
+        ExtractableResponse<Response> response = 지하철_구간_등록(lineId, new SectionRequest(upStationId, downStationId, 4));
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
