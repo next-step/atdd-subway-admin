@@ -1,5 +1,9 @@
 package nextstep.subway.linebridge.domain;
 
+import java.util.ArrayDeque;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.LinkedList;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -12,7 +16,7 @@ import java.util.Optional;
 public class LineBridges {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<LineBridge> lineBridges = new ArrayList<>();
+    private List<LineBridge> lineBridges = new LinkedList<>();
 
     public void add(LineBridge lineBridge) {
         validateDuplicate(lineBridge);
@@ -50,7 +54,7 @@ public class LineBridges {
         }
     }
 
-    public List<LineBridge> getLineBridges() {
-        return Collections.unmodifiableList(lineBridges);
+    public LinkedList<LineBridge> getLineBridges() {
+        return new LinkedList(lineBridges);
     }
 }

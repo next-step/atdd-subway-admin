@@ -60,7 +60,7 @@ public class LineBridge extends BaseEntity {
     }
 
     public int getDistance() {
-        return distance.getDistance();
+        return distance.getValue();
     }
 
     public Line getLine() {
@@ -69,6 +69,10 @@ public class LineBridge extends BaseEntity {
 
     public void updateLine(Line line) {
         this.line = line;
+    }
+
+    public void removeLine() {
+        this.line = null;
     }
 
 
@@ -101,7 +105,7 @@ public class LineBridge extends BaseEntity {
     }
 
     private void changeDistance(Distance distance) {
-        this.distance.subtract(distance.getDistance());
+        this.distance.subtract(distance.getValue());
     }
 
     public boolean isSame(LineBridge lineBridge) {

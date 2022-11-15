@@ -55,4 +55,8 @@ class StationServiceTest {
         assertThat(stationRepository.findById(expect.getId()).isPresent()).isFalse();
     }
 
+    public static Station 지하철_생성(String name) {
+        return new Station(name);
+    }
+
 }

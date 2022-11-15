@@ -6,6 +6,7 @@ import nextstep.subway.linebridge.domain.LineBridges;
 
 import javax.persistence.*;
 import java.util.*;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line extends BaseEntity {
@@ -56,10 +57,18 @@ public class Line extends BaseEntity {
 
     public void addLineBridge(LineBridge lineBridge) {
         Objects.requireNonNull(lineBridge, "구간 정보가 필요합니다.");
-        lineBridges.add(lineBridge);
-
+//        lineBridges.add(lineBridge);
+        lineBridges.getLineBridges().add(lineBridge);
         if (lineBridge.getLine() != this) {
             lineBridge.updateLine(this);
+        }
+    }
+
+    public void removeLineBridge(LineBridge lineBridge) {
+        Objects.requireNonNull(lineBridge, "구간 정보가 필요합니다.");
+        lineBridges.getLineBridges().remove(lineBridge);
+        if (lineBridge.getLine() == this) {
+            lineBridge.removeLine();
         }
     }
 
@@ -79,6 +88,7 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 
     public static class Builder {
 

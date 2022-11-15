@@ -22,7 +22,7 @@ public class Distance {
         }
     }
 
-    public int getDistance() {
+    public int getValue() {
         return distance;
     }
 
