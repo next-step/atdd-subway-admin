@@ -45,4 +45,20 @@ public class Section {
         this.distance -= newSection.distance;
         this.upStation = newSection.downStation;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
 }
