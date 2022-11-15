@@ -22,15 +22,24 @@ public class LineResponse {
     public List<StationResponse> stations;
     public int distance;
 
+
+   public static List<LineResponse> of(List<Line> lines) {
+       LineResponse.builder().build();
+
+       return lines.stream()
+               .map(line -> LineResponse.of(line))
+               .collect(Collectors.toList());
+   }
+
     public static LineResponse of(Line persistLine) {
-        return new LineResponse().builder()
-                .id(persistLine.getId())
-                .name(persistLine.getName())
-                .color(persistLine.getColor())
-                .stations(persistLine.getStations().stream()
-                        .map(StationResponse::of)
-                        .collect(Collectors.toList()))
-                .distance(persistLine.getDistance())
-                .build();
+        return new LineResponse(persistLine);
+    }
+
+    private LineResponse (Line line) {
+        id = line.getId();
+        name = line.getName();
+        color = line.getColor();
+        stations = line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
+        distance = line.getDistance();
     }
 }
