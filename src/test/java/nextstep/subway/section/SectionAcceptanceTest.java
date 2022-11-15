@@ -33,6 +33,7 @@ public class SectionAcceptanceTest {
     private Long 신분당선_구간_ID;
     private Long 신규_역_ID;
     private ExtractableResponse<Response> 지하철_구간_추가_결과;
+    private ExtractableResponse<Response> 지하철_구간_삭제_결과;
 
     @LocalServerPort
     int port;
@@ -245,6 +246,51 @@ public class SectionAcceptanceTest {
         지하철_추가된_구간_조회_확인(지하철_노선_조회_결과, lineName, "판교역", "강남역");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 노선에 존재하지 않는 역을 삭제하면
+     * Then 삭제되지 않는다
+     */
+    @DisplayName("노선에 존재하지 않는 역을 삭제할 수 없다")
+    @Test
+    void deleteNotExistStationException() {
+        // given
+        int distance = 10;
+        String lineName = "신분당선";
+        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 노선에_없는_신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+
+        // when
+        지하철_구간_삭제_결과 = 지하철_구간_삭제(신분당선_구간_ID, 노선에_없는_신규_역_ID);
+
+        // then
+        지하철_구간_삭제_실패(지하철_구간_삭제_결과);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 마지막 구간을 삭제하면
+     * Then 삭제되지 않는다
+     */
+    @DisplayName("마지막 구간은 삭제할 수 없다")
+    @Test
+    void deleteOneLineStationException() {
+        // given
+        int distance = 10;
+        String lineName = "신분당선";
+        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+
+        // when
+        지하철_구간_삭제_결과 = 지하철_구간_삭제(신분당선_구간_ID, 강남역_ID);
+
+        // then
+        지하철_구간_삭제_실패(지하철_구간_삭제_결과);
+    }
+
     private ExtractableResponse<Response> 지하철_구간_추가(
             Long lineId,
             Long upStationId,
@@ -267,6 +313,10 @@ public class SectionAcceptanceTest {
 
     private void 지하철_구간_추가_실패(ExtractableResponse<Response> 지하철_구간_추가_결과) {
         assertThat(지하철_구간_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private void 지하철_구간_삭제_실패(ExtractableResponse<Response> 지하철_구간_삭제_결과) {
+        assertThat(지하철_구간_삭제_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void 지하철_구간_추가_성공_확인(ExtractableResponse<Response> 지하철_구간_추가_결과) {
