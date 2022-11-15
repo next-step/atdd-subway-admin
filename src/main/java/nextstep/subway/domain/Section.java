@@ -47,6 +47,22 @@ public class Section extends BaseEntity {
         this(null, upStation, downStation, distance);
     }
 
+    public void setUpStation(Station upStation) {
+        this.upStation = upStation;
+    }
+
+    private void setDownStation(Station downStation) {
+        this.downStation = downStation;
+    }
+
+    private void setDistance(Integer distance) {
+        this.distance = distance;
+    }
+
+    public Integer getDistance() {
+        return distance;
+    }
+
     public void setLine(Line line) {
         if (this.line != null) {
             this.line.getSections().remove(this);
@@ -72,5 +88,12 @@ public class Section extends BaseEntity {
 
     public Line getLine() {
         return line;
+    }
+
+    public Section changeDownStation(Station downStation, Integer distance) {
+        Section section = new Section(line, downStation, this.downStation, this.distance - distance);
+        setDownStation(downStation);
+        setDistance(distance);
+        return section;
     }
 }

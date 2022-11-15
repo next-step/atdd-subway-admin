@@ -52,7 +52,17 @@ public class Sections {
             addInitialSections(upStation, downStation, distance, line);
             return;
         }
-        addSection(new Section(upStation, downStation, distance), line);
+
+        Optional<Section> first = sections.stream()
+                .filter(it -> it.getUpStation() == upStation)
+                .findFirst();
+
+        if (first.isPresent()) {
+            Section section = first.get();
+            Section newSection = section.changeDownStation(downStation, distance);
+            addSection(newSection, line);
+        }
+
     }
 
     private void addInitialSections(Station upStation, Station downStation, Integer distance, Line line) {

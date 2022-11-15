@@ -99,14 +99,14 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     void section_add_as_down_station() {
         //given
-        StationResponse 광교역 = 지하철역_신규_생성_요청("광교역").as(StationResponse.class);
+        StationResponse 광교중앙역 = 지하철역_신규_생성_요청("광교중앙역").as(StationResponse.class);
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_신규_등록_요청(신분당선.getId(), 정자역.getId(), 광교역.getId(), 5);
+        ExtractableResponse<Response> response = 지하철_구간_신규_등록_요청(신분당선.getId(), 정자역.getId(), 광교중앙역.getId(), 5);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId())).contains((int)(long)광교역.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId())).contains((int)(long)광교중앙역.getId());
     }
 
     /**
