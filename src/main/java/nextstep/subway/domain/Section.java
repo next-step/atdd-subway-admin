@@ -178,4 +178,12 @@ public class Section extends BaseEntity {
     public boolean isConnectableWith(final Section other) {
         return upStation.equals(other.getDownStation());
     }
+
+    public void setDownStation(final Section section) {
+        setDownStation(section.getDownStation());
+    }
+
+    public void setUpStation(final Section section) {
+        setUpStation(section.getUpStation());
+    }
 }

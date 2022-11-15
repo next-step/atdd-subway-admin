@@ -111,12 +111,12 @@ public class Sections {
     private void connect(final Section section1, final Section section2) {
         int distance = connectDistance(section1, section2);
         if (section1.isDeAscentEndpoint()) {
-            section2.setDownStation(section1.getDownStation());
+            section2.setDownStation(section1);
             section2.changeDistance(distance);
             removeSection(section1);
             return;
         }
-        section1.setUpStation(section2.getUpStation());
+        section1.setUpStation(section2);
         section1.changeDistance(distance);
         removeSection(section2);
     }
