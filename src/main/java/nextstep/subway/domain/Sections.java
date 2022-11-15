@@ -114,24 +114,23 @@ public class Sections {
     }
 
     public void removeStation(Station station) {
-        List<Section> sections = findSections(station);
-        collapseSections(sections);
+        Section upStationSection = findUpStationSections(station);
+        Section downStationSection = findDownStationSections(station);
+        collapseSections(upStationSection, downStationSection);
     }
 
-    private void collapseSections(List<Section> sections) {
-        Section upSection = sections.get(0);
-        Section downSection = sections.get(1);
+    private void collapseSections(Section upStationSection, Section downStationSection) {
 
-        Station upStation = upSection.getUpStation();
-        Station downStation = downSection.getDownStation();
+        Station upStation = downStationSection.getUpStation();
+        Station downStation = upStationSection.getDownStation();
 
-        Section section = new Section(upSection.getLine(),
+        Section section = new Section(upStationSection.getLine(),
                 upStation,
                 downStation,
-                upSection.addDistance(downSection));
+                upStationSection.addDistance(downStationSection));
 
-        sections.add(section);
-        removeSections(upSection, downSection);
+        this.sectionList.add(section);
+        removeSections(upStationSection, downStationSection);
     }
 
     private void removeSections(Section ...sections) {
@@ -139,10 +138,16 @@ public class Sections {
                 .forEach(section -> sectionList.remove(section));
     }
 
-    private List<Section> findSections(Station station) {
+    private Section findUpStationSections(Station upStation) {
         return sectionList.stream()
-                .filter(section -> section.hasStation(station))
-                .collect(Collectors.toList());
+                .filter(section -> section.isUpStation(upStation))
+                .findFirst().orElseThrow(NullPointerException::new);
+    }
+
+    private Section findDownStationSections(Station downStation) {
+        return sectionList.stream()
+                .filter(section -> section.isDownStation(downStation))
+                .findFirst().orElseThrow(NullPointerException::new);
     }
 
     @Override

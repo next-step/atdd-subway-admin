@@ -119,4 +119,38 @@ class LineTest {
         assertThatThrownBy(() -> 노선.addSection(홍대역, 가양역, 구간_거리))
                 .isInstanceOf(CannotAddSectionException.class);
     }
+
+    @Test
+    void 가운데_역을_제거할_경우_재배치를_함() {
+        Station 가양역 = new Station("가양역");
+        Station 홍대역 = new Station("홍대역");
+
+        노선.addSection(상행종점역, 가양역, 4);
+        노선.addSection(가양역, 홍대역, 4);
+
+        노선.removeSection(가양역);
+        노선.removeSection(홍대역);
+
+        assertThat(노선.getSections())
+                .extracting(Sections::getStations)
+                .isEqualTo(new Stations(Lists.newArrayList(상행종점역, 하행종점역)));
+    }
+
+    @Test
+    void 종점역이_제거될_경우_다음역이_종점이_됨() {
+
+    }
+    @Test
+    void 가운데_역을_제거할_경우_거리는_두_구간의_거리의_합으로_정함() {
+
+    }
+
+    @Test
+    void 구간이_하나인_노선에서_역을_제거할_수_없음() {
+
+    }
+    @Test
+    void 노선에_등록되어있지_않은_역을_제거할_수_없음() {
+
+    }
 }
