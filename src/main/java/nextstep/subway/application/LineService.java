@@ -8,8 +8,8 @@ import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.NotFoundStation;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,6 +36,7 @@ public class LineService {
         return stationRepository.findById(id).orElseThrow(NotFoundStation::new);
     }
 
+    @Transactional(readOnly = true)
     public List<LineResponse> findAllLine() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
