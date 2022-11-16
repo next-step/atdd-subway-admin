@@ -18,6 +18,14 @@ public class LineResponse {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
     public LineResponse(Long id, String name, String color, int distance, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
