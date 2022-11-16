@@ -26,20 +26,8 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
-    Map<String, Object> _1호선 = new HashMap<String, Object>() {
-        {
-            put("id", 1L);
-            put("name", "1호선");
-            put("color", "blue");
-        }
-    };
-    Map<String, Object> _2호선 = new HashMap<String, Object>() {
-        {
-            put("id", 2L);
-            put("name", "2호선");
-            put("color", "green");
-        }
-    };
+    Map<String, Object> _1호선 = createLine(1L, "1호선", "blue");
+    Map<String, Object> _2호선 = createLine(1L, "2호선", "green");
 
     @BeforeEach
     public synchronized void setUp() {
@@ -105,17 +93,30 @@ public class LineAcceptanceTest {
         long lineId = 지하철_노선을_생성한다(_1호선);
 
         // when
-        Map<String, Object> modifiedLine = new HashMap<String, Object>(){
-            {
-                put("id", Long.valueOf(_1호선.get("id").toString()));
-                put("name", "1호선2");
-                put("color", _1호선.get("color").toString());
-            }
-        };
+        Map<String, Object> modifiedLine = createLine(Long.valueOf(_1호선.get("id").toString()),
+            "1호선2", "_1호선.get(\"color\").toString()");
         지하철_노선을_수정한다(lineId, modifiedLine);
 
         // then
         지하철_노선_정보가_있다(lineId, modifiedLine);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철 노선을 삭제한다.")
+    @Test
+    void deleteLine() {
+        // given
+        long lineId = 지하철_노선을_생성한다(_1호선);
+
+        // when
+        지하철_노선을_삭제한다(lineId);
+
+        // then
+        지하철_노선_정보가_없다(lineId);
     }
 
     private long 지하철_노선을_생성한다(Map<String, Object> line) {
@@ -162,5 +163,31 @@ public class LineAcceptanceTest {
             .then().log().all()
             .extract()
             .jsonPath().getMap("");
+    }
+
+    private void 지하철_노선을_삭제한다(long lineId) {
+        RestAssured.given().log().all()
+            .when().delete("/lines/{id}", lineId)
+            .then().log().all();
+    }
+
+    private void 지하철_노선_정보가_없다(long lineId) {
+        Long id = RestAssured.given().log().all()
+            .when().get("/lines/{id}", lineId)
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .extract()
+            .jsonPath().get("id");
+        assertThat(id).isNull();
+    }
+
+    Map<String, Object> createLine(Long id, String name, String color) {
+        return new HashMap<String, Object>() {
+            {
+                put("id", id);
+                put("name", name);
+                put("color", color);
+            }
+        };
     }
 }
