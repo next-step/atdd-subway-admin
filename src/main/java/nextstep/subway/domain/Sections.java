@@ -60,8 +60,21 @@ public class Sections {
         Optional<Section> upStationSection = findUpStationSection(station);
         Optional<Section> downStationSection = findDownStationSection(station);
 
+        if(upStationSection.isPresent() && downStationSection.isPresent()) {
+            addConnectSection(upStationSection.get(), downStationSection.get());
+        }
+
         upStationSection.ifPresent(sections::remove);
         downStationSection.ifPresent(sections::remove);
+    }
+
+    private void addConnectSection(Section upSection, Section downSection) {
+        sections.add(Section.of(
+            upSection.getDownStation(),
+            downSection.getUpStation(),
+            upSection.getLine(),
+            upSection.addDistance(downSection).value()
+        ));
     }
 
     private Optional<Section> findUpStationSection(Station station) {

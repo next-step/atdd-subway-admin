@@ -152,11 +152,11 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     /**
      * Given 지하철 노선을 생성하고
      * When 종점을 제거하면
-     * Then 다음으로 오던 역이 종점이 된다.
+     * Then 해당 역이 제거되고 다음으로 오던 역이 종점이 된다.
      */
-    @DisplayName("")
+    @DisplayName("종점을 제거하면 해당 역이 제거되고 다음으로 오는 역이 종점이 된다.")
     @Test
-    void removeDownStationSection() {
+    void removeLastSection() {
         // given
         Long 신분당선_ID = 지하철_노선_생성("신분당선", "주황색", 강남역_ID, 광교역_ID, 10).jsonPath().getLong("id");
         지하철_노선_구간_추가(신분당선_ID, 강남역_ID, 양재역_ID, 5);
@@ -168,5 +168,26 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         List<String> result = 지하철_노선_조회(신분당선_ID).jsonPath().getList("stations.name");
         assertThat(result).hasSize(2)
             .contains("강남역", "양재역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 가운데 역을 제거하면
+     * Then 해당 역이 제거되고 역이 재배치된다.
+     */
+    @DisplayName("가운데 역을 제거하면 해당 역이 제거되고 노선이 재배치된다.")
+    @Test
+    void removeCenterSection() {
+        // given
+        Long 신분당선_ID = 지하철_노선_생성("신분당선", "주황색", 강남역_ID, 양재역_ID, 10).jsonPath().getLong("id");
+        지하철_노선_구간_추가(신분당선_ID, 양재역_ID, 광교역_ID, 5);
+
+        // when
+        지하철_노선_구간_삭제(신분당선_ID, 양재역_ID);
+
+        // then
+        List<String> result = 지하철_노선_조회(신분당선_ID).jsonPath().getList("stations.name");
+        assertThat(result).hasSize(2)
+            .contains("강남역", "광교역");
     }
 }
