@@ -1,10 +1,10 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.Station;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
 
@@ -32,9 +32,14 @@ public class LineResponse {
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                null // TODO: 구간은 리스트로 들어올 수 있어야함(구간을 추가한 경우 추가됨)
-//                Arrays.asList(StationResponse.of(line.getUpStation()), StationResponse.of(line.getDownStation()))
+                toList(line.stations())
         );
+    }
+
+    private static List<StationResponse> toList(List<Station> stations) {
+        return stations.stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 
     public Long getId() {

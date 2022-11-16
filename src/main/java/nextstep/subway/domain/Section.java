@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-
-import java.util.Objects;
 import java.util.stream.Stream;
 
 import static nextstep.subway.exception.ErrorMessage.*;

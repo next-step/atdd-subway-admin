@@ -7,7 +7,6 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
-import nextstep.subway.exception.ErrorMessage;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -82,6 +81,5 @@ public class LineService {
                         String.format(LINE_ID_NOT_FOUND.getMessage(), id))
                 );
     }
-
 
 }
