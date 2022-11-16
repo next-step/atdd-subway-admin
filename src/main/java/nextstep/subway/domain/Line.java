@@ -30,8 +30,6 @@ public class Line extends BaseEntity {
     }
 
     public void addStations(Station upStation, Station downStation) {
-        upStation.addLine(this);
-        downStation.addLine(this);
         this.stations.addStations(upStation, downStation);
     }
 

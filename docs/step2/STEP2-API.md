@@ -129,7 +129,6 @@
 ### HTTP request
 ```
     DELETE /lines/1 HTTP/1.1
- 
     Host: localhost:8080
   
 ```

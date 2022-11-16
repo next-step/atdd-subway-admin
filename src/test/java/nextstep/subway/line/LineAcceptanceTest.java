@@ -154,6 +154,33 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(findResponseByKey(responseBody, COLOR)).isEqualTo("yellow");
 
     }
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @DisplayName("지하철 노선 삭제")
+    @Test
+    void deleteLineTest() {
+        //give
+        ExtractableResponse<Response> saveResponse = createLine("분당선", "red", upStation.getId(), downStation.getId(), 10);
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long id = saveResponse.jsonPath().getLong(LINE_ID);
+
+        //when
+        ExtractableResponse<Response> delete = deleteLine(id);
+        //then
+        assertThat(delete.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ExtractableResponse<Response> findResponse = findById(id);
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> deleteLine(Long id) {
+        return RestAssured.given().log().all()
+                .when().delete(LINE_MAIN_PATH + "/" + id)
+                .then().log().all()
+                .extract();
+    }
 
     private ExtractableResponse<Response> updateLine(Long id, String name, String color) {
         Map<String, Object> params = new HashMap<>();
