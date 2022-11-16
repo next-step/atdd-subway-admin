@@ -65,7 +65,7 @@ public class LineAcceptanceTest {
      */
     @DisplayName("지하철역 노선 목록을 조회한다.")
     @Test
-    void findLine() {
+    void findAllLine() {
         // give
         JsonPath station = requestCreateStation("지하철역").jsonPath();
         JsonPath newStation = requestCreateStation("새로운지하철역").jsonPath();
@@ -77,6 +77,26 @@ public class LineAcceptanceTest {
         // then
         List<LineResponse> lines = response.jsonPath().getList(".",LineResponse.class);
         assertThat(lines).hasSize(2);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철역 노선을 조회한다.")
+    @Test
+    void findLine() {
+        // give
+        JsonPath station = requestCreateStation("지하철역").jsonPath();
+        JsonPath newStation = requestCreateStation("새로운지하철역").jsonPath();
+        ExtractableResponse<Response> createdLine =
+                requestCreateLine("신분당선","bg-red-600",station.getLong("id"), newStation.getLong("id"),10);
+        // when
+        ExtractableResponse<Response> response = requestGetLine(createdLine.jsonPath().getLong("id"));
+        // then
+        LineResponse line = response.jsonPath().getObject(".",LineResponse.class);
+        assertThat(line.equals(createdLine.jsonPath().getObject(".", LineResponse.class))).isTrue();
     }
 
 

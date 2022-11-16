@@ -28,4 +28,13 @@ public class LineTestFixture {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> requestGetLine(Long id){
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/"+ id)
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract();
+    }
+
 }
