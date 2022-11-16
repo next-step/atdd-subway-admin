@@ -12,11 +12,9 @@ import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.line.LineCreateRequest;
 import nextstep.subway.dto.line.LineResponse;
-import nextstep.subway.dto.line.LineUpdateRequest;
 import nextstep.subway.exception.LineNotFoundException;
 
 @Service
-@Transactional(readOnly = true)
 public class LineService {
 
 	private static final String LINE_NOT_FOUND_MESSAGE = "해당 노선을 찾을 수 없습니다 : ";
@@ -37,20 +35,27 @@ public class LineService {
 		return LineResponse.of(line);
 	}
 
-	public List<LineResponse> findLines() {
+	@Transactional(readOnly = true)
+	public List<LineResponse> findAll() {
 		return lineRepository.findAll().stream()
 			.map(LineResponse::of)
 			.collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
 	public LineResponse findLine(Long id) {
 		return LineResponse.of(findById(id));
 	}
 
 	@Transactional
-	public void updateLine(Long id, LineUpdateRequest request) {
+	public void updateLine(Long id, String name, String color) {
 		Line line = findById(id);
-		line.updateLine(request);
+		line.updateLine(name, color);
+	}
+
+	@Transactional
+	public void deleteLine(Long id) {
+		lineRepository.deleteById(id);
 	}
 
 	private Line findById(Long id) {
@@ -58,8 +63,4 @@ public class LineService {
 			.orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_MESSAGE + id));
 	}
 
-	@Transactional
-	public void deleteLine(Long id) {
-		lineRepository.deleteById(id);
-	}
 }

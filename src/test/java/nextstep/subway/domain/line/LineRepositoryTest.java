@@ -114,7 +114,7 @@ class LineRepositoryTest {
 		Line actual = lineRepository.findById(savedLine.getId())
 			.orElseThrow(IllegalArgumentException::new);
 		LineUpdateRequest request = LineUpdateRequest.of("3호선", "yellow");
-		actual.updateLine(request);
+		actual.updateLine(request.getName(), request.getColor());
 		entityManager.flush();
 
 		// then

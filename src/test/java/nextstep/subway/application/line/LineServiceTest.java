@@ -35,7 +35,7 @@ class LineServiceTest {
 	@DisplayName("지하철 노선 생성 테스트")
 	void createLineTest() {
 		// given
-		final LineCreateRequest request = LineCreateRequest.of("2호선", "green", 1L, 2L, 10);
+		final LineCreateRequest request = new LineCreateRequest("2호선", "green", 1L, 2L, 10);
 		final Station upStation = Station.from("강남역");
 		final Station downStation = Station.from("역삼역");
 		given(stationService.findById(1L)).willReturn(upStation);

@@ -22,7 +22,7 @@ public class LineAcceptanceUtils {
 		Long upStationId = id(지하철역_생성_요청(upStationName));
 		Long downStationId = id(지하철역_생성_요청(downStationName));
 
-		LineCreateRequest lineCreateRequest = LineCreateRequest.of(name, color, upStationId, downStationId, 10);
+		LineCreateRequest lineCreateRequest = new LineCreateRequest(name, color, upStationId, downStationId, 10);
 		return RestAssuredUtils.post(LINE_URL, lineCreateRequest).extract();
 	}
 

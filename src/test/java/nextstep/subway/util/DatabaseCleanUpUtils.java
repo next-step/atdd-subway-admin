@@ -47,6 +47,7 @@ public class DatabaseCleanUpUtils implements InitializingBean {
 				connection.createStatement().execute("ALTER TABLE " + tableName + " ALTER COLUMN ID RESTART WITH 1");
 			}
 			connection.createStatement().execute("SET REFERENTIAL_INTEGRITY TRUE");
+			connection.close();
 		} catch (SQLException e) {
 			throw new RuntimeException("SQL EXCEPTION while cleanup" + e);
 		}

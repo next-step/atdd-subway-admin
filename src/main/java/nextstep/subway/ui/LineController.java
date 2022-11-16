@@ -36,7 +36,7 @@ public class LineController {
 
 	@GetMapping
 	public ResponseEntity<List<LineResponse>> getLines() {
-		return ResponseEntity.ok().body(lineService.findLines());
+		return ResponseEntity.ok().body(lineService.findAll());
 	}
 
 	@GetMapping("/{id}")
@@ -46,7 +46,7 @@ public class LineController {
 
 	@PutMapping("/{id}")
 	public ResponseEntity<Void> updateLine(@PathVariable(name = "id") Long id, @RequestBody LineUpdateRequest request) {
-		lineService.updateLine(id, request);
+		lineService.updateLine(id, request.getName(), request.getColor());
 		return ResponseEntity.ok(null);
 	}
 

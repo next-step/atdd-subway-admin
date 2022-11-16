@@ -13,7 +13,6 @@ import nextstep.subway.dto.stations.StationResponse;
 import nextstep.subway.exception.StationNotFoundException;
 
 @Service
-@Transactional(readOnly = true)
 public class StationService {
 	private static final String STATION_NOT_FOUND_MESSAGE = "존재하지 않는 역입니다. | id : ";
 	private final StationRepository stationRepository;
@@ -28,6 +27,7 @@ public class StationService {
 		return StationResponse.of(persistStation);
 	}
 
+	@Transactional(readOnly = true)
 	public List<StationResponse> findAllStations() {
 		List<Station> stations = stationRepository.findAll();
 
