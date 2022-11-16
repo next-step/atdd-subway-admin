@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.common.exception.ErrorMessageConstant;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.line.domain.Line;
 
@@ -54,10 +53,7 @@ public class Section extends BaseEntity {
     }
 
     public void update(Section newSection) {
-        // TODO: 도메인 내부로 넣기
-        if(distance.get() <= newSection.distance.get()){
-            throw new IllegalArgumentException(ErrorMessageConstant.VALID_GREATER_OR_EQUAL_LENGTH_BETWEEN_STATION);
-        }
+        distance.validNewDistance(newSection.distance.get());
         if (isEqualUpStation(newSection)) {
             updateUpStation(newSection);
         }

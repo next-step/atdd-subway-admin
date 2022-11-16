@@ -25,8 +25,10 @@ public class Distance {
         }
     }
 
-    public int get() {
-        return distance;
+    public void validNewDistance(int newDistance) {
+        if(distance <= newDistance){
+            throw new IllegalArgumentException(ErrorMessageConstant.VALID_GREATER_OR_EQUAL_LENGTH_BETWEEN_STATION);
+        }
     }
 
     public Distance subtract(Distance newDistance) {
@@ -35,5 +37,9 @@ public class Distance {
 
     public Distance add(Distance another) {
         return new Distance(distance + another.distance);
+    }
+
+    public int get() {
+        return distance;
     }
 }
