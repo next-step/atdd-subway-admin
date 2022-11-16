@@ -27,7 +27,7 @@ public class Sections {
             .collect(Collectors.toList());
     }
 
-    public void add(Section newSection) {
+    public void addSection(Section newSection) {
         validateAlreadyContainsAll(newSection);
         validateNotContainsAny(newSection);
         this.sections.forEach(section -> section.modify(newSection));

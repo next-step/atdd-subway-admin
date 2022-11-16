@@ -28,7 +28,7 @@ public class Line extends BaseEntity {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.sections.add(
+        this.sections.addSection(
             new Section(this, upStation, downStation, distance)
         );
     }
@@ -47,7 +47,7 @@ public class Line extends BaseEntity {
     }
 
     public void saveSection(Section section) {
-        this.sections.add(section);
+        this.sections.addSection(section);
     }
 
     public Long getId() {

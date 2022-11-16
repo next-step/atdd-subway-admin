@@ -14,6 +14,8 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Section {
+    private static final String DISTANCE_OVER_ERROR_MESSAGE = "추가할 구간의 거리가 기존 역 사이 거리보다 길 수는 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -55,25 +57,40 @@ public class Section {
         this(null, null, upStation, downStation, distance);
     }
 
-    public List<Station> getStations() {
-        return Arrays.asList(this.upStation, this.downStation);
+    public void modify(Section section) {
+        modifyUpStation(section);
+        modifyDownStation(section);
     }
 
-    public void modify(Section section) {
-        if (this.upStation.equals(section.upStation)) {
-            if (section.distance >= this.distance) {
-                throw new IllegalArgumentException("추가할 구간의 거리가 기존 역 사이 거리보다 길 수는 없습니다.");
-            }
-            this.upStation = section.downStation;
-            this.distance = this.distance - section.distance;
+    private void modifyUpStation(Section section) {
+        if (!Objects.equals(this.upStation, section.upStation)) {
+            return;
         }
-        if (this.downStation.equals(section.downStation)) {
-            if (section.distance >= this.distance) {
-                throw new IllegalArgumentException("추가할 구간의 거리가 기존 역 사이 거리보다 길 수는 없습니다.");
-            }
-            this.downStation = section.upStation;
-            this.distance = this.distance - section.distance;
+        this.upStation = section.downStation;
+        modifyDistance(section.distance);
+    }
+
+    private void modifyDownStation(Section section) {
+        if (!Objects.equals(this.downStation, section.downStation)) {
+            return;
         }
+        this.downStation = section.upStation;
+        modifyDistance(section.distance);
+    }
+
+    private void modifyDistance(Long distance) {
+        validateDistanceOver(distance);
+        this.distance = this.distance - distance;
+    }
+
+    private void validateDistanceOver(Long distance) {
+        if (distance >= this.distance) {
+            throw new IllegalArgumentException(DISTANCE_OVER_ERROR_MESSAGE);
+        }
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(this.upStation, this.downStation);
     }
 
     public Long getId() {

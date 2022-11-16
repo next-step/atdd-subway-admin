@@ -26,7 +26,7 @@ class SectionsTest {
     @Test
     void add() {
         Sections sections = new Sections();
-        sections.add(new Section(WANGSIPLI, SANGWANGSIPLI, 10L));
+        sections.addSection(new Section(WANGSIPLI, SANGWANGSIPLI, 10L));
 
         assertThat(sections.getStations()).contains(WANGSIPLI, SANGWANGSIPLI);
     }
@@ -35,9 +35,9 @@ class SectionsTest {
     @Test
     void add_already_contains_all() {
         Sections sections = new Sections();
-        sections.add(new Section(WANGSIPLI, SANGWANGSIPLI, 10L));
+        sections.addSection(new Section(WANGSIPLI, SANGWANGSIPLI, 10L));
 
-        assertThatThrownBy(() -> sections.add(new Section(WANGSIPLI, SANGWANGSIPLI, 10L)))
+        assertThatThrownBy(() -> sections.addSection(new Section(WANGSIPLI, SANGWANGSIPLI, 10L)))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -45,9 +45,9 @@ class SectionsTest {
     @Test
     void add_not_contains_any() {
         Sections sections = new Sections();
-        sections.add(new Section(WANGSIPLI, SANGWANGSIPLI, 10L));
+        sections.addSection(new Section(WANGSIPLI, SANGWANGSIPLI, 10L));
 
-        assertThatThrownBy(() -> sections.add(new Section(SINDANG, DDP, 10L)))
+        assertThatThrownBy(() -> sections.addSection(new Section(SINDANG, DDP, 10L)))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -56,9 +56,9 @@ class SectionsTest {
     @ValueSource(longs = {10L, 20L})
     void add_distance_over(long distance) {
         Sections sections = new Sections();
-        sections.add(new Section(WANGSIPLI, DDP, 10L));
+        sections.addSection(new Section(WANGSIPLI, DDP, 10L));
 
-        assertThatThrownBy(() -> sections.add(new Section(WANGSIPLI, SANGWANGSIPLI, distance)))
+        assertThatThrownBy(() -> sections.addSection(new Section(WANGSIPLI, SANGWANGSIPLI, distance)))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -66,9 +66,9 @@ class SectionsTest {
     @Test
     void getStations() {
         Sections sections = new Sections();
-        sections.add(new Section(WANGSIPLI, SANGWANGSIPLI, 10L));
-        sections.add(new Section(SANGWANGSIPLI, SINDANG, 10L));
-        sections.add(new Section(SINDANG, DDP, 10L));
+        sections.addSection(new Section(WANGSIPLI, SANGWANGSIPLI, 10L));
+        sections.addSection(new Section(SANGWANGSIPLI, SINDANG, 10L));
+        sections.addSection(new Section(SINDANG, DDP, 10L));
 
         assertThat(sections.getStations()).contains(WANGSIPLI, SANGWANGSIPLI, SINDANG, DDP);
     }
