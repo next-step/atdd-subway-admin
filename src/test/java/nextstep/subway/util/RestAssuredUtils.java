@@ -1,6 +1,4 @@
-package nextstep.subway.station.util;
-
-import java.util.Map;
+package nextstep.subway.util;
 
 import org.springframework.http.MediaType;
 
@@ -28,9 +26,9 @@ public class RestAssuredUtils {
 			.then().log().all();
 	}
 
-	public static ValidatableResponse post(final String url, final Map<String, String> requestParam) {
+	public static <T> ValidatableResponse post(final String url, final T request) {
 		return requestSpecification
-			.body(requestParam)
+			.body(request)
 			.when()
 			.post(url)
 			.then().log().all();
@@ -40,6 +38,14 @@ public class RestAssuredUtils {
 		return requestSpecification
 			.when()
 			.delete(url)
+			.then().log().all();
+	}
+
+	public static <T> ValidatableResponse put(final String url, final T updateRequest) {
+		return requestSpecification
+			.body(updateRequest)
+			.when()
+			.put(url)
 			.then().log().all();
 	}
 }

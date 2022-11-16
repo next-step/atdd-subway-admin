@@ -1,33 +1,20 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.station.util.StationAcceptanceUtils.*;
+import static nextstep.subway.util.StationAcceptanceUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.config.BaseAcceptanceTest;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class StationAcceptanceTest {
-	@LocalServerPort
-	int port;
-
-	@BeforeEach
-	public void setUp() {
-		if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-			RestAssured.port = port;
-		}
-	}
+class StationAcceptanceTest extends BaseAcceptanceTest {
 
 	/**
 	 * When 지하철역을 생성하면
@@ -82,7 +69,7 @@ class StationAcceptanceTest {
 	@Test
 	void getStations() {
 		// given
-		지하철역_생성_요청("삼성역");
+		지하철역_생성_요청("강남역");
 		지하철역_생성_요청("역삼역");
 
 		// when
@@ -92,7 +79,7 @@ class StationAcceptanceTest {
 		JsonPath jsonPath = inquiryStationsResponse.jsonPath();
 		assertAll(
 			() -> assertThat(inquiryStationsResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-			() -> assertThat(jsonPath.getList("name", String.class)).containsExactly("삼성역", "역삼역"),
+			() -> assertThat(jsonPath.getList("name", String.class)).containsExactly("강남역", "역삼역"),
 			() -> assertThat(jsonPath.getList("id", Long.class)).hasSize(2)
 		);
 	}
