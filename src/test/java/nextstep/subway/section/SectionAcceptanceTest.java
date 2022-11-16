@@ -8,14 +8,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import static nextstep.subway.line.LineAcceptanceRestAssured.지하철노선_생성;
 import static nextstep.subway.line.LineAcceptanceRestAssured.지하철노선_조회;
 import static nextstep.subway.section.SectionAcceptanceRestAssured.지하철구간_추가;
 import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역_생성;
-import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역들_생성;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
@@ -58,6 +54,22 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
     public void 새로운_역_등록_상행종점() {
+        // given
+        Long 잠실역_id = 지하철역_생성("잠실역").jsonPath().getLong("id");
+        Long 가락시장역_id = 지하철역_생성("가락시장역").jsonPath().getLong("id");
+        Long 노선_id = 지하철노선_생성("8호선", "분홍색", 잠실역_id, 가락시장역_id, 10).jsonPath().getLong("id");
+        Long 강변역_id = 지하철역_생성("강변역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> 지하철구간_추가_결과 = 지하철구간_추가(노선_id, 강변역_id, 잠실역_id, 3);
+        assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(노선_id);
+        JsonPath jsonPath = 지하철노선_조회_결과.jsonPath();
+        assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(jsonPath.getList("stations")).hasSize(3);
+        assertThat(jsonPath.getList("stations.name")).contains("잠실역", "가락시장역", "강변역");
     }
 
     /**
@@ -70,6 +82,22 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     public void 새로운_역_등록_하행종점() {
+        // given
+        Long 잠실역_id = 지하철역_생성("잠실역").jsonPath().getLong("id");
+        Long 가락시장역_id = 지하철역_생성("가락시장역").jsonPath().getLong("id");
+        Long 노선_id = 지하철노선_생성("8호선", "분홍색", 잠실역_id, 가락시장역_id, 10).jsonPath().getLong("id");
+        Long 문정역_id = 지하철역_생성("문정역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> 지하철구간_추가_결과 = 지하철구간_추가(노선_id, 가락시장역_id, 문정역_id, 3);
+        assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        // then
+        ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(노선_id);
+        JsonPath jsonPath = 지하철노선_조회_결과.jsonPath();
+        assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(jsonPath.getList("stations")).hasSize(3);
+        assertThat(jsonPath.getList("stations.name")).contains("잠실역", "가락시장역", "문정역");
     }
 
     /**

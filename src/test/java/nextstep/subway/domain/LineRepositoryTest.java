@@ -19,8 +19,8 @@ public class LineRepositoryTest {
         // given
         String name = "8호선";
         String color = "분홍색";
-        Station upStation = new Station("잠실역");
-        Station downStation = new Station("장지역");
+        Station upStation = Station.from("잠실역");
+        Station downStation = Station.from("장지역");
         Integer distance = 10;
         Line line = Line.of(name, color, upStation, downStation, distance);
 

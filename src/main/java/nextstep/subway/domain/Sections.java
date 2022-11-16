@@ -36,6 +36,7 @@ public class Sections {
     }
 
     public void add(Section section){
+        sections.stream().forEach(s -> s.update(section));
         sections.add(section);
     }
 

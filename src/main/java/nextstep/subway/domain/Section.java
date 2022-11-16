@@ -59,8 +59,23 @@ public class Section extends BaseEntity {
         }
     }
 
+    public void update(Section section) {
+        if (this.upStation.equals(section.upStation)) {
+            this.upStation = section.downStation;
+            this.distance = this.distance - section.distance;
+        }
+        if (this.downStation.equals(section.downStation)) {
+            this.downStation = section.upStation;
+            this.distance = this.distance - section.distance;
+        }
+    }
+
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
     }
 
+
+    public Integer getDistance() {
+        return distance;
+    }
 }

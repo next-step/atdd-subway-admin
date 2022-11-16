@@ -15,8 +15,8 @@ public class LineTest {
         // given
         String name = "8호선";
         String color = "분홍색";
-        Station upStation = new Station("잠실역");
-        Station downStation = new Station("장지역");
+        Station upStation = Station.from("잠실역");
+        Station downStation = Station.from("장지역");
         Integer distance = 10;
 
         // when
@@ -30,8 +30,8 @@ public class LineTest {
     @DisplayName("노선의 생성 시 이름, 색깔이 비어있으면 예외 발생")
     void 생성시_필수값_예외() {
         // given
-        Station upStation = new Station("잠실역");
-        Station downStation = new Station("장지역");
+        Station upStation = Station.from("잠실역");
+        Station downStation = Station.from("장지역");
 
         // expect
         assertAll(
@@ -46,8 +46,8 @@ public class LineTest {
         // given
         String name = "8호선";
         String color = "분홍색";
-        Station upStation = new Station("잠실역");
-        Station downStation = new Station("장지역");
+        Station upStation = Station.from("잠실역");
+        Station downStation = Station.from("장지역");
         Integer distance = 10;
         Line line = Line.of(name, color, upStation, downStation, 10);
 
@@ -69,13 +69,13 @@ public class LineTest {
         // given
         String name = "8호선";
         String color = "분홍색";
-        Station upStation = new Station("잠실역");
-        Station downStation = new Station("장지역");
+        Station upStation = Station.from("잠실역");
+        Station downStation = Station.from("장지역");
         Integer distance = 10;
         Line line = Line.of(name, color, upStation, downStation, distance);
 
         // given
-        Station addStation = new Station("문정역");
+        Station addStation = Station.from("문정역");
         Integer addDistance = 10;
         Section section = Section.of(upStation, addStation, addDistance, line);
 
