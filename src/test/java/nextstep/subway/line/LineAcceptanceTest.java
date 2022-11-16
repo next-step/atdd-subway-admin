@@ -88,6 +88,23 @@ public class LineAcceptanceTest {
         assertThat(extractLineName(response)).isEqualTo("신분당선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다.
+     */
+    @DisplayName("노선 정보를 수정한다.")
+    @Test
+    void updateLine () {
+        Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+            .extract()
+            .as(LineResponse.class)
+            .getId();
+
+        ValidatableResponse response = requestApiByUpdateLine(lineId, new LineUpdateRequest("다른분당선", "bg-red-600"));
+
+        assertStatusCode(response, HttpStatus.OK);
+    }
 
     private static ValidatableResponse requestApiByCreateLine(LineRequest request) {
         return RestAssured.given().log().all()
@@ -107,6 +124,14 @@ public class LineAcceptanceTest {
     private static ValidatableResponse requestApiByGetLine(long id) {
         return RestAssured.given().log().all()
             .when().get("/lines/{id}", id)
+            .then().log().all();
+    }
+
+    private static ValidatableResponse requestApiByUpdateLine(long id, LineUpdateRequest lineUpdateRequest) {
+        return RestAssured.given().log().all()
+            .body(lineUpdateRequest)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().put("/lines/{id}", id)
             .then().log().all();
     }
 
