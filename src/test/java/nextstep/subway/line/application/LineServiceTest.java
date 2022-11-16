@@ -3,12 +3,16 @@ package nextstep.subway.line.application;
 import nextstep.subway.exception.NotFoundException;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.SectionRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
 import nextstep.subway.line.exception.LineExceptionCode;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,11 +29,15 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
+@DisplayName("LineService 테스트")
 @ExtendWith(MockitoExtension.class)
 class LineServiceTest {
 
     @Mock
     private LineRepository lineRepository;
+
+    @Mock
+    private SectionRepository sectionRepository;
 
     @Mock
     private StationService stationService;
@@ -84,7 +92,7 @@ class LineServiceTest {
 
     @Test
     void 전쳬_지하철_노선_목록_검색() {
-        Line line = new Line("2호선", "bg-greed-600");
+        Line line = new Line("2호선", "bg-green-600");
         Line line2 = new Line("신분당선", "bg-red-600");
         when(lineRepository.findAll()).thenReturn(Arrays.asList(line, line2));
 
@@ -95,5 +103,53 @@ class LineServiceTest {
                 () -> assertThat(responses.stream().map(LineResponse::getName))
                         .contains("2호선", "신분당선")
         );
+    }
+
+    @Test
+    void 지하철_노선_수정() {
+        Line line = new Line("2호선", "bg-green-600");
+        LineRequest request = new LineRequest("3호선", "bg-orange-600", null, null, 0);
+
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+        lineService.updateLine(1L, request);
+
+        assertThat(line).satisfies(res -> {
+            assertEquals("3호선", res.getName());
+            assertEquals("bg-orange-600", res.getColor());
+        });
+    }
+
+    @Test
+    void 지하철_구간_수정() {
+        Station 교대역 = new Station("교대역");
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+
+        Line line = new Line("2호선", "bg-green-600");
+        Section section = new Section(교대역, 강남역, 10);
+        line.addSection(section);
+        SectionRequest request = new SectionRequest(2L, 3L, 10);
+
+        when(stationService.findById(2L)).thenReturn(강남역);
+        when(stationService.findById(3L)).thenReturn(역삼역);
+        when(sectionRepository.findAllByRequestedSection(강남역, 역삼역)).thenReturn(Arrays.asList(section));
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+
+        lineService.updateSection(1L, request);
+
+        assertThat(line.getSections()).hasSize(2);
+    }
+
+    @Test
+    void 특정_노선의_전체_지하철_구간_목록_검색() {
+        Station upStation = new Station("강남역");
+        Station downStation = new Station("역삼역");
+        Line line = new Line("2호선", "bg-green-600");
+        line.addSection(new Section(upStation, downStation, 10));
+
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+        when(sectionRepository.findAllByLine(line)).thenReturn(line.getSections());
+
+        assertThat(lineService.findAllByLine(1L)).hasSize(1);
     }
 }
