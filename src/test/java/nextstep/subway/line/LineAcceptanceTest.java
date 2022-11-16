@@ -107,6 +107,25 @@ public class LineAcceptanceTest {
         assertStatusCode(response, HttpStatus.OK);
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다.
+     */
+    @DisplayName("노선 정보를 삭제한다.")
+    @Test
+    void deleteLine () {
+        Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+            .extract()
+            .as(LineResponse.class)
+            .getId();
+
+        ValidatableResponse response = requestApiByDeleteLine(lineId);
+
+        assertStatusCode(response, HttpStatus.NO_CONTENT);
+        assertThat(extractLineNames(requestApiByFindAllLines())).doesNotContain("신분당선");
+    }
+
     private static ValidatableResponse requestApiByCreateLine(LineRequest request) {
         return RestAssured.given().log().all()
             .body(request)
@@ -135,6 +154,13 @@ public class LineAcceptanceTest {
             .when().put("/lines/{id}", id)
             .then().log().all();
     }
+
+    private static ValidatableResponse requestApiByDeleteLine(long id) {
+        return RestAssured.given().log().all()
+            .when().delete("/lines/{id}", id)
+            .then().log().all();
+    }
+
 
     private static void assertStatusCode(ValidatableResponse response, HttpStatus httpStatus) {
         assertThat(response.extract().statusCode()).isEqualTo(httpStatus.value());
