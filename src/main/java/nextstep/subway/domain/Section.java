@@ -49,10 +49,10 @@ public class Section extends BaseEntity {
     }
 
     public void updateStation(Section section) {
-        if (upStation.equals(section.upStation)) {
+        if (isUpStation(section.upStation)) {
             updateUpStation(section);
         }
-        if (downStation.equals(section.downStation)) {
+        if (isDownStation(section.downStation)) {
             updateDownStation(section);
         }
     }
@@ -65,6 +65,14 @@ public class Section extends BaseEntity {
     private void updateDownStation(Section section) {
         downStation = section.upStation;
         distance = distance.substract(section.distance);
+    }
+
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public Long getId() {

@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -53,6 +54,26 @@ public class Sections {
         return section.getStations()
             .stream()
             .noneMatch(stations::contains);
+    }
+
+    public void remove(Station station) {
+        Optional<Section> upStationSection = findUpStationSection(station);
+        Optional<Section> downStationSection = findDownStationSection(station);
+
+        upStationSection.ifPresent(sections::remove);
+        downStationSection.ifPresent(sections::remove);
+    }
+
+    private Optional<Section> findUpStationSection(Station station) {
+        return sections.stream()
+            .filter(section -> section.isUpStation(station))
+            .findFirst();
+    }
+
+    private Optional<Section> findDownStationSection(Station station) {
+        return sections.stream()
+            .filter(section -> section.isDownStation(station))
+            .findFirst();
     }
 
     public List<Station> getStations() {

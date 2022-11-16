@@ -90,4 +90,11 @@ public class LineService {
         line.addSection(Section.of(upStation, downStation, line, sectionRequest.getDistance()));
         lineRepository.save(line);
     }
+
+    @Transactional
+    public void removeSection(Long id, Long stationId) {
+        Line line = getLineById(id);
+        Station station = getStation(stationId);
+        line.removeSection(station);
+    }
 }

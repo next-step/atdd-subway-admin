@@ -20,4 +20,11 @@ public class SectionAcceptanceTestFixture {
             .then().log().all()
             .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_구간_삭제(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+            .when().delete("/lines/{id}/sections?stationId={stationId}", lineId, stationId)
+            .then().log().all()
+            .extract();
+    }
 }
