@@ -32,19 +32,21 @@ public class LineService {
 		Station downStation = stationService.findById(request.getDownStationId());
 		Line line = lineRepository.save(
 			Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
-		return LineResponse.of(line);
+
+		return lineResponse(line);
 	}
 
 	@Transactional(readOnly = true)
 	public List<LineResponse> findAll() {
 		return lineRepository.findAll().stream()
-			.map(LineResponse::of)
+			.map(this::lineResponse)
 			.collect(Collectors.toList());
 	}
 
 	@Transactional(readOnly = true)
 	public LineResponse findLine(Long id) {
-		return LineResponse.of(findById(id));
+		Line byId = findById(id);
+		return lineResponse(byId);
 	}
 
 	@Transactional
@@ -63,4 +65,7 @@ public class LineService {
 			.orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_MESSAGE + id));
 	}
 
+	private LineResponse lineResponse(Line line) {
+		return LineResponse.of(line.getId(), line.getName(), line.getColor(), line.stationsNameResponses());
+	}
 }

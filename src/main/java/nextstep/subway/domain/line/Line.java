@@ -1,5 +1,8 @@
 package nextstep.subway.domain.line;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -10,6 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.dto.stations.StationNameResponse;
 
 @Entity
 public class Line {
@@ -76,5 +80,15 @@ public class Line {
 
 	public int getDistance() {
 		return this.distance;
+	}
+
+	public List<StationNameResponse> stationsNameResponses() {
+		StationNameResponse upStationNameResponse = stationsNameResponse(this.upStation);
+		StationNameResponse downStationNameResponse = stationsNameResponse(this.downStation);
+		return Arrays.asList(upStationNameResponse, downStationNameResponse);
+	}
+
+	private StationNameResponse stationsNameResponse(Station upStation) {
+		return new StationNameResponse(upStation.getId(), upStation.getName());
 	}
 }
