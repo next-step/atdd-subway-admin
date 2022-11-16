@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import java.util.List;
+import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -28,6 +29,9 @@ class LineServiceTest {
 
     @Autowired
     StationRepository stationRepository;
+
+    @Autowired
+    EntityManager em;
 
     Station station1 = null;
     Station station2 = null;
@@ -71,8 +75,8 @@ class LineServiceTest {
 
     @Test
     void deleteLineById() {
-        Long id = service.saveLine(getLineRequest());
-        service.deleteLineById(id);
+        Long lineId = service.saveLine(getLineRequest());
+        service.deleteLineById(lineId);
         assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(() -> service.findByName("신분당선"));
     }
 
@@ -80,5 +84,10 @@ class LineServiceTest {
         station1 = stationRepository.save(new Station("경기 광주역"));
         station2 = stationRepository.save(new Station("중앙역"));
         return new LineRequest("신분당선", "bg-red-600", 10, station1.getId(), station2.getId());
+    }
+
+    private void flushAndClear() {
+        em.flush();
+        em.clear();
     }
 }

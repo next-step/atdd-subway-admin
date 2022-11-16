@@ -1,5 +1,7 @@
 package nextstep.subway.dto;
 
+import java.util.List;
+import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
@@ -25,7 +27,7 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, distance, upStation, downStation);
+        return new Line(name, color);
     }
 
     public String getName() {
@@ -56,15 +58,18 @@ public class LineRequest {
         return upStation;
     }
 
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
     public Station getDownStation() {
         return downStation;
     }
 
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
+    public void isUpStationThenSet(List<Station> stations) {
+        this.upStation = stations.stream().filter(station -> station.getId().equals(upStationId))
+                .findFirst().orElseThrow(EntityNotFoundException::new);
+    }
+
+    public void isDownStationThenSet(List<Station> stations) {
+        this.downStation = stations.stream()
+                .filter(station -> station.getId().equals(downStationId)).findFirst()
+                .orElseThrow(EntityNotFoundException::new);
     }
 }

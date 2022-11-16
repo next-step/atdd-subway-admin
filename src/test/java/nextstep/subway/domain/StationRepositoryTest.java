@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.NoSuchElementException;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +35,15 @@ class StationRepositoryTest {
         flushAndClear();
         assertThatExceptionOfType(NoSuchElementException.class)
                 .isThrownBy(() -> repository.findById(station.getId()).get());
+    }
+
+    @Test
+    void findByIdIn() {
+        Station station1 = repository.save(new Station("경기 광주역"));
+        Station station2 = repository.save(new Station("중앙역"));
+        flushAndClear();
+        List<Station> findStations = repository.findByIdIn(Arrays.asList(station1.getId(), station2.getId()));
+        assertThat(findStations).hasSize(2);
     }
 
     private void flushAndClear() {

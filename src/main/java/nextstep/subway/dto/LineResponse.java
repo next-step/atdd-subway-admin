@@ -7,22 +7,18 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private int distance;
-    private StationResponse upStation;
-    private StationResponse downStation;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, int distance) {
+    public LineResponse(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.distance = distance;
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance());
+        return new LineResponse(line.getId(), line.getName(), line.getColor());
     }
 
     public Long getId() {
@@ -39,13 +35,5 @@ public class LineResponse {
 
     public String getColor() {
         return color;
-    }
-
-    public void setUpStation(StationResponse upStation) {
-        this.upStation = upStation;
-    }
-
-    public void setDownStation(StationResponse downStation) {
-        this.downStation = downStation;
     }
 }
