@@ -3,7 +3,6 @@ package nextstep.subway.application;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
-import javax.persistence.PersistenceException;
 import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.LineStationRepository;
 import nextstep.subway.domain.LineStations;
@@ -11,10 +10,8 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineStationResponse;
 import nextstep.subway.dto.SectionRequest;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 
 @Service
 @Transactional(readOnly = true)
@@ -50,6 +47,17 @@ public class LineStationService {
 
     private void isFindSameUpStationThenCreateNewLineStation(LineStations lineStations, Station upStation,
                                                              Station downStation, int distance) {
+        addBetweenByUpStation(lineStations, upStation, downStation, distance);
+        prependUpStation(lineStations, upStation, downStation, distance);
+    }
+
+    private void prependUpStation(LineStations lineStations, Station upStation, Station downStation, int distance) {
+        lineStations.findSameUpStation(downStation).ifPresent(lineStation -> lineStationRepository
+                .save(lineStation.createNewLineStation(distance, upStation, downStation)));
+    }
+
+    private void addBetweenByUpStation(LineStations lineStations, Station upStation, Station downStation,
+                                       int distance) {
         lineStations.findSameUpStation(upStation).ifPresent(lineStation -> {
             lineStationRepository.save(lineStation.createNewLineStation(distance, upStation, downStation));
             lineStationRepository.save(lineStation.createNewDownLineStation(distance, downStation));
@@ -68,10 +76,5 @@ public class LineStationService {
 
     private LineStationResponse getLineStationResponse(LineStation lineStation) {
         return LineStationResponse.of(lineStation);
-    }
-
-    @ExceptionHandler(PersistenceException.class)
-    public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
     }
 }

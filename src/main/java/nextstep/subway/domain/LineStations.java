@@ -16,15 +16,15 @@ public class LineStations {
         this.lineStations.addAll(lineStations);
     }
 
-    public Optional<LineStation> findSameUpStation(Station upStation) {
+    public Optional<LineStation> findSameUpStation(Station station) {
         return lineStations.stream()
-                .filter(lineStation -> lineStation.isEqualsUpStation(upStation))
+                .filter(lineStation -> lineStation.isEqualsUpStation(station))
                 .findFirst();
     }
 
-    public Optional<LineStation> findSameDownStation(Station downStation) {
+    public Optional<LineStation> findSameDownStation(Station station) {
         return lineStations.stream()
-                .filter(lineStation -> lineStation.isEqualsDownStation(downStation))
+                .filter(lineStation -> lineStation.isEqualsDownStation(station))
                 .findFirst();
     }
 }

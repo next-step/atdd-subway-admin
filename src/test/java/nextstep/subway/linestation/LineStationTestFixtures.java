@@ -16,10 +16,22 @@ public abstract class LineStationTestFixtures {
     private static final String PATH_LINE_STATION = "/line-station";
     private static final String PATH_LINE_ID = PATH_LINE_STATION + "/{lineId}";
 
+    public static void 기존_노선과_상행_종점으로_등록한_노선이_함께_조회됨(String information, String pathVariable,
+                                                     String... containValues) {
+        List<String> informationList = 목록조회(information, PATH_LINE_ID, pathVariable);
+        assertThat(informationList).contains(containValues);
+    }
+
     public static void 새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정(String information, String pathVariable,
                                                          String... containValues) {
         List<String> informationList = 목록조회(information, PATH_LINE_ID, pathVariable);
         assertThat(informationList).contains(containValues);
+    }
+
+    public static ExtractableResponse<Response> 새로운_역_상행_종점으로_등록(String upStationId, String downStationId,
+                                                                 String distance,
+                                                                 String pathVariable) {
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
     }
 
     public static ExtractableResponse<Response> 역_사이_새로운역_등록(String upStationId, String downStationId, String distance,

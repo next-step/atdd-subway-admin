@@ -1,10 +1,12 @@
 package nextstep.subway.ui;
 
 import java.util.List;
+import javax.persistence.PersistenceException;
 import nextstep.subway.application.LineStationService;
 import nextstep.subway.dto.LineStationResponse;
 import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,5 +34,10 @@ public class LineStationController {
     @GetMapping("/{lineId}")
     public ResponseEntity<List<LineStationResponse>> showLineStations(@PathVariable("lineId") Long lineId) {
         return ResponseEntity.ok().body(lineStationService.findLineStationsByLineId(lineId));
+    }
+
+    @ExceptionHandler(PersistenceException.class)
+    public ResponseEntity handleIllegalArgsException() {
+        return ResponseEntity.badRequest().build();
     }
 }

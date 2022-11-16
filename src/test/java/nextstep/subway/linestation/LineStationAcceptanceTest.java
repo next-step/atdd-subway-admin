@@ -1,6 +1,8 @@
 package nextstep.subway.linestation;
 
+import static nextstep.subway.linestation.LineStationTestFixtures.기존_노선과_상행_종점으로_등록한_노선이_함께_조회됨;
 import static nextstep.subway.linestation.LineStationTestFixtures.새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정;
+import static nextstep.subway.linestation.LineStationTestFixtures.새로운_역_상행_종점으로_등록;
 import static nextstep.subway.linestation.LineStationTestFixtures.역_사이_새로운역_등록;
 import static nextstep.subway.linestation.LineStationTestFixtures.지하철_노선_등록되어_있음;
 
@@ -33,7 +35,7 @@ class LineStationAcceptanceTest extends TestFixtures {
     }
 
     /**
-     * Given 노선이 등록되어 있다
+     * Given 노선이 등록되어 있다.
      * <p>
      * When 역 사이에 새로운 역을 등록하면
      * <p>
@@ -50,5 +52,25 @@ class LineStationAcceptanceTest extends TestFixtures {
 
         //then
         새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정("distance", lineId, "4", "3");
+    }
+
+    /**
+     * Given 노선이 등록되어 있다.
+     * <p>
+     * When 새로운 역을 상행 종점으로 등록한다.
+     * <p>
+     * Then 기존 노선과 상행 종점으로 등록한 노선이 함께 조회된다
+     */
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @Test
+    void prependUpStation() {
+        //given
+        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId2, "7", "id");
+
+        //when
+        새로운_역_상행_종점으로_등록(stationId3, stationId1, "4", lineId);
+
+        //then
+        기존_노선과_상행_종점으로_등록한_노선이_함께_조회됨("distance", lineId, "7", "4");
     }
 }
