@@ -21,7 +21,6 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.Commit;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class LineStationAcceptanceTest {
@@ -32,9 +31,9 @@ public class LineStationAcceptanceTest {
     @Autowired
     DatabaseCleanUtil databaseCleanUtil;
 
-    StationResponse station1;
-    StationResponse station2;
-    LineResponse line;
+    StationResponse 강남역;
+    StationResponse 잠실역;
+    LineResponse _2호선;
 
     @BeforeEach
     void beforeEach(){
@@ -43,15 +42,15 @@ public class LineStationAcceptanceTest {
         }
         databaseCleanUtil.cleanUp();
 
-        station1 = 지하철역_1개_생성("강남역").as(StationResponse.class);
-        station2 = 지하철역_1개_생성("잠실역").as(StationResponse.class);
-        line = 지하철_노선_1개_생성("2호선", "bg-color-060", station1.getId(), station2.getId(), 20).as(LineResponse.class);
+        강남역 = 지하철역_1개_생성("강남역").as(StationResponse.class);
+        잠실역 = 지하철역_1개_생성("잠실역").as(StationResponse.class);
+        _2호선 = 지하철_노선_1개_생성("2호선", "bg-color-060", 강남역.getId(), 잠실역.getId(), 20).as(LineResponse.class);
     }
 
     /**
      * given 노선과 역을 생성하고
      * when 신규 역과 상행종점 구간을 추가하면
-     * then 구간정보가 조회된다.
+     * then 노선 정보 조회 시, 추가된 역까지 모두 조회된다.
      */
     @Test
     @DisplayName("상행 종점을 추가한다.")
@@ -59,12 +58,14 @@ public class LineStationAcceptanceTest {
         // given - beforeEach
 
         // when
-        StationResponse station3 = 지하철역_1개_생성("사당역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(station3.getId(), station1.getId(), 10);
+        StationResponse 사당역 = 지하철역_1개_생성("사당역").as(StationResponse.class);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(사당역.getId(), 강남역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly(
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_정보_조회(_2호선.getId());
+        assertThat(lineResponse.jsonPath().getList("stations.name", String.class)).containsExactly(
                 "사당역", "강남역","잠실역"
         );
     }
@@ -72,21 +73,22 @@ public class LineStationAcceptanceTest {
     /**
      * given 노선과 역을 생성하고
      * when 신규 역과 하행종점 구간을 추가하면
-     * then 구간정보가 조회된다.
+     * then 노선 정보 조회 시, 추가된 역까지 모두 조회된다.
      */
     @Test
     @DisplayName("하행 종점을 추가한다.")
-    @Commit
     void addSectionAfterDownStation(){
         // given - beforeEach
 
         // when
-        StationResponse station3 = 지하철역_1개_생성("건대입구역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(station2.getId(), station3.getId(), 10);
+        StationResponse 건대입구역 = 지하철역_1개_생성("건대입구역").as(StationResponse.class);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(잠실역.getId(), 건대입구역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly(
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_정보_조회(_2호선.getId());
+        assertThat(lineResponse.jsonPath().getList("stations.name", String.class)).containsExactly(
                 "강남역","잠실역","건대입구역"
         );
     }
@@ -94,7 +96,7 @@ public class LineStationAcceptanceTest {
     /**
      * given 노선과 역(a,b)을 생성하고
      * when 신규 역과 구간(a,c,b)을 추가하면
-     * then 구간정보가 조회된다.
+     * then 노선 정보 조회 시, 추가된 역까지 모두 조회된다.
      */
     @Test
     @DisplayName("노선 구간을 추가한다.")
@@ -102,12 +104,14 @@ public class LineStationAcceptanceTest {
         // given - beforeEach
 
         // when
-        StationResponse station3 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(station1.getId(), station3.getId(), 10);
+        StationResponse 역삼역 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 역삼역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(response.jsonPath().getList("stations.name", String.class)).containsExactly(
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_정보_조회(_2호선.getId());
+        assertThat(lineResponse.jsonPath().getList("stations.name", String.class)).containsExactly(
                 "강남역","역삼역","잠실역"
         );
     }
@@ -123,8 +127,8 @@ public class LineStationAcceptanceTest {
         // given - beforeEach
 
         // when
-        StationResponse station3 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(station1.getId(), station3.getId(), 20);
+        StationResponse 역삼역 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 역삼역.getId(), 20);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -141,8 +145,8 @@ public class LineStationAcceptanceTest {
         // given - beforeEach
 
         // when
-        StationResponse station3 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(station1.getId(), station3.getId(), 25);
+        StationResponse 역삼역 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 역삼역.getId(), 25);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -159,7 +163,7 @@ public class LineStationAcceptanceTest {
         // given - beforeEach
 
         // when
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(station1.getId(), station2.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 잠실역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -167,7 +171,7 @@ public class LineStationAcceptanceTest {
 
     /**
      * given 노선과 역(a,b)을 생성하고
-     * when 구간(a,b)을 추가하면
+     * when 구간(c,d)을 추가하면
      * then 예외가 발생한다.
      */
     @Test
@@ -176,9 +180,9 @@ public class LineStationAcceptanceTest {
         // given - beforeEach
 
         // when
-        StationResponse station3 = 지하철역_1개_생성("시청역").as(StationResponse.class);
-        StationResponse station4 = 지하철역_1개_생성("왕십리역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(station1.getId(), station2.getId(), 10);
+        StationResponse 시청역 = 지하철역_1개_생성("시청역").as(StationResponse.class);
+        StationResponse 왕십리역 = 지하철역_1개_생성("왕십리역").as(StationResponse.class);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(시청역.getId(), 왕십리역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -193,7 +197,7 @@ public class LineStationAcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(param)
-                .when().post("/lines/{id}/sections", line.getId())
+                .when().post("/lines/{id}/sections", _2호선.getId())
                 .then().log().all()
                 .extract();
     }
