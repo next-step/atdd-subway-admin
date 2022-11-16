@@ -83,7 +83,7 @@ public class Sections {
 
     private void deleteValidate() {
         if (sections.size() == ONE_SECTION_SIZE) {
-            throw new IllegalArgumentException(ErrorMessageConstant.LAST_STAION_NOT_DELETE);
+            throw new IllegalArgumentException(ErrorMessageConstant.LAST_STATION_NOT_DELETE);
         }
     }
 
