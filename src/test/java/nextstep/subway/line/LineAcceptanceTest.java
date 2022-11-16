@@ -3,6 +3,7 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.Line;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -10,11 +11,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -43,7 +48,23 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void 지하철_노선_생성_테스트() {
+        // when
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
 
+        ExtractableResponse<Response> response = createLine(params);
+
+        //then
+        List<String> lines = retrieveLineNames();
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(lines).contains(params.get("name"))
+        );
     }
 
     /**
@@ -88,6 +109,44 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_삭제_테스트() {
 
+    }
+
+    public static ExtractableResponse<Response> createLine(Map<String, String> params) {
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().post(BASE_URL)
+                        .then().log().all()
+                        .extract();
+
+        return response;
+    }
+
+    public static List<String> retrieveLineNames() {
+        List<String> lineNames =
+                RestAssured.given().log().all()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get(BASE_URL)
+                        .then().log().all()
+                        .extract()
+                        .jsonPath().getList("name", String.class);
+
+        return lineNames;
+    }
+
+    public static List<Line> retrieveLine(String lineName) {
+        List<Line> line =
+                RestAssured.given().log().all()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .queryParam("name", lineName)
+                        .when().get(BASE_URL)
+                        .then().log().all()
+                        .extract()
+                        .jsonPath().getList(".", Line.class);
+
+        return line;
     }
 
 }
