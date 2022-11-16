@@ -91,7 +91,19 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void getLine() {
+        // Given
+        Station 강남역 = saveStation("강남역");
+        Station 양재역 = saveStation("양재역");
+        String lineName = "신분당선";
+        long lineId = createLine(lineName, "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
+        // When
+        JsonPath responseBody = fetchLine(lineId).extract().jsonPath();
+
+        // Then
+        assertThat(responseBody.getLong("id")).isEqualTo(lineId);
+        assertThat(responseBody.getString("name")).isEqualTo(lineName);
+        assertThat(responseBody.getList("stations.name")).containsExactly(강남역.getName(), 양재역.getName());
     }
 
     /*
@@ -134,6 +146,13 @@ public class LineAcceptanceTest {
     private ValidatableResponse fetchLines() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
+                .then().log().all();
+    }
+
+    private ValidatableResponse fetchLine(long lineId) {
+        return RestAssured.given().log().all()
+                .pathParam("id", lineId)
+                .when().get("/lines/{id}")
                 .then().log().all();
     }
 }
