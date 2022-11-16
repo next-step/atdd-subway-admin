@@ -87,7 +87,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     public static ExtractableResponse<Response> 지하철역_생성_요청(String name){
         return RestAssured.given().log().all()
-                .body(createParam(name))
+                .body(지하철역_이름_맵_생성(name))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
@@ -96,7 +96,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     private static List<String> 지하철역_조회_요청(String name) {
         return RestAssured.given().log().all()
-                .body(createParam(name))
+                .body(지하철역_이름_맵_생성(name))
                 .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
@@ -115,7 +115,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
                 .then().log().all();
     }
 
-    private static HashMap<Object, Object> createParam(String name) {
+    private static HashMap<Object, Object> 지하철역_이름_맵_생성(String name) {
         HashMap<Object, Object> params = new HashMap<>();
         params.put("name", name);
         return params;
