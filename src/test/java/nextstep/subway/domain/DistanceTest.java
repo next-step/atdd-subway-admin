@@ -4,8 +4,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
 
 class DistanceTest {
 
@@ -20,10 +18,10 @@ class DistanceTest {
     }
 
     @Test
-    @DisplayName("기존 구간의 거리보다 크거나 같으면 exception 처리")
-    void equalToOrLessThan() {
+    @DisplayName("기준거리 보다 작거나 같으면 true 반환")
+    void isEqualToOrLessThan() {
         Distance distance = new Distance(5);
 
-        assertThatThrownBy(() -> distance.equalToOrLessThan(6)).isInstanceOf(IllegalArgumentException.class);
+        assertThat(distance.isEqualToOrLessThan(8)).isTrue();
     }
 }
