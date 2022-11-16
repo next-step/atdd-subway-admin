@@ -8,6 +8,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static nextstep.subway.exception.CannotAddSectionException.NO_MATCHED_STATION;
 import static nextstep.subway.exception.CannotAddSectionException.UP_AND_DOWN_STATION_ALL_EXISTS;
@@ -79,44 +80,88 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    private List<Section> getOrderedSections() {
+        if (sectionList.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        Deque<Section> sections = new ArrayDeque<>(sectionList);
+        Deque<Section> orderedSections = new ArrayDeque<>();
+        Section firstSection = sections.poll();
+        orderedSections.add(firstSection);
+        return getOrderedSections(sections, orderedSections);
+    }
+
+    private List<Section> getOrderedSections(Deque<Section> sections, Deque<Section> orderedSections) {
+        if (sections.isEmpty()) {
+            return new ArrayList<>(orderedSections);
+        }
+        Section section = sections.poll();
+        Section lastUpSection = orderedSections.getFirst();
+        Section lastDownSection = orderedSections.getLast();
+
+        if (lastUpSection.isUpSection(section)) {
+            orderedSections.addFirst(section);
+            return getOrderedSections(sections, orderedSections);
+        }
+        if (lastDownSection.isDownSection(section)) {
+            orderedSections.addLast(section);
+            return getOrderedSections(sections, orderedSections);
+        }
+        sections.addLast(section);
+        return getOrderedSections(sections, orderedSections);
+    }
+
     public Stations getStations() {
         if (sectionList.isEmpty()) {
             return Stations.EMPTY;
         }
-        Deque<Section> sections = new ArrayDeque<>(sectionList);
-        Deque<Station> orderedStations = new ArrayDeque<>();
-        Section firstSection = sections.poll();
-        orderedStations.add(firstSection.getUpStation());
-        orderedStations.add(firstSection.getDownStation());
+        List<Station> orderedStations = Stream.concat(
+                        Stream.of(getOrderedSections().get(0).getUpStation()),
+                        getOrderedSections()
+                                .stream()
+                                .map(Section::getDownStation))
+                        .collect(Collectors.toList());
 
-        return new Stations(new ArrayList<>(getOrderedStations(sections, orderedStations)));
-    }
-
-    private Deque<Station> getOrderedStations(Deque<Section> sections, Deque<Station> orderedStations) {
-        if (sections.isEmpty()) {
-            return orderedStations;
-        }
-        Section section = sections.pollFirst();
-        Station upStation = section.getUpStation();
-        Station downStation = section.getDownStation();
-
-        if (orderedStations.getFirst().equals(downStation)) {
-            orderedStations.addFirst(upStation);
-            return getOrderedStations(sections, orderedStations);
-        }
-        if (orderedStations.getLast().equals(upStation)) {
-            orderedStations.addLast(downStation);
-            return getOrderedStations(sections, orderedStations);
-        }
-
-        sections.addLast(section);
-        return getOrderedStations(sections, orderedStations);
+        return new Stations(orderedStations);
     }
 
     public void removeStation(Station station) {
+        sortSections();
+
+        if (isLastUpStation(station)) {
+            removeLastUpSection();
+            return;
+        }
+        if (isLastDownStation(station)) {
+            removeLastDownStation();
+            return;
+        }
+
         Section upStationSection = findUpStationSections(station);
         Section downStationSection = findDownStationSections(station);
         collapseSections(upStationSection, downStationSection);
+    }
+
+    private void sortSections() {
+        List<Section> sections = getOrderedSections();
+        this.sectionList.clear();
+        this.sectionList.addAll(sections);
+    }
+
+    private void removeLastDownStation() {
+        sectionList.remove(sectionList.size()-1);
+    }
+
+    private void removeLastUpSection() {
+        sectionList.remove(sectionList.get(0));
+    }
+
+    private boolean isLastDownStation(Station station) {
+        return sectionList.get(sectionList.size()-1).isDownStation(station);
+    }
+    private boolean isLastUpStation(Station station) {
+        return sectionList.get(0).isUpStation(station);
     }
 
     private void collapseSections(Section upStationSection, Section downStationSection) {
@@ -168,8 +213,8 @@ public class Sections {
 
     @Override
     public String toString() {
-        return "LineStations{" +
-                "lineStationList=" + sectionList +
+        return "Sections{" +
+                "sectionList=" + sectionList +
                 '}';
     }
 }

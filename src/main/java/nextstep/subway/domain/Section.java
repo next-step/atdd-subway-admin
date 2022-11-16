@@ -124,16 +124,20 @@ public class Section {
         );
     }
 
-    public boolean hasStation(Station station) {
-        return isUpStation(station) || isDownStation(station);
-    }
-
     public Line getLine() {
         return line;
     }
 
     public Distance addDistance(Section downSection) {
         return this.distance.add(downSection.distance);
+    }
+
+    public boolean isUpSection(Section other) {
+        return upStation.equals(other.downStation);
+    }
+
+    public boolean isDownSection(Section other) {
+        return downStation.equals(other.upStation);
     }
 
     @Override
@@ -155,7 +159,7 @@ public class Section {
 
     @Override
     public String toString() {
-        return "LineStation{" +
+        return "Section{" +
                 "line=" + line.getName() +
                 ", upStation=" + upStation.getName() +
                 ", downStation=" + downStation.getName() +
