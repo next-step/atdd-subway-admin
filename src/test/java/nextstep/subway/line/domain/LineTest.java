@@ -1,5 +1,7 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.exception.DataRemoveException;
+import nextstep.subway.common.message.ExceptionMessage;
 import nextstep.subway.section.domain.Section;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.Assertions;
@@ -100,5 +102,77 @@ class LineTest {
         Line expected = Line.of("신분당선", "bg-yellow-500", Section.of(upStation, downStation, distance));
 
         assertThat(actual).isNotEqualTo(expected);
+    }
+
+    @DisplayName("지하철 노선에서 상행종점역을 제거하면 다음역이 상행종점역이 된다.")
+    @Test
+    void removeSection() {
+        Line line = Line.of("신분당선", "red", Section.of(upStation, downStation, distance));
+        Section 신사역_강남역_구간 = Section.of(upStation, Station.from("강남역"), 5);
+        line.addSection(신사역_강남역_구간);
+
+        line.removeSection(upStation);
+
+        assertThat(line.getStationsInOrder())
+                .containsExactly(
+                        Station.from("강남역"),
+                        Station.from("광교역")
+                );
+    }
+
+    @DisplayName("지하철 노선에서 하행종점역을 제거하면 이전역이 하행종점역이 된다.")
+    @Test
+    void removeSection2() {
+        Line line = Line.of("신분당선", "red", Section.of(upStation, downStation, distance));
+        Section 신사역_강남역_구간 = Section.of(upStation, Station.from("강남역"), 5);
+        line.addSection(신사역_강남역_구간);
+
+        line.removeSection(downStation);
+
+        assertThat(line.getStationsInOrder())
+                .containsExactly(
+                        Station.from("신사역"),
+                        Station.from("강남역")
+                );
+    }
+
+    @DisplayName("지하철 노선에서 중간역을 제거하면 구간이 재배치된다.")
+    @Test
+    void removeSection3() {
+        Line line = Line.of("신분당선", "red", Section.of(upStation, downStation, distance));
+        Station 강남역 = Station.from("강남역");
+        Section 신사역_강남역_구간 = Section.of(upStation, 강남역, 5);
+        line.addSection(신사역_강남역_구간);
+
+        line.removeSection(강남역);
+
+        assertThat(line.getStationsInOrder())
+                .containsExactly(
+                        Station.from("신사역"),
+                        Station.from("광교역")
+                );
+    }
+
+    @DisplayName("지하철 노선에 자하철 구간이 하나인 경우 지하철역 제거 시 예외가 발생한다.")
+    @Test
+    void removeSectionException() {
+        Line line = Line.of("신분당선", "red", Section.of(upStation, downStation, distance));
+
+        Assertions.assertThatThrownBy(() -> line.removeSection(upStation))
+                .isInstanceOf(DataRemoveException.class)
+                .hasMessageStartingWith(ExceptionMessage.FAIL_TO_REMOVE_STATION_FROM_ONE_SECTION);
+    }
+
+    @DisplayName("지하철 노선에 존재하지않는 자하철 구간 제거시 예외가 발생한다.")
+    @Test
+    void removeSectionException2() {
+        Line line = Line.of("신분당선", "red", Section.of(upStation, downStation, distance));
+        Section 신사역_강남역_구간 = Section.of(upStation, Station.from("강남역"), 5);
+        line.addSection(신사역_강남역_구간);
+
+        Station 수원역 = Station.from("수원역");
+        Assertions.assertThatThrownBy(() -> line.removeSection(수원역))
+                .isInstanceOf(DataRemoveException.class)
+                .hasMessageStartingWith(ExceptionMessage.NOT_FOUND_STATION);
     }
 }

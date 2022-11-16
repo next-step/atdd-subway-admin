@@ -1,6 +1,7 @@
 package nextstep.subway.section.domain;
 
 import com.google.common.collect.Lists;
+import nextstep.subway.common.exception.DataRemoveException;
 import nextstep.subway.common.message.ExceptionMessage;
 import nextstep.subway.station.domain.Station;
 
@@ -9,10 +10,12 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final int SECTION_MIN_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
@@ -34,6 +37,72 @@ public class Sections {
 
         updateUpStation(section);
         sections.add(section);
+    }
+
+    public void remove(Station station) {
+        validateIncludingStation(station);
+        validateRemoveStation();
+
+        removeStationBetweenUpStationAndDownStation(station);
+        removeDownStation(station);
+        removeUpStation(station);
+    }
+
+    private void validateIncludingStation(Station station) {
+        if (!this.getStationsInOrder().contains(station)) {
+            throw new DataRemoveException(ExceptionMessage.NOT_FOUND_STATION);
+        }
+    }
+
+    private void validateRemoveStation() {
+        if (sections.size() == SECTION_MIN_SIZE) {
+            throw new DataRemoveException(ExceptionMessage.FAIL_TO_REMOVE_STATION_FROM_ONE_SECTION);
+        }
+    }
+
+    private void removeStationBetweenUpStationAndDownStation(Station station) {
+        Optional<Section> sectionIncludingTargetStation = sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findAny();
+
+        if (sectionIncludingTargetStation.isPresent()) {
+            Section section = sectionIncludingTargetStation.get();
+            remove(section);
+            updateSection(station, section);
+        }
+    }
+
+    private void updateSection(Station station, Section section) {
+        Optional<Section> sectionIncludingRemovedStation = sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findAny();
+
+        if (sectionIncludingRemovedStation.isPresent()) {
+            Section toBeUpdatedSection = sectionIncludingRemovedStation.get();
+            toBeUpdatedSection.update(
+                    section.getUpStation(),
+                    section.getDistance().add(toBeUpdatedSection.getDistance())
+            );
+        }
+    }
+
+    private void removeDownStation(Station station) {
+        sections.stream()
+                .filter(it -> it.getDownStation().equals(station))
+                .findAny()
+                .ifPresent(this::remove);
+    }
+
+    private void removeUpStation(Station station) {
+        sections.stream()
+                .filter(it -> it.getUpStation().equals(station))
+                .findAny()
+                .ifPresent(this::remove);
+    }
+
+    private void remove(Section section) {
+        section.removeFromLine();
+        sections.remove(section);
     }
 
     private void validateUniqueSection(Section section) {
@@ -83,5 +152,17 @@ public class Sections {
                 .filter(upStation -> !downStationsOfSection.contains(upStation))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(ExceptionMessage.UP_STATION_NOT_EXIST_IN_LINE));
+    }
+
+    public Distance getTotalDistance() {
+        Optional<Distance> distance = sections.stream()
+                .map(Section::getDistance)
+                .reduce(Distance::add);
+
+        if (distance.isPresent()) {
+            return distance.get();
+        }
+
+        throw new IllegalArgumentException(ExceptionMessage.INVALID_SECTION_DISTANCE);
     }
 }

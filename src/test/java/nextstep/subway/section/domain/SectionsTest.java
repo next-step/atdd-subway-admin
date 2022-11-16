@@ -1,10 +1,15 @@
 package nextstep.subway.section.domain;
 
+import nextstep.subway.common.exception.DataRemoveException;
+import nextstep.subway.common.message.ExceptionMessage;
 import nextstep.subway.station.domain.Station;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 class SectionsTest {
 
@@ -77,5 +82,77 @@ class SectionsTest {
                         Station.from("강남역"),
                         Station.from("광교역")
                 );
+    }
+
+    @DisplayName("지하철 구간에서 상행종점역을 제거하면 다음역이 상행종점역이 된다.")
+    @Test
+    void removeUpStation() {
+        Station 신사역 = Station.from("신사역");
+        Station 강남역 = Station.from("강남역");
+        sections.add(Section.of(신사역, 강남역, 5));
+
+        sections.remove(신사역);
+
+        Assertions.assertThat(sections.getStationsInOrder())
+                .containsExactly(
+                        Station.from("강남역"),
+                        Station.from("광교역")
+                );
+    }
+
+
+    @DisplayName("지하철 구간에서 하행종점역을 제거하면 이전역이 하행종점역이 된다.")
+    @Test
+    void removeDownStation() {
+        Station 신사역 = Station.from("신사역");
+        Station 강남역 = Station.from("강남역");
+        sections.add(Section.of(신사역, 강남역, 5));
+
+        sections.remove(Station.from("광교역"));
+
+        Assertions.assertThat(sections.getStationsInOrder())
+                .containsExactly(
+                        Station.from("신사역"),
+                        Station.from("강남역")
+                );
+    }
+
+    @DisplayName("지하철 구간에서 중간역을 제거하면 구간이 재배치되고, 거리는 기존 구간 거리의 합이 된다.")
+    @Test
+    void removeStationBetweenUpStationAndDownStation() {
+        Station 신사역 = Station.from("신사역");
+        Station 강남역 = Station.from("강남역");
+        sections.add(Section.of(신사역, 강남역, 5));
+
+        sections.remove(Station.from("강남역"));
+
+        assertAll(
+                () -> assertThat(sections.getTotalDistance()).isEqualTo(Distance.from(10)),
+                () -> assertThat(sections.getStationsInOrder())
+                        .containsExactly(
+                                Station.from("신사역"),
+                                Station.from("광교역")
+                        )
+        );
+    }
+
+    @DisplayName("지하철 구간이 하나인 경우 지하철역 제거 시 예외가 발생한다.")
+    @Test
+    void removeStationException() {
+        Station 신사역 = Station.from("신사역");
+
+        Assertions.assertThatThrownBy(() -> sections.remove(신사역))
+                .isInstanceOf(DataRemoveException.class)
+                .hasMessageStartingWith(ExceptionMessage.FAIL_TO_REMOVE_STATION_FROM_ONE_SECTION);
+    }
+
+    @DisplayName("지하철 구간에 존재하지 않는 지하철역 제거 시 예외가 발생한다.")
+    @Test
+    void removeStationException2() {
+        Station 수원역 = Station.from("수원역");
+
+        Assertions.assertThatThrownBy(() -> sections.remove(수원역))
+                .isInstanceOf(DataRemoveException.class)
+                .hasMessageStartingWith(ExceptionMessage.NOT_FOUND_STATION);
     }
 }

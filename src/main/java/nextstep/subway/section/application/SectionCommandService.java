@@ -23,11 +23,18 @@ public class SectionCommandService {
     }
 
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new DataNotFoundException(ExceptionMessage.NOT_FOUND_LINE));
+        Line line = findLineById(lineId);
+        line.addSection(toSection(sectionRequest));
+    }
 
-        Section section = toSection(sectionRequest);
-        line.addSection(section);
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        line.removeSection(findStationById(stationId));
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new DataNotFoundException(ExceptionMessage.NOT_FOUND_LINE));
     }
 
     private Section toSection(SectionRequest sectionRequest) {

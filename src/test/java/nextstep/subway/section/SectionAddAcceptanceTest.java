@@ -23,9 +23,9 @@ import static nextstep.subway.line.LineAcceptanceMethods.지하철_노선_생성
 import static nextstep.subway.line.LineAcceptanceMethods.지하철_노선_조회;
 import static nextstep.subway.station.StationAcceptanceMethods.지하철역_생성;
 
-@DisplayName("구간 관련 기능")
+@DisplayName("구간 추가 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class SectionAcceptanceTest {
+class SectionAddAcceptanceTest {
     @LocalServerPort
     int port;
 

@@ -22,4 +22,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity<Void> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(DataRemoveException.class)
+    public ResponseEntity<Void> handleDataRemoveException() {
+        return ResponseEntity.badRequest().build();
+    }
 }
