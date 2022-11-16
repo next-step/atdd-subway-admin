@@ -2,9 +2,8 @@ package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
+import nextstep.subway.application.DatabaseCleanup;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -26,6 +25,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineAcceptanceTest {
 
     @Autowired
+    private DatabaseCleanup databaseCleanup;
+
+    @Autowired
     private StationRepository stationRepository;
 
     @LocalServerPort
@@ -36,6 +38,7 @@ public class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        databaseCleanup.execute();
     }
 
     private Station saveStation(String name) {
