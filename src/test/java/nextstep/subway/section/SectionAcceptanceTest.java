@@ -131,7 +131,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 지하철구간_추가_결과 = 지하철구간_추가(노선_id, 잠실역_id, 석촌역_id, 10);
 
         // then
-        assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -147,7 +147,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 지하철구간_추가_결과 = 지하철구간_추가(노선_id, 잠실역_id, 가락시장역_id, 3);
 
         // then
-        assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -167,6 +167,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 지하철구간_추가_결과 = 지하철구간_추가(노선_id, 석촌역_id, 문정역_id, 3);
 
         // then
-        assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

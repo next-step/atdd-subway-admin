@@ -68,7 +68,7 @@ public class LineService {
         Station downStation = stationService.getStationById(sectionRequest.getDownStationId());
         Section section = sectionRequest.toSection(upStation, downStation, persistLine);
         persistLine.addSection(section);
-        return null;
+        return LineResponse.from(persistLine);
     }
 
     private Line getLineById(Long id) {
