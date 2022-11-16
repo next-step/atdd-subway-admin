@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.line.LineAcceptanceCommon.지하철_노선_등록;
 import static nextstep.subway.section.SectionAcceptanceCommon.지하철_구간_등록;
+import static nextstep.subway.section.SectionAcceptanceCommon.지하철_구간_삭제;
 import static nextstep.subway.station.StationAcceptaneCommon.지하철_역_등록;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,7 +76,6 @@ public class SectionAcceptanceTest extends RestAssuredSetUp {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
-
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
@@ -151,6 +151,29 @@ public class SectionAcceptanceTest extends RestAssuredSetUp {
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
+    }
+
+
+    @DisplayName("노선에 등록되어있지 않은 역을 삭제할 수 없음")
+    @Test
+    void removeSectionWithNoneExistsStation() {
+        //given
+        long samsungStationId = 지하철_역_등록("삼성역").jsonPath().getLong("id");
+        long jamSilStationId = 지하철_역_등록("잠실역").jsonPath().getLong("id");
+        long hongDaeStationId = 지하철_역_등록("홍대입구역").jsonPath().getLong("id");
+        long lineId = 지하철_노선_등록("2호선", "green", jamSilStationId, hongDaeStationId, 10)
+                .jsonPath()
+                .getLong("id");
+        long gangnamStationId = 지하철_역_등록("강남역")
+                .jsonPath()
+                .getLong("id");
+        지하철_구간_등록(lineId, new SectionRequest(hongDaeStationId, gangnamStationId, 2));
+
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(lineId,samsungStationId);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 }
