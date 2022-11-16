@@ -2,6 +2,7 @@ package nextstep.subway.line.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.common.exception.ErrorMessageConstant;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;
@@ -45,7 +46,7 @@ public class LineService {
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) throws RuntimeException {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException("지하철 노선이 존재하지 않습니다.")); // TODO: error messge 추출
+        Line line = lineRepository.findById(id).orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_LINE));
         line.updateInfo(line.of(lineRequest));
     }
 

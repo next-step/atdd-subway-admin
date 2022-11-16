@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.common.exception.ErrorMessageConstant;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.line.domain.Line;
 
@@ -38,7 +39,7 @@ public class Section extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         if(distance <= 0) {
-            throw new IllegalArgumentException("노선의 길이는 0보다 커야합니다.");
+            throw new IllegalArgumentException(ErrorMessageConstant.VALID_LINE_LENGTH_GREATER_THAN_ZERO);
         }
         this.distance = distance;
     }
@@ -57,7 +58,7 @@ public class Section extends BaseEntity {
 
     public void update(Section newSection) {
         if(distance <= newSection.distance){
-            throw new IllegalArgumentException("추가하는 노선의 길이는 기존 역 사이의 길이보다 크거나 같을 수 없습니다.");
+            throw new IllegalArgumentException(ErrorMessageConstant.VALID_GREATER_OR_EQUAL_LENGTH_BETWEEN_STATION);
         }
         if (isEqualUpStation(newSection)) {
             updateUpStation(newSection);

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import nextstep.subway.common.exception.ErrorMessageConstant;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -51,13 +52,13 @@ public class Sections {
 
     private void validateHasStations(Section newSection) {
         if (new HashSet<>(getStations()).containsAll(newSection.findStations())) {
-            throw new IllegalArgumentException("등록하려는 역이 모두 존재합니다.");
+            throw new IllegalArgumentException(ErrorMessageConstant.EXISTS_STATION);
         }
     }
 
     private void validateHasNotBothStations(Section newSection) {
         if (hasNotBothStations(newSection)) {
-            throw new IllegalArgumentException("상행성과 하행선 모두 존재하지 않습니다.");
+            throw new IllegalArgumentException(ErrorMessageConstant.EXISTS_UP_STATION_AND_DOWN_STATION);
         }
     }
 

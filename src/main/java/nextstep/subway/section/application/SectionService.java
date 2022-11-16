@@ -1,5 +1,6 @@
 package nextstep.subway.section.application;
 
+import nextstep.subway.common.exception.ErrorMessageConstant;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;
@@ -22,9 +23,9 @@ public class SectionService {
 
     @Transactional
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new RuntimeException("지하철 노선이 존재하지 않습니다."));
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).get(); // TODO: optional 사용 어떻게 하는게 좋은 코드인지?
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).get();
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_LINE));
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_STATION));
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_STATION));
 
         line.addSection(sectionRequest.toSection(upStation, downStation));
         lineRepository.save(line);

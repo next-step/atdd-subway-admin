@@ -5,7 +5,6 @@ import java.util.List;
 import nextstep.subway.station.application.StationService;
 import nextstep.subway.station.dto.StationRequest;
 import nextstep.subway.station.dto.StationResponse;
-import nextstep.subway.common.ui.BaseController;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/stations")
-public class StationController extends BaseController {
+public class StationController {
     private StationService stationService;
 
     public StationController(StationService stationService) {
