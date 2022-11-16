@@ -19,17 +19,31 @@ public class SectionAcceptanceStep extends AcceptanceTest {
             final Long lineId, final long upStationId, final Long downStationId, final int distance) {
 
         Map<String, Object> params = new HashMap<>();
-          params.put("upStationId", upStationId);
-          params.put("downStationId", downStationId);
-          params.put("distance", distance);
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", distance);
 
-          //@formatter:off
+        //@formatter:off
           return RestAssured.given()
                                   .log().all()
                                   .body(params)
                                   .contentType(MediaType.APPLICATION_JSON_VALUE)
                             .when()
                                   .post("/lines/" + lineId + "/sections")
+                            .then()
+                                  .log().all()
+                            .extract();
+          //@formatter:on
+    }
+
+    public static ExtractableResponse<Response> 지하철노선에_구간_삭제_요청(final Long lineId, final Long stationId) {
+
+        //@formatter:off
+          return RestAssured.given()
+                                  .param("stationId", stationId)
+                                  .log().all()
+                            .when()
+                                  .delete("/lines/" + lineId + "/sections")
                             .then()
                                   .log().all()
                             .extract();
@@ -55,6 +69,14 @@ public class SectionAcceptanceStep extends AcceptanceTest {
     }
 
     public static void 지하철구간_생성_응답상태_400_검증(ExtractableResponse<Response> response) {
+        응답상태_검증(response, HttpStatus.BAD_REQUEST);
+    }
+
+    public static void 지하철구간_삭제_응답상태_204_검증(ExtractableResponse<Response> response) {
+        응답상태_검증(response, HttpStatus.NO_CONTENT);
+    }
+
+    public static void 지하철구간_삭제_응답상태_400_검증(ExtractableResponse<Response> response) {
         응답상태_검증(response, HttpStatus.BAD_REQUEST);
     }
 }

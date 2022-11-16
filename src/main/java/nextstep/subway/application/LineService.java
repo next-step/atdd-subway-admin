@@ -4,8 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,21 +28,20 @@ public class LineService {
         Station downStation = stationService.findById(lineRequest.getDownStationId());
         Section section = new Section(upStation, downStation, lineRequest.getDistance());
         Line line = Line.of(lineRequest.getName(), lineRequest.getColor(), section);
-        return LineResponse.of(lineRepository.save(line));
+        return LineResponse.from(lineRepository.save(line));
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(LineResponse::of)
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(final Long id) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(id + "번 노선을 찾을 수 없습니다."));
-        return LineResponse.of(persistLine);
+    public LineResponse findLine(final Long lineId) {
+        Line persistLine = findById(lineId);
+        return LineResponse.from(persistLine);
     }
 
     @Transactional
@@ -52,12 +50,11 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse modify(final Long id, final LineRequest lineRequest) {
-        Line persistLine = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(id + "번 노선을 찾을 수 없습니다."));
+    public LineResponse modify(final Long lineId, final LineRequest lineRequest) {
+        Line persistLine = findById(lineId);
         persistLine.changeName(lineRequest.getName());
         persistLine.changeColor(lineRequest.getColor());
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     public Line findById(final Long lineId) {
@@ -65,7 +62,28 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException(lineId + "번 노선을 찾을 수 없습니다."));
     }
 
-    public void flush() {
+    @Transactional
+    public SectionResponse addSection(final Long lineId, final SectionRequest sectionRequest) {
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        Section section = new Section(upStation, downStation, sectionRequest.getDistance());
+        Line line = findById(lineId);
+        line.addSection(section);
         lineRepository.flush();
+        return SectionResponse.from(section);
+    }
+
+    public List<SectionResponse> findAllSections(final Long lineId) {
+        Line line = findById(lineId);
+
+        return line.getSections().stream()
+                .map(SectionResponse::from)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteSection(final Long lineId, final Long stationId) {
+        Line line = findById(lineId);
+        line.deleteSectionByStationId(stationId);
     }
 }
