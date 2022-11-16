@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import com.google.common.collect.Lists;
 import nextstep.subway.exception.CannotAddSectionException;
+import nextstep.subway.exception.CannotRemoveSectionException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -10,8 +11,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static java.math.BigInteger.ONE;
 import static nextstep.subway.exception.CannotAddSectionException.NO_MATCHED_STATION;
 import static nextstep.subway.exception.CannotAddSectionException.UP_AND_DOWN_STATION_ALL_EXISTS;
+import static nextstep.subway.exception.CannotRemoveSectionException.ONE_SECTION_REMAINS;
 
 @Embeddable
 public class Sections {
@@ -131,6 +134,7 @@ public class Sections {
     }
 
     public void removeSection(Station station) {
+        verifyRemoveSection(station);
         sortSections();
 
         if (isLastUpStation(station)) {
@@ -145,6 +149,12 @@ public class Sections {
         Section upStationSection = findUpStationSections(station);
         Section downStationSection = findDownStationSections(station);
         collapseSections(upStationSection, downStationSection);
+    }
+
+    private void verifyRemoveSection(Station station) {
+        if (sectionList.size() == ONE.intValue()) {
+            throw new CannotRemoveSectionException(ONE_SECTION_REMAINS);
+        }
     }
 
     private void sortSections() {

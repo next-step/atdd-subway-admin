@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.CannotAddSectionException;
+import nextstep.subway.exception.CannotRemoveSectionException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -168,10 +169,16 @@ class LineTest {
 
     @Test
     void 구간이_하나인_노선에서_역을_제거할_수_없음() {
+        assertThatThrownBy(() -> 노선.removeSection(상행종점역))
+                .isInstanceOf(CannotRemoveSectionException.class);
 
+        assertThatThrownBy(() -> 노선.removeSection(하행종점역))
+                .isInstanceOf(CannotRemoveSectionException.class);
     }
     @Test
     void 노선에_등록되어있지_않은_역을_제거할_수_없음() {
 
+        assertThatThrownBy(() -> 노선.removeSection(가양역))
+                .isInstanceOf(CannotRemoveSectionException.class);
     }
 }
