@@ -14,7 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
@@ -22,7 +21,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
@@ -69,7 +67,7 @@ public class LineAcceptanceTest {
 
         ValidatableResponse response = requestApiByFindAllLines();
 
-        assertThat(extractStations(response)).containsAnyOf("신분당선", "분당선");
+        assertThat(extractLineNames(response)).containsAnyOf("신분당선", "분당선");
     }
 
     /**
@@ -87,7 +85,7 @@ public class LineAcceptanceTest {
 
         ValidatableResponse response = requestApiByGetLine(lineId);
 
-        assertThat(extractStations(response)).containsAnyOf("신분당선");
+        assertThat(extractLineName(response)).isEqualTo("신분당선");
     }
 
 
@@ -116,7 +114,11 @@ public class LineAcceptanceTest {
         assertThat(response.extract().statusCode()).isEqualTo(httpStatus.value());
     }
 
-    private static List<String> extractStations(ValidatableResponse response) {
+    private static List<String> extractLineNames(ValidatableResponse response) {
         return response.extract().jsonPath().getList("name", String.class);
+    }
+
+    private static String extractLineName(ValidatableResponse response) {
+        return response.extract().jsonPath().getString("name");
     }
 }
