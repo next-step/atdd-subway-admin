@@ -33,6 +33,13 @@ public class Section extends BaseEntity {
 
     Integer distance;
 
+    public static List<Section> makeInitialSections(Station upStation, Station downStation, Integer distance) {
+        return Arrays.asList(
+                new Section(null, upStation, END_SECTION_DISTANCE),
+                new Section(upStation, downStation, distance),
+                new Section(downStation, null, END_SECTION_DISTANCE));
+    }
+
     protected Section() {
     }
 
@@ -47,7 +54,49 @@ public class Section extends BaseEntity {
         this(null, upStation, downStation, distance);
     }
 
-    public void setUpStation(Station upStation) {
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Section changeUpStation(Station upStation, Integer distance) {
+        Section section = new Section(line, this.upStation, upStation, calDistance(distance));
+        setUpStation(upStation);
+        setDistance(distance);
+        return section;
+    }
+
+    public Section changeDownStation(Station downStation, Integer distance) {
+        Section section = new Section(line, downStation, this.downStation, calDistance(distance));
+        setDownStation(downStation);
+        setDistance(distance);
+        return section;
+    }
+
+    private Integer calDistance(Integer distance) {
+        if (isEndSection(distance)) {
+            return distance;
+        }
+
+        if (distance >= this.distance) {
+            throw new IllegalArgumentException("추가되는 구간의 거리는 기존이 구간보다 크거나 같을 수 없다. ");
+        }
+
+        return this.distance - distance;
+    }
+
+    private boolean isEndSection(Integer distance) {
+        return downStation == null || upStation == null;
+    }
+
+    private void setUpStation(Station upStation) {
         this.upStation = upStation;
     }
 
@@ -65,62 +114,5 @@ public class Section extends BaseEntity {
         }
         this.line = line;
         line.addSection(this);
-    }
-
-    public static List<Section> makeInitialSections(Station upStation, Station downStation, Integer distance) {
-        return Arrays.asList(
-                new Section(null, upStation, END_SECTION_DISTANCE),
-                new Section(upStation, downStation, distance),
-                new Section(downStation, null, END_SECTION_DISTANCE));
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public Line getLine() {
-        return line;
-    }
-
-    public Section changeDownStation(Station downStation, Integer distance) {
-        Section section = new Section(line, downStation, this.downStation, calDistanceDownStation(distance));
-        setDownStation(downStation);
-        setDistance(distance);
-        return section;
-    }
-
-    private Integer calDistanceDownStation(Integer distance) {
-        if (downStation == null) {
-            return distance;
-        }
-
-        if (distance >= this.distance) {
-            throw new IllegalArgumentException("추가되는 구간의 거리는 기존이 구간보다 크거나 같을 수 없다. ");
-        }
-
-        return this.distance - distance;
-    }
-
-    public Section changeUpStation(Station upStation, Integer distance) {
-        Section section = new Section(line, this.upStation, upStation, calDistanceUpStation(distance));
-        this.upStation = upStation;
-        this.distance = distance;
-        return section;
-    }
-
-    private Integer calDistanceUpStation(Integer distance) {
-        if (upStation == null) {
-            return distance;
-        }
-
-        if (distance >= this.distance) {
-            throw new IllegalArgumentException("추가되는 구간의 거리는 기존이 구간보다 크거나 같을 수 없다. ");
-        }
-
-        return this.distance - distance;
     }
 }
