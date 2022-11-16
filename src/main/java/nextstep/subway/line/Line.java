@@ -19,6 +19,9 @@ public class Line {
     @Embedded
     private Color color;
 
+    @Embedded
+    private Sections sections = new Sections();
+
     protected Line() {
     }
 }
