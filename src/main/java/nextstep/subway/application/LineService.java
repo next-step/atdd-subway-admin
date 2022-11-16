@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+    private static final String ERROR_MESSAGE_NOT_FOUND_LINE = "등록된 노선 정보가 없습니다.";
+
     private final LineRepository lineRepository;
     private final StationService stationService;
 
@@ -38,15 +40,20 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE));
+    }
+
     public LineResponse findLineById(Long id) {
         Optional<Line> findLine = lineRepository.findById(id);
         return findLine.map(LineResponse::of)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE));
     }
 
     @Transactional
     public void updateLineById(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE));
         lineUpdateRequest.updateLine(line);
     }
 

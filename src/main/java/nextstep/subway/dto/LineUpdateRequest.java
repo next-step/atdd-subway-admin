@@ -7,7 +7,7 @@ public class LineUpdateRequest {
     private String color;
 
     public void updateLine(Line line) {
-        line.updateLine(new Line(name, color));
+        line.updateLine(Line.of(name, color));
     }
 
     public String getName() {
