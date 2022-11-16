@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
@@ -110,6 +111,7 @@ class LineStationAcceptanceTest {
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(getId(이호선));
         List<String> stationNames = getResponse.jsonPath().getList("stations.name", String.class);
         assertThat(postResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.jsonPath().getInt("distance")).isEqualTo(DISTANCE + 5);
         assertThat(stationNames).hasSize(3);
         assertThat(stationNames).containsExactly("강남역", "선릉역", "삼성역");
     }
@@ -131,6 +133,7 @@ class LineStationAcceptanceTest {
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(getId(이호선));
         assertThat(postResponse.statusCode()).isEqualTo(예외_발생());
         assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
+        assertThat(getResponse.jsonPath().getInt("distance")).isEqualTo(DISTANCE);
     }
 
     /**
@@ -149,6 +152,7 @@ class LineStationAcceptanceTest {
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(getId(이호선));
         assertThat(postResponse.statusCode()).isEqualTo(예외_발생());
         assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
+        assertThat(getResponse.jsonPath().getInt("distance")).isEqualTo(DISTANCE);
     }
 
     /**
@@ -168,6 +172,7 @@ class LineStationAcceptanceTest {
         ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(getId(이호선));
         assertThat(postResponse.statusCode()).isEqualTo(예외_발생());
         assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
+        assertThat(getResponse.jsonPath().getInt("distance")).isEqualTo(DISTANCE);
     }
 
     /**
@@ -179,7 +184,12 @@ class LineStationAcceptanceTest {
     @Test
     void 노선에서_종점_제거() {
         // given
-        역_사이에_새로운_역_등록();
+        JsonPath 역삼역 = 지하철_역_생성("역삼역");
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("upStationId", getId(강남역));
+        paramMap.put("downStationId", getId(역삼역));
+        paramMap.put("distance", 5);
+        지하철_구간_추가(getId(이호선), paramMap);
 
         // when
         ExtractableResponse<Response> deleteResponse = 지하철_구간_제거(getId(이호선), getId(강남역));
@@ -188,6 +198,7 @@ class LineStationAcceptanceTest {
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
+        assertThat(getResponse.jsonPath().getInt("distance")).isEqualTo(5);
     }
 
     /**
@@ -213,6 +224,7 @@ class LineStationAcceptanceTest {
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
+        assertThat(getResponse.jsonPath().getInt("distance")).isEqualTo(DISTANCE);
     }
 
     /**
@@ -230,6 +242,7 @@ class LineStationAcceptanceTest {
         // then
         assertThat(deleteResponse.statusCode()).isEqualTo(예외_발생());
         assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
+        assertThat(getResponse.jsonPath().getInt("distance")).isEqualTo(DISTANCE);
     }
 
     /**

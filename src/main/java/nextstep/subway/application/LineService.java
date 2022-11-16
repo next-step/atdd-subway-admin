@@ -5,6 +5,7 @@ import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.exception.LineStationNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,7 +51,7 @@ public class LineService {
 
     public LineResponse findLine(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
+                () -> new LineStationNotFoundException(String.format("존재하지 않는 지하철 노선입니다. (id : %s)", lineId))
         );
 
         return LineResponse.of(line);
@@ -59,7 +60,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
+                () -> new LineStationNotFoundException(String.format("존재하지 않는 지하철 노선입니다. (id : %s)", lineId))
         );
 
         line.update(lineUpdateRequest);
@@ -67,10 +68,8 @@ public class LineService {
 
     @Transactional
     public void deleteLine(Long lineId) {
-        // TODO: ExceptionHandler로 예외에 맞는 statusCode 반환 찾아보기
-        // TODO: assertThatThrownBy는 단위 테스트에서 사용하기 (도메인에 대한 테스트도 구현)
         Line line = lineRepository.findById(lineId).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
+                () -> new LineStationNotFoundException(String.format("존재하지 않는 지하철 노선입니다. (id : %s)", lineId))
         );
 
         lineRepository.delete(line);
@@ -79,7 +78,7 @@ public class LineService {
     @Transactional
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
+                () -> new LineStationNotFoundException(String.format("존재하지 않는 지하철 노선입니다. (id : %s)", lineId))
         );
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
@@ -93,7 +92,7 @@ public class LineService {
     @Transactional
     public void removeSection(Long lineId, Long stationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(
-                () -> new RuntimeException("존재하지 않는 지하철 노선입니다.")
+                () -> new LineStationNotFoundException(String.format("존재하지 않는 지하철 노선입니다. (id : %s)", lineId))
         );
         Station station = stationService.findStationById(stationId);
         line.deleteLineStation(station);

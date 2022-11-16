@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.BadRequestForLineStationException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,7 +60,7 @@ public class LineStations {
         LineStation upperLineStation = getUpperLineStation(newLineStation);
 
         if (upperLineStation.isShorterThan(newLineStation)) {
-            throw new IllegalArgumentException("기존 구간의 길이보다 크거나 같습니다.");
+            throw new BadRequestForLineStationException("기존 구간의 길이보다 크거나 같습니다.");
         }
 
         lineStations.add(newLineStation);
@@ -69,21 +71,21 @@ public class LineStations {
         return lineStations.stream()
                 .filter(s -> s.getUpStation() == null)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("과"));
+                .orElseThrow(() -> new BadRequestForLineStationException("상행역과 하행역 중 하나는 포함되어야 합니다."));
     }
 
     private LineStation getLastLineStation() {
         return lineStations.stream()
                 .filter(s -> s.getDownStation() == null)
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 중 하나는 포함되어야 합니다."));
+                .orElseThrow(() -> new BadRequestForLineStationException("상행역과 하행역 중 하나는 포함되어야 합니다."));
     }
 
     private LineStation getUpperLineStation(LineStation newLineStation) {
         return lineStations.stream()
                 .filter(s -> s.canAddInterLineStation(newLineStation))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("상행역과 하행역 중 하나는 포함되어야 합니다."));
+                .orElseThrow(() -> new BadRequestForLineStationException("상행역과 하행역 중 하나는 포함되어야 합니다."));
     }
 
     public List<Station> getStationsInOrder() {
@@ -140,10 +142,10 @@ public class LineStations {
 
     public void delete(Station station) {
         if (!this.contains(station)) {
-            throw new IllegalArgumentException("노선에 포함되지 않은 역은 삭제할 수 없습니다.");
+            throw new BadRequestForLineStationException("노선에 포함되지 않은 역은 삭제할 수 없습니다.");
         }
         if (lineStations.size() == 3) {
-            throw new IllegalArgumentException("단일 구간 노선의 역은 삭제할 수 없습니다.");
+            throw new BadRequestForLineStationException("단일 구간 노선의 역은 삭제할 수 없습니다.");
         }
 
         LineStation prevLineStation = getPrevLineStation(station);
@@ -204,5 +206,11 @@ public class LineStations {
                 .filter(candidate -> candidate.getUpStation() == station || candidate.getDownStation() == station)
                 .collect(Collectors.toList())
         );
+    }
+
+    public int getTotalDistance() {
+        return lineStations.stream()
+                .mapToInt(LineStation::getDistance)
+                .sum();
     }
 }

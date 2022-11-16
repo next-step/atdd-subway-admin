@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.exception.BadRequestForLineStationException;
 
 import javax.persistence.*;
 import java.util.List;
@@ -46,7 +47,7 @@ public class Line extends BaseEntity {
 
     public void addLineStation(LineStation lineStation) {
         if (lineStations.contains(lineStation)) {
-            throw new IllegalArgumentException("이미 등록된 구간입니다.");
+            throw new BadRequestForLineStationException("이미 등록된 구간입니다.");
         }
         lineStations.add(lineStation);
     }
