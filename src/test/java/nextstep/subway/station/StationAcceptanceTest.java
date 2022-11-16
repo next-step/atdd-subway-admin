@@ -3,11 +3,9 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -17,19 +15,8 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
-
+@DisplayName("지하철역 인수 테스트")
+class StationAcceptanceTest extends AcceptanceTest {
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -42,7 +29,7 @@ class StationAcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        List<String> stationNames = requestGetStations();
+        List<String> stationNames = getList(requestGetStations(), "name");
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -72,7 +59,7 @@ class StationAcceptanceTest {
         requestCreateStation("강남역");
         requestCreateStation("서울역");
 
-        List<String> stations = requestGetStations();
+        List<String> stations = getList(requestGetStations(), "name");
         assertThat(stations).contains("강남역", "서울역");
     }
 
@@ -84,13 +71,13 @@ class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        Long stationId = requestCreateStationGetLong("강남역");
+        Long stationId = getId(requestCreateStation("강남역"));
 
         ExtractableResponse<Response> response = requestDeleteStation(stationId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        List<String> stations = requestGetStations();
+        List<String> stations = getList(requestGetStations(), "name");
         assertThat(stations).isEmpty();
     }
 
@@ -114,14 +101,10 @@ class StationAcceptanceTest {
                 .extract();
     }
 
-    private Long requestCreateStationGetLong(String name) {
-        return requestCreateStation(name).jsonPath().getLong("id");
-    }
-
-    private List<String> requestGetStations() {
+    private ExtractableResponse<Response> requestGetStations() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+                .extract();
     }
 }
