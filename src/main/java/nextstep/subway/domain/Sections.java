@@ -155,6 +155,14 @@ public class Sections {
         if (sectionList.size() == ONE.intValue()) {
             throw new CannotRemoveSectionException(ONE_SECTION_REMAINS);
         }
+        if (!hasStation(station)) {
+            throw new CannotAddSectionException(CannotRemoveSectionException.NOT_EXISTS_STATION);
+        }
+    }
+
+    private boolean hasStation(Station station) {
+        return sectionList.stream()
+                .anyMatch(section -> section.isUpStation(station) || section.isDownStation(station));
     }
 
     private void sortSections() {

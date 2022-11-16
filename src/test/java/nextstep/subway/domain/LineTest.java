@@ -177,7 +177,6 @@ class LineTest {
     }
     @Test
     void 노선에_등록되어있지_않은_역을_제거할_수_없음() {
-
         assertThatThrownBy(() -> 노선.removeSection(가양역))
                 .isInstanceOf(CannotRemoveSectionException.class);
     }
