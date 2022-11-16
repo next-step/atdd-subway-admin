@@ -114,6 +114,11 @@ class SectionAddAcceptanceTest extends SubwayAcceptanceTest {
      */
     @Test
     void 노선에_없는_역을_제거() {
+        long 새로운_역_식별자 = 지하철역_식별자(지하철역_생성("새로운역"));
+
+        ExtractableResponse<Response> 제거_응답 = 구간_제거(노선_식별자, 새로운_역_식별자);
+
+        SectionAcceptanceTestAssertions.구간_제거_실패함(제거_응답);
     }
 
 }
