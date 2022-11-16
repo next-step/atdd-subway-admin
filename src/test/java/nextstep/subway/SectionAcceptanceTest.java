@@ -44,9 +44,8 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * When 노선에 새로운 구간을 등록하면
      * Then 새로운 역이 노선에 포함된다.
      */
-    @DisplayName("노선에 구간을 등록한다.")
     @Test
-    void 새로운_역_등록() {
+    void 노선에_새로운_역_등록() {
         // When
         ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
         Long 신규역_ID = 응답_ID(신규역);
@@ -56,13 +55,11 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "강남역", "신규역", "광교역");
     }
 
-    // TODO: 메서드명과 display name이 같은 경우는 Display name을 제거하는지?
     /**
      * Given 지하철 노선에 구간을 등록하고
      * When 새로운 역을 상행 종점으로 등록하면
      * Then 새로운 역이 상행 종점으로 등록된다.
      */
-    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
     @Test
     void 새로운_역을_상행_종점으로_등록() {
         // When
@@ -79,7 +76,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * When 새로운 역을 하행 종점으로 등록하면
      * Then 새로운 역이 하행 종점으로 등록된다.
      */
-    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
     @Test
     void 새로운_역을_하행_종점으로_등록() {
         // When
@@ -96,10 +92,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * When 역 사이에 새로운 역을 등록하면
      * Then 400 Bad Request를 응답한다.
      */
-    @DisplayName("예외 테스트 : 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @ParameterizedTest
     @ValueSource(ints = {12, 13})
-    void 기존_역_사이_길이보다_크거나_같은_길이_등록_예외(int distance) {
+    void 기존_역_사이_길이보다_크거나_같은_길이_등록되있으면_예외(int distance) {
         // When
         ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("양재역");
         Long 신규역_ID = 응답_ID(신규역);
@@ -115,9 +110,8 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * When 상행역과 하행역을 똑같이 등록하면
      * Then 400 Bad Request를 응답한다.
      */
-    @DisplayName("예외 테스트 : 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
-    void 상행역과_하행역이_이미_노선에_등록_예외() {
+    void 상행역과_하행역이_이미_노선에_등록되있으면_예외() {
         // When
         ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("양재역");
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 상행역_ID, 하행역_ID, 4);
@@ -132,7 +126,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * When 상행역과 하행역에 둘 중 하나도 포함되어있지 않은 노선을 등록하면
      * Then 400 Bad Request를 응답한다.
      */
-    @DisplayName("예외 테스트 : 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
     @Test
     void 상행역과_하행역이_노선에_모두_존재하지않는_경우_예외() {
         // When
