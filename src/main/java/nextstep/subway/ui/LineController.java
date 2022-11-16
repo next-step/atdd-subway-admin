@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "/lines")
@@ -47,11 +48,9 @@ public class LineController {
     /* 노선 단건 조회 */
     @GetMapping(value = "/{id}")
     public ResponseEntity<LineResponse> get(@PathVariable(value = "id") long id) {
-        LineResponse response = lineService.find(id);
-        if (response == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(response);
+        Optional<LineResponse> response = lineService.find(id);
+        return response.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     /* 노선 단건 수정 */

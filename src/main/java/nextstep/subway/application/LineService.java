@@ -41,10 +41,9 @@ public class LineService {
     }
 
     @Transactional(readOnly = true)
-    public LineResponse find(long id) {
+    public Optional<LineResponse> find(long id) {
         return lineRepository.findById(id)
-                .map(Line::toLineResponse)
-                .orElse(null);
+                .map(Line::toLineResponse);
     }
 
     @Transactional(isolation = READ_COMMITTED)
