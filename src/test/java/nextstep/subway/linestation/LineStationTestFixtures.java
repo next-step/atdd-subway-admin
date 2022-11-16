@@ -55,6 +55,11 @@ public abstract class LineStationTestFixtures {
         return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
     }
 
+    public static ExtractableResponse<Response> 기존노선의_상행_하행_역과_모두_일치하지_않게_등록(String upStationId, String downStationId,
+                                                                             String distance, String pathVariable) {
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
+    }
+
     public static ExtractableResponse<Response> 기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록(String upStationId,
                                                                                 String downStationId, String distance,
                                                                                 String pathVariable) {

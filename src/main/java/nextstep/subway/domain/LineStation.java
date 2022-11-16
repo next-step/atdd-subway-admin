@@ -102,9 +102,16 @@ public class LineStation {
         }
     }
 
-    public void validateAlreadyExists(Station upStation, Station downStation) {
+    public void validateAlreadyExistsStation(Station upStation, Station downStation) {
         if (this.upStation.equals(upStation) && this.downStation.equals(downStation)) {
             throw new IllegalArgumentException("이미 존재하는 노선입니다.");
+        }
+    }
+
+    public void validateNotExistsStation(Station upStation, Station downStation) {
+        if (!this.upStation.equals(upStation) && !this.downStation.equals(downStation) && !this.upStation
+                .equals(downStation) && !this.downStation.equals(upStation)) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
         }
     }
 }

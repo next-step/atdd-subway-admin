@@ -27,4 +27,13 @@ public class LineStations {
                 .filter(lineStation -> lineStation.isEqualsDownStation(station))
                 .findFirst();
     }
+
+    public void validateAlreadyExistsStation(Station upStation, Station downStation) {
+        lineStations.forEach(lineStation -> lineStation.validateAlreadyExistsStation(upStation, downStation));
+    }
+
+    public void validateNotExistsStation(Station upStation, Station downStation) {
+        lineStations.forEach(lineStation -> lineStation.validateNotExistsStation(upStation, downStation));
+    }
+
 }

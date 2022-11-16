@@ -33,16 +33,27 @@ public class LineStationService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        LineStations lineStations = new LineStations();
-        lineStations.addAll(lineStationRepository.findByLineId(lineId).orElseThrow(EntityNotFoundException::new));
-
+        LineStations lineStations = createLineStations(lineId);
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
                 .orElseThrow(EntityNotFoundException::new);
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(EntityNotFoundException::new);
         int distance = sectionRequest.getDistance();
+
+        validateStations(lineStations, upStation, downStation);
         isFindSameUpStationThenCreateNewLineStation(lineStations, upStation, downStation, distance);
         isFindSameDownStationThenCreateNewLineStation(lineStations, upStation, downStation, distance);
+    }
+
+    private LineStations createLineStations(Long lineId) {
+        LineStations lineStations = new LineStations();
+        lineStations.addAll(lineStationRepository.findByLineId(lineId).orElseThrow(EntityNotFoundException::new));
+        return lineStations;
+    }
+
+    private void validateStations(LineStations lineStations, Station upStation, Station downStation) {
+        lineStations.validateAlreadyExistsStation(upStation, downStation);
+        lineStations.validateNotExistsStation(upStation, downStation);
     }
 
     private void isFindSameUpStationThenCreateNewLineStation(LineStations lineStations, Station upStation,
@@ -60,7 +71,6 @@ public class LineStationService {
                                        int distance) {
         lineStations.findSameUpStation(upStation).ifPresent(lineStation -> {
             lineStation.validateLength(distance);
-            lineStation.validateAlreadyExists(upStation, downStation);
             lineStationRepository.save(lineStation.createNewLineStation(distance, upStation, downStation));
             lineStationRepository.save(lineStation.createNewDownLineStation(distance, downStation));
             lineStationRepository.delete(lineStation);
@@ -82,7 +92,6 @@ public class LineStationService {
                                          int distance) {
         lineStations.findSameDownStation(downStation).ifPresent(lineStation -> {
             lineStation.validateLength(distance);
-            lineStation.validateAlreadyExists(upStation, downStation);
             lineStationRepository.save(lineStation.createNewLineStation(distance, upStation, downStation));
             lineStationRepository.save(lineStation.createNewUpLineStation(distance, upStation));
             lineStationRepository.delete(lineStation);
