@@ -16,7 +16,14 @@ public abstract class LineStationTestFixtures {
     private static final String PATH_LINE_STATION = "/line-station";
     private static final String PATH_LINE_ID = PATH_LINE_STATION + "/{lineId}";
 
-    public static void 기존_노선과_상행_종점으로_등록한_노선이_함께_조회됨(String information, String pathVariable,
+    public static void 기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨(String information, String pathVariable,
+                                                     String... containValues) {
+        List<String> informationList = 목록조회(information, PATH_LINE_ID, pathVariable);
+        assertThat(informationList).contains(containValues);
+    }
+
+
+    public static void 기존_구간과_상행_종점으로_등록한_구간이_함께_조회됨(String information, String pathVariable,
                                                      String... containValues) {
         List<String> informationList = 목록조회(information, PATH_LINE_ID, pathVariable);
         assertThat(informationList).contains(containValues);
@@ -26,6 +33,12 @@ public abstract class LineStationTestFixtures {
                                                          String... containValues) {
         List<String> informationList = 목록조회(information, PATH_LINE_ID, pathVariable);
         assertThat(informationList).contains(containValues);
+    }
+
+    public static ExtractableResponse<Response> 새로운_역_하행_종점으로_등록(String upStationId, String downStationId,
+                                                                 String distance,
+                                                                 String pathVariable) {
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
     }
 
     public static ExtractableResponse<Response> 새로운_역_상행_종점으로_등록(String upStationId, String downStationId,

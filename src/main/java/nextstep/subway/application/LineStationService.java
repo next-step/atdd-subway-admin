@@ -67,6 +67,17 @@ public class LineStationService {
 
     private void isFindSameDownStationThenCreateNewLineStation(LineStations lineStations, Station upStation,
                                                                Station downStation, int distance) {
+        addBetweenByDownStation(lineStations, upStation, downStation, distance);
+        appendDownStation(lineStations, upStation, downStation, distance);
+    }
+
+    private void appendDownStation(LineStations lineStations, Station upStation, Station downStation, int distance) {
+        lineStations.findSameDownStation(upStation).ifPresent(lineStation -> lineStationRepository
+                .save(lineStation.createNewLineStation(distance, upStation, downStation)));
+    }
+
+    private void addBetweenByDownStation(LineStations lineStations, Station upStation, Station downStation,
+                                         int distance) {
         lineStations.findSameDownStation(downStation).ifPresent(lineStation -> {
             lineStationRepository.save(lineStation.createNewLineStation(distance, upStation, downStation));
             lineStationRepository.save(lineStation.createNewUpLineStation(distance, upStation));
