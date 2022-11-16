@@ -125,9 +125,6 @@ public class LineAcceptanceTest {
 
         // Then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        ValidatableResponse validatableResponse = fetchLine(lineId);
-        System.out.println(validatableResponse.extract().jsonPath());
     }
 
     /*
@@ -138,7 +135,16 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLine() {
+        // Given
+        Station 강남역 = saveStation("강남역");
+        Station 양재역 = saveStation("양재역");
+        long lineId = createLine("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
+        // When
+        ValidatableResponse response = deleteLine(lineId);
+
+        // Then
+        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     private ValidatableResponse createLine(String name, String color, Station upStation, Station downStation, int distance) {
@@ -179,6 +185,13 @@ public class LineAcceptanceTest {
                 .pathParam("id", lineId)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/{id}")
+                .then().log().all();
+    }
+
+    private ValidatableResponse deleteLine(long lineId) {
+        return RestAssured.given().log().all()
+                .pathParam("id", lineId)
+                .when().delete("/lines/{id}")
                 .then().log().all();
     }
 }

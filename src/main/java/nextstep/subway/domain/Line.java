@@ -19,7 +19,7 @@ public class Line {
     @Column(unique = true)
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "line", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
     private final List<Section> sections = new ArrayList<>();
 
     protected Line() { }
