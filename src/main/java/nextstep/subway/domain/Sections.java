@@ -90,20 +90,30 @@ public class Sections {
 
     private void removeEndPoint(final List<Section> sections) {
         Section section = sections.get(0);
+
         if (section.isAscentEndpoint()) {
             section.changeAscentEndPoint(true);
-        } else if (section.isDeAscentEndpoint()) {
-            section.changeAscentEndPoint(false);
+            return;
         }
+
+        if (section.isDeAscentEndpoint()) {
+            section.changeAscentEndPoint(false);
+            return;
+        }
+
         removeSection(section);
     }
 
     private void connect(final List<Section> sections) {
         Section section1 = sections.get(0);
         Section section2 = sections.get(1);
+
         if (section1.isConnectableWith(section2)) {
             connect(section1, section2);
-        } else if (section2.isConnectableWith(section1)) {
+            return;
+        }
+
+        if (section2.isConnectableWith(section1)) {
             connect(section2, section1);
         }
     }
