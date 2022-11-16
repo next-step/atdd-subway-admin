@@ -38,7 +38,7 @@ public class SectionService {
         line.deleteSection(station);
     }
 
-    private Line findLineById(Long lineId) {
+    public Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_LINE));
     }

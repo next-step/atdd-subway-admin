@@ -73,12 +73,20 @@ public class Sections {
     public void delete(Station station) {
         Optional<Section> prevSection = getPrevSection(station);
         Optional<Section> nextSection = getNextSection(station);
+        if (isMiddleSection(prevSection, nextSection)) {
+            deleteMiddleSection(prevSection.get(), nextSection.get());
+            return;
+        }
         deleteEndSection(prevSection, nextSection);
     }
 
     private void deleteEndSection(Optional<Section> prevSection, Optional<Section> nextSection) {
         prevSection.ifPresent(sections::remove);
         nextSection.ifPresent(sections::remove);
+    }
+
+    private boolean isMiddleSection(Optional<Section> prevSection, Optional<Section> nextSection) {
+        return prevSection.isPresent() && nextSection.isPresent();
     }
 
     private void deleteMiddleSection(Section prevSection, Section nextSection) {

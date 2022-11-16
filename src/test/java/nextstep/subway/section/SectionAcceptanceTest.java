@@ -11,8 +11,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import nextstep.subway.common.BaseAcceptanceTest;
+import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.LineAcceptanceTest;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -189,6 +192,22 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", 노선_ID, 삭제할_역_ID)
                 .then().log().all()
                 .extract();
+    }
+
+    @Test
+    void 중간역을_삭제한다() {
+        // given
+        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
+        Long 신규역_ID = 응답_ID(신규역);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
+
+        // when
+        ExtractableResponse<Response> 지하철역_구간_삭제_응답 = 지하철역_구간_삭제_요청(노선_ID, 상행역_ID);
+
+        // Then
+        지하철역_구간_삭제_응답_검증(지하철역_구간_삭제_응답);
+        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.지하철노선_조회_요청(노선_ID);
+        지하철_노선에_지하철역_등록_확인(지하철노선_조회_응답, "신규역", "광교역");
     }
 
     private void 지하철_노선에_지하철역_등록_확인(ExtractableResponse<Response> response, String... expectStationNames) {
