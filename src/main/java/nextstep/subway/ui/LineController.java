@@ -21,20 +21,20 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("")
+    @PostMapping
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest request) {
         LineResponse response = lineService.saveLine(request);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
-    @GetMapping(value = "", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public ResponseEntity<List<LineResponse>> showLine() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
-    @GetMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> detailLine(@PathVariable Long lineId) {
-        return ResponseEntity.ok().body(lineService.findLine(lineId));
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<LineResponse> detailLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
     @PutMapping("/{id}")
