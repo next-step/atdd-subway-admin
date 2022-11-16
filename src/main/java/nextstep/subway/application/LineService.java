@@ -79,6 +79,6 @@ public class LineService {
                 .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
         Station station = stationRepository.findById(stationId)
                 .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
-        line.deleteSection(station);
+        line.deleteSection(line,station);
     }
 }

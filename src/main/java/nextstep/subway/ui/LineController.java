@@ -59,8 +59,8 @@ public class LineController {
     }
 
     @DeleteMapping(value = "/{id}/sections")
-    public ResponseEntity deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
-        lineService.deleteSection(lineId, stationId);
+    public ResponseEntity deleteSection(@PathVariable Long id,@RequestParam Long stationId) {
+        lineService.deleteSection(id, stationId);
         return ResponseEntity.ok().build();
     }
 
