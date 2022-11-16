@@ -22,4 +22,8 @@ class SectionAcceptanceTestAssertions {
     static void 구간_등록_실패함(ExtractableResponse<Response> 노선_응답) {
         assertThat(노선_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    static void 구간_제거_실패함(ExtractableResponse<Response> 제거_응답) {
+        assertThat(제거_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

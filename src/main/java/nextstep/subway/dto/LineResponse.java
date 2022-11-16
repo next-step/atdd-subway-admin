@@ -38,7 +38,8 @@ public class LineResponse {
 				line.getName(),
 				line.getColor(),
 				toStations(line.getSections()),
-				line.getCreatedDate(), line.getModifiedDate()
+				line.getCreatedDate(),
+				line.getModifiedDate()
 			);
 	}
 

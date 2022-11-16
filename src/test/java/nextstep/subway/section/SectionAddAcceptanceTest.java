@@ -83,15 +83,12 @@ class SectionAddAcceptanceTest extends SubwayAcceptanceTest {
      */
     @Test
     void 가운데역_제거() {
-    }
+        구간_제거(노선_식별자, 중간역1_식별자);
+        구간_제거(노선_식별자, 중간역2_식별자);
 
-    /**
-     * Given 노선에 구간이 3개 존재하고
-     * When 가운데 역을 제거할 경우
-     * Then 거리는 두 구간의 거리의 합으로 정함
-     */
-    @Test
-    void 제거된_역_사이의_거리() {
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회(노선_식별자);
+        List<String> 역_목록 = Lists.newArrayList(지하철역.getFirst(), 지하철역.getLast());
+        역_목록_일치함(노선_조회_응답, 역_목록);
     }
 
     /**
@@ -101,6 +98,12 @@ class SectionAddAcceptanceTest extends SubwayAcceptanceTest {
      */
     @Test
     void 구간이_하나인_노선에서_역제거() {
+        구간_제거(노선_식별자, 중간역1_식별자);
+        구간_제거(노선_식별자, 중간역2_식별자);
+
+        ExtractableResponse<Response> 제거_응답 = 구간_제거(노선_식별자, 상행종점역_식별자);
+
+        SectionAcceptanceTestAssertions.구간_제거_실패함(제거_응답);
     }
 
 

@@ -48,7 +48,7 @@ public class RestAssuredUtils {
 	public static ExtractableResponse<Response> delete(String requestPath) {
 		return RestAssured.given().log().all()
 				.when().delete(requestPath)
-				.then().log().all().statusCode(HttpStatus.NO_CONTENT.value())
+				.then().log().all()
 				.extract();
 	}
 
