@@ -121,8 +121,7 @@ public class LineAcceptanceStep {
         assertAll(
                 () -> assertThat(result.jsonPath().getInt("id")).isEqualTo(savedLine.jsonPath().getInt("id")),
                 () -> assertThat(result.jsonPath().getString("name")).isEqualTo(savedLine.jsonPath().getString("name")),
-                ()-> assertThat(result.jsonPath().getString("color")).isEqualTo(savedLine.jsonPath().getString("color")),
-                ()-> assertThat(result.jsonPath().getInt("distance")).isEqualTo(savedLine.jsonPath().getInt("distance"))
+                ()-> assertThat(result.jsonPath().getString("color")).isEqualTo(savedLine.jsonPath().getString("color"))
         );
     }
 

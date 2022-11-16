@@ -78,32 +78,11 @@ public class Line extends BaseEntity {
         Objects.requireNonNull(newSection, NOT_FOUND_SECTION_ERR);
         sections.addSection(newSection);
 
-        List<Section> sortedSection = new ArrayList<>();
-        for(Section s : sections.sortSection()) {
-            sortedSection.add(s);
-        }
-
-        sections.getSections().forEach(s -> {
-            int idx = sections.getSections().indexOf(s);
-            s.changeSort(sortedSection.get(idx));
-        });
-
-
         if (newSection.getLine() != this) {
             newSection.updateLine(this);
         }
     }
 
-
-    @Override
-    public String toString() {
-        return "Line{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                ", sections=" + sections +
-                '}';
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -118,5 +97,13 @@ public class Line extends BaseEntity {
         return Objects.hash(id, name, color, sections);
     }
 
-
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", sections=" + sections +
+                '}';
+    }
 }

@@ -98,7 +98,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
         if (isUpStation(newSection.upStation)) {
             changeUpStation(newSection);
             changeDistance(newSection.distance);
-//            return;
+            return;
         }
 
 

@@ -23,15 +23,12 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
-//        sortSection();
-
         validateNotMatchedStaton(newSection);
         validateDistance(newSection);
         validateDuplicated(newSection);
 
         changeSections(newSection);
         sections.add(newSection);
-//        sortSection();
     }
 
 

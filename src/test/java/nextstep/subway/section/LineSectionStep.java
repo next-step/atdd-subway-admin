@@ -51,12 +51,6 @@ public class LineSectionStep {
         지하철역을_생성한다("교대역");
     }
 
-    public static void 구간_2개_등록한다(int lineId) {
-        추가_역을_3개_생성한다();
-//        구간_생성_요청(lineId, 1L, 3L, 4); // 강남-역삼
-
-    }
-
 
     public static void 구간_추가_등록_결과_확인(int lineId, ExtractableResponse<Response> response, int count, String target) {
         구간_예상_수_확인(lineId, response, count, target);
