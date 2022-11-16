@@ -63,6 +63,14 @@ public class Section extends BaseEntity {
         return downStation.equals(newSection.getDownStation());
     }
 
+    public boolean isSameUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
     public Station getUpStation() {
         return upStation;
     }

@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.SectionsException;
+import nextstep.subway.exception.StationException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.OneToMany;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.SectionsExceptionMessage.*;
+import static nextstep.subway.exception.StationExceptionMessage.NONE_EXISTS_STATION;
 
 public class Sections {
 
@@ -20,19 +22,19 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
-        validationSection(newSection);
+        validateSection(newSection);
         modifyUpStation(newSection);
         modifyDownStation(newSection);
         sections.add(newSection);
     }
 
-    private void validationDistance(Section section, Section newSection) {
+    private void validateDistance(Section section, Section newSection) {
         if (section.isShortDistance(newSection)) {
             throw new SectionsException(LONGER_THAN_OHTER.getMessage());
         }
     }
 
-    private void validationSection(Section newSection) {
+    private void validateSection(Section newSection) {
         if (isContainsAllStation(newSection)) {
             throw new SectionsException(ALREADY_CONTAINS_SECTION.getMessage());
         }
@@ -47,7 +49,7 @@ public class Sections {
         if (findSection == null) {
             return;
         }
-        validationDistance(findSection, newSection);
+        validateDistance(findSection, newSection);
         findSection.modifyUpStation(newSection);
     }
 
@@ -57,7 +59,7 @@ public class Sections {
         if (findSection == null) {
             return;
         }
-        validationDistance(findSection, newSection);
+        validateDistance(findSection, newSection);
         findSection.modifyDownStation(newSection);
     }
 
@@ -78,28 +80,66 @@ public class Sections {
         return !sections.isEmpty() && !newSection.isComponentAnyOfStations(getStations());
     }
 
-    public void deleteSection(Station deleteStation) {
+    public void deleteSection(Line line, Station deleteStation) {
         List<Section> findSections = sections.stream().filter(section -> section.hasStation(deleteStation))
                 .collect(Collectors.toList());
         validateEmptySection(findSections);
-        validateSingleSection(sections,findSections);
+        validateSections(findSections, sections);
         if (isSingleSection(findSections)) {
             sections.remove(findSections.get(0));
             return;
         }
+        arrageSection(line, findSections, deleteStation);
     }
-    private void validateEmptySection(List<Section> sections){
-        if(sections.isEmpty()){
+
+    private void arrageSection(Line line, List<Section> findSections, Station deleteStation) {
+        sections.removeAll(findSections);
+        Station upStation = getUpStation(findSections, deleteStation);
+        Station downStation = getDownStation(findSections, deleteStation);
+        long distance = findSections.stream().mapToLong(Section::getDistance).sum();
+        sections.add(new Section(line, upStation, downStation, distance));
+    }
+
+    private Station getUpStation(List<Section> sections, Station station) {
+        return sections.stream()
+                .filter(section1 -> section1.isSameDownStation(station))
+                .map(section1 -> section1.getUpStation())
+                .findFirst()
+                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+    }
+
+    private Station getDownStation(List<Section> sections, Station station) {
+        return sections.stream()
+                .filter(section1 -> section1.isSameUpStation(station))
+                .map(section1 -> section1.getDownStation())
+                .findFirst()
+                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+    }
+
+    private void validateSections(List<Section> findSections, List<Section> sections) {
+        validateSingleSection(findSections, sections);
+        validateMultiSection(findSections);
+    }
+
+    private void validateMultiSection(List<Section> findSections) {
+        if (findSections.size() > 2) {
+            throw new SectionsException(MULTI_SECTION.getMessage());
+        }
+    }
+
+    private void validateEmptySection(List<Section> sections) {
+        if (sections.isEmpty()) {
             throw new SectionsException(NOT_REGISTER_SECTION.getMessage());
         }
     }
-    private void validateSingleSection(List<Section> sections,List<Section> findSections){
-        if(isSingleSection(sections) && isSingleSection(findSections)){
+
+    private void validateSingleSection(List<Section> sections, List<Section> findSections) {
+        if (isSingleSection(sections) && isSingleSection(findSections)) {
             throw new SectionsException(SINGLE_SECTION.getMessage());
         }
     }
 
-    private boolean isSingleSection(List<Section> findSections){
+    private boolean isSingleSection(List<Section> findSections) {
         return findSections.size() == 1;
     }
 }
