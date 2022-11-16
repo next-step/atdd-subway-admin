@@ -17,7 +17,7 @@ public class SectionTest {
         Integer distance = 10;
 
         // when
-        Section section = Section.of(upStation, downStation, distance, null);
+        Section section = Section.of(upStation, downStation, distance);
 
         // then
         assertThat(section).isNotNull();
@@ -31,7 +31,7 @@ public class SectionTest {
         Integer distance = 10;
 
         // expect
-        assertThatIllegalArgumentException().isThrownBy(() -> Section.of(null, downStation, distance, null));
+        assertThatIllegalArgumentException().isThrownBy(() -> Section.of(null, downStation, distance));
     }
 
 
@@ -44,7 +44,7 @@ public class SectionTest {
         Integer distance = 0;
 
         // expect
-        assertThatIllegalArgumentException().isThrownBy(() -> Section.of(upStation, downStation, distance, null));
+        assertThatIllegalArgumentException().isThrownBy(() -> Section.of(upStation, downStation, distance));
     }
 
 }

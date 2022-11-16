@@ -31,6 +31,14 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
+    public int size(){
+        return this.sections.size();
+    }
+
+    public void add(Section section){
+        sections.add(section);
+    }
+
     public List<Station> getStations() {
         return sections.stream()
                 .map(Section::getStations)

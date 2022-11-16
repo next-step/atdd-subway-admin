@@ -61,6 +61,28 @@ public class LineTest {
                 () -> assertThat(line.getName()).isEqualTo(newName),
                 () -> assertThat(line.getColor()).isEqualTo(newColor)
         );
+    }
 
+    @Test
+    @DisplayName("잠실역, 장지역 구간 사이에 문정역 구간을 추가한다")
+    void addSection() {
+        // given
+        String name = "8호선";
+        String color = "분홍색";
+        Station upStation = new Station("잠실역");
+        Station downStation = new Station("장지역");
+        Integer distance = 10;
+        Line line = Line.of(name, color, upStation, downStation, distance);
+
+        // given
+        Station addStation = new Station("문정역");
+        Integer addDistance = 10;
+        Section section = Section.of(upStation, addStation, addDistance, line);
+
+        // when
+        line.addSection(section);
+
+        // then
+        assertThat(line.getSections().size()).isEqualTo(2);
     }
 }
