@@ -8,28 +8,14 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.utils.BaseTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
 
 @DisplayName("지하철역 관련 기능")
-@DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-    }
-
+public class StationAcceptanceTest extends BaseTest {
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -96,11 +82,8 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void 지하철역_제거() {
-        // given
-        createStation("서울대입구역");
-
-        // when
-        deleteStation(1);
+        // given & when
+        deleteStation(createStation("서울대입구역").jsonPath().get("id"));
 
         // then
         List<String> stationNames = getStations();
