@@ -6,8 +6,8 @@ import nextstep.subway.domain.Station;
 
 public class SectionRequest {
 
-    private String downStationId;
-    private String upStationId;
+    private Long downStationId;
+    private Long upStationId;
     private Integer distance;
 
     public Section toSection(Line line, Station upStation, Station downStation) {
@@ -15,11 +15,11 @@ public class SectionRequest {
     }
 
     public Long getDownStationId() {
-        return Long.parseLong(downStationId);
+        return downStationId;
     }
 
     public Long getUpStationId() {
-        return Long.parseLong(upStationId);
+        return upStationId;
     }
 
     public Integer getDistance() {
