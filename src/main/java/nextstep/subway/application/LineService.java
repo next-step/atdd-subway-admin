@@ -3,13 +3,13 @@ package nextstep.subway.application;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManager;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 
@@ -17,11 +17,11 @@ import nextstep.subway.dto.LineResponse;
 @Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
-    private final EntityManager entityManager;
+    private final StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository, EntityManager entityManager) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
-        this.entityManager = entityManager;
+        this.stationRepository = stationRepository;
     }
 
     public List<LineResponse> findAllLines() {
@@ -41,7 +41,18 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line line = lineRepository.save(lineRequest.toLine(entityManager));
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 ID 입니다."));
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 ID 입니다."));
+        
+        Line line = lineRepository.save(new Line(
+            lineRequest.getName(),
+            lineRequest.getColor(),
+            upStation,
+            downStation,
+            lineRequest.getDistance()
+        ));
         return LineResponse.of(line);
     }
 
