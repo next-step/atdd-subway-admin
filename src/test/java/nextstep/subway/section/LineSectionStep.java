@@ -21,23 +21,18 @@ public class LineSectionStep {
     }
 
     public static ExtractableResponse<Response> 역_사이에_새로운_역을_등록한다(int lineId) {
-        return RestAssured.given()
-                .body(구간_하나를_생성한다()).log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/" + lineId + "/sections")
-                .then()
-                .log().all()
-                .extract();
+        return 정상_구간_생성_요청(lineId, 1L, null, 4);
     }
 
-    private static SectionRequest 구간_하나를_생성한다() {
+    private static ExtractableResponse<Response> 정상_구간_생성_요청(int lineId, Long upStationId, Long downStationId, int distance) {
         int newStationId =  지하철역을_생성한다("역삼역").jsonPath().get("id");
 
-        return SectionRequest.builder()
-                .upStationId(1L)
+        SectionRequest request = SectionRequest.builder()
+                .upStationId(upStationId)
                 .downStationId(Long.valueOf(newStationId))
-                .distance(4)
+                .distance(distance)
                 .build();
+        return 구간_생성_호출(lineId, request);
     }
 
     public static ExtractableResponse<Response> 비정상_구간_생성_요청(int lineId, Long upStationId, Long downStationId, int distance) {
@@ -47,6 +42,10 @@ public class LineSectionStep {
                 .distance(distance)
                 .build();
 
+        return 구간_생성_호출(lineId, request);
+    }
+
+    public static ExtractableResponse<Response> 구간_생성_호출(int lineId, SectionRequest request) {
         return RestAssured.given()
                 .body(request).log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)

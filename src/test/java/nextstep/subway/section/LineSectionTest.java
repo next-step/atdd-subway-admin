@@ -96,7 +96,7 @@ public class LineSectionTest {
      */
     @DisplayName("새로운 구간의 길이가 기존 구간 길이보다 크거나 같으면 예외를 던진다")
     @Test
-    void 역_사이에_새로운_역_생성_예외() {
+    void 새로운_구간_길이_예외() {
         // given -> beforeEach
 
         // when
@@ -107,6 +107,24 @@ public class LineSectionTest {
         구간_등록_실패(response1);
         구간_등록_실패(response2);
     }
+
+//    /**
+//     * Given 2개의 지하철역이 등록되어 있고, 노선이 등록되어있다
+//     * When 새로운 역을 상행 종점으로 생성하면
+//     * Then 생성된 지하철 구간을 확인할 수 있다
+//     */
+//    @DisplayName("새로운 역을 상행 종점으로 구간 등록할 수 있다")
+//    @Test
+//    void 새로운_역_상행_종점_생성_성공() {
+//        // given -> beforeEach
+//        String upStationId = "3";
+//        String downStationId = "1";
+//        int distance = 5;
+//
+//        ExtractableResponse<Response> response = 지하철구간_생성_요청(upStationId, downStationId, distance);
+//
+//        지하철구간_생성_성공(response);
+//    }
 
 
 }
