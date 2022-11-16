@@ -102,7 +102,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
                 .extract().jsonPath().getList("name", String.class);
     }
 
-    private static List<String> 지하철역_이름_목록_조회_요청() {
+    public static List<String> 지하철역_이름_목록_조회_요청() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()

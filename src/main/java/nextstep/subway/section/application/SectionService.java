@@ -31,6 +31,13 @@ public class SectionService {
         return LineResponse.of(line);
     }
 
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStation(stationId);
+        line.deleteSection(station);
+    }
+
     private Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_LINE));

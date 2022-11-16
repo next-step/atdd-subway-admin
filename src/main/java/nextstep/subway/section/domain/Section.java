@@ -52,18 +52,29 @@ public class Section extends BaseEntity {
         return id;
     }
 
+    public Station getDownStation() {
+        return downStation;
+    }
+
     public void update(Section newSection) {
         distance.validNewDistance(newSection.distance.get());
-        if (isEqualUpStation(newSection)) {
+        if (isEqualUpStation(newSection.upStation)) {
             updateUpStation(newSection);
         }
-        if (isEqualDownStation(newSection)) {
+        if (isEqualDownStation(newSection.downStation)) {
             updateDownStation(newSection);
         }
     }
 
-    private boolean isEqualUpStation(Section newSection) {
-        return upStation.equals(newSection.upStation);
+    public Section merge(Section nextSection) {
+        Distance newDistance = distance.add(nextSection.distance);
+        Section section = new Section(upStation, nextSection.getDownStation(), newDistance);
+        section.addLine(line);
+        return section;
+    }
+
+    public boolean isEqualUpStation(Station station) {
+        return upStation.equals(station);
     }
 
     private void updateUpStation(Section newSection) {
@@ -71,8 +82,8 @@ public class Section extends BaseEntity {
         distance.subtract(newSection.distance);
     }
 
-    private boolean isEqualDownStation(Section newSection) {
-        return downStation.equals(newSection.downStation);
+    public boolean isEqualDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     private void updateDownStation(Section newSection) {
