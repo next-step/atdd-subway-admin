@@ -19,7 +19,7 @@ public class Name {
         this.name = name;
     }
 
-    public static Name of(String name) {
+    public static Name from(String name) {
         if (Objects.isNull(name) || name.trim().isEmpty()) {
             throw new IllegalArgumentException(ROUTE_NAME_ERROR);
         }

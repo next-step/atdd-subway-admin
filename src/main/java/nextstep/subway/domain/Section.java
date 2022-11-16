@@ -44,15 +44,15 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public static Section from(Station upStation, Station downStation, Line line, Distance distance) {
-        return new Section(upStation, downStation, line, distance);
+    public static Section of(Station upStation, Station downStation, Line line, int distance) {
+        return new Section(upStation, downStation, line, Distance.from(distance));
     }
 
     public void updateStation(Section section) {
-        if (upStation.equals(section.upStation)) {
+        if (isUpStation(section.upStation)) {
             updateUpStation(section);
         }
-        if (downStation.equals(section.downStation)) {
+        if (isDownStation(section.downStation)) {
             updateDownStation(section);
         }
     }
@@ -65,6 +65,18 @@ public class Section extends BaseEntity {
     private void updateDownStation(Section section) {
         downStation = section.upStation;
         distance = distance.substract(section.distance);
+    }
+
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public Distance addDistance(Section section) {
+        return this.distance.add(section.getDistance());
     }
 
     public Long getId() {

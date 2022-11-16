@@ -35,16 +35,16 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line line = lineRepository.save(createLine(lineRequest));
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     private Line createLine(LineRequest lineRequest) {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
-        return Line.from(
-            Name.of(lineRequest.getName()),
-            Color.of(lineRequest.getColor()),
-            Distance.of(lineRequest.getDistance()),
+        return Line.of(
+            lineRequest.getName(),
+            lineRequest.getColor(),
+            lineRequest.getDistance(),
             upStation,
             downStation
         );
@@ -56,17 +56,14 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
-        System.out.println(lines.size());
-
         return lines.stream()
-            .map(LineResponse::of)
+            .map(LineResponse::from)
             .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) {
         Line a = getLineById(id);
-        return LineResponse.of(getLineById(id));
+        return LineResponse.from(getLineById(id));
     }
 
     private Line getLineById(Long id) {
@@ -90,7 +87,14 @@ public class LineService {
         Station downStation = getStation(sectionRequest.getDownStationId());
 
         Line line = getLineById(id);
-        line.addSection(Section.from(upStation, downStation, line, Distance.of(sectionRequest.getDistance())));
+        line.addSection(Section.of(upStation, downStation, line, sectionRequest.getDistance()));
         lineRepository.save(line);
+    }
+
+    @Transactional
+    public void removeSection(Long id, Long stationId) {
+        Line line = getLineById(id);
+        Station station = getStation(stationId);
+        line.removeSection(station);
     }
 }

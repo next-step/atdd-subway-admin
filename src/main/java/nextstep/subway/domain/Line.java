@@ -31,25 +31,29 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    private Line(Name name, Color color, Distance distance, Station upStation, Station downStation) {
-        Section section = Section.from(upStation, downStation, this, distance);
-        this.name = name;
-        this.color = color;
+    private Line(String name, String color, int distance, Station upStation, Station downStation) {
+        Section section = Section.of(upStation, downStation, this, distance);
+        this.name = Name.from(name);
+        this.color = Color.from(color);
         this.sections = Sections.from(Collections.singletonList(section));
     }
 
-    public static Line from(Name name, Color color, Distance distance, Station upStation, Station downStation) {
+    public static Line of(String name, String color, int distance, Station upStation, Station downStation) {
         return new Line(name, color, distance, upStation, downStation);
     }
 
     public void modify(String name, String color) {
-        this.name = Name.of(name);
-        this.color = Color.of(color);
+        this.name = Name.from(name);
+        this.color = Color.from(color);
     }
 
     public void addSection(Section section) {
         sections.add(section);
         section.setLine(this);
+    }
+
+    public void removeSection(Station station) {
+        sections.remove(station);
     }
 
     public Long getId() {

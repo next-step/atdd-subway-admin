@@ -19,7 +19,7 @@ public class Color {
         this.color = color;
     }
 
-    public static Color of(String color) {
+    public static Color from(String color) {
         if (Objects.isNull(color) || color.trim().isEmpty()) {
             throw new IllegalArgumentException(ROUTE_COLOR_ERROR);
         }

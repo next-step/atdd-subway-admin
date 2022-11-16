@@ -11,12 +11,19 @@ public class SectionAcceptanceTestFixture {
 
     public static ExtractableResponse<Response> 지하철_노선_구간_추가(Long id, Long upStationId,
         Long downStationId, int distance) {
-        SectionRequest sectionRequest = SectionRequest.from(upStationId, downStationId, distance);
+        SectionRequest sectionRequest = SectionRequest.of(upStationId, downStationId, distance);
 
         return RestAssured.given().log().all()
             .body(sectionRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/{id}/sections", id)
+            .then().log().all()
+            .extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_구간_삭제(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+            .when().delete("/lines/{id}/sections?stationId={stationId}", lineId, stationId)
             .then().log().all()
             .extract();
     }
