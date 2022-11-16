@@ -26,8 +26,10 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
 
-    private final static LineRequest line_1 = new LineRequest("1호선", "빨간색", 1L, 2L, 10);
-    private final static LineRequest line_2 = new LineRequest("2호선", "노색", 3L, 4L, 15);
+    private Station station_1;
+    private Station station_2;
+    private Station station_3;
+    private Station station_4;
 
     @Autowired
     private DatabaseCleanup databaseCleanup;
@@ -48,10 +50,10 @@ public class LineAcceptanceTest {
     }
 
     private void initStations(){
-        stationRepository.save(new Station("우장산역"));
-        stationRepository.save(new Station("화곡역"));
-        stationRepository.save(new Station("까치산역"));
-        stationRepository.save(new Station("마곡나루역"));
+        station_1 = stationRepository.save(new Station("우장산역"));
+        station_2 = stationRepository.save(new Station("화곡역"));
+        station_3 = stationRepository.save(new Station("까치산역"));
+        station_4 = stationRepository.save(new Station("마곡나루역"));
     }
 
     /**
@@ -62,11 +64,13 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        String location = insertLineSuccess(line_1).header("Location");
+        String location = insertLineSuccess(
+                generateLineRequest("1호선", station_1.getId(), station_2.getId()))
+                .header("Location");
 
         // then
         String lineName = selectLine(location).extract().jsonPath().get("name");
-        assertThat(lineName).isEqualTo(line_1.getName());
+        assertThat(lineName).isEqualTo("1호선");
     }
 
     /**
@@ -78,8 +82,12 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        insertLineSuccess(line_1);
-        insertLineSuccess(line_2);
+        insertLineSuccess(
+                generateLineRequest("1호선", station_1.getId(), station_2.getId()))
+                .header("Location");
+        insertLineSuccess(
+                generateLineRequest("2호선", station_3.getId(), station_4.getId()))
+                .header("Location");
 
         // when
         List<String> lineNames =
@@ -88,7 +96,7 @@ public class LineAcceptanceTest {
         // then
         assertAll (
                 () -> assertThat(lineNames.size()).isEqualTo(2),
-                () -> assertThat(lineNames).contains(line_1.getName(), line_2.getName())
+                () -> assertThat(lineNames).contains("1호선", "2호선")
         );
     }
 
@@ -101,14 +109,16 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        String location = insertLineSuccess(line_1).header("Location");
+        String location = insertLineSuccess(
+                generateLineRequest("1호선", station_1.getId(), station_2.getId()))
+                .header("Location");
 
         // when
         String lineName = selectLine(location).extract().jsonPath().get("name");
 
         // then
         assertThat(lineName).isNotNull();
-        assertThat(lineName).isEqualTo(line_1.getName());
+        assertThat(lineName).isEqualTo("1호선");
     }
 
     /**
@@ -120,14 +130,17 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        String location = insertLineSuccess(line_1).header("Location");
+        String location = insertLineSuccess(
+                generateLineRequest("1호선", station_1.getId(), station_2.getId()))
+                .header("Location");
 
         // when
-        updateLineSuccess(location, line_2);
+        updateLineSuccess(location,
+                generateLineRequest("2호선", station_3.getId(), station_4.getId()));
 
         // then
         String lineName = selectLine(location).extract().jsonPath().get("name");
-        assertThat(lineName).isEqualTo(line_2.getName());
+        assertThat(lineName).isEqualTo("2호선");
     }
 
     /**
@@ -139,7 +152,9 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        String location = insertLineSuccess(line_1).header("Location");
+        String location = insertLineSuccess(
+                generateLineRequest("1호선", station_1.getId(), station_2.getId()))
+                .header("Location");
 
         // when
         deleteLineSuccess(location);
@@ -161,8 +176,8 @@ public class LineAcceptanceTest {
                 .then().log().all();
     }
 
-    private ExtractableResponse<Response> insertLineSuccess(LineRequest lineRequest) {
-        ExtractableResponse<Response> response = insertLine(lineRequest).extract();
+    private ExtractableResponse<Response> insertLineSuccess(LineRequest request) {
+        ExtractableResponse<Response> response = insertLine(request).extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         return response;
     }
@@ -198,6 +213,10 @@ public class LineAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete(location)
                 .then().log().all();
+    }
+
+    private LineRequest generateLineRequest(String name, Long upStationId, Long downStationId) {
+        return new LineRequest(name, "빨간색", upStationId, downStationId, 10);
     }
 
 }
