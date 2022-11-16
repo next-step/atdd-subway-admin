@@ -9,7 +9,7 @@ import java.util.List;
 @Embeddable
 public class Stations {
 
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "line")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "line")
     private List<Station> stations = new ArrayList<>();
 
     public List<Station> getList() {

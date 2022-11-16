@@ -4,13 +4,15 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.EntityNotFoundException;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -28,44 +30,55 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line line = lineRepository.save(lineRequest.toLine());
-        addStation(line, lineRequest.getUpStationId());
-        addStation(line, lineRequest.getDownStationId());
+        Station upStation = getStation(lineRequest.getUpStationId());
+        Station downStation = getStation(lineRequest.getDownStationId());
+        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(line);
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return LineResponse.of(lineRepository.getById(id));
+        return LineResponse.of(getLine(id));
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
-        List<LineResponse> responses = new ArrayList<>();
-        lineRepository.findAll().stream().forEach(
-                line -> responses.add(LineResponse.of(line))
-        );
-        return responses;
+        return lineRepository.findAll()
+                .stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 
     @Transactional
     public LineResponse updateById(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.getById(id);
+        Line line = getLine(id);
         return LineResponse.of(lineRepository.save(line.updateInfo(lineRequest)));
     }
 
     @Transactional
     public void deleteById(Long id) {
-        stationRepository.deleteByLineId(id);
+        checkExistLine(lineRepository.findById(id), id);
         lineRepository.deleteById(id);
     }
 
-    private void addStation(Line line, Long id) {
-        line.addStation(getStation(id));
+    private Line getLine(Long id) {
+        Optional<Line> line = lineRepository.findById(id);
+        checkExistLine(line, id);
+        return line.get();
+    }
+
+    private void checkExistLine(Optional<Line> line, Long id) {
+        line.orElseThrow(() -> new EntityNotFoundException("Line", id));
     }
 
     private Station getStation(Long id) {
-        return stationRepository.getById(id);
+        Optional<Station> station = stationRepository.findById(id);
+        checkExistStation(station, id);
+        return station.get();
+    }
+
+    private void checkExistStation(Optional<Station> station, Long id) {
+        station.orElseThrow(() -> new EntityNotFoundException("Station", id));
     }
 
 }
