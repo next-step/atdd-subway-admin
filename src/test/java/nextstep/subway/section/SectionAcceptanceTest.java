@@ -1,6 +1,5 @@
 package nextstep.subway.section;
 
-import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
@@ -10,8 +9,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import nextstep.subway.common.BaseAcceptanceTest;
+import nextstep.subway.common.ResponseAssertTest;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +36,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // Given
         초기_노선_길이 = 12;
-        신분당선 = LineAcceptanceTest.지하철노선_생성_요청("신분당선", "bg-red-600", "강남역", "광교역", 초기_노선_길이).as(LineResponse.class);
+        신분당선 = LineAcceptanceTest.노선_생성_요청("신분당선", "bg-red-600", "강남역", "광교역", 초기_노선_길이).as(LineResponse.class);
         노선_ID = 신분당선.getId();
         상행역_ID = 신분당선.getStations().get(0).getId();
         하행역_ID = 신분당선.getStations().get(1).getId();
@@ -49,12 +50,12 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 노선에_새로운_역_등록() {
         // When
-        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
+        ExtractableResponse<Response> 신규역 = StationAcceptanceTest.지하철역_생성_요청("신규역");
         Long 신규역_ID = 응답_ID(신규역);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 상행역_ID, 신규역_ID, 4);
+        ExtractableResponse<Response> 노선에_지하철역_등록_응답 = 지하철역_생성_요청(노선_ID, 상행역_ID, 신규역_ID, 4);
 
         // Then
-        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "강남역", "신규역", "광교역");
+        노선에_지하철역_등록_확인(노선에_지하철역_등록_응답, "강남역", "신규역", "광교역");
     }
 
     /**
@@ -65,12 +66,12 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 새로운_역을_상행_종점으로_등록() {
         // When
-        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신사역");
+        ExtractableResponse<Response> 신규역 = StationAcceptanceTest.지하철역_생성_요청("신사역");
         Long 신규역_ID = 응답_ID(신규역);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID, 상행역_ID, 3);
+        ExtractableResponse<Response> 노선에_지하철역_등록_응답 = 지하철역_생성_요청(노선_ID, 신규역_ID, 상행역_ID, 3);
 
         // Then
-        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "신사역", "강남역", "광교역");
+        노선에_지하철역_등록_확인(노선에_지하철역_등록_응답, "신사역", "강남역", "광교역");
     }
 
     /**
@@ -81,12 +82,12 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 새로운_역을_하행_종점으로_등록() {
         // When
-        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("동천역");
+        ExtractableResponse<Response> 신규역 = StationAcceptanceTest.지하철역_생성_요청("동천역");
         Long 신규역_ID = 응답_ID(신규역);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID, 상행역_ID, 3);
+        ExtractableResponse<Response> 노선에_지하철역_등록_응답 = 지하철역_생성_요청(노선_ID, 신규역_ID, 상행역_ID, 3);
 
         // Then
-        지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "강남역", "광교역", "동천역");
+        노선에_지하철역_등록_확인(노선에_지하철역_등록_응답, "강남역", "광교역", "동천역");
     }
 
     /**
@@ -98,13 +99,13 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @ValueSource(ints = {12, 13})
     void 기존_역_사이_길이보다_크거나_같은_길이_등록되있으면_예외(int distance) {
         // When
-        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("양재역");
+        ExtractableResponse<Response> 신규역 = StationAcceptanceTest.지하철역_생성_요청("양재역");
         Long 신규역_ID = 응답_ID(신규역);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 하행역_ID, 신규역_ID, distance);
+        ExtractableResponse<Response> 노선에_지하철역_등록_응답 = 지하철역_생성_요청(노선_ID, 하행역_ID, 신규역_ID, distance);
 
         // Then
-        printErrorMessage(지하철_노선에_지하철역_등록_응답);
-        assertThat(지하철_노선에_지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        printErrorMessage(노선에_지하철역_등록_응답);
+        assertThat(노선에_지하철역_등록_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -115,8 +116,8 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 상행역과_하행역이_이미_노선에_등록되있으면_예외() {
         // When
-        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("양재역");
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 상행역_ID, 하행역_ID, 4);
+        StationAcceptanceTest.지하철역_생성_요청("양재역");
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철역_생성_요청(노선_ID, 상행역_ID, 하행역_ID, 4);
 
         // Then
         printErrorMessage(지하철_노선에_지하철역_등록_응답);
@@ -131,11 +132,11 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 상행역과_하행역이_노선에_모두_존재하지않는_경우_예외() {
         // When
-        ExtractableResponse<Response> 신규역1 = 지하철역_생성_요청("없는역1");
+        ExtractableResponse<Response> 신규역1 = StationAcceptanceTest.지하철역_생성_요청("없는역1");
         Long 신규역1_ID = 응답_ID(신규역1);
-        ExtractableResponse<Response> 신규역2 = 지하철역_생성_요청("없는역2");
+        ExtractableResponse<Response> 신규역2 = StationAcceptanceTest.지하철역_생성_요청("없는역2");
         Long 신규역2_ID = 응답_ID(신규역2);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역1_ID, 신규역2_ID, 4);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철역_생성_요청(노선_ID, 신규역1_ID, 신규역2_ID, 4);
 
         // Then
         지하철역_등록_실패_검증(지하철_노선에_지하철역_등록_응답);
@@ -149,17 +150,17 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 상행역을_삭제한다() {
         // Given
-        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
+        ExtractableResponse<Response> 신규역 = StationAcceptanceTest.지하철역_생성_요청("신규역");
         Long 신규역_ID = 응답_ID(신규역);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
 
         // When
         ExtractableResponse<Response> 지하철역_구간_삭제_응답 = 지하철역_구간_삭제_요청(노선_ID, 신규역_ID);
 
         // Then
         지하철역_구간_삭제_응답_검증(지하철역_구간_삭제_응답);
-        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.지하철노선_조회_요청(노선_ID);
-        지하철_노선에_지하철역_등록_확인(지하철노선_조회_응답, "강남역", "광교역");
+        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.노선_조회_요청(노선_ID);
+        노선에_지하철역_등록_확인(지하철노선_조회_응답, "강남역", "광교역");
     }
 
     /**
@@ -170,17 +171,17 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 하행역을_삭제한다() {
         // Given
-        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
+        ExtractableResponse<Response> 신규역 = StationAcceptanceTest.지하철역_생성_요청("신규역");
         Long 신규역_ID = 응답_ID(신규역);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
 
         // When
         ExtractableResponse<Response> 지하철역_구간_삭제_응답 = 지하철역_구간_삭제_요청(노선_ID, 하행역_ID);
 
         // Then
         지하철역_구간_삭제_응답_검증(지하철역_구간_삭제_응답);
-        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.지하철노선_조회_요청(노선_ID);
-        지하철_노선에_지하철역_등록_확인(지하철노선_조회_응답, "신규역", "강남역");
+        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.노선_조회_요청(노선_ID);
+        노선에_지하철역_등록_확인(지하철노선_조회_응답, "신규역", "강남역");
     }
 
     /**
@@ -191,17 +192,17 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     void 중간역을_삭제한다() {
         // given
-        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
+        ExtractableResponse<Response> 신규역 = StationAcceptanceTest.지하철역_생성_요청("신규역");
         Long 신규역_ID = 응답_ID(신규역);
-        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
 
         // when
         ExtractableResponse<Response> 지하철역_구간_삭제_응답 = 지하철역_구간_삭제_요청(노선_ID, 상행역_ID);
 
         // Then
         지하철역_구간_삭제_응답_검증(지하철역_구간_삭제_응답);
-        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.지하철노선_조회_요청(노선_ID);
-        지하철_노선에_지하철역_등록_확인(지하철노선_조회_응답, "신규역", "광교역");
+        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.노선_조회_요청(노선_ID);
+        노선에_지하철역_등록_확인(지하철노선_조회_응답, "신규역", "광교역");
     }
 
     /**
@@ -234,7 +235,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     }
 
     private void 지하철역_구간_삭제_응답_검증(ExtractableResponse<Response> 지하철역_구간_삭제_응답) {
-        assertThat(지하철역_구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        ResponseAssertTest.응답_컨텐츠가_없는_성공_확인(지하철역_구간_삭제_응답);
     }
 
     private ExtractableResponse<Response> 지하철역_구간_삭제_요청(Long 노선_ID, Long 삭제할_역_ID) {
@@ -245,12 +246,12 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                 .extract();
     }
 
-    private void 지하철_노선에_지하철역_등록_확인(ExtractableResponse<Response> response, String... expectStationNames) {
+    private void 노선에_지하철역_등록_확인(ExtractableResponse<Response> response, String... expectStationNames) {
         List<String> stationsNameList = response.jsonPath().getList("stations.name", String.class);
         assertThat(stationsNameList).containsAll(Arrays.asList(expectStationNames));
     }
 
-    private ExtractableResponse<Response> 지하철_노선에_지하철역_생성_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
+    private ExtractableResponse<Response> 지하철역_생성_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
         HashMap<String, Object> params = new HashMap<>();
         params.put("lineId", lineId);
         params.put("upStationId", upStationId);
