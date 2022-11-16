@@ -90,7 +90,32 @@ public class LineAcceptanceTest {
 
         // when
         // then
-        지하철_노선_목록에서_노선_정보가_있다(lineId, _1호선);
+        지하철_노선_정보가_있다(lineId, _1호선);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // given
+        long lineId = 지하철_노선을_생성한다(_1호선);
+
+        // when
+        Map<String, Object> modifiedLine = new HashMap<String, Object>(){
+            {
+                put("id", Long.valueOf(_1호선.get("id").toString()));
+                put("name", "1호선2");
+                put("color", _1호선.get("color").toString());
+            }
+        };
+        지하철_노선을_수정한다(lineId, modifiedLine);
+
+        // then
+        지하철_노선_정보가_있다(lineId, modifiedLine);
     }
 
     private long 지하철_노선을_생성한다(Map<String, Object> line) {
@@ -113,19 +138,29 @@ public class LineAcceptanceTest {
         assertThat(lineIds).containsAnyOf(lineId);
     }
 
-    private void 지하철_노선_목록에서_노선_정보가_있다(Long lineId, Map<String, Object> line) {
+    private void 지하철_노선_정보가_있다(Long lineId, Map<String, Object> line) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
-            .when().get("/lines")
+            .when().get("/lines/{id}", lineId)
             .then().log().all()
             .statusCode(HttpStatus.OK.value())
             .extract();
         assertAll(
-            () -> assertThat(response.jsonPath().getList("id", Long.class))
-                .contains(lineId),
-            () -> assertThat(response.jsonPath().getList("name", String.class))
-                .contains(line.get("name").toString()),
-            () -> assertThat(response.jsonPath().getList("color", String.class))
-                .contains(line.get("color").toString())
+            () -> assertThat(response.jsonPath().getLong("id"))
+                .isEqualTo(lineId),
+            () -> assertThat(response.jsonPath().getString("name"))
+                .isEqualTo(line.get("name").toString()),
+            () -> assertThat(response.jsonPath().getString("color"))
+                .isEqualTo(line.get("color").toString())
         );
+    }
+
+    private Map<String, Object> 지하철_노선을_수정한다(long lineId, Map<String, Object> line) {
+        return RestAssured.given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .body(line)
+            .when().put("/lines/{id}", lineId)
+            .then().log().all()
+            .extract()
+            .jsonPath().getMap("");
     }
 }
