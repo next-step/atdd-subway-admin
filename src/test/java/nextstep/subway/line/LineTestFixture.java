@@ -38,8 +38,8 @@ public class LineTestFixture {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> requestUpdateLine(Long id,LineUpdateRequest params){
-        return RestAssured.given().log().all()
+    public static void requestUpdateLine(Long id,LineUpdateRequest params){
+        RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(params)
                 .when().put("/lines/"+ id)
@@ -47,5 +47,15 @@ public class LineTestFixture {
                 .statusCode(HttpStatus.OK.value())
                 .extract();
     }
+
+    public static void requestDeleteLine(Long id){
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/"+ id)
+                .then().log().all()
+                .statusCode(HttpStatus.NO_CONTENT.value())
+                .extract();
+    }
+
 
 }
