@@ -10,17 +10,15 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_생성;
-import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_식별자;
-import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_조회;
+import static nextstep.subway.line.LineAcceptanceTestAssured.*;
 import static nextstep.subway.section.SectionAcceptanceTestAssertions.구간_등록_실패함;
 import static nextstep.subway.section.SectionAcceptanceTestAssertions.구간_등록됨;
 import static nextstep.subway.section.SectionAcceptanceTestAssured.구간_등록;
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_생성;
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_식별자;
 
-@DisplayName("구간 관련 기능")
-class SectionAcceptanceTest extends SubwayAcceptanceTest {
+@DisplayName("구간 삭제 기능")
+class SectionRemoveAcceptanceTest extends SubwayAcceptanceTest {
 
     long 노선_식별자;
     long 상행종점역_식별자;
