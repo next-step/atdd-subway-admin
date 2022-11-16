@@ -6,7 +6,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,10 +26,6 @@ public class Sections {
         return new Sections(sections);
     }
 
-    public List<Section> getSections() {
-        return Collections.unmodifiableList(sections);
-    }
-
     public int size() {
         return this.sections.size();
     }
@@ -38,7 +33,7 @@ public class Sections {
     public void add(Section section) {
         validateAddContainsAllStation(section);
         validateAddNonContainsStation(section);
-        sections.stream().forEach(s -> s.update(section));
+        updateSections(section);
         sections.add(section);
     }
 
@@ -49,10 +44,14 @@ public class Sections {
     }
 
     private void validateAddNonContainsStation(Section section) {
-        if (getStations().stream()
-                .noneMatch(station -> section.getStations().contains(station))) {
+        List<Station> stations = section.getStations();
+        if (getStations().stream().noneMatch(stations::contains)) {
             throw new IllegalArgumentException("등록하려는 구간의 상행역과 하행역 둘 중 하나라도 기존 구간의 역에 포함되지 않으면 구간을 등록할 수 없습니다.");
         }
+    }
+
+    private void updateSections(Section section) {
+        sections.stream().forEach(s -> s.update(section));
     }
 
     public List<Station> getStations() {

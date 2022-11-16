@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "SECTION")
@@ -29,8 +30,7 @@ public class Section extends BaseEntity {
     }
 
     private Section(Long id, Station upStation, Station downStation, Integer distance, Line line) {
-        validateStation(upStation);
-        validateStation(downStation);
+        validateStations(upStation, downStation);
         validateDistance(distance);
         this.id = id;
         this.upStation = upStation;
@@ -47,8 +47,8 @@ public class Section extends BaseEntity {
         return new Section(null, upStation, downStation, distance, line);
     }
 
-    private void validateStation(Station station) {
-        if (station == null) {
+    private void validateStations(Station... stations) {
+        if (stations == null || Arrays.stream(stations).anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("구간은 상행역, 하행역 둘다 존재해야 합니다.");
         }
     }
@@ -62,18 +62,26 @@ public class Section extends BaseEntity {
     public void update(Section section) {
         if (this.upStation.equals(section.upStation)) {
             validateUpdateDistance(section.distance);
-            this.upStation = section.downStation;
-            this.distance = this.distance - section.distance;
+            updateWhenEqualsUpStation(section);
         }
         if (this.downStation.equals(section.downStation)) {
             validateUpdateDistance(section.distance);
-            this.downStation = section.upStation;
-            this.distance = this.distance - section.distance;
+            updateWhenEqualsDownStation(section);
         }
     }
 
-    private void validateUpdateDistance(Integer distance){
-        if (this.distance <= distance){
+    private void updateWhenEqualsUpStation(Section section) {
+        this.upStation = section.downStation;
+        this.distance = this.distance - section.distance;
+    }
+
+    private void updateWhenEqualsDownStation(Section section) {
+        this.downStation = section.upStation;
+        this.distance = this.distance - section.distance;
+    }
+
+    private void validateUpdateDistance(Integer distance) {
+        if (this.distance <= distance) {
             throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우는 길이가 기존 구간길이보다 작아야 합니다.");
         }
     }
@@ -81,7 +89,6 @@ public class Section extends BaseEntity {
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
     }
-
 
     public Integer getDistance() {
         return distance;
