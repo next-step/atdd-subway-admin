@@ -52,7 +52,7 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         List<Station> allStations = new ArrayList<>();
-        sections.getSections().forEach(section ->  {
+        sections.getSections().forEach(section -> {
             allStations.add(section.getUpStation());
             allStations.add(section.getDownStation());
         });
@@ -66,10 +66,10 @@ public class Line extends BaseEntity {
     }
 
     public void update(LineRequest updateRequest) {
-        if(!updateRequest.getName().isEmpty() && updateRequest.getName() != "") {
+        if (!updateRequest.getName().isEmpty() && updateRequest.getName() != "") {
             this.name = updateRequest.getName();
         }
-        if(!updateRequest.getColor().isEmpty() && updateRequest.getColor() != ""){
+        if (!updateRequest.getColor().isEmpty() && updateRequest.getColor() != "") {
             this.color = updateRequest.getColor();
         }
     }
@@ -77,6 +77,17 @@ public class Line extends BaseEntity {
     public void addSection(Section newSection) {
         Objects.requireNonNull(newSection, NOT_FOUND_SECTION_ERR);
         sections.addSection(newSection);
+
+        List<Section> sortedSection = new ArrayList<>();
+        for(Section s : sections.sortSection()) {
+            sortedSection.add(s);
+        }
+
+        sections.getSections().forEach(s -> {
+            int idx = sections.getSections().indexOf(s);
+            s.changeSort(sortedSection.get(idx));
+        });
+
 
         if (newSection.getLine() != this) {
             newSection.updateLine(this);

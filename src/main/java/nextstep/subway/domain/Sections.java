@@ -23,13 +23,15 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
+//        sortSection();
+
         validateNotMatchedStaton(newSection);
         validateDistance(newSection);
         validateDuplicated(newSection);
 
         changeSections(newSection);
         sections.add(newSection);
-        sortSection();
+//        sortSection();
     }
 
 
@@ -46,14 +48,10 @@ public class Sections {
     }
 
     private void validateDistance(Section newSection) {
-        if(sections.size() == 1) {
+        // 두번째 추가이거나 종점 추가일 경우 길이 체크x
+        if(sections.size() == 1 || newSection.isLastStation(sections)) {
             return;
         }
-
-        boolean d = newSection.isLastStation(sections);
-
-
-
 
         // 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
         Optional<Section> invalidSections = sections.stream()
@@ -83,10 +81,10 @@ public class Sections {
         });
     }
 
-    private void sortSection() {
+    public List<Section> sortSection() {
         List<Section> sortedSections = sections.stream()
                 .sorted(Section::compareTo)
                 .collect(Collectors.toList());
-        sections = sortedSections;
+        return Collections.unmodifiableList(sortedSections);
     }
 }

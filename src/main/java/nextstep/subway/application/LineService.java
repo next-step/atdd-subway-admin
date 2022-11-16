@@ -27,6 +27,8 @@ public class LineService {
         Station upStation = findStationById(Long.valueOf(lineRequest.getUpLastStationId()));
         Station downStation = findStationById(Long.valueOf(lineRequest.getDownLastStationId()));
 
+        Line temp = lineRequest.toLine(upStation, downStation);
+
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }

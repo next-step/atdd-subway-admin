@@ -49,7 +49,7 @@ public class LineSectionTest {
         //given -> beforeEach
 
         //when
-        ExtractableResponse<Response> savedSection = 역_사이에_새로운_역을_등록한다(lineId);
+        ExtractableResponse<Response> savedSection = 구간_생성_요청(lineId, 1L, 3L, 4);
 
         //then
         구간_추가_등록_결과_확인(lineId, savedSection, 2, "sections");
@@ -143,6 +143,28 @@ public class LineSectionTest {
 
         // then
         구간_추가_등록_결과_확인(lineId, response, 2, "sections");
+    }
+
+
+    /**
+     * Given 지하철역과 노선이 등록되어 있고, 구간이 2개 등록되어있다.
+     * When 새로운 역을 하행 종점으로 생성하면
+     * Then 길이체크하지 않고 생성된 지하철 구간을 확인할 수 있다
+     */
+    @DisplayName("종점으로 등록할 경우 길이를 체크하지 않는다")
+    @Test
+    void 종점_등록_길이_확인없이_성공() {
+        // given -> beforeEach
+        구간_2개_등록한다(lineId);
+
+        ExtractableResponse<Response> response2 = 구간_생성_요청(lineId, 1L, 3L, 4); // 강남-역삼
+        구간_추가_등록_결과_확인(lineId, response2, 2, "sections");
+
+        // when
+        ExtractableResponse<Response> response = 구간_생성_요청(lineId, 3L, 5L, 10);
+
+        // then
+        구간_추가_등록_결과_확인(lineId, response, 3, "sections");
     }
 
 }

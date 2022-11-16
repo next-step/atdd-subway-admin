@@ -20,13 +20,9 @@ public class LineSectionStep {
     public static ExtractableResponse<Response> 역_3개와_노선을_생성한다() {
         int upLastStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
         int downLastStationId = 지하철역을_생성한다("선릉역").jsonPath().get("id");
-        지하철역을_생성한다("잠실역");
+        지하철역을_생성한다("역삼역");
 
         return 노선_한개_생성한다(upLastStationId, downLastStationId);
-    }
-
-    public static ExtractableResponse<Response> 역_사이에_새로운_역을_등록한다(int lineId) {
-        return 구간_생성_요청(lineId, 1L, 3L, 4);
     }
 
     public static ExtractableResponse<Response> 구간_생성_요청(int lineId, Long upStationId, Long downStationId, int distance) {
@@ -53,6 +49,12 @@ public class LineSectionStep {
         지하철역을_생성한다("판교역");
         지하철역을_생성한다("건대역");
         지하철역을_생성한다("교대역");
+    }
+
+    public static void 구간_2개_등록한다(int lineId) {
+        추가_역을_3개_생성한다();
+//        구간_생성_요청(lineId, 1L, 3L, 4); // 강남-역삼
+
     }
 
 

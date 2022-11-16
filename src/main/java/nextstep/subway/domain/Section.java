@@ -87,22 +87,35 @@ public class Section extends BaseEntity implements Comparable<Section> {
         changeStation(newSection);
     }
 
-    private void changeDistance(Section newSection) {
-        this.distance -= newSection.getDistance();
+    private void changeDistance(int distance) {
+        this.distance -= distance;
     }
 
     private void changeStation(Section newSection) {
 
+        // 기존 upStation과 새로운 upStation과 일치하면 사이에 들어감
+        // 따라서 기존 upStation -> 새로운 downStation
         if (isUpStation(newSection.upStation)) {
             changeUpStation(newSection);
-            changeDistance(newSection);
-            return;
+            changeDistance(newSection.distance);
+//            return;
         }
 
+
+        // 기존 downStation과 새로운 downStation이 일치
+        //  따라서 기존 downStation -> 새로운 upstation
         if (isDownStation(newSection.downStation)) {
             changeDownStation(newSection);
-            changeDistance(newSection);
+            changeDistance(newSection.distance);
         }
+    }
+
+    public void changeSort(Section sortedSection) {
+        this.upStation = sortedSection.upStation;
+        this.downStation = sortedSection.downStation;
+        this.line = sortedSection.line;
+        this.distance = sortedSection.distance;
+
     }
 
     public boolean isLastStation(List<Section> sections) {
