@@ -57,6 +57,11 @@ public class Line extends BaseEntity {
         return distance;
     }
 
+    public void updateNameAndColor(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
     public static class Builder {
         private String name;
         private String color;

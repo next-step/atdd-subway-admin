@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
             .orElseThrow(EntityNotFoundException::new);
@@ -45,5 +47,11 @@ public class LineService {
     public LineResponse findById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        line.updateNameAndColor(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 }
