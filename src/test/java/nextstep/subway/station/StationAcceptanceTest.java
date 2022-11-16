@@ -144,6 +144,10 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
+    static Long 지하철역_생성_성공_id_응답(Map<String, String> params) {
+        return 지하철역_생성_성공(params).body().jsonPath().getLong("id");
+    }
+
     static ExtractableResponse<Response> 지하철역_조회_성공() {
         return RestAssured.given().log().all()
                 .accept(MediaType.APPLICATION_JSON_VALUE)
