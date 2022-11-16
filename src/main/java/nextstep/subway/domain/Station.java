@@ -9,6 +9,9 @@ public class Station extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn
+    private Line line;
 
     public Station() {
     }
@@ -23,5 +26,9 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public void addLine(Line line) {
+        this.line = line;
     }
 }
