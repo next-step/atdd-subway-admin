@@ -62,11 +62,11 @@ public class LineAcceptanceTest {
      */
     @DisplayName("노선 목록을 조회한다.")
     @Test
-    void getLines () {
+    void findAllLines () {
         createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
         createLine(new LineRequest("분당선", "bg-red-600", 1L, 3L, 10));
 
-        ValidatableResponse response = findAllLines();
+        ValidatableResponse response = findAll();
 
         assertThat(extractStations(response)).containsAnyOf("신분당선", "분당선");
     }
@@ -79,7 +79,7 @@ public class LineAcceptanceTest {
             .then().log().all();
     }
 
-    private static ValidatableResponse findAllLines() {
+    private static ValidatableResponse findAll() {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/lines")
