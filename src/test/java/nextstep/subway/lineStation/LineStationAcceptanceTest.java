@@ -178,7 +178,16 @@ class LineStationAcceptanceTest {
     @DisplayName("노선에서 종점을 제거한다.")
     @Test
     void 노선에서_종점_제거() {
+        // given
+        역_사이에_새로운_역_등록();
 
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_구간_제거(getId(이호선), getId(강남역));
+        ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(getId(이호선));
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
     /**
@@ -189,7 +198,21 @@ class LineStationAcceptanceTest {
     @DisplayName("노선에서 가운데 역을 제거한다.")
     @Test
     void 노선에서_가운데_역_제거() {
+        // given
+        JsonPath 역삼역 = 지하철_역_생성("역삼역");
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("upStationId", getId(강남역));
+        paramMap.put("downStationId", getId(역삼역));
+        paramMap.put("distance", 5);
+        지하철_구간_추가(getId(이호선), paramMap);
 
+        // when
+        ExtractableResponse<Response> deleteResponse = 지하철_구간_제거(getId(이호선), getId(역삼역));
+        ExtractableResponse<Response> getResponse = 노선_아이디로_지하철역_조회(getId(이호선));
+
+        // then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(getResponse.jsonPath().getList("stations")).hasSize(2);
     }
 
     /**

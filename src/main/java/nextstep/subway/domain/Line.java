@@ -52,12 +52,7 @@ public class Line extends BaseEntity {
     }
 
     public void deleteLineStation(Station station) {
-        if (!lineStations.contains(station)) {
-            throw new IllegalArgumentException("노선에 포함되지 않은 역은 삭제할 수 없습니다.");
-        }
-        if (lineStations.size() == 3) {
-            throw new IllegalArgumentException("단일 구간 노선의 역은 삭제할 수 없습니다.");
-        }
+        lineStations.delete(station);
     }
 
     public Long getId() {
