@@ -5,8 +5,8 @@ public enum SectionsExceptionMessage  {
     ALREADY_CONTAINS_SECTION("이미 같은 구간이 존재합니다"),
     NOT_CONSTAINS_ANY_SECTION("포함된 구간이 없습니다"),
     NOT_REGISTER_SECTION("등록안된 구간입니다"),
-    SINGLE_SECTION("마지막 구간입니다");
-
+    SINGLE_SECTION("마지막구간은 삭제할 수 없습니다"),
+    MULTI_SECTION("중복구간은 삭제할 수 없습니다");
 
     String message;
 
