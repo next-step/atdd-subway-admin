@@ -93,7 +93,10 @@ public class Section extends BaseEntity {
     }
 
     public void validateDistance(final Section newSection) {
-        distance.equalToOrLessThan(newSection.getDistance());
+        if (distance.isEqualToOrLessThan(newSection.getDistance())) {
+            throw new IllegalArgumentException(
+                    "새로 생성할 구간의 간격" + newSection.getDistance() + "는 기존 구간 간격 " + distance + "보다 짧아야 합니다.");
+        }
     }
 
     public void registerEndPoint() {
@@ -101,22 +104,14 @@ public class Section extends BaseEntity {
         changeDeAscentEndPoint(true);
     }
 
-
     public boolean isAscentEndpoint(final Section newSection) {
-        return downStation.equals(newSection.getUpStation());
-    }
-
-    public boolean isDeAscentEndpoint(final Section newSection) {
         return upStation.equals(newSection.getDownStation());
     }
 
-    public boolean isAscentEndpoint() {
-        return isAscentEndPoint;
+    public boolean isDeAscentEndpoint(final Section newSection) {
+        return downStation.equals(newSection.getUpStation());
     }
 
-    public boolean isDeAscentEndpoint() {
-        return isDeAscentEndPoint;
-    }
 
     public void changeAscentEndPoint(final Boolean ascentEndPoint) {
         isAscentEndPoint = ascentEndPoint;
@@ -148,23 +143,54 @@ public class Section extends BaseEntity {
     }
 
     public void reArrangeWith(final Section newSection) {
+        if (changeEndPoint(newSection)) return;
+        changeStation(newSection);
+    }
+
+    private void changeStation(final Section newSection) {
         if (isSameUpStation(newSection)) {
-            changeUpStation(newSection.getDownStation());
-            minusDistanceOf(newSection);
-        } else if (isSameDownStation(newSection)) {
-            changeDownStation(newSection.getUpStation());
-            minusDistanceOf(newSection);
-        } else if (isAscentEndpoint(newSection)) {
-            changeAscentEndPoint(false);
-            changeAscentEndPoint(true);
-        } else if (isDeAscentEndpoint(newSection)) {
-            changeDeAscentEndPoint(false);
-            changeDeAscentEndPoint(true);
+            changeUpStationToDownStationOf(newSection);
+            return;
+        }
+        if (isSameDownStation(newSection)) {
+            changeDownStationToUpStationOf(newSection);
         }
     }
 
+    private boolean changeEndPoint(final Section newSection) {
+        if (isAscentEndpoint(newSection)) {
+            changeAscentEndPointTo(newSection);
+            return true;
+        }
+        if (isDeAscentEndpoint(newSection)) {
+            changeDeAscentEndPointTo(newSection);
+            return true;
+        }
+        return false;
+    }
+
+    private void changeDeAscentEndPointTo(final Section newSection) {
+        changeDeAscentEndPoint(false);
+        newSection.changeDeAscentEndPoint(true);
+    }
+
+    private void changeAscentEndPointTo(final Section newSection) {
+        changeAscentEndPoint(false);
+        newSection.changeAscentEndPoint(true);
+    }
+
+    private void changeDownStationToUpStationOf(final Section newSection) {
+        changeDownStation(newSection.getUpStation());
+        minusDistanceOf(newSection);
+    }
+
+    private void changeUpStationToDownStationOf(final Section newSection) {
+        changeUpStation(newSection.getDownStation());
+        minusDistanceOf(newSection);
+    }
+
     private void minusDistanceOf(final Section newSection) {
-        changeDistance(getDistance() - newSection.getDistance());
+        distance.minus(newSection.getDistance());
     }
 
     public boolean isSameDownStation(final Section newSection) {
@@ -185,5 +211,13 @@ public class Section extends BaseEntity {
 
     public void setUpStation(final Section section) {
         setUpStation(section.getUpStation());
+    }
+
+    public boolean isAscentEndpoint() {
+        return isAscentEndPoint;
+    }
+
+    public boolean isDeAscentEndpoint() {
+        return isDeAscentEndPoint;
     }
 }
