@@ -1,22 +1,19 @@
 package nextstep.subway.station;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.List;
 import nextstep.subway.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     /**
@@ -86,7 +83,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청("강남역");
 
         // when
-        지하철역_삭제_요청(객체_응답_ID(지하철역_생성_응답));
+        지하철역_삭제_요청(응답_ID(지하철역_생성_응답));
 
         // then
         assertThat(지하철역_조회_요청("강남역")).isEmpty();
