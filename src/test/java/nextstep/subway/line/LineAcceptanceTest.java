@@ -33,13 +33,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private StationRepository stationRepository;
     private Station upStation;
     private Station downStation;
-
+    private Station otherUpStation;
+    private Station otherDownStation;
 
     @BeforeEach
     void init() {
         setUp();
         upStation = stationRepository.save(new Station("강남역"));
         downStation = stationRepository.save(new Station("성수역"));
+        otherUpStation = stationRepository.save(new Station("홍대역"));
+        otherDownStation = stationRepository.save(new Station("구의역"));
     }
 
     /**
@@ -74,6 +77,31 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("지하철 노선 목록 조회")
+    @Test
+    void findAllLineTest() {
+        //give
+        ExtractableResponse<Response> saveResponse = createLine("분당선", "red", upStation.getId(), downStation.getId(), 10);
+        ExtractableResponse<Response> saveOtherResponse = createLine("타르코프", "yellow", otherUpStation.getId(), otherDownStation.getId(), 10);
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(saveOtherResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+        //when
+        ExtractableResponse<Response> findResponse = findAllLine();
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        //then
+        JsonPath responseBody = findResponse.jsonPath();
+        assertThat(findResponseByKey(responseBody, LINE_NAME)).containsExactly("분당선", "타르코프");
+        assertThat(findResponseByKey(responseBody, COLOR)).containsExactly("red", "yellow");
 
     }
 
