@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.utils.BaseTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,17 +20,7 @@ import org.springframework.http.MediaType;
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends BaseTest {
     @Autowired
-    StationRepository stationRepository;
-
-    @Autowired
     LineRepository lineRepository;
-
-    private void 역_생성(){
-        stationRepository.save(new Station("서울대입구역"));
-        stationRepository.save(new Station("낙성대역"));
-        stationRepository.save(new Station("시청역"));
-        stationRepository.save(new Station("영등포역"));
-    }
 
     /**
      * When 지하철 노선을 생성하면
@@ -41,7 +29,6 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선 생성")
     @Test
     void 지하철_노선_생성() {
-        역_생성();
         ExtractableResponse<Response> response = createLine("2호선", "bg-green-800", 1, 2, 500);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -58,7 +45,6 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선 목록 조회")
     @Test
     void 지하철노선_목록_조회() {
-        역_생성();
         createLine("1호선", "bg-blue-200", 3, 4, 400);
         createLine("2호선", "bg-green-800", 1, 2, 500);
 
@@ -75,7 +61,6 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선 조회")
     @Test
     void 지하철노선_조회() {
-        역_생성();
         Long lineId = createLine("2호선", "bg-green-800", 1, 2, 500).jsonPath().getLong("id");
 
         ExtractableResponse<Response> response = getLine(lineId);
@@ -97,7 +82,6 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선 수정")
     @Test
     void 지하철노선_수정() {
-        역_생성();
         Long lineId = createLine("2호선", "bg-green-800", 1, 2, 500).jsonPath().getLong("id");
 
         updateLine(lineId, "3호선", "bg-orange-900");
@@ -115,7 +99,6 @@ public class LineAcceptanceTest extends BaseTest {
     @DisplayName("지하철 노선 삭제")
     @Test
     void 지하철노선_삭제() {
-        역_생성();
         Long lineId = createLine("2호선", "bg-green-800", 1, 2, 500).jsonPath().getLong("id");
 
         deleteLine(lineId);
