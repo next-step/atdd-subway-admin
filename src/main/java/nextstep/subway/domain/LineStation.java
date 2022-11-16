@@ -98,7 +98,13 @@ public class LineStation {
 
     public void validateLength(int distance) {
         if (this.distance <= distance) {
-            throw new IllegalArgumentException("기존역 사이에 같은길이의 역을 등록할 수 없습니다.");
+            throw new IllegalArgumentException("기존역 사이에 같은 길이의 역을 등록할 수 없습니다.");
+        }
+    }
+
+    public void validateAlreadyExists(Station upStation, Station downStation) {
+        if (this.upStation.equals(upStation) && this.downStation.equals(downStation)) {
+            throw new IllegalArgumentException("이미 존재하는 노선입니다.");
         }
     }
 }

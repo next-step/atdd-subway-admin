@@ -41,20 +41,22 @@ public abstract class LineStationTestFixtures {
     }
 
     public static ExtractableResponse<Response> 새로운_역_하행_종점으로_등록(String upStationId, String downStationId,
-                                                                 String distance,
-                                                                 String pathVariable) {
+                                                                 String distance, String pathVariable) {
         return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
     }
 
     public static ExtractableResponse<Response> 새로운_역_상행_종점으로_등록(String upStationId, String downStationId,
-                                                                 String distance,
-                                                                 String pathVariable) {
+                                                                 String distance, String pathVariable) {
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
+    }
+
+    public static ExtractableResponse<Response> 기존노선과_동일하게_상행_하행역을_등록(String upStationId, String downStationId,
+                                                                      String distance, String pathVariable) {
         return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
     }
 
     public static ExtractableResponse<Response> 기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록(String upStationId,
-                                                                                String downStationId,
-                                                                                String distance,
+                                                                                String downStationId, String distance,
                                                                                 String pathVariable) {
         return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
     }

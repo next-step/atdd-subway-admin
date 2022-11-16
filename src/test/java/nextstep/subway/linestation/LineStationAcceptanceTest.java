@@ -2,6 +2,7 @@ package nextstep.subway.linestation;
 
 import static nextstep.subway.linestation.LineStationTestFixtures.기존_구간과_상행_종점으로_등록한_구간이_함께_조회됨;
 import static nextstep.subway.linestation.LineStationTestFixtures.기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨;
+import static nextstep.subway.linestation.LineStationTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
 import static nextstep.subway.linestation.LineStationTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
 import static nextstep.subway.linestation.LineStationTestFixtures.등록이_불가하다;
 import static nextstep.subway.linestation.LineStationTestFixtures.새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정;
@@ -115,6 +116,26 @@ class LineStationAcceptanceTest extends TestFixtures {
 
         //when
         ExtractableResponse<Response> response = 기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록(stationId1, stationId3, "8", lineId);
+
+        //then
+        등록이_불가하다(response);
+    }
+
+    /**
+     * Given 노선이 등록되어 있다.
+     * <p>
+     * When 기존노선과 동일하게 상행 하행역을 등록하면
+     * <p>
+     * Then 등록이_불가하다.
+     */
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
+    @Test
+    void validateAlreadyExists() {
+        //given
+        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId2, "7", "id");
+
+        //when
+        ExtractableResponse<Response> response = 기존노선과_동일하게_상행_하행역을_등록(stationId1, stationId2, "4", lineId);
 
         //then
         등록이_불가하다(response);
