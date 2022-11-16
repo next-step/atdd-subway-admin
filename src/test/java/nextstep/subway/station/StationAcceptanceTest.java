@@ -11,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext
 public class StationAcceptanceTest {
     @LocalServerPort
     int port;
@@ -131,7 +133,7 @@ public class StationAcceptanceTest {
             .then().log().all();
     }
 
-    private static ValidatableResponse createStation(String name) {
+    public static ValidatableResponse createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
