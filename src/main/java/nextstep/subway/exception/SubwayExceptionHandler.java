@@ -12,6 +12,10 @@ public class SubwayExceptionHandler {
     public ResponseEntity<String> notFoundStationException(NotFoundStation ex) {
         return ResponseEntity.badRequest().body("not found station");
     }
+    @ExceptionHandler({NotFoundLine.class})
+    public ResponseEntity<String> notFoundLineException(NotFoundStation ex) {
+        return ResponseEntity.badRequest().body("not found line");
+    }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity handleIllegalArgsException() {

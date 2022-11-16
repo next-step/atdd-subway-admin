@@ -28,6 +28,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     private static final String DISTANCE = "distance";
     private static final String UP_STATION = "upStationId";
     private static final String DOWN_STATION = "downStationId";
+    private static final String LINE_ID = "id";
 
     @Autowired
     private StationRepository stationRepository;
@@ -60,8 +61,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findResponse = findAllLine();
         assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         JsonPath responseBody = findResponse.jsonPath();
-        assertThat(findResponseByKey(responseBody, LINE_NAME)).containsExactly("분당선");
-        assertThat(findResponseByKey(responseBody, COLOR)).containsExactly("red");
+        assertThat(findListResponseByKey(responseBody, LINE_NAME)).containsExactly("분당선");
+        assertThat(findListResponseByKey(responseBody, COLOR)).containsExactly("red");
 
     }
 
@@ -100,14 +101,44 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
         //then
         JsonPath responseBody = findResponse.jsonPath();
-        assertThat(findResponseByKey(responseBody, LINE_NAME)).containsExactly("분당선", "타르코프");
-        assertThat(findResponseByKey(responseBody, COLOR)).containsExactly("red", "yellow");
+        assertThat(findListResponseByKey(responseBody, LINE_NAME)).containsExactly("분당선", "타르코프");
+        assertThat(findListResponseByKey(responseBody, COLOR)).containsExactly("red", "yellow");
+
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 노선 목록 조회")
+    @Test
+    void findAllLineByName() {
+        //give
+        ExtractableResponse<Response> saveResponse = createLine("분당선", "red", upStation.getId(), downStation.getId(), 10);
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long id = saveResponse.jsonPath().getLong(LINE_ID);
+        //when
+        ExtractableResponse<Response> findResponse = findById(id);
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        //then
+        JsonPath responseBody = findResponse.jsonPath();
+        assertThat(findResponseByKey(responseBody, LINE_NAME)).isEqualTo("분당선");
+        assertThat(findResponseByKey(responseBody, COLOR)).isEqualTo("red");
 
     }
 
     private ExtractableResponse<Response> findAllLine() {
         return RestAssured.given().log().all()
                 .when().get(LINE_MAIN_PATH)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> findById(Long id) {
+        return RestAssured.given().log().all()
+                .when().get(LINE_MAIN_PATH + "/" + id)
                 .then().log().all()
                 .extract();
     }
@@ -127,7 +158,11 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private List<String> findResponseByKey(JsonPath jsonPath, String key) {
+    private List<String> findListResponseByKey(JsonPath jsonPath, String key) {
         return jsonPath.getList(key, String.class);
+    }
+
+    private String findResponseByKey(JsonPath jsonPath, String key) {
+        return jsonPath.get(key);
     }
 }
