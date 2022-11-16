@@ -59,7 +59,7 @@ public class LineService {
 
     private Line findLineById(Long id) throws NotFoundException {
         return lineRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(id + ErrMsg.CANNOT_FIND_LINE)
+                () -> new NotFoundException(ErrMsg.notFoundLine(id))
         );
     }
 }

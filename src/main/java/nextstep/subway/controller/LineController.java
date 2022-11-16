@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@RequestMapping("/lines")
 @RestController
 public class LineController {
     private LineService lineService;
@@ -26,29 +28,29 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping("/")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
-    @GetMapping("/lines/{id}")
-    public ResponseEntity showLine(@PathVariable Long id) throws NotFoundException {
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> showLine(@PathVariable Long id) throws NotFoundException {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
-    @PatchMapping("/lines/{id}")
-    public ResponseEntity update(@PathVariable Long id, @RequestBody LineRequest lineRequest) throws NotFoundException {
+    @PatchMapping("/{id}")
+    public ResponseEntity<LineResponse> update(@PathVariable Long id, @RequestBody LineRequest lineRequest) throws NotFoundException {
         LineResponse line = lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().body(line);
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) throws NotFoundException {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
