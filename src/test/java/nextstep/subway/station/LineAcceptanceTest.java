@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성_성공;
+import static nextstep.subway.station.StationAcceptanceTest.지하철역_생성_성공_id_응답;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.HttpHeaders.LOCATION;
 
@@ -48,12 +48,13 @@ public class LineAcceptanceTest {
     void 노선_생성() {
 
         // given:
-        // 지하철역 두개 생성
-        지하철역_두개_생성_성공();
+        // 삼전역, 강남역 생성
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
 
         // when:
         // 노선 생성
-        Map<String, Object> lineParams = 노선_생성_요청파라미터("line", "bg-red-600");
+        Map<String, Object> lineParams = 노선_생성_요청파라미터("line", "bg-red-600", 삼전역_id, 강남역_id);
         ExtractableResponse<Response> response = 노선_생성_성공(lineParams);
 
         //then:
@@ -69,12 +70,13 @@ public class LineAcceptanceTest {
     @Test
     void 노선_목록() {
         // given:
-        // 지하철역 두개 생성
-        지하철역_두개_생성_성공();
+        // 삼전역, 강남역 생성
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
 
         // 분당선, 경인선 생성
-        Map<String, Object> boondangLine = 노선_생성_요청파라미터("boondangLine", "bg-red-600");
-        Map<String, Object> kyunginLine = 노선_생성_요청파라미터("kyunginLine", "bg-green-600");
+        Map<String, Object> boondangLine = 노선_생성_요청파라미터("boondangLine", "bg-red-600", 삼전역_id, 강남역_id);
+        Map<String, Object> kyunginLine = 노선_생성_요청파라미터("kyunginLine", "bg-green-600", 삼전역_id, 강남역_id);
         LineResponse boondangResponse = 노선_생성_성공(boondangLine).body().jsonPath().getObject("", LineResponse.class);
         LineResponse kyunginResponse = 노선_생성_성공(kyunginLine).body().jsonPath().getObject("", LineResponse.class);
 
@@ -98,11 +100,12 @@ public class LineAcceptanceTest {
     void 노선_단건_조회() {
 
         // given:
-        // 지하철역 두개 생성
-        지하철역_두개_생성_성공();
+        // 삼전역, 강남역 생성
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
 
         // 분당선 생성
-        Map<String, Object> boondangLine = 노선_생성_요청파라미터("boondangLine", "bg-red-600");
+        Map<String, Object> boondangLine = 노선_생성_요청파라미터("boondangLine", "bg-red-600", 삼전역_id, 강남역_id);
         ExtractableResponse<Response> createResponse = 노선_생성_성공(boondangLine);
         String boondangGetUrl = createResponse.headers().get(LOCATION).getValue();
 
@@ -124,19 +127,22 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_수정() {
         // given:
-        // 지하철역 두개 생성
-        지하철역_두개_생성_성공();
+        // 삼전역, 강남역 생성
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
 
         // 분당선 생성
-        Map<String, Object> boondangLine = 노선_생성_요청파라미터("boondangLine", "bg-red-600");
+        Map<String, Object> boondangLine = 노선_생성_요청파라미터("boondangLine", "bg-red-600", 삼전역_id, 강남역_id);
         ExtractableResponse<Response> createResponse = 노선_생성_성공(boondangLine);
         String boondangGetUrl = createResponse.headers().get(LOCATION).getValue();
 
         // when:
         // 분당선 수정
         Map<String, String> updateRequest = new HashMap<>();
-        updateRequest.put("name", "다른라인");
-        updateRequest.put("color", "bg-blue-600");
+        String updateName = "다른라인";
+        String updateColor = "bg-blue-600";
+        updateRequest.put("name", updateName);
+        updateRequest.put("color", updateColor);
         ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(updateRequest)
@@ -144,7 +150,13 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .extract();
 
-        assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        // 수정 된 분당선 조회
+        ExtractableResponse<Response> updatedLine = 노선_조회(boondangGetUrl);
+        String updatedName = updatedLine.body().jsonPath().get("name");
+        String updatedColor = updatedLine.body().jsonPath().get("color");
+
+        assertThat(updatedName).isEqualTo(updateName);
+        assertThat(updatedColor).isEqualTo(updateColor);
     }
 
     /**
@@ -156,11 +168,12 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_삭제() {
         // given:
-        // 지하철역 두개 생성
-        지하철역_두개_생성_성공();
+        // 삼전역, 강남역 생성
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
 
         // 분당선 생성
-        Map<String, Object> boondangLine = 노선_생성_요청파라미터("boondangLine", "bg-red-600");
+        Map<String, Object> boondangLine = 노선_생성_요청파라미터("boondangLine", "bg-red-600", 삼전역_id, 강남역_id);
         ExtractableResponse<Response> createResponse = 노선_생성_성공(boondangLine);
         String boondangGetUrl = createResponse.headers().get(LOCATION).getValue();
 
@@ -172,21 +185,18 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    void 지하철역_두개_생성_성공() {
-        Map<String, String> samjeonStation = new HashMap<>();
-        samjeonStation.put("name", "삼전역");
-        Map<String, String> gangnamStation = new HashMap<>();
-        gangnamStation.put("name", "강남역");
-        지하철역_생성_성공(samjeonStation);
-        지하철역_생성_성공(gangnamStation);
+    long 지하철역_생성(String name) {
+        final Map<String, String> param = new HashMap<>();
+        param.put("name", name);
+        return 지하철역_생성_성공_id_응답(param);
     }
 
-    Map<String, Object> 노선_생성_요청파라미터(String name, String color) {
+    Map<String, Object> 노선_생성_요청파라미터(String name, String color, long upStationId, long downStationId) {
         Map<String, Object> boondangLine = new HashMap<>();
         boondangLine.put("name", name);
         boondangLine.put("color", color);
-        boondangLine.put("upStationId", 1);
-        boondangLine.put("downStationId", 2);
+        boondangLine.put("upStationId", upStationId);
+        boondangLine.put("downStationId", downStationId);
         boondangLine.put("distance", 10);
         return boondangLine;
     }
