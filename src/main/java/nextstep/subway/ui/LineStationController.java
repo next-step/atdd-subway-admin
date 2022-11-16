@@ -2,7 +2,6 @@ package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
 import nextstep.subway.application.LineStationService;
-import nextstep.subway.domain.LineStation;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.ResponseEntity;

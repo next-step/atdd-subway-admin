@@ -36,12 +36,16 @@ public class LineStation extends BaseEntity {
     }
 
     public void updateLineStation(Station preStation, Station station, Integer distance){
-        if(preStation!=null && this.distance <= distance){
-            throw new IllegalArgumentException("신규 등록 구간 거리는 기존 거리보다 크면 안됩니다.");
-        }
+        validateDistance(preStation, distance);
         this.preStation = preStation;
         this.station = station;
         this.distance = distance;
+    }
+
+    private void validateDistance(Station preStation, Integer distance) {
+        if(preStation !=null && this.distance <= distance){
+            throw new IllegalArgumentException("신규 등록 구간 거리는 기존 거리보다 크면 안됩니다.");
+        }
     }
 
     public Long getId() {
