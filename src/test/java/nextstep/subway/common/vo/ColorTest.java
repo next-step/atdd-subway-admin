@@ -10,12 +10,14 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("색상")
-class ColorTest {
+public class ColorTest {
+
+    public static final Color 신분당선_색상 = new Color("red");
 
     @DisplayName("색상 생성")
     @Test
     void constructor() {
-        assertThatNoException().isThrownBy(() -> new Name("blue"));
+        assertThatNoException().isThrownBy(() -> new Color("red"));
     }
 
     @DisplayName("null 이거나 empty 일 수 없다.")

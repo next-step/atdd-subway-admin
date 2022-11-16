@@ -20,8 +20,14 @@ public class Line {
     private Color color;
 
     @Embedded
-    private Sections sections = new Sections();
+    private final Sections sections = new Sections();
 
     protected Line() {
+    }
+
+    public Line(long id, Name name, Color color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
     }
 }

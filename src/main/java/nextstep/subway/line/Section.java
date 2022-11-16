@@ -26,4 +26,12 @@ public class Section {
 
     @Embedded
     private Distance distance;
+
+    public Section(long id, Line line, Station upStation, Station downStation, Distance distance) {
+        this.id = id;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
 }

@@ -10,7 +10,9 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("이름")
-class NameTest {
+public class NameTest {
+
+    public static final Name 신분당선_이름 = new Name("신분당선");
 
     @DisplayName("이름 생성")
     @Test
