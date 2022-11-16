@@ -33,7 +33,6 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
-        // TODO: 지하철 구간 관련 유효성 처리
         sections.addSection(section);
         section.changeLine(this);
     }

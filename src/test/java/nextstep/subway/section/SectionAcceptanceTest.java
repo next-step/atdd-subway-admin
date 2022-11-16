@@ -35,9 +35,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 지하철 구간 등록 요청
      * Then 지하철 노선에 지하철역 등록됨
      */
-    @DisplayName("노선에 구간을 등록(역 사이에 새로운 역을 등록할 경우)한다.")
+    @DisplayName("역 사이에 새로운 역(상행연결)을 등록할 경우")
     @Test
-    void add_section() {
+    void connected_up_station() {
         // given
         ExtractableResponse<Response> 사당역 = 지하철역_생성_요청("사당역");
         SectionRequest 신림_사당_구간_요청 = new SectionRequest(식별_아이디_조회(신림역), 식별_아이디_조회(사당역), 5);
@@ -45,6 +45,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // when
         ExtractableResponse<Response> 신림_사당_구간_응답 = 지하철_구간_생성_요청(
                 식별_아이디_조회(신림_강남_노선), 신림_사당_구간_요청
+        );
+
+        // then
+        요청_성공(신림_사당_구간_응답);
+    }
+
+    @DisplayName("역 사이에 새로운 역(하행연결)을 등록할 경우")
+    @Test
+    void connected_down_station() {
+        // given
+        ExtractableResponse<Response> 사당역 = 지하철역_생성_요청("사당역");
+        SectionRequest 사당_강남_구간_요청 = new SectionRequest(식별_아이디_조회(사당역), 식별_아이디_조회(강남역), 5);
+
+        // when
+        ExtractableResponse<Response> 신림_사당_구간_응답 = 지하철_구간_생성_요청(
+                식별_아이디_조회(신림_강남_노선), 사당_강남_구간_요청
         );
 
         // then
@@ -97,8 +113,18 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     @Test
-    void test() {
+    void between_station_distance_over() {
+        // given
+        ExtractableResponse<Response> 사당역 = 지하철역_생성_요청("사당역");
+        SectionRequest 사당_강남_구간_요청 = new SectionRequest(식별_아이디_조회(사당역), 식별_아이디_조회(강남역), 10);
 
+        // when
+        ExtractableResponse<Response> 신림_사당_구간_응답 = 지하철_구간_생성_요청(
+                식별_아이디_조회(신림_강남_노선), 사당_강남_구간_요청
+        );
+
+        // then
+        요청_실패(신림_사당_구간_응답);
     }
 
     /**

@@ -5,8 +5,7 @@ import javax.persistence.*;
 import java.util.Objects;
 import java.util.stream.Stream;
 
-import static nextstep.subway.exception.ErrorMessage.DISTANCE_CANNOT_BE_ZERO;
-import static nextstep.subway.exception.ErrorMessage.SAME_SUBWAY_SECTION_ERROR;
+import static nextstep.subway.exception.ErrorMessage.*;
 
 @Entity
 public class Section {
@@ -57,6 +56,23 @@ public class Section {
         return Stream.of(upStation, downStation);
     }
 
+    public void connectUpStationToDownStation(Section section) {
+        updateDistance(section.getDistance());
+        this.upStation = section.downStation;
+    }
+
+    public void connectDownStationToUpStation(Section section) {
+        updateDistance(section.getDistance());
+        this.downStation = section.upStation;
+    }
+
+    private void updateDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException(DISTANCE_BETWEEN_STATION_OVER.getMessage());
+        }
+        this.distance -= distance;
+    }
+
     public Long getId() {
         return id;
     }
@@ -71,18 +87,6 @@ public class Section {
 
     public int getDistance() {
         return distance;
-    }
-
-    public Line getLine() {
-        return line;
-    }
-
-    public void connectUpStationToDownStation(Section section) {
-        this.upStation = section.downStation;
-    }
-
-    public void connectDownStationToUpStation(Section section) {
-        this.downStation = section.upStation;
     }
 
 }
