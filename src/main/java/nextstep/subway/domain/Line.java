@@ -58,4 +58,9 @@ public class Line {
         stations.add(lastSection.getDownStation().toMapForOpen());
         return stations;
     }
+
+    public void update(Line updateLine) {
+        this.name = updateLine.name;
+        this.color = updateLine.color;
+    }
 }

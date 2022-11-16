@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -114,7 +115,19 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
+        // Given
+        Station 강남역 = saveStation("강남역");
+        Station 양재역 = saveStation("양재역");
+        long lineId = createLine("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
+        // When
+        ValidatableResponse response = updateLine(lineId, "구분당선", "bg-blue-600");
+
+        // Then
+        assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ValidatableResponse validatableResponse = fetchLine(lineId);
+        System.out.println(validatableResponse.extract().jsonPath());
     }
 
     /*
@@ -153,6 +166,19 @@ public class LineAcceptanceTest {
         return RestAssured.given().log().all()
                 .pathParam("id", lineId)
                 .when().get("/lines/{id}")
+                .then().log().all();
+    }
+
+    private ValidatableResponse updateLine(long lineId, String name, String color) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .pathParam("id", lineId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}")
                 .then().log().all();
     }
 }

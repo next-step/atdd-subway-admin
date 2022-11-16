@@ -4,6 +4,7 @@ import nextstep.subway.domain.*;
 import nextstep.subway.dto.CreateLineDto;
 import nextstep.subway.dto.DtoConverter;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.UpdateLineDto;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -11,7 +12,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
 public class LineService {
 
     private final LineRepository lineRepository;
@@ -23,21 +23,24 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public Line register(CreateLineDto dto) {
-        Station upStation = findStation(dto.getUpStationId());
-        Station downStation = findStation(dto.getDownStationId());
+        Station upStation = findStationById(dto.getUpStationId());
+        Station downStation = findStationById(dto.getDownStationId());
         Section section = new Section(upStation, downStation, dto.getDistance());
         Line line = DtoConverter.toLineEntity(dto);
         line.addSection(section);
         return lineRepository.save(line);
     }
 
-    private Station findStation(long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 역은 존재하지 않습니다."));
+    @Transactional
+    public void update(long id, UpdateLineDto dto) {
+        Line line = findLineById(id);
+        line.update(DtoConverter.toLineEntity(dto));
     }
 
-    public List<LineResponse> findAllLines() {
+    @Transactional(readOnly = true)
+    public List<LineResponse> fetchAllLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
@@ -45,9 +48,19 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 노선은 존재하지 않습니다."));
+    private Station findStationById(long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 역은 존재하지 않습니다."));
+    }
+
+    @Transactional(readOnly = true)
+    public LineResponse fetchLine(long id) {
+        Line line = findLineById(id);
         return LineResponse.of(line);
+    }
+
+    private Line findLineById(long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 노선은 존재하지 않습니다."));
     }
 }

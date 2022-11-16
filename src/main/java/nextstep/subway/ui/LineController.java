@@ -4,6 +4,7 @@ import nextstep.subway.application.LineService;
 import nextstep.subway.domain.Line;
 import nextstep.subway.dto.CreateLineDto;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.UpdateLineDto;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,11 +30,17 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        return ResponseEntity.ok().body(lineService.findAllLines());
+        return ResponseEntity.ok().body(lineService.fetchAllLines());
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable("id") long id) {
-        return ResponseEntity.ok().body(lineService.findLine(id));
+        return ResponseEntity.ok().body(lineService.fetchLine(id));
+    }
+
+    @PutMapping("/lines/{id}")
+    public ResponseEntity<Void> updateLine(@PathVariable("id") long id, @RequestBody UpdateLineDto dto) {
+        lineService.update(id, dto);
+        return ResponseEntity.ok().build();
     }
 }
