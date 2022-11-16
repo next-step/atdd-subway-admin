@@ -31,13 +31,28 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    public int size(){
+    public int size() {
         return this.sections.size();
     }
 
-    public void add(Section section){
+    public void add(Section section) {
+        validateAddContainsAllStation(section);
+        validateAddNonContainsStation(section);
         sections.stream().forEach(s -> s.update(section));
         sections.add(section);
+    }
+
+    private void validateAddContainsAllStation(Section section) {
+        if (getStations().containsAll(section.getStations())) {
+            throw new IllegalArgumentException("이미 모든 역이 존재 합니다.");
+        }
+    }
+
+    private void validateAddNonContainsStation(Section section) {
+        if (getStations().stream()
+                .noneMatch(station -> section.getStations().contains(station))) {
+            throw new IllegalArgumentException("등록하려는 구간의 상행역과 하행역 둘 중 하나라도 기존 구간의 역에 포함되지 않으면 구간을 등록할 수 없습니다.");
+        }
     }
 
     public List<Station> getStations() {

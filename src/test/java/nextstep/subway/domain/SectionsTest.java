@@ -13,15 +13,15 @@ public class SectionsTest {
     @DisplayName("구간 추가 성공")
     void add() {
         // given
-        Station upStation = Station.from("잠실역");
-        Station downStation = Station.from("장지역");
+        Station upStation = Station.of(1L, "잠실역");
+        Station downStation = Station.of(2L, "장지역");
         Integer distance = 10;
         Section section = Section.of(upStation, downStation, distance);
         Sections sections = Sections.from(Collections.singletonList(section));
 
         // given
-        Station addStation = Station.from("문정역");
-        Integer addDistance = 10;
+        Station addStation = Station.of(3L, "문정역");
+        Integer addDistance = 5;
         Section addSection = Section.of(upStation, addStation, addDistance);
 
         // when

@@ -132,6 +132,16 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 등록할 수 없다")
     public void 새로운_역_등록_실패_이미_존재() {
+        // given
+        Long 잠실역_id = 지하철역_생성("잠실역").jsonPath().getLong("id");
+        Long 가락시장역_id = 지하철역_생성("가락시장역").jsonPath().getLong("id");
+        Long 노선_id = 지하철노선_생성("8호선", "분홍색", 잠실역_id, 가락시장역_id, 10).jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> 지하철구간_추가_결과 = 지하철구간_추가(노선_id, 가락시장역_id, 가락시장역_id, 3);
+
+        // then
+        assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -143,6 +153,18 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     @Test
     @DisplayName("노선에 새롭게 구간등록 하려는 상행역과 하행역 중 하나라도 포함되어 있지 않으면 등록할 수 없다")
     public void 새로운_역_등록_실패_포함_안됨() {
+        // given
+        Long 잠실역_id = 지하철역_생성("잠실역").jsonPath().getLong("id");
+        Long 가락시장역_id = 지하철역_생성("가락시장역").jsonPath().getLong("id");
+        Long 노선_id = 지하철노선_생성("8호선", "분홍색", 잠실역_id, 가락시장역_id, 10).jsonPath().getLong("id");
+        Long 석촌역_id = 지하철역_생성("석촌역").jsonPath().getLong("id");
+        Long 문정역_id = 지하철역_생성("문정역").jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> 지하철구간_추가_결과 = 지하철구간_추가(노선_id, 석촌역_id, 문정역_id, 3);
+
+        // then
+        assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
 }
