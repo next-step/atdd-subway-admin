@@ -65,7 +65,7 @@ public class LineAcceptanceTest {
         String location = insertLineSuccess(line_1).header("Location");
 
         // then
-        String lineName = selectLine(null, location).extract().jsonPath().get("name");
+        String lineName = selectLine(location).extract().jsonPath().get("name");
         assertThat(lineName).isEqualTo(line_1.getName());
     }
 
@@ -104,7 +104,7 @@ public class LineAcceptanceTest {
         String location = insertLineSuccess(line_1).header("Location");
 
         // when
-        String lineName = selectLine(null, location).extract().jsonPath().get("name");
+        String lineName = selectLine(location).extract().jsonPath().get("name");
 
         // then
         assertThat(lineName).isNotNull();
@@ -123,10 +123,10 @@ public class LineAcceptanceTest {
         String location = insertLineSuccess(line_1).header("Location");
 
         // when
-        updateLineSuccess(null, location, line_2);
+        updateLineSuccess(location, line_2);
 
         // then
-        String lineName = selectLine(null, location).extract().jsonPath().get("name");
+        String lineName = selectLine(location).extract().jsonPath().get("name");
         assertThat(lineName).isEqualTo(line_2.getName());
     }
 
@@ -142,16 +142,16 @@ public class LineAcceptanceTest {
         String location = insertLineSuccess(line_1).header("Location");
 
         // when
-        deleteLineSuccess(null, location);
+        deleteLineSuccess(location);
 
         // then
-        String lineName = selectLine(null, location).extract().jsonPath().get("name");
+        String lineName = selectLine(location).extract().jsonPath().get("name");
         assertThat(lineName).isNullOrEmpty();
     }
 
-    private ValidatableResponse selectLine(Long id, String location) {
+    private ValidatableResponse selectLine(String location) {
         return RestAssured.given().log().all()
-                .when().get(generateUrl(id, location))
+                .when().get(location)
                 .then().log().all();
     }
 
@@ -175,36 +175,29 @@ public class LineAcceptanceTest {
                 .then().log().all();
     }
 
-    private void updateLineSuccess(Long id, String location, LineRequest lineRequest) {
-        ExtractableResponse<Response> response = updateLine(id, location, lineRequest).extract();
+    private void updateLineSuccess(String location, LineRequest lineRequest) {
+        ExtractableResponse<Response> response = updateLine(location, lineRequest).extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    private ValidatableResponse updateLine(Long id, String location, LineRequest lineRequest) {
+    private ValidatableResponse updateLine(String location, LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(generateUrl(id, location))
+                .when().put(location)
                 .then().log().all();
     }
 
-    private void deleteLineSuccess(Long id, String location) {
-        ExtractableResponse<Response> response = deleteLine(id, location).extract();
+    private void deleteLineSuccess(String location) {
+        ExtractableResponse<Response> response = deleteLine(location).extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-    private ValidatableResponse deleteLine(Long id, String location) {
+    private ValidatableResponse deleteLine(String location) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(generateUrl(id, location))
+                .when().delete(location)
                 .then().log().all();
-    }
-
-    private String generateUrl(Long id, String location) {
-        if (location != null) {
-            return location;
-        }
-        return "/line/" + id;
     }
 
 }
