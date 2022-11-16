@@ -4,6 +4,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.RestAssuredSetUp;
 import nextstep.subway.dto.SectionRequest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -170,10 +171,66 @@ public class SectionAcceptanceTest extends RestAssuredSetUp {
         지하철_구간_등록(lineId, new SectionRequest(hongDaeStationId, gangnamStationId, 2));
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_삭제(lineId,samsungStationId);
+        ExtractableResponse<Response> response = 지하철_구간_삭제(lineId, samsungStationId);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 수 없음")
+    @Test
+    void removeSectionWithLastSectionInLine() {
+        //given
+        long jamSilStationId = 지하철_역_등록("잠실역").jsonPath().getLong("id");
+        long hongDaeStationId = 지하철_역_등록("홍대입구역").jsonPath().getLong("id");
+        long lineId = 지하철_노선_등록("2호선", "green", jamSilStationId, hongDaeStationId, 10)
+                .jsonPath()
+                .getLong("id");
+
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(lineId, jamSilStationId);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("종점이 제거 될 경우 다음으로 오던 역이 종점이 됨")
+    @Test
+    void removeSectionWithEdgeStation() {
+        //given
+        long bangbaeStationId = 지하철_역_등록("방배역").jsonPath().getLong("id");
+        long jamSilStationId = 지하철_역_등록("잠실역").jsonPath().getLong("id");
+        long hongDaeStationId = 지하철_역_등록("홍대입구역").jsonPath().getLong("id");
+        long lineId = 지하철_노선_등록("2호선", "green", jamSilStationId, hongDaeStationId, 10)
+                .jsonPath()
+                .getLong("id");
+        지하철_구간_등록(lineId, new SectionRequest(jamSilStationId, bangbaeStationId, 4));
+
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(lineId, jamSilStationId);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @Disabled
+    @DisplayName("중간역이 제거될 경우 재배치를 함")
+    @Test
+    void removeSectionWithRearrage() {
+        //given
+        long bangbaeStationId = 지하철_역_등록("방배역").jsonPath().getLong("id");
+        long jamSilStationId = 지하철_역_등록("잠실역").jsonPath().getLong("id");
+        long hongDaeStationId = 지하철_역_등록("홍대입구역").jsonPath().getLong("id");
+        long lineId = 지하철_노선_등록("2호선", "green", jamSilStationId, hongDaeStationId, 10)
+                .jsonPath()
+                .getLong("id");
+        지하철_구간_등록(lineId, new SectionRequest(hongDaeStationId, bangbaeStationId, 5));
+
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_삭제(lineId, hongDaeStationId);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
 }
