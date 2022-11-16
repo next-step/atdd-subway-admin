@@ -3,7 +3,8 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.ErrorMessage.UP_STATION_AND_DOWN_STATION_ENROLLMENT;
@@ -17,8 +18,9 @@ public class Sections {
 
     public void addSection(Section section) {
         if (!sections.isEmpty()) {
-            // TODO: 구간 중복 또는 길이 관련 유효성 처리
             validateStations(section);
+            ifConnectedUpStation(section);
+            ifConnectedDownStation(section);
         }
         sections.add(section);
     }
@@ -47,6 +49,22 @@ public class Sections {
                 .flatMap(Section::streamOfStation)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    private void ifConnectedUpStation(Section addSection) {
+        for (Section section : sections) {
+            if (section.getUpStation().equals(addSection.getUpStation())) {
+                section.connectUpStationToDownStation(addSection);
+            }
+        }
+    }
+
+    private void ifConnectedDownStation(Section addSection) {
+        for (Section section : sections) {
+            if (section.getDownStation().equals(addSection.getDownStation())) {
+                section.connectDownStationToUpStation(addSection);
+            }
+        }
     }
 
 }

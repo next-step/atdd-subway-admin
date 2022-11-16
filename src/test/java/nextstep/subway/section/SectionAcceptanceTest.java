@@ -35,7 +35,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * When 지하철 노선에 지하철 구간 등록 요청
      * Then 지하철 노선에 지하철역 등록됨
      */
-    @DisplayName("노선에 구간을 등록한다.")
+    @DisplayName("노선에 구간을 등록(역 사이에 새로운 역을 등록할 경우)한다.")
     @Test
     void add_section() {
         // given
@@ -54,7 +54,39 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
     @Test
     void new_station_up_station_add() {
+        // given
+        ExtractableResponse<Response> 신도림역 = 지하철역_생성_요청("신도림역");
+        SectionRequest 신도림_신림_구간_요청 = new SectionRequest(식별_아이디_조회(신도림역), 식별_아이디_조회(신림역), 5);
 
+        // when
+        ExtractableResponse<Response> 신도림_신림_구간_응답 = 지하철_구간_생성_요청(
+                식별_아이디_조회(신림_강남_노선), 신도림_신림_구간_요청
+        );
+
+        // then
+        요청_성공(신도림_신림_구간_응답);
+    }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void new_station_down_station_add() {
+        // given
+        ExtractableResponse<Response> 잠실역 = 지하철역_생성_요청("잠실역");
+        ExtractableResponse<Response> 왕십리 = 지하철역_생성_요청("왕십리");
+        SectionRequest 잠실_강남_구간_요청 = new SectionRequest(식별_아이디_조회(강남역), 식별_아이디_조회(잠실역), 5);
+        SectionRequest 잠실_왕십리_구간_요청 = new SectionRequest(식별_아이디_조회(잠실역), 식별_아이디_조회(왕십리), 5);
+
+        // when
+        ExtractableResponse<Response> 신림_잠실_구간_응답 = 지하철_구간_생성_요청(
+                식별_아이디_조회(신림_강남_노선), 잠실_강남_구간_요청
+        );
+        ExtractableResponse<Response> 신림_왕십리_구간_응답 = 지하철_구간_생성_요청(
+                식별_아이디_조회(신림_강남_노선), 잠실_왕십리_구간_요청
+        );
+
+        // then
+        요청_성공(신림_잠실_구간_응답);
+        요청_성공(신림_왕십리_구간_응답);
     }
 
     @DisplayName("노선을 생성한 후 구간 설정 후 노선의 리스트 확인")

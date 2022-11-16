@@ -28,7 +28,6 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        Sections sections = line.getSections();
         return new LineResponse(
                 line.getId(),
                 line.getName(),
