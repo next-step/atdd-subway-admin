@@ -1,0 +1,61 @@
+package nextstep.subway.line;
+
+import static nextstep.subway.line.LineTestFixture.*;
+import static nextstep.subway.station.StationTestFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
+import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.utils.DatabaseCleanup;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.web.server.LocalServerPort;
+
+@DisplayName("노선 관련 기능")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class LineAcceptanceTest {
+    @LocalServerPort
+    int port;
+
+    @Autowired
+    DatabaseCleanup databaseCleanup;
+
+    @BeforeEach
+    public void setUp() {
+        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
+            RestAssured.port = port;
+        }
+        databaseCleanup.execute();
+    }
+
+    /**
+     * When 지하철 노선을 생성하면
+     * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
+     */
+    @DisplayName("지하철역을 생성한다.")
+    @Test
+    void createLine() {
+        // give
+        JsonPath upStation = requestCreateStation("지하철역").jsonPath();
+        JsonPath downStation = requestCreateStation("새로운지하철역").jsonPath();
+        // when
+        ExtractableResponse<Response> response =
+                requestCreateLine("신분당선","bg-red-600",upStation.getLong("id"), downStation.getLong("id"),10);
+        // then
+        LineResponse lineResponse = response.jsonPath().getObject(".", LineResponse.class);
+        assertAll(
+                () -> assertThat(lineResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineResponse.getColor()).isEqualTo("bg-red-600"),
+                () -> assertThat(lineResponse.getStations()).hasSize(2)
+        );
+    }
+
+
+}
