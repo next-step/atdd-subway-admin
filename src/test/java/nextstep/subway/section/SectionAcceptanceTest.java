@@ -218,6 +218,20 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         // Then
         assertThat(지하철역_구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+    /**
+     * Given 지하철 노선에 구간을 하나만 등록하고
+     * When 해당 역을 삭제하면
+     * Then 400 Bad Request를 응답한다.
+     */
+    @Test
+    void 구간이_하나인_노선에서_역을_제거_요청_예외() {
+        // When
+        지하철역_구간_삭제_요청(노선_ID, 상행역_ID);
+        ExtractableResponse<Response> 지하철역_구간_삭제_응답 = 지하철역_구간_삭제_요청(노선_ID, 하행역_ID);
+
+        // Then
+        assertThat(지하철역_구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
     private void 지하철역_구간_삭제_응답_검증(ExtractableResponse<Response> 지하철역_구간_삭제_응답) {
         assertThat(지하철역_구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

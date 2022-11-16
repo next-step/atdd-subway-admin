@@ -14,6 +14,7 @@ import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {
+    private static final int ONE_SECTION_SIZE = 0;
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = Lists.newArrayList();
 
@@ -40,13 +41,12 @@ public class Sections {
             sections.add(newSection);
             return;
         }
-
-        validate(newSection);
+        addValidate(newSection);
         sections.forEach(section -> section.update(newSection));
         sections.add(newSection);
     }
 
-    private void validate(Section section) {
+    private void addValidate(Section section) {
         validateHasStations(section);
         validateHasNotBothStations(section);
     }
@@ -71,6 +71,7 @@ public class Sections {
     }
 
     public void delete(Station station) {
+        deleteValidate();
         Optional<Section> prevSection = getPrevSection(station);
         Optional<Section> nextSection = getNextSection(station);
         if (isMiddleSection(prevSection, nextSection)) {
@@ -78,6 +79,12 @@ public class Sections {
             return;
         }
         deleteEndSection(prevSection, nextSection);
+    }
+
+    private void deleteValidate() {
+        if (sections.size() == ONE_SECTION_SIZE) {
+            throw new IllegalArgumentException(ErrorMessageConstant.LAST_STAION_NOT_DELETE);
+        }
     }
 
     private void deleteEndSection(Optional<Section> prevSection, Optional<Section> nextSection) {
