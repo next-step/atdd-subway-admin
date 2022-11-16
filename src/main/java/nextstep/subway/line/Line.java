@@ -1,5 +1,8 @@
 package nextstep.subway.line;
 
+import nextstep.subway.common.vo.Color;
+import nextstep.subway.common.vo.Name;
+
 import javax.persistence.*;
 
 @Entity
@@ -10,9 +13,11 @@ public class Line {
     @Column(name = "line_id")
     private Long id;
 
-    private String name;
+    @Embedded
+    private Name name;
 
-    private String color;
+    @Embedded
+    private Color color;
 
     protected Line() {
     }
