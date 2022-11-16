@@ -146,7 +146,7 @@ public class LineAcceptanceTest extends BaseAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철노선_조회_요청(Long lineId) {
+    public static ExtractableResponse<Response> 지하철노선_조회_요청(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + lineId)

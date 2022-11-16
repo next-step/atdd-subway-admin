@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import nextstep.subway.common.BaseAcceptanceTest;
@@ -58,7 +59,6 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         지하철_노선에_지하철역_등록_확인(지하철_노선에_지하철역_등록_응답, "강남역", "신규역", "광교역");
     }
 
-    // TODO: 메서드명과 display name이 같은 경우는 Display name을 제거하는지?
     /**
      * Given 지하철 노선에 구간을 등록하고
      * When 새로운 역을 상행 종점으로 등록하면
@@ -149,14 +149,12 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
     /**
      * Given 지하철 노선에 구간을 등록하고
      * When 구간을 삭제하면
-     * Then 해당 구간 정보는 삭제된다.
+     * Then 해당 구간 정보는 삭제되고 조회되지 않는다.
      */
     @DisplayName("구간을 삭제한다.")
     @Test
     void 상행역을_삭제한다() {
         // Given
-        // 강남역
-        // 광교역
         ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
         Long 신규역_ID = 응답_ID(신규역);
         ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
@@ -165,12 +163,41 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         ExtractableResponse<Response> 지하철역_구간_삭제_응답 = 지하철역_구간_삭제_요청(노선_ID, 신규역_ID);
 
         // Then
-        List<String> 지하철역_이름_목록_조회_응답 = 지하철역_이름_목록_조회_요청();
         지하철역_구간_삭제_응답_검증(지하철역_구간_삭제_응답);
+        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.지하철노선_조회_요청(노선_ID);
+        지하철_노선에_지하철역_등록_확인(지하철노선_조회_응답, "강남역", "광교역");
     }
 
     @Test
     void 하행역을_삭제한다() {
+        // Given
+        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
+        Long 신규역_ID = 응답_ID(신규역);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
+
+        // When
+        ExtractableResponse<Response> 지하철역_구간_삭제_응답 = 지하철역_구간_삭제_요청(노선_ID, 하행역_ID);
+
+        // Then
+        지하철역_구간_삭제_응답_검증(지하철역_구간_삭제_응답);
+        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.지하철노선_조회_요청(노선_ID);
+        지하철_노선에_지하철역_등록_확인(지하철노선_조회_응답, "신규역", "강남역");
+    }
+
+    @Test
+    void 중간역을_삭제한다() {
+        // given
+        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
+        Long 신규역_ID = 응답_ID(신규역);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
+
+        // when
+        ExtractableResponse<Response> 지하철역_구간_삭제_응답 = 지하철역_구간_삭제_요청(노선_ID, 상행역_ID);
+
+        // Then
+        지하철역_구간_삭제_응답_검증(지하철역_구간_삭제_응답);
+        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.지하철노선_조회_요청(노선_ID);
+        지하철_노선에_지하철역_등록_확인(지하철노선_조회_응답, "신규역", "광교역");
     }
 
     private void 지하철역_구간_삭제_응답_검증(ExtractableResponse<Response> 지하철역_구간_삭제_응답) {
@@ -185,13 +212,9 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
                 .extract();
     }
 
-    private void 지하철_노선에_지하철역_등록_확인(
-                ExtractableResponse<Response> response,
-                String upStationsName,
-                String downStationName,
-                String newStationName) {
-        List<String> list = response.jsonPath().getList("stations.name", String.class);
-        assertThat(list).contains(upStationsName, downStationName, newStationName);
+    private void 지하철_노선에_지하철역_등록_확인(ExtractableResponse<Response> response, String... expectStationNames) {
+        List<String> stationsNameList = response.jsonPath().getList("stations.name", String.class);
+        assertThat(stationsNameList).containsAll(Arrays.asList(expectStationNames));
     }
 
     private ExtractableResponse<Response> 지하철_노선에_지하철역_생성_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
