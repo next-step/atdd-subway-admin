@@ -48,4 +48,9 @@ public class LineService {
         lineRepository.save(line);
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
