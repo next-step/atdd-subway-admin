@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.DatabaseCleanup;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -47,10 +48,10 @@ public class LineAcceptanceTest {
      */
     @DisplayName("노선을 생성한다.")
     @Test
-    void createLine() {
+    void requestApiByCreateLine() {
         LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
 
-        ValidatableResponse response = createLine(request);
+        ValidatableResponse response = requestApiByCreateLine(request);
 
         assertStatusCode(response, HttpStatus.CREATED);
     }
@@ -63,15 +64,34 @@ public class LineAcceptanceTest {
     @DisplayName("노선 목록을 조회한다.")
     @Test
     void findAllLines () {
-        createLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
-        createLine(new LineRequest("분당선", "bg-red-600", 1L, 3L, 10));
+        requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
+        requestApiByCreateLine(new LineRequest("분당선", "bg-red-600", 1L, 3L, 10));
 
-        ValidatableResponse response = findAll();
+        ValidatableResponse response = requestApiByFindAllLines();
 
         assertThat(extractStations(response)).containsAnyOf("신분당선", "분당선");
     }
 
-    private static ValidatableResponse createLine(LineRequest request) {
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("노선을 조회한다.")
+    @Test
+    void getLine () {
+        Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+            .extract()
+            .as(LineResponse.class)
+            .getId();
+
+        ValidatableResponse response = requestApiByGetLine(lineId);
+
+        assertThat(extractStations(response)).containsAnyOf("신분당선");
+    }
+
+
+    private static ValidatableResponse requestApiByCreateLine(LineRequest request) {
         return RestAssured.given().log().all()
             .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -79,10 +99,16 @@ public class LineAcceptanceTest {
             .then().log().all();
     }
 
-    private static ValidatableResponse findAll() {
+    private static ValidatableResponse requestApiByFindAllLines() {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/lines")
+            .then().log().all();
+    }
+
+    private static ValidatableResponse requestApiByGetLine(long id) {
+        return RestAssured.given().log().all()
+            .when().get("/lines/{id}", id)
             .then().log().all();
     }
 
