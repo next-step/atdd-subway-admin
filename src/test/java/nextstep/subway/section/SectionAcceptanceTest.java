@@ -163,6 +163,22 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         지하철_노선에_지하철역_등록_확인(지하철노선_조회_응답, "강남역", "광교역");
     }
 
+    @Test
+    void 하행역을_삭제한다() {
+        // Given
+        ExtractableResponse<Response> 신규역 = 지하철역_생성_요청("신규역");
+        Long 신규역_ID = 응답_ID(신규역);
+        ExtractableResponse<Response> 지하철_노선에_지하철역_등록_응답 = 지하철_노선에_지하철역_생성_요청(노선_ID, 신규역_ID ,상행역_ID, 4);
+
+        // When
+        ExtractableResponse<Response> 지하철역_구간_삭제_응답 = 지하철역_구간_삭제_요청(노선_ID, 하행역_ID);
+
+        // Then
+        지하철역_구간_삭제_응답_검증(지하철역_구간_삭제_응답);
+        ExtractableResponse<Response> 지하철노선_조회_응답 = LineAcceptanceTest.지하철노선_조회_요청(노선_ID);
+        지하철_노선에_지하철역_등록_확인(지하철노선_조회_응답, "신규역", "강남역");
+    }
+
     private void 지하철역_구간_삭제_응답_검증(ExtractableResponse<Response> 지하철역_구간_삭제_응답) {
         assertThat(지하철역_구간_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
