@@ -2,12 +2,12 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,23 +27,22 @@ public class LineService {
 
     @Transactional(isolation = READ_COMMITTED)
     public LineResponse create(Line line) {
-        line.addStations(stationService.findStationByIdToLineResponse(
-                Arrays.asList(line.getUpStationId(), line.getDownStationId())));
         final Line resultLine = lineRepository.save(line);
-        return resultLine.toLineResponse();
+        List<Station> stations = findStations(line);
+        return LineResponse.fromLineStations(resultLine, stations);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findList() {
         return lineRepository.findAll().stream()
-                .map(Line::toLineResponse)
+                .map(line -> LineResponse.fromLineStations(line, findStations(line)))
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public Optional<LineResponse> find(long id) {
         return lineRepository.findById(id)
-                .map(Line::toLineResponse);
+                .map(line -> LineResponse.fromLineStations(line, findStations(line)));
     }
 
     @Transactional(isolation = READ_COMMITTED)
@@ -52,5 +51,9 @@ public class LineService {
         lineRepository.save(line.orElseThrow(IllegalArgumentException::new)
                 .updateName(request.getName())
                 .updateColor(request.getColor()));
+    }
+
+    private List<Station> findStations(Line line) {
+        return stationService.findAllById(line.getStationIds());
     }
 }

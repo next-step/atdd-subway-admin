@@ -143,7 +143,7 @@ public class LineAcceptanceTest {
         String updateColor = "bg-blue-600";
         updateRequest.put("name", updateName);
         updateRequest.put("color", updateColor);
-        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+        RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(updateRequest)
                 .when().put(boondangGetUrl)

@@ -1,18 +1,21 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Color;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Name;
+import nextstep.subway.domain.Station;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
 
     private final long id;
     private final Name name;
     private final Color color;
-    private final List<StationResponse> stations;
+    private final List<StationToLineResponse> stations;
 
-    public LineResponse(long id, Name name, Color color, List<StationResponse> stations) {
+    public LineResponse(long id, Name name, Color color, List<StationToLineResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -31,7 +34,14 @@ public class LineResponse {
         return color.getColor();
     }
 
-    public List<StationResponse> getStations() {
+    public List<StationToLineResponse> getStations() {
         return stations;
+    }
+
+    public static LineResponse fromLineStations(Line line, List<Station> stations) {
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+                stations.stream()
+                        .map(StationToLineResponse::fromStation)
+                        .collect(Collectors.toList()));
     }
 }

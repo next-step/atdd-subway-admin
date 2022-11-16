@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Entity
 public class Station extends BaseEntity {
@@ -18,10 +16,6 @@ public class Station extends BaseEntity {
     @Embedded
     @AttributeOverride(name = "name", column = @Column(name = "name", unique = true, nullable = false))
     private Name name;
-
-    @JoinColumn(name = "line_id")
-    @ManyToOne
-    private Line line;
 
     public Station() {
     }

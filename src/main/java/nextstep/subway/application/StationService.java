@@ -34,7 +34,7 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public List<Station> findStationByIdToLineResponse(List<Long> stationIds) {
+    public List<Station> findAllById(List<Long> stationIds) {
         return stationRepository.findAllById(stationIds);
     }
 
