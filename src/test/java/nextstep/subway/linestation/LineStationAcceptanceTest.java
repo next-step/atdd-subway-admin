@@ -2,12 +2,16 @@ package nextstep.subway.linestation;
 
 import static nextstep.subway.linestation.LineStationTestFixtures.기존_구간과_상행_종점으로_등록한_구간이_함께_조회됨;
 import static nextstep.subway.linestation.LineStationTestFixtures.기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨;
+import static nextstep.subway.linestation.LineStationTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
+import static nextstep.subway.linestation.LineStationTestFixtures.등록이_불가하다;
 import static nextstep.subway.linestation.LineStationTestFixtures.새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정;
 import static nextstep.subway.linestation.LineStationTestFixtures.새로운_역_상행_종점으로_등록;
 import static nextstep.subway.linestation.LineStationTestFixtures.새로운_역_하행_종점으로_등록;
 import static nextstep.subway.linestation.LineStationTestFixtures.역_사이_새로운역_등록;
 import static nextstep.subway.linestation.LineStationTestFixtures.지하철_노선_등록되어_있음;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.fixtures.TestFixtures;
@@ -61,7 +65,7 @@ class LineStationAcceptanceTest extends TestFixtures {
      * <p>
      * When 새로운 역을 상행 종점으로 등록한다.
      * <p>
-     * Then 기존 구간과 상행 종점으로 등록한 구간이 함께 조회된다
+     * Then 기존 구간과 상행 종점으로 등록한 구간이 함께 조회된다.
      */
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
@@ -81,7 +85,7 @@ class LineStationAcceptanceTest extends TestFixtures {
      * <p>
      * When 새로운 역을 하행 종점으로 등록한다.
      * <p>
-     * Then 기존 구간과 하행 종점으로 등록한 구간이 함께 조회된다
+     * Then 기존 구간과 하행 종점으로 등록한 구간이 함께 조회된다.
      */
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
@@ -94,5 +98,25 @@ class LineStationAcceptanceTest extends TestFixtures {
 
         //then
         기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨("distance", lineId, "7", "4");
+    }
+
+    /**
+     * Given 노선이 등록되어 있다.
+     * <p>
+     * When 기존역 구간 길이보다 크거나 같은 역을 기존역 사이에 등록하면
+     * <p>
+     * Then 등록이 불가하다.
+     */
+    @DisplayName("기존역 구간 길이보다 크거나 같으면 새로운역 등록 불가하다.")
+    @Test
+    void validateLength() {
+        //given
+        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId2, "7", "id");
+
+        //when
+        ExtractableResponse<Response> response = 기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록(stationId1, stationId3, "8", lineId);
+
+        //then
+        등록이_불가하다(response);
     }
 }

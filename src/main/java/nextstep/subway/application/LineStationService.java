@@ -59,6 +59,7 @@ public class LineStationService {
     private void addBetweenByUpStation(LineStations lineStations, Station upStation, Station downStation,
                                        int distance) {
         lineStations.findSameUpStation(upStation).ifPresent(lineStation -> {
+            lineStation.validateLength(distance);
             lineStationRepository.save(lineStation.createNewLineStation(distance, upStation, downStation));
             lineStationRepository.save(lineStation.createNewDownLineStation(distance, downStation));
             lineStationRepository.delete(lineStation);
@@ -79,6 +80,7 @@ public class LineStationService {
     private void addBetweenByDownStation(LineStations lineStations, Station upStation, Station downStation,
                                          int distance) {
         lineStations.findSameDownStation(downStation).ifPresent(lineStation -> {
+            lineStation.validateLength(distance);
             lineStationRepository.save(lineStation.createNewLineStation(distance, upStation, downStation));
             lineStationRepository.save(lineStation.createNewUpLineStation(distance, upStation));
             lineStationRepository.delete(lineStation);

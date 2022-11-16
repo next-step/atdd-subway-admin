@@ -36,7 +36,7 @@ public class LineStationController {
         return ResponseEntity.ok().body(lineStationService.findLineStationsByLineId(lineId));
     }
 
-    @ExceptionHandler(PersistenceException.class)
+    @ExceptionHandler({PersistenceException.class, IllegalArgumentException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }

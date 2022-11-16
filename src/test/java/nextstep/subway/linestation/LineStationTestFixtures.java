@@ -8,6 +8,7 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public abstract class LineStationTestFixtures {
@@ -15,6 +16,10 @@ public abstract class LineStationTestFixtures {
     private static final String PATH_LINE = "/lines";
     private static final String PATH_LINE_STATION = "/line-station";
     private static final String PATH_LINE_ID = PATH_LINE_STATION + "/{lineId}";
+
+    public static void 등록이_불가하다(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 
     public static void 기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨(String information, String pathVariable,
                                                      String... containValues) {
@@ -44,6 +49,13 @@ public abstract class LineStationTestFixtures {
     public static ExtractableResponse<Response> 새로운_역_상행_종점으로_등록(String upStationId, String downStationId,
                                                                  String distance,
                                                                  String pathVariable) {
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
+    }
+
+    public static ExtractableResponse<Response> 기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록(String upStationId,
+                                                                                String downStationId,
+                                                                                String distance,
+                                                                                String pathVariable) {
         return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
     }
 

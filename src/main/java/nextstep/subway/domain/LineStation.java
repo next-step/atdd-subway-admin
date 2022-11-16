@@ -95,4 +95,10 @@ public class LineStation {
     public LineStation createNewUpLineStation(int distance, Station upStation) {
         return new LineStation(line, Math.abs(this.distance - distance), this.upStation, upStation);
     }
+
+    public void validateLength(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException("기존역 사이에 같은길이의 역을 등록할 수 없습니다.");
+        }
+    }
 }
