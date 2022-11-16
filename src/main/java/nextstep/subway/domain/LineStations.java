@@ -145,39 +145,58 @@ public class LineStations {
         if (lineStations.size() == 3) {
             throw new IllegalArgumentException("단일 구간 노선의 역은 삭제할 수 없습니다.");
         }
+
         LineStation prevLineStation = getPrevLineStation(station);
         LineStation nextLineStation = getNextLineStation(station);
-        if (prevLineStation == null) {
-            Station nextStation = nextLineStation.getDownStation();
-            deleteLineStationIncludeStation(station);
-            LineStation newLineStation = new LineStation(null, nextStation, 0, nextLineStation.getLine());
-            lineStations.add(newLineStation);
+
+        if (deleteLineStationIfFirstLineStation(station, prevLineStation, nextLineStation)) {
             return;
         }
-        if (nextLineStation == null) {
-            Station prevStation = prevLineStation.getUpStation();
-            deleteLineStationIncludeStation(station);
-            LineStation newLineStation = new LineStation(prevStation, null, 0, prevLineStation.getLine());
-            lineStations.add(newLineStation);
+        if (deleteLineStationIfLastLineStation(station, prevLineStation, nextLineStation)) {
             return;
         }
-        deleteLineStationIncludeStation(station);
-        LineStation newLineStation = new LineStation(prevLineStation.getUpStation(), nextLineStation.getDownStation(), prevLineStation.getDistance() + nextLineStation.getDistance(), prevLineStation.getLine());
-        lineStations.add(newLineStation);
+        deleteLineStationIfInterLineStation(station, prevLineStation, nextLineStation);
     }
 
     private LineStation getPrevLineStation(Station station) {
         return lineStations.stream()
-                .filter(candidate -> candidate.getDownStation() == station)
+                .filter(candidate -> candidate.getUpStation() != null && candidate.getDownStation() == station)
                 .findFirst()
                 .orElse(null);
     }
 
     private LineStation getNextLineStation(Station station) {
         return lineStations.stream()
-                .filter(candidate -> candidate.getUpStation() == station)
+                .filter(candidate -> candidate.getUpStation() == station && candidate.getDownStation() != null)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private boolean deleteLineStationIfFirstLineStation(Station station, LineStation prev, LineStation next) {
+        if (prev != null) {
+            return false;
+        }
+        LineStation newLineStation = new LineStation(null, next.getDownStation(), 0, next.getLine());
+        deleteLineStationIncludeStation(station);
+        lineStations.add(newLineStation);
+        return true;
+    }
+
+    private boolean deleteLineStationIfLastLineStation(Station station, LineStation prev, LineStation next) {
+        if (next != null) {
+            return false;
+        }
+        LineStation newLineStation = new LineStation(prev.getUpStation(), null, 0, prev.getLine());
+        deleteLineStationIncludeStation(station);
+        lineStations.add(newLineStation);
+        return true;
+    }
+
+    private void deleteLineStationIfInterLineStation(Station station, LineStation prev, LineStation next) {
+        LineStation newLineStation = new LineStation(prev.getUpStation(), next.getDownStation(),
+                prev.getDistance() + next.getDistance(), prev.getLine());
+        deleteLineStationIncludeStation(station);
+        lineStations.add(newLineStation);
     }
 
     private void deleteLineStationIncludeStation(Station station) {
