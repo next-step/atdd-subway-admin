@@ -2,7 +2,7 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 
-public class LineRequest {
+public class CreateLineDto {
     private String name;
 
     private String color;
@@ -29,9 +29,5 @@ public class LineRequest {
 
     public long getDistance() {
         return distance;
-    }
-
-    public Line toLine() {
-        return new Line(name, color);
     }
 }

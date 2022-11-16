@@ -1,11 +1,9 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
+import nextstep.subway.dto.CreateLineDto;
+import nextstep.subway.dto.DtoConverter;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,18 +16,25 @@ public class LineService {
 
     private final LineRepository lineRepository;
 
-    public LineService(LineRepository lineRepository) {
+    private final StationRepository stationRepository;
+
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
-    public LineResponse register(Line line, Section section) {
+    public Line register(CreateLineDto dto) {
+        Station upStation = findStation(dto.getUpStationId());
+        Station downStation = findStation(dto.getDownStationId());
+        Section section = new Section(upStation, downStation, dto.getDistance());
+        Line line = DtoConverter.toLineEntity(dto);
         line.addSection(section);
-        return register(line);
+        return lineRepository.save(line);
     }
 
-    public LineResponse register(Line line) {
-        Line persistLine = lineRepository.save(line);
-        return LineResponse.of(persistLine);
+    private Station findStation(long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 역은 존재하지 않습니다."));
     }
 
     public List<LineResponse> findAllLines() {
@@ -37,5 +42,6 @@ public class LineService {
 
         return lines.stream()
                 .map(LineResponse::of)
-                .collect(Collectors.toList());    }
+                .collect(Collectors.toList());
+    }
 }

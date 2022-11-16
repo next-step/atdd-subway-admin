@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -38,8 +37,8 @@ public class LineAcceptanceTest {
         }
     }
 
-    private long getStationId(String name) {
-        return stationRepository.save(new Station(name)).getId();
+    private Station saveStation(String name) {
+        return stationRepository.save(new Station(name));
     }
 
     /*
@@ -50,12 +49,14 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // When
-        ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", getStationId("강남역"), getStationId("양재역"), 10).extract();
+        Station 강남역 = saveStation("강남역");
+        Station 양재역 = saveStation("양재역");
+        long lineId = createLine("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
         // Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        JsonPath responseBody = response.jsonPath();
-        System.out.println(responseBody.toString());
+        JsonPath responseBody = fetchLines().extract().jsonPath();
+        assertThat(responseBody.getList("id", Long.class)).containsAnyOf(lineId);
+        assertThat(responseBody.getList("stations[0].name")).containsExactly(강남역.getName(), 양재역.getName());
     }
 
     /*
@@ -67,10 +68,19 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // Given
-        createLine("신분당선", "bg-red-600", getStationId("강남역"), getStationId("양재역"), 10).extract();
-        createLine("분당선", "bg-yellow-600", getStationId("야탑역"), getStationId("모란역"), 10).extract();
-        JsonPath jsonPath = fetchLines().extract().jsonPath();
-        System.out.println(jsonPath);
+        Station 강남역 = saveStation("강남역");
+        Station 양재역 = saveStation("양재역");
+        createLine("신분당선", "bg-red-600", 강남역, 양재역, 10).extract();
+
+        Station 야탑역 = saveStation("야탑역");
+        Station 모란역 = saveStation("모란역");
+        createLine("분당선", "bg-yellow-600", 야탑역, 모란역, 10).extract();
+
+        // When
+        JsonPath responseBody = fetchLines().extract().jsonPath();
+
+        // Then
+        assertThat(responseBody.getList("").size()).isEqualTo(2);
     }
 
     /*
@@ -106,12 +116,12 @@ public class LineAcceptanceTest {
 
     }
 
-    private ValidatableResponse createLine(String name, String color, long upStationId, long downStationId, int distance) {
+    private ValidatableResponse createLine(String name, String color, Station upStation, Station downStation, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
+        params.put("upStationId", upStation.getId());
+        params.put("downStationId", downStation.getId());
         params.put("distance", distance);
 
         return RestAssured.given().log().all()

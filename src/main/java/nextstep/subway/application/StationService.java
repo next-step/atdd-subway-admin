@@ -25,11 +25,6 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
-    public Station fetch(Long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 역입니다."));
-    }
-
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
