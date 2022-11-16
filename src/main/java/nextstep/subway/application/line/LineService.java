@@ -1,5 +1,6 @@
 package nextstep.subway.application.line;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,6 +13,7 @@ import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.line.LineCreateRequest;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.dto.stations.StationNameResponse;
 import nextstep.subway.exception.LineNotFoundException;
 
 @Service
@@ -32,7 +34,6 @@ public class LineService {
 		Station downStation = stationService.findById(request.getDownStationId());
 		Line line = lineRepository.save(
 			Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
-
 		return lineResponse(line);
 	}
 
@@ -66,6 +67,22 @@ public class LineService {
 	}
 
 	private LineResponse lineResponse(Line line) {
-		return LineResponse.of(line.getId(), line.getName(), line.getColor(), line.stationsNameResponses());
+		return LineResponse.of(
+			line.getId(),
+			line.getName(),
+			line.getColor(),
+			stationsNameResponses(line)
+		);
+	}
+
+	private List<StationNameResponse> stationsNameResponses(Line line) {
+		return stationsNameResponses(line.getUpStation(), line.getDownStation());
+	}
+
+	private List<StationNameResponse> stationsNameResponses(Station upStation, Station downStation) {
+		StationNameResponse upStationNameResponse = new StationNameResponse(upStation.getId(), upStation.getName());
+		StationNameResponse downStationNameResponse = new StationNameResponse(downStation.getId(),
+			downStation.getName());
+		return Arrays.asList(upStationNameResponse, downStationNameResponse);
 	}
 }
