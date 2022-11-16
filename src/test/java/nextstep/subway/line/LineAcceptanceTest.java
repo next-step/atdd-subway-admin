@@ -11,6 +11,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -97,6 +98,27 @@ public class LineAcceptanceTest {
         // then
         LineResponse line = response.jsonPath().getObject(".",LineResponse.class);
         assertThat(line.equals(createdLine.jsonPath().getObject(".", LineResponse.class))).isTrue();
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철역 노선을 수정한다.")
+    @Test
+    void updateLine() {
+        // give
+        JsonPath station = requestCreateStation("지하철역").jsonPath();
+        JsonPath newStation = requestCreateStation("새로운지하철역").jsonPath();
+        ExtractableResponse<Response> createdLine =
+                requestCreateLine("신분당선","bg-red-600",station.getLong("id"), newStation.getLong("id"),10);
+        // when
+        Long createdId = createdLine.jsonPath().getLong("id");
+        requestUpdateLine(createdId, LineUpdateRequest.of("다른분당선","bg-red-600"));
+        // then
+        ExtractableResponse<Response> response = requestGetLine(createdLine.jsonPath().getLong("id"));
+        assertThat(response.jsonPath().getString("name")).isEqualTo("다른분당선");
     }
 
 
