@@ -53,6 +53,22 @@ public class Sections {
             return;
         }
 
+        Optional<Section> sectionByUpStation = sections.stream()
+                .filter(it -> it.getUpStation() == upStation)
+                .findFirst();
+
+        Optional<Section> sectionByDownStation = sections.stream()
+                .filter(it -> it.getUpStation() == downStation)
+                .findFirst();
+
+        if (sectionByUpStation.isPresent() && sectionByDownStation.isPresent()) {
+            throw new IllegalArgumentException("이미 등록되어 있는 역 입니다.");
+        }
+        //둘다 안포함?
+        if (!sectionByUpStation.isPresent() && !sectionByDownStation.isPresent()) {
+            throw new IllegalArgumentException("추가할 수 없는 역 입니다.");
+        }
+
         Optional<Section> first = sections.stream()
                 .filter(it -> it.getUpStation() == upStation)
                 .findFirst();

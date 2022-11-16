@@ -86,7 +86,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_신규_등록_요청(신분당선.getId(), 신논현역.getId(), 강남역.getId(), 1);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId())).contains((int)(long)신논현역.getId());
     }
 

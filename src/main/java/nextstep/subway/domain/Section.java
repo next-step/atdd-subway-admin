@@ -59,10 +59,6 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public Integer getDistance() {
-        return distance;
-    }
-
     public void setLine(Line line) {
         if (this.line != null) {
             this.line.getSections().remove(this);
@@ -91,9 +87,21 @@ public class Section extends BaseEntity {
     }
 
     public Section changeDownStation(Station downStation, Integer distance) {
-        Section section = new Section(line, downStation, this.downStation, this.distance - distance);
+        Section section = new Section(line, downStation, this.downStation, calDistance(distance));
         setDownStation(downStation);
         setDistance(distance);
         return section;
+    }
+
+    public Integer calDistance(Integer distance) {
+        if (downStation == null || upStation == null) {
+            return distance;
+        }
+
+        if (distance >= this.distance) {
+            throw new IllegalArgumentException("추가되는 구간의 거리는 기존이 구간보다 크거나 같을 수 없다. ");
+        }
+
+        return this.distance = distance;
     }
 }
