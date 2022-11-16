@@ -24,6 +24,7 @@ public class Line extends BaseEntity {
     private Station upStation;
     @ManyToOne
     private Station downStation;
+    @Column(nullable = false)
     private int distance;
 
     protected Line() {

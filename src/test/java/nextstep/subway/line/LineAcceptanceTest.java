@@ -2,7 +2,7 @@ package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
-import nextstep.subway.DatabaseCleanup;
+import nextstep.subway.AbstractAcceptanceTest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -10,32 +10,20 @@ import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.List;
-
+import static nextstep.subway.AcceptanceUtils.assertStatusCode;
+import static nextstep.subway.AcceptanceUtils.extractName;
+import static nextstep.subway.AcceptanceUtils.extractNames;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
+public class LineAcceptanceTest extends AbstractAcceptanceTest {
 
     @BeforeEach
-    void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleanup.execute();
-
+    public void setUp() {
+        super.setUp();
         StationAcceptanceTest.createStation("지하철역");
         StationAcceptanceTest.createStation("새로운지하철역");
         StationAcceptanceTest.createStation("또다른지하철역");
@@ -68,7 +56,7 @@ public class LineAcceptanceTest {
 
         ValidatableResponse response = requestApiByFindAllLines();
 
-        assertThat(extractLineNames(response)).containsAnyOf("신분당선", "분당선");
+        assertThat(extractNames(response)).containsAnyOf("신분당선", "분당선");
     }
 
     /**
@@ -86,7 +74,7 @@ public class LineAcceptanceTest {
 
         ValidatableResponse response = requestApiByGetLine(lineId);
 
-        assertThat(extractLineName(response)).isEqualTo("신분당선");
+        assertThat(extractName(response)).isEqualTo("신분당선");
     }
 
     /**
@@ -123,7 +111,7 @@ public class LineAcceptanceTest {
         ValidatableResponse response = requestApiByDeleteLine(lineId);
 
         assertStatusCode(response, HttpStatus.NO_CONTENT);
-        assertThat(extractLineNames(requestApiByFindAllLines())).doesNotContain("신분당선");
+        assertThat(extractNames(requestApiByFindAllLines())).doesNotContain("신분당선");
     }
 
     private static ValidatableResponse requestApiByCreateLine(LineRequest request) {
@@ -161,16 +149,4 @@ public class LineAcceptanceTest {
             .then().log().all();
     }
 
-
-    private static void assertStatusCode(ValidatableResponse response, HttpStatus httpStatus) {
-        assertThat(response.extract().statusCode()).isEqualTo(httpStatus.value());
-    }
-
-    private static List<String> extractLineNames(ValidatableResponse response) {
-        return response.extract().jsonPath().getList("name", String.class);
-    }
-
-    private static String extractLineName(ValidatableResponse response) {
-        return response.extract().jsonPath().getString("name");
-    }
 }
