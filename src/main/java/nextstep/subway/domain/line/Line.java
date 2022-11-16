@@ -1,6 +1,7 @@
 package nextstep.subway.domain.line;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -32,6 +33,9 @@ public class Line {
 	@JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_down_station"))
 	private Station downStation;
 
+	@Embedded
+	private Sections sections;
+
 	private int distance;
 
 	protected Line() {
@@ -40,9 +44,7 @@ public class Line {
 	private Line(String name, String color, Station upStation, Station downStation, int distance) {
 		this.name = name;
 		this.color = color;
-		this.upStation = upStation;
-		this.downStation = downStation;
-		this.distance = distance;
+		this.sections = Sections.initialSections(new Section(this, upStation, downStation, distance));
 	}
 
 	public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
