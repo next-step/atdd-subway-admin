@@ -23,12 +23,21 @@ public class SectionService {
 
     @Transactional
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_LINE));
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_STATION));
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_STATION));
-
+        Line line = findLineById(lineId);
+        Station upStation = findStation(sectionRequest.getUpStationId());
+        Station downStation = findStation(sectionRequest.getDownStationId());
         line.addSection(sectionRequest.toSection(upStation, downStation));
         lineRepository.save(line);
         return LineResponse.of(line);
+    }
+
+    private Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_LINE));
+    }
+
+    private Station findStation(Long sectionRequest) {
+        return stationRepository.findById(sectionRequest)
+                .orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_STATION));
     }
 }
