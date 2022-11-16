@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -14,17 +12,14 @@ import javax.persistence.Id;
 
 @Entity
 public class Line extends BaseEntity {
+    @Embedded
+    private final Sections sections = new Sections();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(unique = true)
     private String name;
-
     private String color;
-
-    @Embedded
-    private Sections sections;
 
     protected Line() {
     }
@@ -33,8 +28,8 @@ public class Line extends BaseEntity {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.sections = new Sections(
-            Collections.singletonList(new Section(this, upStation, downStation, distance))
+        this.sections.add(
+            new Section(this, upStation, downStation, distance)
         );
     }
 
@@ -49,6 +44,10 @@ public class Line extends BaseEntity {
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void saveSection(Section section) {
+        this.sections.add(section);
     }
 
     public Long getId() {

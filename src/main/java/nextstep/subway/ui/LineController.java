@@ -16,15 +16,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 
 @RestController
 public class LineController {
     private final LineService lineService;
+    private final SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -56,15 +60,24 @@ public class LineController {
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity<LineResponse> deleteLine(
+    public ResponseEntity<Void> deleteLine(
         @PathVariable Long id
     ) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException() {
+    @PostMapping("/lines/{id}/sections")
+    public ResponseEntity<Void> addSection(
+        @PathVariable Long id,
+        @RequestBody SectionRequest sectionRequest
+    ) {
+        sectionService.saveSection(id, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})
+    public ResponseEntity<Void> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
 }

@@ -133,10 +133,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     @ValueSource(strings = {"20", "10"})
     void addSection_distance_over(String distance) {
+        Integer SEOHYUN_ID = ID_추출(지하철역_생성("서현역"));
+
         // when
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", WANGSIPLI_ID.toString());
-        params.put("downStationId", JUKJUN_ID.toString());
+        params.put("downStationId", SEOHYUN_ID.toString());
         params.put("distance", distance);
         ExtractableResponse<Response> response = 지하철_구간_등록(LINE_BUNDANG_ID, params);
 
