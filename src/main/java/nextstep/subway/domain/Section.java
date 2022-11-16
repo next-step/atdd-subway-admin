@@ -87,14 +87,14 @@ public class Section extends BaseEntity {
     }
 
     public Section changeDownStation(Station downStation, Integer distance) {
-        Section section = new Section(line, downStation, this.downStation, calDistance(distance));
+        Section section = new Section(line, downStation, this.downStation, calDistanceDownStation(distance));
         setDownStation(downStation);
         setDistance(distance);
         return section;
     }
 
-    public Integer calDistance(Integer distance) {
-        if (downStation == null || upStation == null) {
+    private Integer calDistanceDownStation(Integer distance) {
+        if (downStation == null) {
             return distance;
         }
 
@@ -102,6 +102,25 @@ public class Section extends BaseEntity {
             throw new IllegalArgumentException("추가되는 구간의 거리는 기존이 구간보다 크거나 같을 수 없다. ");
         }
 
-        return this.distance = distance;
+        return this.distance - distance;
+    }
+
+    public Section changeUpStation(Station upStation, Integer distance) {
+        Section section = new Section(line, this.upStation, upStation, calDistanceUpStation(distance));
+        this.upStation = upStation;
+        this.distance = distance;
+        return section;
+    }
+
+    private Integer calDistanceUpStation(Integer distance) {
+        if (upStation == null) {
+            return distance;
+        }
+
+        if (distance >= this.distance) {
+            throw new IllegalArgumentException("추가되는 구간의 거리는 기존이 구간보다 크거나 같을 수 없다. ");
+        }
+
+        return this.distance - distance;
     }
 }
