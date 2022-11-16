@@ -50,8 +50,9 @@ public class LineSectionTest {
 
         //when
         ExtractableResponse<Response> savedSection = 역_사이에_새로운_역을_등록한다(lineId);
+
         //then
-        구간_등록_성공_확인(savedSection);
+        구간_추가_등록_결과_확인(lineId, savedSection, 2, "sections");
     }
 
     /**
@@ -115,7 +116,7 @@ public class LineSectionTest {
      */
     @DisplayName("새로운 역을 상행 종점으로 구간 등록할 수 있다")
     @Test
-    void 새로운_역_상행_종점_생성_성공() {
+    void 새로운_역_상행_종점_등록_성공() {
         // given -> beforeEach
 
         // when 상행종점
@@ -125,5 +126,23 @@ public class LineSectionTest {
         구간_추가_등록_결과_확인(lineId, response, 2, "sections");
     }
 
+
+
+    /**
+     * Given 2개의 지하철역이 등록되어 있고, 노선이 등록되어있다
+     * When 새로운 역을 하행 종점으로 생성하면
+     * Then 생성된 지하철 구간을 확인할 수 있다
+     */
+    @DisplayName("새로운 역을 하행 종점으로 구간 등록할 수 있다")
+    @Test
+    void 새로운_역_하행_종점_등록_성공() {
+        // given -> beforeEach
+
+        // when 상행종점
+        ExtractableResponse<Response> response = 구간_생성_요청(lineId, 2L, 3L, 10);
+
+        // then
+        구간_추가_등록_결과_확인(lineId, response, 2, "sections");
+    }
 
 }

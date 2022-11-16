@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static nextstep.subway.constant.Message.*;
 
@@ -27,10 +28,11 @@ public class Sections {
         validateDuplicated(newSection);
 
         changeSections(newSection);
-        // 구간을 변경했으면 새로운
         sections.add(newSection);
-
+        sortSection();
     }
+
+
 
 
     private void validateNotMatchedStaton(Section newSection) {
@@ -44,6 +46,15 @@ public class Sections {
     }
 
     private void validateDistance(Section newSection) {
+        if(sections.size() == 1) {
+            return;
+        }
+
+        boolean d = newSection.isLastStation(sections);
+
+
+
+
         // 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
         Optional<Section> invalidSections = sections.stream()
                 .filter(s -> s.getDistance() <= newSection.getDistance())
@@ -53,6 +64,8 @@ public class Sections {
             throw new IllegalArgumentException(NOT_VALID_SECTION_DISTANCE);
         }
     }
+
+
 
     private void validateDuplicated(Section section) {
         Optional<Section> duplicate = sections.stream()
@@ -68,5 +81,12 @@ public class Sections {
         sections.forEach(s -> {
             s.change(newSection);
         });
+    }
+
+    private void sortSection() {
+        List<Section> sortedSections = sections.stream()
+                .sorted(Section::compareTo)
+                .collect(Collectors.toList());
+        sections = sortedSections;
     }
 }

@@ -1,10 +1,11 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section extends BaseEntity implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -27,7 +28,7 @@ public class Section extends BaseEntity {
     public Section() {
     }
 
-    public Section (Station upStation, Station downStation, Line line, int distance) {
+    public Section(Station upStation, Station downStation, Line line, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.line = line;
@@ -67,13 +68,14 @@ public class Section extends BaseEntity {
         if (Objects.isNull(section)) {
             return false;
         }
-        return isUpStation(section.upStation) || isDownStation(section.downStation)
-                || isUpStation(section.getDownStation()) || isDownStation(section.getDownStation());
+        return isUpStation(section.upStation) || isDownStation(section.upStation)
+                || isUpStation(section.downStation) || isDownStation(section.downStation);
     }
 
     public boolean isUpStation(Station station) {
         return this.upStation.equals(station);
     }
+
     public boolean isDownStation(Station station) {
         return this.downStation.equals(station);
     }
@@ -103,6 +105,12 @@ public class Section extends BaseEntity {
         }
     }
 
+    public boolean isLastStation(List<Section> sections) {
+        Station firstStation = sections.get(0).upStation;
+        Station lastStation = sections.get(sections.size() - 1).downStation;
+        return firstStation.equals(upStation) || lastStation.equals(downStation);
+    }
+
     public void updateLine(Line line) {
         this.line = line;
     }
@@ -110,6 +118,7 @@ public class Section extends BaseEntity {
     private void changeUpStation(Section newSection) {
         this.upStation = newSection.downStation;
     }
+
     private void changeDownStation(Section newSection) {
         this.downStation = newSection.upStation;
     }
@@ -138,5 +147,14 @@ public class Section extends BaseEntity {
         Section section = (Section) o;
         return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line);
     }
+
+    @Override
+    public int compareTo(Section s) {
+        //
+        if (this.downStation.getId().equals(s.upStation.getId())) return -1;
+        else if (this.upStation.getId().equals(s.downStation.getId())) return 1;
+        return 0;
+    }
+
 
 }
