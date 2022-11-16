@@ -32,4 +32,20 @@ public class LineService {
             .map(LineResponse::of)
             .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public LineResponse findById(Long id) {
+        return lineRepository.findById(id).map(LineResponse::of)
+            .orElse(LineResponse.EMPTY);
+    }
+
+    @Transactional
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        if (!lineRepository.existsById(id)) {
+            return LineResponse.EMPTY;
+        }
+        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
+        lineRepository.save(line);
+        return LineResponse.of(line);
+    }
 }
