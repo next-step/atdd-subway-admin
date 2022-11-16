@@ -231,7 +231,7 @@ class LineAcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> 지하철_노선을_생성한다(String lineName, String lineColor, Long distance, List<Long> stationIds) {
+    public static ExtractableResponse<Response> 지하철_노선을_생성한다(String lineName, String lineColor, Long distance, List<Long> stationIds) {
         Long upStationId = stationIds.get(0);
         Long downStationId = stationIds.get(1);
         LineRequest request = new LineRequest(lineName, lineColor, distance, upStationId, downStationId);

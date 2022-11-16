@@ -16,6 +16,10 @@ public class Section extends BaseEntity{
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id", nullable = false)
+    private Line line;
+
     @Column(nullable = false)
     private Long distance;
 }
