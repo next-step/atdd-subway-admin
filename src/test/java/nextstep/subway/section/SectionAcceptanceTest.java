@@ -118,7 +118,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
      * When 상행역과 하행역 이미 노선에 모두 등록되어 있다면
      * Then 노선에 새로운 지하철 역을 등록할 수 없다
      */
-    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
     @Test
     void addSectionDuplicateException() {
         // given
@@ -136,7 +136,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
      * When 상행역과 하행역 둘 중 하나도 포함되어있지 않으면
      * Then 노선에 새로운 지하철 역을 등록할 수 없다
      */
-    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.")
     @Test
     void addSectionNotExistException() {
         // given
@@ -189,5 +189,41 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         List<String> result = 지하철_노선_조회(신분당선_ID).jsonPath().getList("stations.name");
         assertThat(result).hasSize(2)
             .contains("강남역", "광교역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 하나의 노선에서 마지막 구간을 제거하면
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거하면 제거할 수 없다.")
+    @Test
+    void removeOneSectionException() {
+        // given
+        Long 신분당선_ID = 지하철_노선_생성("신분당선", "주황색", 강남역_ID, 양재역_ID, 10).jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(신분당선_ID, 양재역_ID);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 노선에 등록되지 않은 역을 제거하면
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("노선에 등록되지 않은 역을 제거하면 제거할 수 없다.")
+    @Test
+    void removeNotExistStationException() {
+        // given
+        Long 신분당선_ID = 지하철_노선_생성("신분당선", "주황색", 강남역_ID, 양재역_ID, 10).jsonPath().getLong("id");
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_구간_삭제(신분당선_ID, 광교역_ID);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
