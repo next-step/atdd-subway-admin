@@ -70,7 +70,6 @@ public class LineService {
 
     @Transactional
     public void delete(Long lineId) {
-        findById(lineId);
-        lineRepository.deleteById(lineId);
+        lineRepository.delete(lineRepository.findById(lineId).orElseThrow(NotFoundException::new));
     }
 }
