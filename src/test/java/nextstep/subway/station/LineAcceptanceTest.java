@@ -1,8 +1,11 @@
 package nextstep.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,18 +26,18 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
-    Map<String, Object> _1호선 = new HashMap<String, Object>(){
+    Map<String, Object> _1호선 = new HashMap<String, Object>() {
         {
             put("id", 1L);
             put("name", "1호선");
-            put("color", "blue darken-1");
+            put("color", "blue");
         }
     };
-    Map<String, Object> _2호선 = new HashMap<String, Object>(){
+    Map<String, Object> _2호선 = new HashMap<String, Object>() {
         {
             put("id", 2L);
             put("name", "2호선");
-            put("color", "green darken-1");
+            put("color", "green");
         }
     };
 
@@ -47,7 +50,7 @@ public class LineAcceptanceTest {
      * When 지하철 노선을 생성하면
      * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
      */
-    @DisplayName("지하철노선을 생성한다.")
+    @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
         // when
@@ -62,9 +65,9 @@ public class LineAcceptanceTest {
      * When 지하철 노선 목록을 조회하면
      * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
      */
-    @DisplayName("지하철 노선 목록 조회한다.")
+    @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
-    void inquiryLine() {
+    void inquiryLines() {
         // given
         long lineId = 지하철_노선을_생성한다(_1호선);
         long lineId2 = 지하철_노선을_생성한다(_2호선);
@@ -72,6 +75,22 @@ public class LineAcceptanceTest {
         // when
         // then
         지하철_노선_목록에서_조회된다(lineId, lineId2);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 노선을 조회한다.")
+    @Test
+    void inquiryLine() {
+        // given
+        long lineId = 지하철_노선을_생성한다(_1호선);
+
+        // when
+        // then
+        지하철_노선_목록에서_노선_정보가_있다(lineId, _1호선);
     }
 
     private long 지하철_노선을_생성한다(Map<String, Object> line) {
@@ -84,7 +103,7 @@ public class LineAcceptanceTest {
             .jsonPath().getLong("id");
     }
 
-    private void 지하철_노선_목록에서_조회된다(Long ... lineId) {
+    private void 지하철_노선_목록에서_조회된다(Long... lineId) {
         List<Long> lineIds = RestAssured.given().log().all()
             .when().get("/lines")
             .then().log().all()
@@ -92,5 +111,21 @@ public class LineAcceptanceTest {
             .extract()
             .jsonPath().getList("id", Long.class);
         assertThat(lineIds).containsAnyOf(lineId);
+    }
+
+    private void 지하철_노선_목록에서_노선_정보가_있다(Long lineId, Map<String, Object> line) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+            .when().get("/lines")
+            .then().log().all()
+            .statusCode(HttpStatus.OK.value())
+            .extract();
+        assertAll(
+            () -> assertThat(response.jsonPath().getList("id", Long.class))
+                .contains(lineId),
+            () -> assertThat(response.jsonPath().getList("name", String.class))
+                .contains(line.get("name").toString()),
+            () -> assertThat(response.jsonPath().getList("color", String.class))
+                .contains(line.get("color").toString())
+        );
     }
 }
