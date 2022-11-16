@@ -11,28 +11,18 @@ public class Line {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "upStationId")
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "downStationId")
-    private Station downStation;
-
     private String name;
     private String color;
-    private int distance;
+
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     protected Line() {}
 
-    public Line(String name, String color, int distance,
-                Station upStation, Station downStation) {
+    public Line(String name, String color, LineStations lineStations) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
-
+        this.lineStations = lineStations;
     }
 
     public Line updateInfo(LineRequest lineRequest) {
@@ -53,11 +43,8 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public LineStations getLineStations() {
+        return lineStations;
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
 }

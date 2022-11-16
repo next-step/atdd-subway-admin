@@ -18,6 +18,14 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    public LineStation toLineUpStation() {
+        return new LineStation(this);
+    }
+
+    public LineStation toLineStation(Station preStation, int distance) {
+        return new LineStation(preStation, this, distance);
+    }
+
     public Long getId() {
         return id;
     }

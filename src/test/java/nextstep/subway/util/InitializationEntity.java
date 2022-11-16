@@ -31,6 +31,6 @@ public class InitializationEntity {
     }
 
     public void initLine() {
-        line_1 = lineRepository.save(new Line("1호선", "", 10 ,station_1, station_2));
+        line_1 = lineRepository.save(new Line("1호선", "", null));
     }
 }

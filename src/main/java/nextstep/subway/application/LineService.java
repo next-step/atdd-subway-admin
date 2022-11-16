@@ -1,11 +1,13 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineStations;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.EntityNotFoundException;
 import nextstep.subway.repository.LineRepository;
+import nextstep.subway.repository.LineStationRepository;
 import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +22,15 @@ public class LineService {
 
     private LineRepository lineRepository;
 
+    private LineStationRepository lineStationRepository;
+
     private StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository,
+                       LineStationRepository lineStationRepository,
                        StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.lineStationRepository = lineStationRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -32,7 +38,12 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
-        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation));
+
+        LineStations lineStations = new LineStations();
+        lineStations.add(lineStationRepository.save(upStation.toLineUpStation()));
+        lineStations.add(lineStationRepository.save(downStation.toLineStation(upStation, lineRequest.getDistance())));
+
+        Line line = lineRepository.save(lineRequest.toLine(lineStations));
         return LineResponse.of(line);
     }
 
