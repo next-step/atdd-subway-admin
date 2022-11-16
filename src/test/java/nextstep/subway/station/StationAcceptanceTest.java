@@ -1,43 +1,22 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import nextstep.subway.DatabaseCleanup;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.AbstractAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.AcceptanceUtils.assertStatusCode;
+import static nextstep.subway.AcceptanceUtils.extractNames;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItems;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleanup.execute();
-    }
-
+public class StationAcceptanceTest extends AbstractAcceptanceTest {
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -53,7 +32,7 @@ public class StationAcceptanceTest {
         assertStatusCode(response, HttpStatus.CREATED);
 
         // then
-        assertThat(extractStations(requestApiByGetStations())).containsAnyOf("강남역");
+        assertThat(extractNames(requestApiByGetStations())).containsAnyOf("강남역");
     }
 
     /**
@@ -92,7 +71,7 @@ public class StationAcceptanceTest {
 
         // then
         assertStatusCode(response, HttpStatus.OK);
-        assertThat(extractStations(response)).containsAnyOf("강남역", "양재역");
+        assertThat(extractNames(response)).containsAnyOf("강남역", "양재역");
     }
 
     /**
@@ -108,24 +87,20 @@ public class StationAcceptanceTest {
             .jsonPath().getLong("id");
 
         // when
-        ValidatableResponse response = requestApiByGetStation(id);
+        ValidatableResponse response = requestApiByDeleteStation(id);
 
         // then
         assertStatusCode(response, HttpStatus.NO_CONTENT);
 
         // then
-        assertThat(extractStations(requestApiByGetStations())).doesNotContain("강남역");
+        assertThat(extractNames(requestApiByGetStations())).doesNotContain("강남역");
 
     }
 
-    private static ValidatableResponse requestApiByGetStation(long id) {
+    private static ValidatableResponse requestApiByDeleteStation(long id) {
         return RestAssured.given().log().all()
             .when().delete("/stations/{id}", id)
             .then().log().all();
-    }
-
-    private static List<String> extractStations(ValidatableResponse response) {
-        return response.extract().jsonPath().getList("name", String.class);
     }
 
     private static ValidatableResponse requestApiByGetStations() {
@@ -134,7 +109,7 @@ public class StationAcceptanceTest {
             .then().log().all();
     }
 
-    private static ValidatableResponse createStation(String name) {
+    public static ValidatableResponse createStation(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
 
@@ -145,7 +120,4 @@ public class StationAcceptanceTest {
             .then().log().all();
     }
 
-    private static void assertStatusCode(ValidatableResponse response, HttpStatus httpStatus) {
-        assertThat(response.extract().statusCode()).isEqualTo(httpStatus.value());
-    }
 }
