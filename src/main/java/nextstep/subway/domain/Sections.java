@@ -9,18 +9,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 @Embeddable
-public class LineStations {
+public class Sections {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
-    private List<LineStation> lineStations = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>();
 
-    protected LineStations(){
+    protected Sections(){
 
     }
 
     public void add(Station preStation, Station station, Integer distance){
-        this.lineStations.add(new LineStation(preStation, station, distance));
+        this.sections.add(new Section(preStation, station, distance));
     }
 
     public void addSection(Station preStation, Station station, Integer distance){
@@ -28,17 +28,17 @@ public class LineStations {
         validateNotIncludeStation(preStation, station);
 
         if(isStationPresent(preStation)){
-            this.lineStations.stream()
-                    .filter(lineStation -> preStation.equals(lineStation.getPreStation()))
+            this.sections.stream()
+                    .filter(section -> preStation.equals(section.getPreStation()))
                     .findFirst()
-                    .ifPresent(lineStation -> lineStation.updateLineStation(station, lineStation.getStation(), distance));
+                    .ifPresent(section -> section.updateSection(station, section.getStation(), distance));
         }
 
         if(isStationPresent(station)){
-            this.lineStations.stream()
-                    .filter(lineStation -> station.equals(lineStation.getStation()))
+            this.sections.stream()
+                    .filter(section -> station.equals(section.getStation()))
                     .findFirst()
-                    .ifPresent(lineStation -> lineStation.updateLineStation(lineStation.getPreStation(), preStation, distance));
+                    .ifPresent(section -> section.updateSection(section.getPreStation(), preStation, distance));
         }
 
         add(preStation, station, distance);
@@ -57,27 +57,27 @@ public class LineStations {
     }
 
     private boolean isStationPresent(Station station){
-        return this.lineStations.stream()
-                .anyMatch(lineStation -> station.equals(lineStation.getStation()));
+        return this.sections.stream()
+                .anyMatch(section -> station.equals(section.getStation()));
     }
 
-    public List<LineStation> getOrderStations(){
-        Optional<LineStation> first = this.lineStations.stream()
-                .filter(lineStation -> lineStation.getPreStation() == null)
+    public List<Section> getOrderStations(){
+        Optional<Section> first = this.sections.stream()
+                .filter(section -> section.getPreStation() == null)
                 .findAny();
 
-        List<LineStation> orders = new ArrayList<>();
+        List<Section> orders = new ArrayList<>();
         while(first.isPresent()){
-            LineStation tmp = first.get();
+            Section tmp = first.get();
             orders.add(tmp);
-            first = this.lineStations.stream()
-                    .filter(lineStation -> tmp.getStation() == lineStation.getPreStation())
+            first = this.sections.stream()
+                    .filter(section -> tmp.getStation() == section.getPreStation())
                     .findAny();
         }
         return orders;
     }
 
-    public List<LineStation> getLineStations() {
-        return lineStations;
+    public List<Section> getSections() {
+        return sections;
     }
 }

@@ -9,7 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class LineStation extends BaseEntity {
+public class Section extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,21 +25,28 @@ public class LineStation extends BaseEntity {
 
     private Integer distance;
 
-    protected LineStation(){
+    protected Section(){
 
     }
 
-    public LineStation(Station preStation, Station station, Integer distance) {
+    public Section(Station preStation, Station station, Integer distance) {
+        validateSameStation(preStation, station);
         this.preStation = preStation;
         this.station = station;
         this.distance = distance;
     }
 
-    public void updateLineStation(Station preStation, Station station, Integer distance){
+    private void validateSameStation(Station preStation, Station station) {
+        if(station.equals(preStation)){
+            throw new IllegalArgumentException("역 구간 생성 시, 상행역과 하행역이 같은 수 없습니다.");
+        }
+    }
+
+    public void updateSection(Station preStation, Station station, Integer distance){
         validateDistance(preStation, distance);
         this.preStation = preStation;
         this.station = station;
-        this.distance = distance;
+        this.distance -= distance;
     }
 
     private void validateDistance(Station preStation, Integer distance) {
@@ -62,15 +69,5 @@ public class LineStation extends BaseEntity {
 
     public Integer getDistance() {
         return distance;
-    }
-
-    @Override
-    public String toString() {
-        return "LineStation{" +
-                "id=" + id +
-                ", preStation=" + preStation +
-                ", station=" + station +
-                ", distance=" + distance +
-                '}';
     }
 }
