@@ -61,12 +61,20 @@ public class Section extends BaseEntity {
 
     public void update(Section section) {
         if (this.upStation.equals(section.upStation)) {
+            validateUpdateDistance(section.distance);
             this.upStation = section.downStation;
             this.distance = this.distance - section.distance;
         }
         if (this.downStation.equals(section.downStation)) {
+            validateUpdateDistance(section.distance);
             this.downStation = section.upStation;
             this.distance = this.distance - section.distance;
+        }
+    }
+
+    private void validateUpdateDistance(Integer distance){
+        if (this.distance <= distance){
+            throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우는 길이가 기존 구간길이보다 작아야 합니다.");
         }
     }
 
