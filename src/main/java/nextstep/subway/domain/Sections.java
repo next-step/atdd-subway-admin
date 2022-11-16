@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import com.google.common.collect.Lists;
 import nextstep.subway.exception.CannotAddSectionException;
 import nextstep.subway.exception.CannotRemoveSectionException;
+import nextstep.subway.utils.CollectionUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -11,7 +12,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static java.math.BigInteger.ONE;
 import static nextstep.subway.exception.CannotAddSectionException.NO_MATCHED_STATION;
 import static nextstep.subway.exception.CannotAddSectionException.UP_AND_DOWN_STATION_ALL_EXISTS;
 import static nextstep.subway.exception.CannotRemoveSectionException.ONE_SECTION_REMAINS;
@@ -20,7 +20,7 @@ import static nextstep.subway.exception.CannotRemoveSectionException.ONE_SECTION
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Section> sectionList = new LinkedList<>();
+    private List<Section> sectionList = new ArrayList<>();
 
     protected Sections() {
     }
@@ -123,22 +123,32 @@ public class Sections {
         if (sectionList.isEmpty()) {
             return Stations.EMPTY;
         }
-        List<Station> orderedStations = Stream.concat(
-                        Stream.of(getOrderedSections().get(0).getUpStation()),
-                        getOrderedSections()
-                                .stream()
-                                .map(Section::getDownStation))
-                        .collect(Collectors.toList());
+        sortSections();
+
+        List<Station> orderedStations =
+                Stream.concat(
+                        Stream.of(getFirstUpStation()),
+                        getAllDownStations()
+                ).collect(Collectors.toList());
 
         return new Stations(orderedStations);
+    }
+
+    private Station getFirstUpStation() {
+        return getFirstSection().getUpStation();
+    }
+
+    private Stream<Station> getAllDownStations() {
+        return sectionList.stream()
+                .map(Section::getDownStation);
     }
 
     public void removeSection(Station station) {
         verifyRemoveSection(station);
         sortSections();
 
-        if (isLastUpStation(station)) {
-            removeLastUpSection();
+        if (isFirstUpStation(station)) {
+            removeFirstUpSection();
             return;
         }
         if (isLastDownStation(station)) {
@@ -152,7 +162,7 @@ public class Sections {
     }
 
     private void verifyRemoveSection(Station station) {
-        if (sectionList.size() == ONE.intValue()) {
+        if (CollectionUtils.isSingletonList(sectionList)) {
             throw new CannotRemoveSectionException(ONE_SECTION_REMAINS);
         }
         if (!hasStation(station)) {
@@ -172,18 +182,19 @@ public class Sections {
     }
 
     private void removeLastDownStation() {
-        sectionList.remove(sectionList.size()-1);
+        sectionList.remove(getLastSection());
     }
 
-    private void removeLastUpSection() {
-        sectionList.remove(sectionList.get(0));
+    private void removeFirstUpSection() {
+        sectionList.remove(getFirstSection());
     }
 
     private boolean isLastDownStation(Station station) {
-        return sectionList.get(sectionList.size()-1).isDownStation(station);
+        return getLastSection().isDownStation(station);
     }
-    private boolean isLastUpStation(Station station) {
-        return sectionList.get(0).isUpStation(station);
+
+    private boolean isFirstUpStation(Station station) {
+        return getFirstSection().isUpStation(station);
     }
 
     private void collapseSections(Section upStationSection, Section downStationSection) {
@@ -219,6 +230,14 @@ public class Sections {
 
     public Sections getSections() {
         return new Sections(getOrderedSections());
+    }
+
+    private Section getFirstSection() {
+        return CollectionUtils.getFirst(sectionList);
+    }
+
+    private Section getLastSection() {
+        return CollectionUtils.getLast(sectionList);
     }
 
     @Override

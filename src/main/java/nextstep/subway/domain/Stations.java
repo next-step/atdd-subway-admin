@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 public class Stations {
 
     public static final Stations EMPTY = new Stations(Collections.emptyList());
+
     private final List<Station> stationList;
 
     public Stations(Station ...stations) {
