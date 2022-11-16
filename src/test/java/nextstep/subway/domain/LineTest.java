@@ -18,6 +18,7 @@ class LineTest {
         // when
         line.update("3호선", "노랑색");
 
+        // then
         assertAll(
                 () -> assertThat(line.getName()).isEqualTo("3호선"),
                 () -> assertThat(line.getColor()).isEqualTo("노랑색")

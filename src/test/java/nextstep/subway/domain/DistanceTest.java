@@ -21,22 +21,28 @@ class DistanceTest {
     @DisplayName("거리를 뺄 수 있다")
     @Test
     void subtract() {
+        // given
         Distance distance1 = new Distance(10);
         Distance distance2 = new Distance(7);
 
+        // when
         Distance result = distance1.subtract(distance2);
 
+        // then
         assertThat(result.get()).isEqualTo(3);
     }
 
     @DisplayName("거리를 더할 수 있다")
     @Test
     void add() {
+        // given
         Distance distance1 = new Distance(10);
         Distance distance2 = new Distance(20);
 
+        // when
         Distance result = distance1.add(distance2);
 
+        // then
         assertThat(result.get()).isEqualTo(30);
     }
 }
