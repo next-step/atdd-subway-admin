@@ -129,6 +129,44 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void updateLineTest() {
+        //give
+        ExtractableResponse<Response> saveResponse = createLine("분당선", "red", upStation.getId(), downStation.getId(), 10);
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        Long id = saveResponse.jsonPath().getLong(LINE_ID);
+
+        //when
+        ExtractableResponse<Response> update = updateLine(id,"2호선","yellow");
+        assertThat(update.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        //then
+        ExtractableResponse<Response> findResponse = findById(id);
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        JsonPath responseBody = findResponse.jsonPath();
+        assertThat(findResponseByKey(responseBody, LINE_NAME)).isEqualTo("2호선");
+        assertThat(findResponseByKey(responseBody, COLOR)).isEqualTo("yellow");
+
+    }
+
+    private ExtractableResponse<Response> updateLine(Long id, String name, String color) {
+        Map<String, Object> params = new HashMap<>();
+        params.put(LINE_NAME, name);
+        params.put(COLOR, color);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put(LINE_MAIN_PATH + "/" + id)
+                .then().log().all()
+                .extract();
+    }
+
     private ExtractableResponse<Response> findAllLine() {
         return RestAssured.given().log().all()
                 .when().get(LINE_MAIN_PATH)

@@ -48,4 +48,10 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(NotFoundLine::new);
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(NotFoundLine::new);
+        line.update(lineRequest);
+    }
 }
