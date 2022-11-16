@@ -2,6 +2,7 @@ package nextstep.subway.dto;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 
 public class LineResponse {
@@ -24,7 +25,10 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line){
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), null);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(),
+                line.getOrderStations().stream()
+                .map(lineStation -> StationResponse.of(lineStation.getStation()))
+                .collect(Collectors.toList()));
     }
 
     public Long getId() {
