@@ -55,29 +55,6 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Section section = (Section) o;
-        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, upStation, downStation, line, distance);
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", line=" + line +
-                ", distance=" + distance +
-                '}';
-    }
 
     public boolean isContainSameStations(Section section) {
         if (Objects.isNull(section)) {
@@ -105,9 +82,7 @@ public class Section extends BaseEntity {
         if (Objects.isNull(newSection)) {
             return;
         }
-
         changeStation(newSection);
-        changeDistance(newSection);
     }
 
     private void changeDistance(Section newSection) {
@@ -118,12 +93,18 @@ public class Section extends BaseEntity {
 
         if (isUpStation(newSection.upStation)) {
             changeUpStation(newSection);
+            changeDistance(newSection);
             return;
         }
 
         if (isDownStation(newSection.downStation)) {
             changeDownStation(newSection);
+            changeDistance(newSection);
         }
+    }
+
+    public void updateLine(Line line) {
+        this.line = line;
     }
 
     private void changeUpStation(Section newSection) {
@@ -132,4 +113,30 @@ public class Section extends BaseEntity {
     private void changeDownStation(Section newSection) {
         this.downStation = newSection.upStation;
     }
+
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, upStation, downStation, line, distance);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", upStation=" + upStation +
+                ", downStation=" + downStation +
+                ", line=" + line +
+                ", distance=" + distance +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line);
+    }
+
 }

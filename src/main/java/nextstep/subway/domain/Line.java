@@ -61,6 +61,10 @@ public class Line extends BaseEntity {
         return allStations.stream().distinct().collect(Collectors.toList());
     }
 
+    public List<Section> getSections() {
+        return sections.getSections();
+    }
+
     public void update(LineRequest updateRequest) {
         if(!updateRequest.getName().isEmpty() && updateRequest.getName() != "") {
             this.name = updateRequest.getName();
@@ -73,6 +77,10 @@ public class Line extends BaseEntity {
     public void addSection(Section newSection) {
         Objects.requireNonNull(newSection, NOT_FOUND_SECTION_ERR);
         sections.addSection(newSection);
+
+        if (newSection.getLine() != this) {
+            newSection.updateLine(this);
+        }
     }
 
 

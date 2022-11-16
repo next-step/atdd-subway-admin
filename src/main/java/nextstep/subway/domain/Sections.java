@@ -27,6 +27,9 @@ public class Sections {
         validateDuplicated(newSection);
 
         changeSections(newSection);
+        // 구간을 변경했으면 새로운
+        sections.add(newSection);
+
     }
 
 

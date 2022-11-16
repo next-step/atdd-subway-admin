@@ -20,7 +20,7 @@ public class LineResponse {
     public String name;
     public String color;
     public List<StationResponse> stations;
-    public int distance;
+    public List<SectionResponse.Section> sections;
 
 
    public static List<LineResponse> of(List<Line> lines) {
@@ -40,5 +40,6 @@ public class LineResponse {
         name = line.getName();
         color = line.getColor();
         stations = line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
+        sections = line.getSections().stream().map(SectionResponse::of).collect(Collectors.toList());
     }
 }

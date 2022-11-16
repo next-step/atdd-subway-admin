@@ -4,46 +4,40 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.SectionRequest;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+
 import static nextstep.subway.line.LineAcceptanceStep.노선_한개_생성한다;
+import static nextstep.subway.line.LineAcceptanceStep.특정_노선을_조회한다;
 import static nextstep.subway.station.StationAcceptanceTest.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class LineSectionStep {
 
-    public static ExtractableResponse<Response> 역_2개와_노선을_생성한다() {
+    public static ExtractableResponse<Response> 역_3개와_노선을_생성한다() {
         int upLastStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
         int downLastStationId = 지하철역을_생성한다("선릉역").jsonPath().get("id");
+        지하철역을_생성한다("잠실역");
 
         return 노선_한개_생성한다(upLastStationId, downLastStationId);
     }
 
     public static ExtractableResponse<Response> 역_사이에_새로운_역을_등록한다(int lineId) {
-        return 정상_구간_생성_요청(lineId, 1L, null, 4);
+        return 구간_생성_요청(lineId, 1L, 3L, 4);
     }
 
-    private static ExtractableResponse<Response> 정상_구간_생성_요청(int lineId, Long upStationId, Long downStationId, int distance) {
-        int newStationId =  지하철역을_생성한다("역삼역").jsonPath().get("id");
-
-        SectionRequest request = SectionRequest.builder()
-                .upStationId(upStationId)
-                .downStationId(Long.valueOf(newStationId))
-                .distance(distance)
-                .build();
-        return 구간_생성_호출(lineId, request);
-    }
-
-    public static ExtractableResponse<Response> 비정상_구간_생성_요청(int lineId, Long upStationId, Long downStationId, int distance) {
+    public static ExtractableResponse<Response> 구간_생성_요청(int lineId, Long upStationId, Long downStationId, int distance) {
         SectionRequest request = SectionRequest.builder()
                 .upStationId(upStationId)
                 .downStationId(downStationId)
                 .distance(distance)
                 .build();
-
         return 구간_생성_호출(lineId, request);
     }
+
 
     public static ExtractableResponse<Response> 구간_생성_호출(int lineId, SectionRequest request) {
         return RestAssured.given()
@@ -62,13 +56,23 @@ public class LineSectionStep {
     }
 
 
-    public static void 구간_등록_성공_확인(ExtractableResponse<Response> savedSection) {
-        assertThat(savedSection.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    public static void 구간_추가_등록_결과_확인(int lineId, ExtractableResponse<Response> response, int count, String target) {
+        구간_예상_수_확인(lineId, response, count, target);
+        구간_등록_성공_확인(response);
+    }
+
+    public static void 구간_등록_성공_확인(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     public static void 구간_등록_실패(ExtractableResponse<Response> response) {
         // 500
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    public static void 구간_예상_수_확인(int lineId, ExtractableResponse<Response> response, int count, String target) {
+        List<JSONObject> jsonObjects = 특정_노선을_조회한다(lineId).jsonPath().getList(target);
+        assertThat(jsonObjects).hasSize(count);
     }
 
 

@@ -35,7 +35,7 @@ public class LineSectionTest {
         databaseCleanup.execute();
 
         // 2개 지하철역 등록, 노선 1개 등록
-        lineId = 역_2개와_노선을_생성한다().jsonPath().get("id");
+        lineId = 역_3개와_노선을_생성한다().jsonPath().get("id");
     }
 
     /**
@@ -65,7 +65,7 @@ public class LineSectionTest {
         // given -> beforeEach
 
         // when
-        ExtractableResponse<Response> response = 비정상_구간_생성_요청(lineId, 1L, 2L, 2);
+        ExtractableResponse<Response> response = 구간_생성_요청(lineId, 1L, 2L, 2);
 
         // then
         구간_등록_실패(response);
@@ -83,7 +83,7 @@ public class LineSectionTest {
         추가_역을_3개_생성한다();
 
         // when
-        ExtractableResponse<Response> response = 비정상_구간_생성_요청(lineId, 4L, 5L, 10);
+        ExtractableResponse<Response> response = 구간_생성_요청(lineId, 4L, 5L, 10);
 
         // then
         구간_등록_실패(response);
@@ -100,31 +100,30 @@ public class LineSectionTest {
         // given -> beforeEach
 
         // when
-        ExtractableResponse<Response> response1 = 비정상_구간_생성_요청(lineId, 1L, 2L, 7);
-        ExtractableResponse<Response> response2 = 비정상_구간_생성_요청(lineId, 1L, 2L, 8);
+        ExtractableResponse<Response> response1 = 구간_생성_요청(lineId, 1L, 2L, 7);
+        ExtractableResponse<Response> response2 = 구간_생성_요청(lineId, 1L, 2L, 8);
 
         // then
         구간_등록_실패(response1);
         구간_등록_실패(response2);
     }
 
-//    /**
-//     * Given 2개의 지하철역이 등록되어 있고, 노선이 등록되어있다
-//     * When 새로운 역을 상행 종점으로 생성하면
-//     * Then 생성된 지하철 구간을 확인할 수 있다
-//     */
-//    @DisplayName("새로운 역을 상행 종점으로 구간 등록할 수 있다")
-//    @Test
-//    void 새로운_역_상행_종점_생성_성공() {
-//        // given -> beforeEach
-//        String upStationId = "3";
-//        String downStationId = "1";
-//        int distance = 5;
-//
-//        ExtractableResponse<Response> response = 지하철구간_생성_요청(upStationId, downStationId, distance);
-//
-//        지하철구간_생성_성공(response);
-//    }
+    /**
+     * Given 2개의 지하철역이 등록되어 있고, 노선이 등록되어있다
+     * When 새로운 역을 상행 종점으로 생성하면
+     * Then 생성된 지하철 구간을 확인할 수 있다
+     */
+    @DisplayName("새로운 역을 상행 종점으로 구간 등록할 수 있다")
+    @Test
+    void 새로운_역_상행_종점_생성_성공() {
+        // given -> beforeEach
+
+        // when 상행종점
+        ExtractableResponse<Response> response = 구간_생성_요청(lineId, 3L, 1L, 3);
+
+        // then
+        구간_추가_등록_결과_확인(lineId, response, 2, "sections");
+    }
 
 
 }
