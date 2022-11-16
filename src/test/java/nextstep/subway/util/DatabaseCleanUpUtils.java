@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,10 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 public class DatabaseCleanUpUtils implements InitializingBean {
 
+
 	@Autowired
-	DataSource dataSource;
+	private final DataSource dataSource;
 
 	private final List<String> tableNames = new ArrayList<>();
+
+	public DatabaseCleanUpUtils(DataSource dataSource) {
+		this.dataSource = dataSource;
+	}
 
 	@Override
 	public void afterPropertiesSet() {
@@ -41,12 +47,14 @@ public class DatabaseCleanUpUtils implements InitializingBean {
 	public void cleanUp() {
 		try {
 			Connection connection = dataSource.getConnection();
-			connection.createStatement().execute("SET REFERENTIAL_INTEGRITY FALSE");
+			Statement statement = connection.createStatement();
+			statement.execute("SET REFERENTIAL_INTEGRITY FALSE");
 			for (String tableName : tableNames) {
-				connection.createStatement().executeUpdate("TRUNCATE TABLE " + tableName);
-				connection.createStatement().execute("ALTER TABLE " + tableName + " ALTER COLUMN ID RESTART WITH 1");
+				statement.executeUpdate("TRUNCATE TABLE " + tableName);
+				statement.execute("ALTER TABLE " + tableName + " ALTER COLUMN ID RESTART WITH 1");
 			}
-			connection.createStatement().execute("SET REFERENTIAL_INTEGRITY TRUE");
+			statement.execute("SET REFERENTIAL_INTEGRITY TRUE");
+			statement.close();
 			connection.close();
 		} catch (SQLException e) {
 			throw new RuntimeException("SQL EXCEPTION while cleanup" + e);
