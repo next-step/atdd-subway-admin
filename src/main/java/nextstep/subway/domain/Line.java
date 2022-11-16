@@ -23,7 +23,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private LineStations lineStations = new LineStations();
+    private Sections lineStations = new Sections();
 
     protected Line(){}
 
@@ -64,11 +64,11 @@ public class Line extends BaseEntity {
         lineStations.addSection(preStation, station, distance);
     }
 
-    public List<LineStation> getOrderStations(){
+    public List<Section> getOrderStations(){
         return lineStations.getOrderStations();
     }
 
-    public LineStations getLineStations() {
+    public Sections getLineStations() {
         return lineStations;
     }
 }
