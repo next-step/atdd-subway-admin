@@ -17,7 +17,7 @@ public class RestControllerAdvice {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<HashMap> handleException(Exception e) {
         HashMap<Object, Object> errorMap = new HashMap<>();
-        errorMap.put("errorMessage", ErrorMessageConstant.NOT_EXISTS_LINE);
+        errorMap.put("errorMessage", ErrorMessageConstant.ERROR_MESSAGE_DEFAULT);
         return ResponseEntity.badRequest().body(errorMap);
     }
 }
