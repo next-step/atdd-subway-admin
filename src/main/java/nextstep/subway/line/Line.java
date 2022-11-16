@@ -30,4 +30,9 @@ public class Line {
         this.name = name;
         this.color = color;
     }
+
+    public Line(Name name, Color color) {
+        this.name = name;
+        this.color = color;
+    }
 }
