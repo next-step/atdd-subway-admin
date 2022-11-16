@@ -51,11 +51,11 @@ public class Line extends BaseEntity {
 	}
 
 	public Sections getSections() {
-		return sections;
+		return sections.getSections();
 	}
 
     public void removeSection(Station station) {
-		sections.removeStation(station);
+		sections.removeSection(station);
     }
 
 	public Stations getStation() {

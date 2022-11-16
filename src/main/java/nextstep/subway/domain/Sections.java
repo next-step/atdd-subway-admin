@@ -26,6 +26,10 @@ public class Sections {
         sectionList.addAll(Lists.newArrayList(sections));
     }
 
+    public Sections(List<Section> sections) {
+        this.sectionList = sections;
+    }
+
     public void addSection(Line line, Station upStation, Station downStation, Distance distance) {
         if (sectionList.isEmpty()) {
             sectionList.add(new Section(line, upStation, downStation, distance));
@@ -126,7 +130,7 @@ public class Sections {
         return new Stations(orderedStations);
     }
 
-    public void removeStation(Station station) {
+    public void removeSection(Station station) {
         sortSections();
 
         if (isLastUpStation(station)) {
@@ -193,6 +197,10 @@ public class Sections {
         return sectionList.stream()
                 .filter(section -> section.isDownStation(downStation))
                 .findFirst().orElseThrow(NullPointerException::new);
+    }
+
+    public Sections getSections() {
+        return new Sections(getOrderedSections());
     }
 
     @Override

@@ -14,13 +14,13 @@ class LineTest {
     Station 하행종점역 = new Station("신촌역");
     Station 가양역 = new Station("가양역");;
     Station 홍대역 = new Station("홍대역");;
-    int 거리 = 10;
+    int 종점간_거리 = 10;
 
     Line 노선;
 
     @BeforeEach
     void setup() {
-        노선 = new Line("2호선", "color", 상행종점역, 하행종점역, 거리);
+        노선 = new Line("2호선", "color", 상행종점역, 하행종점역, 종점간_거리);
     }
 
     @Test
@@ -79,7 +79,7 @@ class LineTest {
     @Test
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
     void 구간_거리_검증() {
-        int 구간_거리 = 거리+1;
+        int 구간_거리 = 종점간_거리 +1;
 
         assertThatThrownBy(() -> 노선.addSection(홍대역, 하행종점역, 구간_거리))
                 .isInstanceOf(CannotAddSectionException.class);
@@ -154,6 +154,15 @@ class LineTest {
     }
     @Test
     void 가운데_역을_제거할_경우_거리는_두_구간의_거리의_합으로_정함() {
+        노선.addSection(상행종점역, 가양역, 4);
+        노선.addSection(가양역, 홍대역, 4);
+
+        노선.removeSection(가양역);
+
+        assertThat(노선.getSections())
+                .isEqualTo(new Sections(
+                        new Section(노선, 상행종점역, 홍대역, 8),
+                        new Section(노선, 홍대역, 하행종점역, 2)));
 
     }
 
