@@ -21,7 +21,11 @@ public class SectionController {
 
     @PostMapping("/lines/{id}/sections")
     public ResponseEntity addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        sectionService.addSection(id, sectionRequest);
+        try {
+            sectionService.addSection(id, sectionRequest);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok().build();
     }
 
