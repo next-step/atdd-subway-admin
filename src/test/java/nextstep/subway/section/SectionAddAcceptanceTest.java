@@ -1,6 +1,8 @@
 package nextstep.subway.section;
 
 import com.google.common.collect.Lists;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.SubwayAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -8,9 +10,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
 
-import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_생성;
-import static nextstep.subway.line.LineAcceptanceTestAssured.지하철_노선_식별자;
+import static nextstep.subway.line.LineAcceptanceTestAssertions.역_목록_일치함;
+import static nextstep.subway.line.LineAcceptanceTestAssured.*;
+import static nextstep.subway.section.SectionAcceptanceTestAssured.구간_등록;
+import static nextstep.subway.section.SectionAcceptanceTestAssured.구간_제거;
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_생성;
 import static nextstep.subway.station.StationAcceptanceTestAssured.지하철역_식별자;
 
@@ -39,8 +44,8 @@ class SectionAddAcceptanceTest extends SubwayAcceptanceTest {
         중간역2_식별자 = 지하철역_식별자(지하철역_생성(지하철역.get(2)));
 
         노선_식별자 = 지하철_노선_식별자(지하철_노선_생성("2호선", 상행종점역_식별자, 하행종점역_식별자, 종점간_거리));
-        SectionAcceptanceTestAssured.구간_등록(노선_식별자, 상행종점역_식별자, 중간역1_식별자, 1);
-        SectionAcceptanceTestAssured.구간_등록(노선_식별자, 중간역1_식별자, 중간역2_식별자, 2);
+        구간_등록(노선_식별자, 상행종점역_식별자, 중간역1_식별자, 1);
+        구간_등록(노선_식별자, 중간역1_식별자, 중간역2_식별자, 2);
     }
 
     /**
@@ -50,6 +55,11 @@ class SectionAddAcceptanceTest extends SubwayAcceptanceTest {
      */
     @Test
     void 하행_종점역_제거() {
+        구간_제거(노선_식별자, 하행종점역_식별자);
+
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회(노선_식별자);
+        List<String> 역_목록 = Lists.newArrayList(지하철역.get(0), 지하철역.get(1), 지하철역.get(2));
+        역_목록_일치함(노선_조회_응답, 역_목록);
     }
 
     /**
@@ -59,6 +69,11 @@ class SectionAddAcceptanceTest extends SubwayAcceptanceTest {
      */
     @Test
     void 상행_종점역_제거() {
+        구간_제거(노선_식별자, 상행종점역_식별자);
+
+        ExtractableResponse<Response> 노선_조회_응답 = 지하철_노선_조회(노선_식별자);
+        List<String> 역_목록 = Lists.newArrayList(지하철역.get(1), 지하철역.get(2), 지하철역.getLast());
+        역_목록_일치함(노선_조회_응답, 역_목록);
     }
 
     /**

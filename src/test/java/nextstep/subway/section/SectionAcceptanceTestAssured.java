@@ -7,6 +7,7 @@ import org.apache.groovy.util.Maps;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static nextstep.subway.RestAssuredUtils.delete;
 import static nextstep.subway.RestAssuredUtils.post;
 
 class SectionAcceptanceTestAssured {
@@ -26,7 +27,15 @@ class SectionAcceptanceTestAssured {
                 DISTANCE, 거리 + "");
     }
 
+    public static ExtractableResponse<Response> 구간_제거(long 노선_식별자, long 역_식별자) {
+        return delete(삭제_요청_주소(노선_식별자, 역_식별자));
+    }
+
     private static String 요청_주소(long 노선_식별자) {
         return format("/lines/%s/sections", 노선_식별자);
+    }
+
+    private static String 삭제_요청_주소(long 노선_식별자, long 역_식별자) {
+        return format("/lines/%s/sections?stationId=%s", 노선_식별자, 역_식별자);
     }
 }
