@@ -30,17 +30,14 @@ public class Section extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
-    private int distance;
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        if(distance <= 0) {
-            throw new IllegalArgumentException(ErrorMessageConstant.VALID_LINE_LENGTH_GREATER_THAN_ZERO);
-        }
         this.distance = distance;
     }
 
@@ -57,7 +54,8 @@ public class Section extends BaseEntity {
     }
 
     public void update(Section newSection) {
-        if(distance <= newSection.distance){
+        // TODO: 도메인 내부로 넣기
+        if(distance.get() <= newSection.distance.get()){
             throw new IllegalArgumentException(ErrorMessageConstant.VALID_GREATER_OR_EQUAL_LENGTH_BETWEEN_STATION);
         }
         if (isEqualUpStation(newSection)) {
@@ -74,7 +72,7 @@ public class Section extends BaseEntity {
 
     private void updateUpStation(Section newSection) {
         upStation = newSection.upStation;
-        distance = distance - newSection.distance;
+        distance.subtract(newSection.distance);
     }
 
     private boolean isEqualDownStation(Section newSection) {
@@ -83,6 +81,6 @@ public class Section extends BaseEntity {
 
     private void updateDownStation(Section newSection) {
         downStation = newSection.upStation;
-        distance = distance - newSection.distance;
+        distance.subtract(newSection.distance);
     }
 }
