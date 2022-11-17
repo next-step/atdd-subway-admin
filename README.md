@@ -63,14 +63,17 @@ npm run dev
 
 This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master/LICENSE.md) licensed.
 
+### IntelliJ Settings
+
+- Non-ASCII characters 설정 해제
+- 개행설정: Preferences -> Editor -> General -> Ensure every saved file ends with a line break(Ensure line feed at file end on save)
+
 ### 1단계 - 지하철역 인수 테스트 작성
 
 1. 기능 요구사항
     - [x] 지하철역 관련 인수 테스트를 완성
         - [x] 지하철역 목록 조회 인수 테스트 작성하기
         - [x] 지하철역 삭제 인수 테스트 작성하기
-2. 설정
-    - Non-ASCII characters 설정 해제
 
 ### 2단계 - 지하철 노선 기능
 
@@ -107,3 +110,18 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [x] 인수 테스트의 재사용성과 가독성, 빠른 테스트 의도 파악을 위해 인수 테스트 리팩터링
 3. 참조
     - [데이터 베이스 초기화](https://velog.io/@janeljs/test-database-init)
+
+### 3단계 - 구간 추가 기능
+
+1. 기능 요구사항
+    - [x] 요구사항 설명에서 제공되는 요구사항을 기반으로 지하철 구간 추가 기능 구현
+    - [x] 요구사항을 정의한 인수 조건 설정
+    - [x] 인수 조건을 검증하는 인수 테스트 작성
+    - [x] 예외 케이스에 대한 검증 포함
+2. 기능 목록
+    - [x] 역 사이에 새로운 역을 등록할 경우
+    - [x] 새로운 역을 상행 종점으로 등록할 경우
+    - [x] 새로운 역을 하행 종점으로 등록할 경우
+    - [x] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+    - [x] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+    - [x] 상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 추가할 수 없음

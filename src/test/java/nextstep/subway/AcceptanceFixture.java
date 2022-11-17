@@ -3,6 +3,8 @@ package nextstep.subway;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.assertj.core.api.Assertions;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
@@ -24,4 +26,11 @@ public class AcceptanceFixture {
         return response.jsonPath().getString("name");
     }
 
+    public static void 요청_성공(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 요청_실패(ExtractableResponse<Response> response) {
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

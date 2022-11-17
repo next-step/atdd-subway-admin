@@ -2,15 +2,19 @@ package nextstep.subway.service;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.exception.ErrorMessage.LINE_ID_NOT_FOUND;
 
 @Service
 @Transactional(readOnly = true)
@@ -26,24 +30,25 @@ public class LineService {
 
     @Transactional
     public LineResponse create(LineRequest request) {
-        Line line = lineRepository.save(getLine(request));
-        return LineResponse.of(line);
+        Line line = request.toLine();
+        line.addSection(getSection(request));
+        Line savedLine = lineRepository.save(line);
+        return LineResponse.of(savedLine);
     }
 
-    private Line getLine(LineRequest request) {
+    private Section getSection(LineRequest request) {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
-        return new Line(request.getName(), request.getColor(), upStation, downStation, request.getDistance());
+        return new Section(upStation, downStation, request.getDistance());
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> stations = lineRepository.findAll();
 
         return stations.stream()
-                .map(station -> LineResponse.of(station))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
-
 
     public LineResponse findLine(Long id) {
         Line line = findById(id);
@@ -62,14 +67,19 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    private Line findById(Long id) {
-        return lineRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
+    @Transactional
+    public void addSection(Long id, SectionRequest request) {
+        Line line = findById(id);
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        line.addSection(new Section(upStation, downStation, request.getDistance()));
     }
 
-    public void validateCheck(LineRequest request) {
-        if (lineRepository.existsByName(request.getName())) {
-            throw new DataIntegrityViolationException("이미 존재하는 지하철 노선 이름입니다.");
-        }
+    private Line findById(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new DataIntegrityViolationException(
+                        String.format(LINE_ID_NOT_FOUND.getMessage(), id))
+                );
     }
+
 }

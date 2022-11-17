@@ -24,4 +24,5 @@ public class BaseEntity {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
+
 }

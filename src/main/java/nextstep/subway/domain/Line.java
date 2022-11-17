@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -15,16 +16,8 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
-
-    @Column
-    private int distance;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -34,11 +27,14 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this(name, color);
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    public void update(Line line) {
+        this.name = line.getName();
+        this.color = line.getColor();
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+        section.changeLine(this);
     }
 
     public Long getId() {
@@ -53,20 +49,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public List<Station> stations() {
+        return sections.stationsBySorted();
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public void update(Line line) {
-        this.name = line.getName();
-        this.color = line.getColor();
-    }
 }

@@ -4,8 +4,6 @@ import javax.persistence.*;
 
 @Entity
 public class Station extends BaseEntity {
-    protected Station() {
-    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -13,6 +11,9 @@ public class Station extends BaseEntity {
 
     @Column(unique = true)
     private String name;
+
+    protected Station() {
+    }
 
     public Station(String name) {
         this.name = name;
