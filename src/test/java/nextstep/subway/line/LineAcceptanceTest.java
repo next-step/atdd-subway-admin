@@ -143,7 +143,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Long id = saveResponse.jsonPath().getLong(LINE_ID);
 
         //when
-        ExtractableResponse<Response> update = updateLine(id,"2호선","yellow");
+        ExtractableResponse<Response> update = updateLine(id, "2호선", "yellow");
         assertThat(update.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //then
@@ -154,6 +154,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(findResponseByKey(responseBody, COLOR)).isEqualTo("yellow");
 
     }
+
     /**
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 삭제하면

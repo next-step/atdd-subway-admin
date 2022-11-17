@@ -17,24 +17,20 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
     private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
     public LineResponse saveStation(LineRequest lineRequest) {
-        Station upStation = findStation(lineRequest.getUpStationId());
-        Station downStation = findStation(lineRequest.getDownStationId());
+        Station upStation = stationService.findStation(lineRequest.getUpStationId());
+        Station downStation = stationService.findStation(lineRequest.getDownStationId());
         Line line = lineRequest.toLine();
         line.addStations(upStation, downStation);
         return LineResponse.of(lineRepository.save(line));
-    }
-
-    private Station findStation(Long id) {
-        return stationRepository.findById(id).orElseThrow(NotFoundStation::new);
     }
 
     @Transactional(readOnly = true)
