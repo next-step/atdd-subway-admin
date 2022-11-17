@@ -83,8 +83,10 @@ public class Sections {
         Optional<Section> nextSection = findNextSection(station);
         if (isDeleteMiddle(prevSection, nextSection)) {
             deleteMiddle(prevSection.get(), nextSection.get());
+            return;
         }
         nextSection.ifPresent(sections::remove);
+        prevSection.ifPresent(sections::remove);
     }
 
     private Optional<Section> findPrevSection(Station station) {
