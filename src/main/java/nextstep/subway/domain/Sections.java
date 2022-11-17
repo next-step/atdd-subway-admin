@@ -17,24 +17,24 @@ import nextstep.subway.dto.StationResponse;
 public class Sections {
 
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
-    private List<Section> sectionList = new ArrayList<>();
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
 
-    public Sections(final List<Section> sectionList) {
-        this.sectionList = Collections.unmodifiableList(sectionList);
+    public Sections(final List<Section> sections) {
+        this.sections = Collections.unmodifiableList(sections);
     }
 
     public void addSection(Section section) {
-        this.sectionList.add(section);
+        this.sections.add(section);
     }
 
     public List<StationResponse> getStations() {
-        Set<StationResponse> upStations = sectionList.stream()
+        Set<StationResponse> upStations = sections.stream()
             .map(section -> StationResponse.of(section.getUpStation()))
             .collect(Collectors.toSet());
-        Set<StationResponse> downStations = sectionList.stream()
+        Set<StationResponse> downStations = sections.stream()
             .map(section -> StationResponse.of(section.getDownStation()))
             .collect(Collectors.toSet());
 
