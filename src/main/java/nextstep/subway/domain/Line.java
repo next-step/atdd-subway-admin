@@ -51,14 +51,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        List<Station> allStations = new ArrayList<>();
-        sections.getSections().forEach(section -> {
-            allStations.add(section.getUpStation());
-            allStations.add(section.getDownStation());
-        });
-
-        // 중복제거
-        return allStations.stream().distinct().collect(Collectors.toList());
+        return sections.getAllStations();
     }
 
     public List<Section> getSections() {
