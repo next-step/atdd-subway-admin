@@ -4,6 +4,7 @@ import nextstep.subway.exception.SectionsException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ import static nextstep.subway.exception.SectionsExceptionMessage.*;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<Section> sections = new ArrayList<>();
 
     protected Sections() {
