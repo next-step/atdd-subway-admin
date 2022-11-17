@@ -1,10 +1,8 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line {
@@ -19,8 +17,8 @@ public class Line {
     @Column(unique = true)
     private String color;
 
-    @OneToMany(mappedBy = "line", cascade = { CascadeType.PERSIST, CascadeType.REMOVE })
-    private final List<Section> sections = new ArrayList<>();
+    @Embedded
+    private final Sections sections = new Sections();
 
     protected Line() { }
 
@@ -31,10 +29,6 @@ public class Line {
 
     public Long getId() {
         return id;
-    }
-
-    public List<Section> getSections() {
-        return sections;
     }
 
     public void addSection(Section section) {
@@ -51,12 +45,7 @@ public class Line {
     }
 
     public List<Map<String, Object>> getStations() {
-        List<Map<String, Object>> stations = sections.stream()
-                .map(section -> section.getUpStation().toMapForOpen())
-                .collect(Collectors.toList());
-        Section lastSection = sections.get(sections.size() - 1);
-        stations.add(lastSection.getDownStation().toMapForOpen());
-        return stations;
+        return sections.getStations();
     }
 
     public void update(Line updateLine) {
