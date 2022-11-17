@@ -47,20 +47,20 @@ public class Line {
         return this.id;
     }
 
-    public String getName() {
-        return this.name.getName();
+    public Name getName() {
+        return this.name;
     }
 
-    public String getColor() {
-        return this.color.getColor();
+    public Color getColor() {
+        return this.color;
     }
 
     public void addSection(Station upStation, Station downStation, int distance) {
         this.sections.add(new Section(this, upStation, downStation, new Distance(distance)));
     }
 
-    public void update(String name, String color) {
-        this.name = new Name(name);
-        this.color = new Color(color);
+    public void update(Name name, Color color) {
+        this.name = name;
+        this.color = color;
     }
 }

@@ -1,10 +1,13 @@
 package nextstep.subway.line.dto;
 
+import nextstep.subway.common.vo.Color;
+import nextstep.subway.common.vo.Name;
+
 public class LineUpdateRequest {
 
     private String name;
     private String color;
-    
+
     public void setName(String name) {
         this.name = name;
     }
@@ -13,12 +16,12 @@ public class LineUpdateRequest {
         this.color = color;
     }
 
-    public String getName() {
-        return this.name;
+    public Name toName() {
+        return new Name(this.name);
     }
 
-    public String getColor() {
-        return this.color;
+    public Color toColor() {
+        return new Color(this.color);
     }
 }
 

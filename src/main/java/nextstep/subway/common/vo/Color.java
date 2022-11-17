@@ -27,6 +27,19 @@ public class Color {
         }
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Color color1 = (Color) o;
+        return Objects.equals(color, color1.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(color);
+    }
+
     public String getColor() {
         return color;
     }
