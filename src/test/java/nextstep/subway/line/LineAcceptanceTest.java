@@ -220,8 +220,7 @@ public class LineAcceptanceTest {
 
     private static ExtractableResponse<Response> updateLine(String location, Map<String, String> params) {
 
-        String id = location.substring(location.lastIndexOf("/"), location.length());
-        System.out.println("debug : " + BASE_URL + id);
+        String id = location.substring(location.lastIndexOf("/"));
 
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
