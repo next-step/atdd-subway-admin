@@ -49,10 +49,6 @@ public class Section extends BaseEntity {
         return distance <= section.getDistance();
     }
 
-    public boolean isSameSection(Section section) {
-        return equals(section);
-    }
-
     public boolean isSameUpStation(Section newSection) {
         return upStation.equals(newSection.getUpStation());
     }
