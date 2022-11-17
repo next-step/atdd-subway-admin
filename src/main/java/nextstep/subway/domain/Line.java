@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.Collections;
-import java.util.List;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -56,7 +56,7 @@ public class Line {
         return color;
     }
 
-    public List<Station> findAssignedStations() {
+    public Set<Station> findAssignedStations() {
         return sections.assignedStations();
     }
 

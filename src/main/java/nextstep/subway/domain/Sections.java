@@ -1,8 +1,10 @@
 package nextstep.subway.domain;
 
-import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -27,12 +29,27 @@ public class Sections {
         return new Sections(sections);
     }
 
-    public List<Station> assignedStations() {
+    public Set<Station> assignedStations() {
+        Set<Station> sortedStations = new LinkedHashSet<>();
+        Optional<Section> section = findFirstSection();
+        while (section.isPresent()) {
+            section.ifPresent(findSection -> sortedStations.addAll(findSection.stations()));
+            section = findNextSection(section.get());
+        }
+        return sortedStations;
+    }
+
+    private Optional<Section> findFirstSection() {
+        List<Station> downStations = this.sections.stream().map(Section::getDownStation).collect(Collectors.toList());
         return this.sections.stream()
-                .map(Section::stations)
-                .flatMap(Collection::stream)
-                .distinct()
-                .collect(Collectors.toList());
+                .filter(section -> !downStations.contains(section.getUpStation()))
+                .findFirst();
+    }
+
+    private Optional<Section> findNextSection(Section currentSection) {
+        return this.sections.stream()
+                .filter(section -> section.isNext(currentSection))
+                .findFirst();
     }
 
     public void add(Section newSection) {
@@ -56,7 +73,7 @@ public class Sections {
     }
 
     private boolean notInclude(Section newSection) {
-        List<Station> assignedStations = this.assignedStations();
+        Set<Station> assignedStations = this.assignedStations();
         return newSection.stations().stream()
                 .noneMatch(assignedStations::contains);
     }

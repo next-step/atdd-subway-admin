@@ -68,12 +68,24 @@ public class Section {
         }
     }
 
+    public boolean isNext(Section section) {
+        return this.upStation.equals(section.downStation);
+    }
+
     private boolean isSameUpStation(Section newSection) {
         return this.upStation.equals(newSection.upStation);
     }
 
     private boolean isSameDownStation(Section newSection) {
         return this.downStation.equals(newSection.downStation);
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
     }
 
     @Override
