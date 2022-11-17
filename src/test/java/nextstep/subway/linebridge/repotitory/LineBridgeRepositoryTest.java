@@ -1,4 +1,4 @@
-package nextstep.subway.linebridge.application;
+package nextstep.subway.linebridge.repotitory;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -6,21 +6,17 @@ import nextstep.subway.distance.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.linebridge.domain.LineBridge;
-import static nextstep.subway.station.application.StationServiceTest.*;
+import static nextstep.subway.station.repository.StationRepositoryTest.*;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.repository.StationRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
-
 @DataJpaTest
-class LineBridgeServiceTest {
+class LineBridgeRepositoryTest {
     @Autowired
     private StationRepository stationRepository;
 

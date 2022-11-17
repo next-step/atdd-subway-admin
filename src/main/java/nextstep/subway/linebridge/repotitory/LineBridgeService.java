@@ -1,4 +1,4 @@
-package nextstep.subway.linebridge.application;
+package nextstep.subway.linebridge.repotitory;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.repository.LineRepository;

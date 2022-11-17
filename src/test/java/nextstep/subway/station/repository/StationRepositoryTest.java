@@ -1,4 +1,4 @@
-package nextstep.subway.station.application;
+package nextstep.subway.station.repository;
 
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.dto.StationRequest;
@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 public
-class StationServiceTest {
+class StationRepositoryTest {
 
     public static StationRequest 강남역 = new StationRequest("강남역");
     public static StationRequest 역삼역 = new StationRequest("역삼역");

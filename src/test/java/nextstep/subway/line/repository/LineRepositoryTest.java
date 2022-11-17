@@ -1,8 +1,7 @@
-package nextstep.subway.line.application;
+package nextstep.subway.line.repository;
 
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineDto;
-import nextstep.subway.line.repository.LineRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.repository.StationRepository;
 import org.junit.jupiter.api.Test;
@@ -10,11 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import static nextstep.subway.station.application.StationServiceTest.*;
+import static nextstep.subway.station.repository.StationRepositoryTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
-class LineServiceTest {
+class LineRepositoryTest {
     @Autowired
     private StationRepository stationRepository;
 
