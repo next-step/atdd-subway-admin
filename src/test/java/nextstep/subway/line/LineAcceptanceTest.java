@@ -92,7 +92,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> saveResponse = createLine("분당선", "red", 1L, 200L, 10);
 
         //then
-        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 

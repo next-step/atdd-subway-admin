@@ -6,7 +6,7 @@ import nextstep.subway.exception.IllegalRequestBody;
 
 public class LineSaveRequest {
     private static final Long MIN_DISTANCE = 0L;
-    private static final Long MIN_STAION_ID = 1L;
+    private static final Long MIN_STATION_ID = 1L;
     private String name;
     private String color;
     private Long distance;
@@ -70,7 +70,7 @@ public class LineSaveRequest {
     }
 
     private void validateStationId(Long upStationId) {
-        if (upStationId < MIN_STAION_ID) {
+        if (upStationId < MIN_STATION_ID) {
             throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_STATION_ID.getMessage());
         }
     }
