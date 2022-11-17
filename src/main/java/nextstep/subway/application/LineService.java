@@ -69,8 +69,8 @@ public class LineService {
     public SectionResponse.Section saveSection(Long lineId, SectionRequest sectionRequest) {
         // 이전에 저장됐던 section이 Line에 같이 조회됨
         Line line = lineRepository.findById(lineId).orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
-        Station upStation = findStationById(Long.valueOf(sectionRequest.getUpStationId()));
-        Station downStation = findStationById(Long.valueOf(sectionRequest.getDownStationId()));
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
 
         // 새로운 section에 위에서 가져온 line도 매핑
         Section section = new Section(upStation, downStation, line, sectionRequest.getDistance());
