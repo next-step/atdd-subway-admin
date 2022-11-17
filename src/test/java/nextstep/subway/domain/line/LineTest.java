@@ -57,6 +57,7 @@ public class LineTest {
     @Nested
     @DisplayName("addSection 메소드는")
     class Describe_addSection {
+
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
         private Station downStation = new Station("잠실역");
@@ -106,5 +107,5 @@ public class LineTest {
             );
         }
     }
-
 }
+

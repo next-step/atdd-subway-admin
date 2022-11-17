@@ -46,6 +46,7 @@ public class SectionTest {
     @Nested
     @DisplayName("getStations 메소드")
     class Describe_getStations {
+
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
         private Station downStation = new Station("잠실역");
@@ -69,6 +70,7 @@ public class SectionTest {
     @Nested
     @DisplayName("isShortDistance 메소드")
     class Describe_isShortDistance {
+
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
         private Station downStation = new Station("잠실역");
@@ -91,6 +93,7 @@ public class SectionTest {
     @Nested
     @DisplayName("isSameUpStation 메소드")
     class Describe_isSameUpStation {
+
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
         private Station downStation = new Station("잠실역");
@@ -113,6 +116,7 @@ public class SectionTest {
     @Nested
     @DisplayName("isSameDownStation 메소드")
     class Describe_isSameDownStation {
+
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
         private Station downStation = new Station("잠실역");
@@ -135,6 +139,7 @@ public class SectionTest {
     @Nested
     @DisplayName("isComponentAllOfStations 메소드")
     class Describe_isComponentAllOfStations {
+
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
         private Station downStation = new Station("잠실역");
@@ -160,6 +165,7 @@ public class SectionTest {
     @Nested
     @DisplayName("isComponentAnyOfStations 메소드")
     class Describe_isComponentAnyOfStations {
+
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
         private Station downStation = new Station("잠실역");
@@ -184,6 +190,7 @@ public class SectionTest {
     @Nested
     @DisplayName("modifyUpStation 메소드")
     class Describe_modifyUpStation {
+
         private Line line = new Line("2호선", "green");
         private Station gangnameStation = new Station("강남역");
         private Station jamsilStation = new Station("잠실역");
@@ -212,6 +219,7 @@ public class SectionTest {
     @Nested
     @DisplayName("modifyDownStation 메소드")
     class Describe_modifyDownStation {
+
         private Line line = new Line("2호선", "green");
         private Station gangnameStation = new Station("강남역");
         private Station jamsilStation = new Station("잠실역");
@@ -236,5 +244,5 @@ public class SectionTest {
             );
         }
     }
-
 }
+

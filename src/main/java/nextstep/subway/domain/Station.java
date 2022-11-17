@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.StationException;
 
 import javax.persistence.*;
-
 import java.util.Objects;
 
 import static nextstep.subway.exception.StationExceptionMessage.EMPTY_STATION_NAME;

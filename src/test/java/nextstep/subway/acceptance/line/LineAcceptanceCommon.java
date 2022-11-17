@@ -36,7 +36,7 @@ public class LineAcceptanceCommon {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_등록(String name, String color, long upStationId,long downStationId, long distance) {
+    public static ExtractableResponse<Response> 지하철_노선_등록(String name, String color, long upStationId, long downStationId, long distance) {
         return RestAssured.given().log().all()
                 .body(LineRequest.builder()
                         .name(name)
