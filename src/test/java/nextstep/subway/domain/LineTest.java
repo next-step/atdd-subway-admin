@@ -46,10 +46,9 @@ public class LineTest {
         // when
         lineRepository.save(shinbundang);
         flushAndClear();
-        Line line = lineRepository.findById(1L).get();
 
         // then
-        assertThat(line).isEqualTo(shinbundang);
+        assertThat(lineRepository.findById(1L)).get().isEqualTo(shinbundang);
     }
 
     @DisplayName("라인을 생성하고 addStation 메소드 테스트")
@@ -68,10 +67,8 @@ public class LineTest {
         flushAndClear();
 
         // then
-        Line responseLine = lineRepository.findById(1L).get();
         assertAll(
-                () -> assertThat(responseLine.getUpStation()).isEqualTo(gangNam),
-                () -> assertThat(responseLine.getDownStation()).isEqualTo(seongSoo)
+                () -> assertThat(lineRepository.findById(1L)).get().isEqualTo(line)
         );
     }
 

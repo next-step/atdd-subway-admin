@@ -35,10 +35,9 @@ public class StationTest {
         // when
         stationRepository.save(sinsa);
         flushAndClear();
-        Station station = stationRepository.findById(1L).get();
 
         // then
-        assertThat(station).isEqualTo(sinsa);
+        assertThat(stationRepository.findById(1L)).get().isEqualTo(sinsa);
     }
 
     private void flushAndClear() {
