@@ -270,3 +270,65 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   // To-be
   assertThat(stationRepository.findById).{method}
   ```
+  
+
+## 3단계 - 구간 추가 기능
+> - 제시된 인수 조건을 기반으로 기능 구현을 하는 단계
+> - 기능 구현 전에 **_인수 조건을 만족하는 지 검증하는 인수 테스트를 먼저 만들고 기능 구현_**
+
+### API 명세
+```http request
+POST /lines/1/sections HTTP/1.1
+accept: */*
+content-type: application/json; charset=UTF-8
+host: localhost:52165
+
+{
+    "downStationId": "4",
+    "upStationId": "2",
+    "distance": 10
+}
+```
+### 기능 목록 
+- [ ] 역 사이에 새로운 역을 등록할 경우  
+  새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정  
+![](images/3단계-1.png)
+
+- [ ] 새로운 역을 상행 종점으로 등록할 경우  
+![](images/3단계-2.png)
+
+- [ ] 새로운 역을 하행 종점으로 등록할 경우  
+![](images/3단계-3.png)
+
+- [ ] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음  
+![](images/3단계-4.png)
+
+- [ ] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음  
+![](images/3단계-5.png)
+
+- [ ] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음  
+![](images/3단계-6.png)
+
+### 프로그래밍 요구사항
+- 인수 테스트 주도 개발 프로세스에 맞춰서 기능을 구현하세요. 
+  - `요구사항 설명`을 참고하여 인수 조건을 정의 
+  - 인수 조건을 검증하는 인수 테스트 작성 
+  - 인수 테스트를 충족하는 기능 구현
+- 인수 조건은 인수 테스트 메서드 상단에 주석으로 작성하세요. 
+- 뼈대 코드의 인수 테스트를 참고 
+- 인수 테스트의 결과가 다른 인수 테스트에 영향을 끼치지 않도록 인수 테스트를 서로 격리 시키세요. 
+- 인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링 하세요.
+
+### 힌트
+1. 세부적인 예외 상황을 고려하지 않고 `Happy Path` 경우를 검증하기 위한 인수 테스트를 먼저 만들 것
+> "Happy Path"는 '아무것도 잘못되지 않는 사용자 시나리오'를 의미한다 (All-Pass Scenario / Positive Test).  
+> 이는 사람의 실수, 엣지 케이스, 의도를 벗어난 행동을 포함하지 않기 때문에 이 시나리오 대로 테스트를 수행하면 이슈나 버그가 발생할 가능성이 현저히 낮아진다.
+2. 이전 단계에서 구현해 둔 TestUtil을 활용하여 구간 등록에 필요한 테스트 픽스처를 쉽게 생성
+3. 지하철역은 여러개의 노선에 포함될 수 있다.(환승역의 경우 각 다른 노선에 포함됨)  
+  이런 경우 다대다 관계로 보아`@ManyToMany` 관계로 맺을 수 있음
+   - 다대다 관계는 `매핑 테이블을 엔티티`로 두어 회피하는 것을 지향  
+   참고자료
+     - [[JPA] @ManyToMany, 다대다[N:M] 관계](https://ict-nroo.tistory.com/127)
+4. List<Station>을 별도 일급 컬렉션으로 묶어 사용
+   - [LineStations 예시 코드](https://github.com/next-step/atdd-subway-map/blob/boorownie/src/main/java/nextstep/subway/line/domain/LineStations.java)
+   - [JPA @Embedded And @Embeddable 활용](https://www.baeldung.com/jpa-embedded-embeddable)
