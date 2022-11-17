@@ -9,11 +9,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("Section 클래스")
+@DisplayName("Section 도메인")
 public class SectionTest {
 
     @Nested
@@ -57,11 +60,181 @@ public class SectionTest {
         @Test
         void returns_stations() {
             assertAll(
-                   () -> assertThat(section.getStations()).hasSize(2),
-                   () -> assertThat(section.getStations()).containsExactly(upStation,downStation)
+                    () -> assertThat(section.getStations()).hasSize(2),
+                    () -> assertThat(section.getStations()).containsExactly(upStation, downStation)
             );
         }
     }
 
+    @Nested
+    @DisplayName("isShortDistance 메소드")
+    class Describe_isShortDistance {
+        private Line line = new Line("2호선", "green");
+        private Station upStation = new Station("강남역");
+        private Station downStation = new Station("잠실역");
+        private Section section;
+        private Section newSection;
+
+        @BeforeEach
+        void setUpSection() {
+            section = new Section(line, upStation, downStation, 10);
+            newSection = new Section(new Line("3호선", "yellow"), downStation, upStation, 50);
+        }
+
+        @DisplayName("입력 구간보다 거리값이 작거나 같으면 true를 반환")
+        @Test
+        void context_with_less_then_distance_returns_true() {
+            assertThat(section.isShortDistance(newSection)).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("isSameUpStation 메소드")
+    class Describe_isSameUpStation {
+        private Line line = new Line("2호선", "green");
+        private Station upStation = new Station("강남역");
+        private Station downStation = new Station("잠실역");
+        private Section section;
+        private Section newSection;
+
+        @BeforeEach
+        void setUpSection() {
+            section = new Section(line, upStation, downStation, 10);
+            newSection = new Section(new Line("3호선", "yellow"), upStation, new Station("마곡역"), 50);
+        }
+
+        @DisplayName("입력구간과 같은 상행역이면 true를 반환")
+        @Test
+        void context_with_same_upstation_returns_true() {
+            assertThat(section.isSameUpStation(newSection)).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("isSameDownStation 메소드")
+    class Describe_isSameDownStation {
+        private Line line = new Line("2호선", "green");
+        private Station upStation = new Station("강남역");
+        private Station downStation = new Station("잠실역");
+        private Section section;
+        private Section newSection;
+
+        @BeforeEach
+        void setUpSection() {
+            section = new Section(line, upStation, downStation, 10);
+            newSection = new Section(new Line("3호선", "yellow"), new Station("마곡역"), downStation, 50);
+        }
+
+        @DisplayName("입력구간과 같은 하행역이면 true를 반환")
+        @Test
+        void context_with_same_upstation_returns_true() {
+            assertThat(section.isSameDownStation(newSection)).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("isComponentAllOfStations 메소드")
+    class Describe_isComponentAllOfStations {
+        private Line line = new Line("2호선", "green");
+        private Station upStation = new Station("강남역");
+        private Station downStation = new Station("잠실역");
+        private Section section;
+        private List<Station> stations;
+
+        @BeforeEach
+        void setUpSection() {
+            section = new Section(line, upStation, downStation, 10);
+            stations = new ArrayList<>();
+            stations.add(upStation);
+            stations.add(downStation);
+            stations.add(new Station("마곡역"));
+        }
+
+        @DisplayName("입력으로 주어진 역들이 구간에 있는 역을 모두 포함한다면 true를 반환")
+        @Test
+        void context_with_same_upstation_returns_true() {
+            assertThat(section.isComponentAllOfStations(stations)).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("isComponentAnyOfStations 메소드")
+    class Describe_isComponentAnyOfStations {
+        private Line line = new Line("2호선", "green");
+        private Station upStation = new Station("강남역");
+        private Station downStation = new Station("잠실역");
+        private Section section;
+        private List<Station> stations;
+
+        @BeforeEach
+        void setUpSection() {
+            section = new Section(line, upStation, downStation, 10);
+            stations = new ArrayList<>();
+            stations.add(upStation);
+            stations.add(new Station("마곡역"));
+        }
+
+        @DisplayName("입력으로 주어진 역들이 구간에 있는 역을 하나라도 포함한다면 true를 반환 ")
+        @Test
+        void context_with_same_upstation_returns_true() {
+            assertThat(section.isComponentAnyOfStations(stations)).isTrue();
+        }
+    }
+
+    @Nested
+    @DisplayName("modifyUpStation 메소드")
+    class Describe_modifyUpStation {
+        private Line line = new Line("2호선", "green");
+        private Station gangnameStation = new Station("강남역");
+        private Station jamsilStation = new Station("잠실역");
+        private Station bangbaeStation = new Station("방배역");
+        private Station samsungStation = new Station("삼성역");
+        private Section section;
+        private Section newSection;
+
+        @BeforeEach
+        void setUpSection() {
+            section = new Section(line, gangnameStation, jamsilStation, 10);
+            newSection = new Section(line, bangbaeStation, samsungStation, 3);
+        }
+
+        @DisplayName("상행역을 주어진 구간의 하행역으로 바꾼다")
+        @Test
+        void context_with_section_modify_upstation() {
+            section.modifyUpStation(newSection);
+            assertAll(
+                    () -> assertThat(section.getUpStation()).isEqualTo(samsungStation),
+                    () -> assertThat(section.getDistance()).isEqualTo(7)
+            );
+        }
+    }
+
+    @Nested
+    @DisplayName("modifyDownStation 메소드")
+    class Describe_modifyDownStation {
+        private Line line = new Line("2호선", "green");
+        private Station gangnameStation = new Station("강남역");
+        private Station jamsilStation = new Station("잠실역");
+        private Station bangbaeStation = new Station("방배역");
+        private Station samsungStation = new Station("삼성역");
+        private Section section;
+        private Section newSection;
+
+        @BeforeEach
+        void setUpSection() {
+            section = new Section(line, gangnameStation, jamsilStation, 10);
+            newSection = new Section(line, bangbaeStation, samsungStation, 3);
+        }
+
+        @DisplayName("하행역을 주어진 구간의 상행역으로 바꾼다")
+        @Test
+        void context_with_section_modify_upstation() {
+            section.modifyDownStation(newSection);
+            assertAll(
+                    () -> assertThat(section.getDownStation()).isEqualTo(bangbaeStation),
+                    () -> assertThat(section.getDistance()).isEqualTo(7)
+            );
+        }
+    }
 
 }
