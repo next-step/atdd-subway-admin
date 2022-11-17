@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -9,14 +8,14 @@ import java.util.List;
 @Embeddable
 public class Stations {
     @OneToMany
-    private List<Station> stations = new ArrayList<>();
+    private List<Station> values = new ArrayList<>();
 
     public void addStations(Station upStation, Station downStation) {
-        this.stations.add(upStation);
-        this.stations.add(downStation);
+        this.values.add(upStation);
+        this.values.add(downStation);
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public List<Station> getValues() {
+        return values;
     }
 }
