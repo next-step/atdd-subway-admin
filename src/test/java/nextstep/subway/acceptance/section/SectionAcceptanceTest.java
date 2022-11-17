@@ -1,16 +1,16 @@
-package nextstep.subway.section;
+package nextstep.subway.acceptance.section;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.RestAssuredSetUp;
+import nextstep.subway.acceptance.RestAssuredSetUp;
 import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.line.LineAcceptanceCommon.지하철_노선_등록;
-import static nextstep.subway.section.SectionAcceptanceCommon.지하철_구간_등록;
-import static nextstep.subway.station.StationAcceptaneCommon.지하철_역_등록;
+import static nextstep.subway.acceptance.line.LineAcceptanceCommon.지하철_노선_등록;
+import static nextstep.subway.acceptance.section.SectionAcceptanceCommon.지하철_구간_등록;
+import static nextstep.subway.acceptance.station.StationAcceptaneCommon.지하철_역_등록;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 기능")

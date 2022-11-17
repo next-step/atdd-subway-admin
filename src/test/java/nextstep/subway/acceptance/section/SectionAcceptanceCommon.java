@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.acceptance.section;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
