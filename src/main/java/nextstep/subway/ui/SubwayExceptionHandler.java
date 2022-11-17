@@ -1,5 +1,8 @@
-package nextstep.subway.exception;
+package nextstep.subway.ui;
 
+import nextstep.subway.exception.IllegalRequestBody;
+import nextstep.subway.exception.NotFoundLine;
+import nextstep.subway.exception.NotFoundStation;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
