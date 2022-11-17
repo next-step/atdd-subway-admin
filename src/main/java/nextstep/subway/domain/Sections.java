@@ -88,6 +88,7 @@ public class Sections {
         }
         arrageSection(line, findSections, deleteStation);
     }
+
     private void validateSections(List<Section> findSections, List<Section> sections) {
         validateSingleSection(findSections, sections);
         validateMultiSection(findSections);
@@ -116,9 +117,11 @@ public class Sections {
             throw new SectionsException(SINGLE_SECTION.getMessage());
         }
     }
+
     private boolean isSingleSection(List<Section> findSections) {
         return findSections.size() == 1;
     }
+
     private void arrageSection(Line line, List<Section> findSections, Station deleteStation) {
         sections.removeAll(findSections);
         Station upStation = getUpStation(findSections, deleteStation);
