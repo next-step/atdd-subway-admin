@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.raw.Distance;
+import nextstep.subway.dto.LineResponse;
 
 import javax.persistence.*;
 import java.util.List;
@@ -129,6 +130,15 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.downStation = newSection.upStation;
     }
 
+    public LineResponse.Section from() {
+        return LineResponse.Section.builder()
+                .id(id)
+                .upStationId(upStation.getId())
+                .downStationId(downStation.getId())
+                .distance(distance.getDistance())
+                .build();
+    }
+
 
     @Override
     public int hashCode() {
@@ -161,6 +171,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
         else if (this.upStation.getId().equals(s.downStation.getId())) return 1;
         return 0;
     }
+
 
 
 }

@@ -66,7 +66,7 @@ public class LineService {
     }
 
     @Transactional
-    public SectionResponse.Section saveSection(Long lineId, SectionRequest sectionRequest) {
+    public LineResponse saveSection(Long lineId, SectionRequest sectionRequest) {
         // 이전에 저장됐던 section이 Line에 같이 조회됨
         Line line = lineRepository.findById(lineId).orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
         Station upStation = findStationById(sectionRequest.getUpStationId());
@@ -78,6 +78,6 @@ public class LineService {
         // line에도 새로운 section 정보 등록 (양방향) -> line.save하지 않아도 transacition 종료 후 업데이트
         line.addSection(section);
 
-        return SectionResponse.of(section);
+        return LineResponse.from(line);
     }
 }
