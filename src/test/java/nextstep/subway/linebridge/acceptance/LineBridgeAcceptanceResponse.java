@@ -12,6 +12,6 @@ public class LineBridgeAcceptanceResponse {
     }
 
     public static void 지하철구간_생성_실패(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
     }
 }

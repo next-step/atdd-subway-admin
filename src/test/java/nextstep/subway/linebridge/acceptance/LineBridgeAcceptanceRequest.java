@@ -75,6 +75,6 @@ public class LineBridgeAcceptanceRequest {
     }
 
     public static void 구간이_삭제되지_않는다(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
     }
 }

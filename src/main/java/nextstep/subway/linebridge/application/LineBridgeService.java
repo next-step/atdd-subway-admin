@@ -25,13 +25,13 @@ public class LineBridgeService {
     @Transactional
     public LineBridgeDto.Response createLineBridge(Long id, LineBridgeDto.Request lineBridgeRequest) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(()-> new IllegalArgumentException("해당 노선을 찾지 못했습니다."));
+                .orElseThrow(()-> new NoSuchElementException("해당 노선을 찾지 못했습니다."));
 
         Station upStation = stationRepository.findById(lineBridgeRequest.getUpStationId())
-                .orElseThrow(()-> new IllegalArgumentException("지하철역을 찾지 못했습니다."));
+                .orElseThrow(()-> new NoSuchElementException("지하철역을 찾지 못했습니다."));
 
         Station downStation = stationRepository.findById(lineBridgeRequest.getDownStationId())
-                .orElseThrow(()-> new IllegalArgumentException("지하철역을 찾지 못했습니다."));
+                .orElseThrow(()-> new NoSuchElementException("지하철역을 찾지 못했습니다."));
 
         LineBridge lineBridge = new LineBridge(upStation, downStation, lineBridgeRequest.getDistance());
         line.addLineBridge(lineBridge);
@@ -40,14 +40,14 @@ public class LineBridgeService {
     }
     private Line findById(Long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 지하철 노선을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("해당 지하철 노선을 찾을 수 없습니다."));
     }
 
     @Transactional
     public void deleteLineBridgeByStationId(Long lineId, Long stationId) {
         Line findLine = findById(lineId);
         Station station = stationRepository.findById(stationId)
-                .orElseThrow(() -> new IllegalArgumentException("해당 지하철역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new NoSuchElementException("해당 지하철역을 찾을 수 없습니다."));
 
         findLine.removeStation(station);
     }

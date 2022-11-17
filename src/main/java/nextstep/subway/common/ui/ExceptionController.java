@@ -16,4 +16,9 @@ class ExceptionController {
         log.info(e.getMessage());
         return ResponseEntity.badRequest().build();
     }
+
+    @ExceptionHandler(NoSuchFieldException.class)
+    public ResponseEntity<Void> handleNoSuchFieldException() {
+        return ResponseEntity.notFound().build();
+    }
 }

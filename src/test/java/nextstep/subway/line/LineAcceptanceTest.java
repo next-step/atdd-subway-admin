@@ -217,7 +217,7 @@ public class LineAcceptanceTest {
 
     public void 지하철_노선의_정보가_삭제된다(int lineId){
         ExtractableResponse<Response> response = 노선을_조회한다_노선아이디가_없으면_모든_노선이_조회된다("/"+lineId);
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
     }
 
 
