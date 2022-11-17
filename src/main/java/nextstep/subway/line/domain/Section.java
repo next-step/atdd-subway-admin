@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.common.vo.Distance;
 import nextstep.subway.station.domain.Station;
@@ -29,6 +29,13 @@ public class Section {
 
     public Section(long id, Line line, Station upStation, Station downStation, Distance distance) {
         this.id = id;
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;

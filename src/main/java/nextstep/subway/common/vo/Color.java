@@ -1,9 +1,12 @@
 package nextstep.subway.common.vo;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
+@Access(AccessType.FIELD)
 public class Color {
 
     public static final String NULL_AND_EMPTY_EXCEPTION_MESSAGE = "색상은 null 이거나 empty일 수 없습니다.";
@@ -22,5 +25,9 @@ public class Color {
         if (Objects.isNull(color) || color.isEmpty()) {
             throw new IllegalArgumentException(NULL_AND_EMPTY_EXCEPTION_MESSAGE);
         }
+    }
+
+    public String getColor() {
+        return color;
     }
 }

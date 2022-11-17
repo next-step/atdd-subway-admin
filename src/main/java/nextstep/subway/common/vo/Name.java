@@ -1,9 +1,12 @@
 package nextstep.subway.common.vo;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
+@Access(AccessType.FIELD)
 public class Name {
 
     public static final String NULL_AND_EMPTY_EXCEPTION_MESSAGE = "이름은 null 이거나 empty일 수 없습니다.";
@@ -21,5 +24,9 @@ public class Name {
         if (Objects.isNull(name) || name.isEmpty()) {
             throw new IllegalArgumentException(NULL_AND_EMPTY_EXCEPTION_MESSAGE);
         }
+    }
+
+    public String getName() {
+        return this.name;
     }
 }

@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.line.domain.Section;
 import org.junit.jupiter.api.DisplayName;
 
 import static nextstep.subway.common.vo.DistanceTest.논현역_신논현역_거리;

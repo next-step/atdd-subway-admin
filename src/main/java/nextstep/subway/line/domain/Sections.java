@@ -1,7 +1,8 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.station.domain.Station;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line")
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
@@ -24,6 +25,7 @@ public class Sections {
         for (Section section : this.sections) {
             if (firstUpStation.equals(section.getUpStation())) {
                 stations.add(section.getDownStation());
+                firstUpStation = section.getDownStation();
             }
         }
         while (isTrue(firstUpStation)) {
@@ -31,15 +33,9 @@ public class Sections {
                 for (Section section : this.sections) {
                     if (firstUpStation.equals(section.getUpStation())) {
                         stations.add(section.getDownStation());
-                        firstUpStation = section.getUpStation();
+                        firstUpStation = section.getDownStation();
                     }
                 }
-            }
-        }
-        for (int i = 0; i < this.sections.size(); i++) {
-            stations.add(this.sections.get(0).getUpStation());
-            if (i == this.sections.size()) {
-                stations.add(this.sections.get(0).getDownStation());
             }
         }
         return stations;

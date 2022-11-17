@@ -1,9 +1,12 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 import nextstep.subway.common.vo.Color;
+import nextstep.subway.common.vo.Distance;
 import nextstep.subway.common.vo.Name;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line {
@@ -34,5 +37,25 @@ public class Line {
     public Line(Name name, Color color) {
         this.name = name;
         this.color = color;
+    }
+
+    public List<Station> getStations() {
+        return this.sections.getStations();
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return this.name.getName();
+    }
+
+    public String getColor() {
+        return this.color.getColor();
+    }
+
+    public void addSection(Station upStation, Station downStation, int distance) {
+        this.sections.add(new Section(this, upStation, downStation, new Distance(distance)));
     }
 }
