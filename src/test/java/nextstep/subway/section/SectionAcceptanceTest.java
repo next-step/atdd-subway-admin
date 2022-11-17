@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,16 +30,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private Integer LINE_BUNDANG_ID_거리_10;
 
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-        WANGSIPLI_ID = ID_추출(지하철역_생성(WANGSIPLI));
-        JUKJUN_ID = ID_추출(지하철역_생성(JUKJUN));
-
-        // when
-        LINE_BUNDANG_ID_거리_10 = ID_추출(지하철_노선_생성_거리_10(LINE_BUNDANG, WANGSIPLI_ID, JUKJUN_ID));
-    }
-
     /**
      * Given 지하철 역과 노선이 등록되어있고
      * When 지하철역 사이에 새로운 지하철 역을 구간으로 등록하면
@@ -50,6 +39,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         // given
+        왕십리_죽전_분당선_등록();
         String SEOHYUN = "서현역";
         Integer SEOHYUN_ID = ID_추출(지하철역_생성(SEOHYUN));
 
@@ -75,6 +65,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_upStation() {
         // given
+        왕십리_죽전_분당선_등록();
+
         String CHEONGRYANGRI = "청량리역";
         Integer CHEONGRYANGRI_ID = ID_추출(지하철역_생성(CHEONGRYANGRI));
 
@@ -99,6 +91,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_downStation() {
         // given
+        왕십리_죽전_분당선_등록();
+
         String GIHEUNG = "기흥역";
         Integer GIHEUNG_ID = ID_추출(지하철역_생성(GIHEUNG));
 
@@ -123,6 +117,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @ParameterizedTest
     @ValueSource(strings = {"20", "10"})
     void addSection_distance_over(String distance) {
+        // given
+        왕십리_죽전_분당선_등록();
         Integer SEOHYUN_ID = ID_추출(지하철역_생성("서현역"));
 
         // when
@@ -141,6 +137,9 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행역 하행역 이미 모두 등록되어있는 경우")
     @Test
     void addSection_alreadyExists() {
+        // given
+        왕십리_죽전_분당선_등록();
+
         // when
         Map<String, String> params = 구간_등록_요청_파라미터(WANGSIPLI_ID, JUKJUN_ID, "5");
         ExtractableResponse<Response> response = 지하철_구간_등록(LINE_BUNDANG_ID_거리_10, params);
@@ -158,6 +157,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_notContains() {
         // given
+        왕십리_죽전_분당선_등록();
         Integer HONGDAE_ID = ID_추출(지하철역_생성("HONGDAE"));
         Integer JAMSIL_ID = ID_추출(지하철역_생성("JAMSIL"));
 
@@ -183,5 +183,11 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     private List<String> 노선목록_역목록_이름_추출(ExtractableResponse<Response> response) {
         return extractList(response, "$[*].stations[*].name");
+    }
+
+    private void 왕십리_죽전_분당선_등록() {
+        WANGSIPLI_ID = ID_추출(지하철역_생성(WANGSIPLI));
+        JUKJUN_ID = ID_추출(지하철역_생성(JUKJUN));
+        LINE_BUNDANG_ID_거리_10 = ID_추출(지하철_노선_생성_거리_10(LINE_BUNDANG, WANGSIPLI_ID, JUKJUN_ID));
     }
 }
