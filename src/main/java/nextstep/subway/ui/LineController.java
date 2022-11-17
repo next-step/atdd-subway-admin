@@ -1,7 +1,6 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.domain.Line;
 import nextstep.subway.dto.CreateLineDto;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.UpdateLineDto;
@@ -23,8 +22,7 @@ public class LineController {
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody CreateLineDto dto) {
-        Line registeredLine = lineService.register(dto);
-        LineResponse response = LineResponse.of(registeredLine);
+        LineResponse response = lineService.register(dto);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 

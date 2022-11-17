@@ -24,13 +24,13 @@ public class LineService {
     }
 
     @Transactional
-    public Line register(CreateLineDto dto) {
+    public LineResponse register(CreateLineDto dto) {
         Station upStation = findStationById(dto.getUpStationId());
         Station downStation = findStationById(dto.getDownStationId());
         Section section = new Section(upStation, downStation, dto.getDistance());
         Line line = DtoConverter.toLineEntity(dto);
         line.addSection(section);
-        return lineRepository.save(line);
+        return LineResponse.of(lineRepository.save(line));
     }
 
     @Transactional
