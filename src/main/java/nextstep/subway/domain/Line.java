@@ -5,6 +5,7 @@ import nextstep.subway.exception.LineException;
 import javax.persistence.*;
 import java.util.List;
 
+import static nextstep.subway.exception.LineExceptionMessage.EMPTY_LINE_COLOR;
 import static nextstep.subway.exception.LineExceptionMessage.EMPTY_LINE_NAME;
 
 @Entity
@@ -37,7 +38,7 @@ public class Line extends BaseEntity {
 
     private void validateColor(String color){
         if (color == null || color.isEmpty()) {
-            throw new LineException(EMPTY_LINE_NAME.getMessage());
+            throw new LineException(EMPTY_LINE_COLOR.getMessage());
         }
     }
 
