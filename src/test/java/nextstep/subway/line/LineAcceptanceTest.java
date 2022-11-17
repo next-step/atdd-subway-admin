@@ -7,6 +7,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.exception.ErrorStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -55,15 +56,29 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine() {
         //when
         ExtractableResponse<Response> saveResponse = createLine("분당선", "red", upStation.getId(), downStation.getId(), 10);
-        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         //then
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> findResponse = findAllLine();
         assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         JsonPath responseBody = findResponse.jsonPath();
         assertThat(findListResponseByKey(responseBody, LINE_NAME)).containsExactly("분당선");
         assertThat(findListResponseByKey(responseBody, COLOR)).containsExactly("red");
 
+    }
+
+    /**
+     * When 노선 생성시 올바르지 못한 데이터를 넘긴다면
+     * Then 지하철 노선을 생성할 수 없다.
+     */
+    @DisplayName("지하철 노선 생성 시 올바르지 못한 데이터를 requestBody로 넘길때 실패(stationId 0)")
+    @Test
+    void createLineFailedBadRequest() {
+        //when
+        ExtractableResponse<Response> saveResponse = createLine("분당선", "red", 0L, 200L, 10);
+
+        //then
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -74,10 +89,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLineFailed() {
         //when
-        ExtractableResponse<Response> saveResponse = createLine("분당선", "red", 100L, 200L, 10);
+        ExtractableResponse<Response> saveResponse = createLine("분당선", "red", 1L, 200L, 10);
 
         //then
-        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
     }
 
@@ -89,17 +104,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록 조회")
     @Test
     void findAllLineTest() {
-        //give
+        //given
         ExtractableResponse<Response> saveResponse = createLine("분당선", "red", upStation.getId(), downStation.getId(), 10);
         ExtractableResponse<Response> saveOtherResponse = createLine("타르코프", "yellow", otherUpStation.getId(), otherDownStation.getId(), 10);
-        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(saveOtherResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         //when
         ExtractableResponse<Response> findResponse = findAllLine();
-        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //then
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         JsonPath responseBody = findResponse.jsonPath();
         assertThat(findListResponseByKey(responseBody, LINE_NAME)).containsExactly("분당선", "타르코프");
         assertThat(findListResponseByKey(responseBody, COLOR)).containsExactly("red", "yellow");
@@ -114,15 +127,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 목록 조회")
     @Test
     void findAllLineByName() {
-        //give
+        //given
         ExtractableResponse<Response> saveResponse = createLine("분당선", "red", upStation.getId(), downStation.getId(), 10);
-        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         Long id = saveResponse.jsonPath().getLong(LINE_ID);
+
         //when
         ExtractableResponse<Response> findResponse = findById(id);
-        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //then
+        assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         JsonPath responseBody = findResponse.jsonPath();
         assertThat(findResponseByKey(responseBody, LINE_NAME)).isEqualTo("분당선");
         assertThat(findResponseByKey(responseBody, COLOR)).isEqualTo("red");
@@ -137,16 +150,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 수정")
     @Test
     void updateLineTest() {
-        //give
+        //given
         ExtractableResponse<Response> saveResponse = createLine("분당선", "red", upStation.getId(), downStation.getId(), 10);
-        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         Long id = saveResponse.jsonPath().getLong(LINE_ID);
 
         //when
         ExtractableResponse<Response> update = updateLine(id, "2호선", "yellow");
-        assertThat(update.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //then
+        assertThat(update.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> findResponse = findById(id);
         assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         JsonPath responseBody = findResponse.jsonPath();
@@ -163,11 +175,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선 삭제")
     @Test
     void deleteLineTest() {
-        //give
+        //given
         ExtractableResponse<Response> saveResponse = createLine("분당선", "red", upStation.getId(), downStation.getId(), 10);
-        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         Long id = saveResponse.jsonPath().getLong(LINE_ID);
-
         //when
         ExtractableResponse<Response> delete = deleteLine(id);
         //then

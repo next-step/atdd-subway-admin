@@ -1,23 +1,31 @@
 package nextstep.subway.dto;
 
-
 import nextstep.subway.domain.Line;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-
+import nextstep.subway.exception.ErrorStatus;
+import nextstep.subway.exception.IllegalRequestBody;
 
 public class LineSaveRequest {
-    @NotBlank(message = "name is not null or blank")
+    private static final Long MIN_DISTANCE = 0L;
+    private static final Long MIN_STAION_ID = 1L;
     private String name;
-    @NotBlank(message = "color is not null or blank")
     private String color;
-    @Min(value = 1, message = "distance over than 0")
     private Long distance;
-    @Min(value = 1, message = "upStationId over than 0")
     private Long upStationId;
-    @Min(value = 1, message = "downStationId over than 0")
     private Long downStationId;
+
+    public LineSaveRequest(String name, String color, Long distance, Long upStationId, Long downStationId) {
+        validateName(name);
+        validateColor(color);
+        validateDistacne(distance);
+        validateStationId(upStationId);
+        validateStationId(downStationId);
+        this.name = name;
+        this.color = color;
+        this.distance = distance;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+    }
+
 
     public Line toLine() {
         return new Line(name, color, distance);
@@ -41,5 +49,29 @@ public class LineSaveRequest {
 
     public Long getDistance() {
         return distance;
+    }
+
+    private void validateName(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_NAME.getMessage());
+        }
+    }
+
+    private void validateColor(String color) {
+        if (color == null || color.isEmpty()) {
+            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_COLOR.getMessage());
+        }
+    }
+
+    private void validateDistacne(Long distance) {
+        if (distance <= MIN_DISTANCE) {
+            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_DISTANCE.getMessage());
+        }
+    }
+
+    private void validateStationId(Long upStationId) {
+        if (upStationId < MIN_STAION_ID) {
+            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_STATION_ID.getMessage());
+        }
     }
 }
