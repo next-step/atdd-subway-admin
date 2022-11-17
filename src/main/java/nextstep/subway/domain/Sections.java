@@ -93,6 +93,7 @@ public class Sections {
         validateSingleSection(findSections, sections);
         validateMultiSection(findSections);
     }
+
     private void validateMultiSection(List<Section> findSections) {
         if (findSections.size() > 2) {
             throw new SectionsException(MULTI_SECTION.getMessage());
@@ -112,6 +113,7 @@ public class Sections {
             throw new SectionsException(NOT_REGISTER_SECTION.getMessage());
         }
     }
+
     private void validateSingleSection(List<Section> sections, List<Section> findSections) {
         if (isSingleSection(sections) && isSingleSection(findSections)) {
             throw new SectionsException(SINGLE_SECTION.getMessage());
