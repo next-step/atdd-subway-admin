@@ -7,26 +7,17 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import nextstep.subway.DatabaseCleanup;
+import nextstep.subway.DefaultAcceptanceTest;
 import nextstep.subway.dto.StationRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+public class StationAcceptanceTest extends DefaultAcceptanceTest {
 
     private final String STATION_URI = "/stations";
-    @LocalServerPort
-    int port;
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
 
     public ExtractableResponse<Response> 지하철역_생성_요청(StationRequest stationRequest) {
         return RestAssured.given().log().all()
@@ -53,16 +44,6 @@ public class StationAcceptanceTest {
             .then().log().all()
             .extract().jsonPath().getList("name", String.class);
 
-    }
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-            databaseCleanup.afterPropertiesSet();
-        }
-        
-        databaseCleanup.execute();
     }
 
     /**

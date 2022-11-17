@@ -9,7 +9,7 @@ import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.DatabaseCleanup;
+import nextstep.subway.DefaultAcceptanceTest;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -18,28 +18,27 @@ import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
+public class LineAcceptanceTest extends DefaultAcceptanceTest {
 
     private final String LINE_URI = "/lines";
     private final String STATION_URI = "/stations";
-    @LocalServerPort
-    int port;
 
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
     private StationResponse 강남역;
     private StationResponse 판교역;
     private StationResponse 선릉역;
     private StationResponse 청계산역;
 
+    @BeforeEach
+    void setup() {
+        강남역 = 지하철역_생성_요청(지하철역_생성_요청값("강남역"));
+        판교역 = 지하철역_생성_요청(지하철역_생성_요청값("판교역"));
+        선릉역 = 지하철역_생성_요청(지하철역_생성_요청값("선릉역"));
+        청계산역 = 지하철역_생성_요청(지하철역_생성_요청값("청계산역"));
+    }
 
     public StationResponse 지하철역_생성_요청(StationRequest stationRequest) {
         return RestAssured.given().log().all()
@@ -106,37 +105,10 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    StationRequest 강남역_생성_요청값() {
-        return new StationRequest("강남역");
+    StationRequest 지하철역_생성_요청값(String 지하철역_이름) {
+        return new StationRequest(지하철역_이름);
     }
 
-    StationRequest 판교역_생성_요청값() {
-        return new StationRequest("판교역");
-    }
-
-    StationRequest 선릉역_생성_요청값() {
-        return new StationRequest("선릉역");
-    }
-
-    StationRequest 청계산역_생성_요청값() {
-        return new StationRequest("청계산역");
-    }
-
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-            databaseCleanup.afterPropertiesSet();
-        }
-
-        databaseCleanup.execute();
-
-        강남역 = 지하철역_생성_요청(강남역_생성_요청값());
-        판교역 = 지하철역_생성_요청(판교역_생성_요청값());
-        선릉역 = 지하철역_생성_요청(선릉역_생성_요청값());
-        청계산역 = 지하철역_생성_요청(청계산역_생성_요청값());
-    }
 
     /**
      * When 지하철 노선을 생성하면
