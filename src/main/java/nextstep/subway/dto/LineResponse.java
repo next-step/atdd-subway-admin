@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class LineResponse {
 
@@ -13,9 +14,9 @@ public class LineResponse {
 
     private final String color;
 
-    private final List<Map<String, Object>> stations;
+    private final List<StationResponse> stations;
 
-    public LineResponse(Long id, String name, String color, List<Map<String, Object>> stations) {
+    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -23,7 +24,7 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
-        List<Map<String, Object>> stations = line.getStations();
+        List<StationResponse> stations = createStations(line);
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
     }
 
@@ -39,7 +40,40 @@ public class LineResponse {
         return color;
     }
 
-    public List<Map<String, Object>> getStations() {
+    public List<StationResponse> getStations() {
         return stations;
+    }
+
+    private static List<StationResponse> createStations(Line line) {
+        return line.getStations()
+                .stream()
+                .map(LineResponse::createStationResponse)
+                .collect(Collectors.toList());
+    }
+
+    private static StationResponse createStationResponse(Map<String, Object> station) {
+        long id = (long) station.get("id");
+        String name = (String) station.get("name");
+        return new StationResponse(id, name);
+    }
+
+    private static class StationResponse {
+
+        private Long id;
+
+        private String name;
+
+        public StationResponse(Long id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
+        }
     }
 }
