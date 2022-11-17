@@ -93,4 +93,11 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역 모두 노선에 포함되어 있지 않습니다.");
     }
+
+    @Test
+    void 노선의_마지막_구간은_삭제할_수_없다() {
+        assertThatThrownBy(() -> sections.delete(강남역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선의 마지막 구간은 삭제할 수 없습니다.");
+    }
 }

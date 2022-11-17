@@ -107,7 +107,11 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
     @DisplayName("구간이 하나인 지하철 노선은 제거할 수 없다.")
     @Test
     void removeSectionOnlyOneExist() {
+        // when
+        ExtractableResponse<Response> removeSectionResponse = deleteSection(이호선, 강남역);
 
+        // then
+        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
