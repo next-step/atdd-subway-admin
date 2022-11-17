@@ -1,9 +1,15 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.SectionException;
+import nextstep.subway.exception.SectionExceptionMessage;
+import nextstep.subway.exception.SectionsException;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static nextstep.subway.exception.SectionExceptionMessage.LESS_THEN_ZERO_DISTANCE;
 
 @Entity
 public class Section extends BaseEntity {
@@ -28,10 +34,17 @@ public class Section extends BaseEntity {
     }
 
     public Section(Line line, Station upStation, Station downStation, long distance) {
+        validateDistance(distance);
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    private void validateDistance(long distance) {
+        if(distance <= 0){
+            throw new SectionException(LESS_THEN_ZERO_DISTANCE.getMessage());
+        }
     }
 
     public List<Station> getStations() {

@@ -36,7 +36,7 @@ public class Line extends BaseEntity {
         }
     }
 
-    private void validateColor(String color){
+    private void validateColor(String color) {
         if (color == null || color.isEmpty()) {
             throw new LineException(EMPTY_LINE_COLOR.getMessage());
         }
