@@ -1,9 +1,7 @@
 package nextstep.subway.domain;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import javax.persistence.*;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -15,25 +13,24 @@ public class Line extends BaseEntity {
     private String name;
     @Column(unique = true)
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @Fetch(FetchMode.JOIN)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-    private Integer distance;
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Integer distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    }
+
+    public void update(Line line) {
+        this.name = line.name;
+        this.color = line.color;
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        this.lineStations.addLineStation(lineStation);
     }
 
     public Long getId() {
@@ -44,36 +41,12 @@ public class Line extends BaseEntity {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public String getColor() {
         return color;
     }
 
-    public void setColor(String color) {
-        this.color = color;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public void setUpStation(Station upStation) {
-        this.upStation = upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public void setDownStation(Station downStation) {
-        this.downStation = downStation;
-    }
-
-    public Integer getDistance() {
-        return distance;
+    public List<LineStation> getLineStations() {
+        return lineStations.values();
     }
 
     @Override

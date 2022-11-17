@@ -10,9 +10,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import java.util.Arrays;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
 @Import(DatabaseCleanup.class)
@@ -41,7 +41,7 @@ public class LineTest {
     @Test
     void 생성() {
         // given
-        Line shinbundang = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+        Line shinbundang = new Line("신분당선", "bg-red-600");
 
         // when
         lineRepository.save(shinbundang);
@@ -51,25 +51,42 @@ public class LineTest {
         assertThat(lineRepository.findById(1L)).get().isEqualTo(shinbundang);
     }
 
-    @DisplayName("라인을 생성하고 addStation 메소드 테스트")
+    @DisplayName("라인을 생성한 후, 수정된 값으로 업데이트 한다")
     @Test
-    void 라인생성_성공_addStation테스트() {
+    void 라인수정_성공() {
         // given
-        Station gangNam = new Station("강남역");
-        Station seongSoo = new Station("성수역");
-        stationRepository.saveAll(Arrays.asList(gangNam, seongSoo));
-
-        // when
-        Line line = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
-        line.setUpStation(gangNam);
-        line.setDownStation(seongSoo);
+        Line line = new Line("신분당선", "bg-red-600");
+        line.addLineStation(new LineStation(line, upStation, downStation, 100));
         lineRepository.save(line);
         flushAndClear();
 
+        // when
+        Line newLine = lineRepository.findById(1L).orElseThrow(RuntimeException::new);
+        newLine.update(new Line("경기광주선", "bg-blue-100"));
+        flushAndClear();
+
         // then
-        assertAll(
-                () -> assertThat(lineRepository.findById(1L)).get().isEqualTo(line)
-        );
+        assertThat(newLine.getName()).isEqualTo("경기광주선");
+    }
+
+    @DisplayName("라인을 생성하고, station을 linestation으로 추가한다.")
+    @Test
+    void 라인생성_addLineStation테스트() {
+        // given : 라인과 station을 생성하고, LineStation도 생성
+        Line line = new Line("신분당선", "빨강");
+        LineStation firstLineStation = new LineStation(line, upStation, downStation, 100);
+        LineStation secondLineStation = new LineStation(line, downStation, null, 0);
+
+        // when : 라인에 linestation을 추가 후 save
+        line.addLineStation(firstLineStation);
+        line.addLineStation(secondLineStation);
+        lineRepository.save(line);
+        flushAndClear();
+
+        // then : line의 linestations에 잘 들어갔는 지 확인
+        Optional<Line> getLine = lineRepository.findById(1L);
+        assertThat(getLine).isPresent();
+        assertThat(getLine.get().getLineStations()).containsAll(Arrays.asList(firstLineStation, secondLineStation));
     }
 
     private void flushAndClear() {

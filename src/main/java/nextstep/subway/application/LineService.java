@@ -1,9 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -27,8 +24,11 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(RuntimeException::new);
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(RuntimeException::new);
+        Line line = lineRequest.toLine();
+        line.addLineStation(new LineStation(line, upStation, downStation, lineRequest.getDistance()));
+        line.addLineStation(new LineStation(line, downStation, null, 0));
 
-        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        Line persistLine = lineRepository.save(line);
         return LineResponse.of(persistLine);
     }
 
@@ -46,10 +46,7 @@ public class LineService {
     @Transactional
     public void updateLine(Long lineId, LineRequest lineRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
-        line.setName(lineRequest.getName());
-        line.setColor(lineRequest.getColor());
-
-        lineRepository.save(line);
+        line.update(lineRequest.toLine());
     }
 
     @Transactional
