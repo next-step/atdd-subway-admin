@@ -39,7 +39,6 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    @Transactional(readOnly = true)
     public Station findStation(Long id) {
         return stationRepository.findById(id).orElseThrow(NotFoundStation::new);
     }
