@@ -30,4 +30,10 @@ public class LineSteps {
                 .when().get("/lines")
                 .then().log().all().extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+        return given()
+                .when().get("/lines/{id}", id)
+                .then().log().all().extract();
+    }
 }

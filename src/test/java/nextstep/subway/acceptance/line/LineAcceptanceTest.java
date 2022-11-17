@@ -7,8 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.acceptance.line.LineSteps.지하철_노선_목록_조회_요청;
-import static nextstep.subway.acceptance.line.LineSteps.지하철_노선_생성_요청;
+import static nextstep.subway.acceptance.line.LineSteps.*;
 import static nextstep.subway.acceptance.station.StationSteps.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -58,6 +57,30 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getList("name")).contains("신분당선", "2호선")
+        );
+    }
+
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @DisplayName("지하철 노선 조회")
+    @Test
+    void findLine() {
+        // Given
+        Long 신논현역_ID = 지하철역_생성(SHINNONHYUN_STATION).jsonPath().getLong("id");
+        Long 논현역_ID = 지하철역_생성(NONHYUN_STATION).jsonPath().getLong("id");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "red", 신논현역_ID, 논현역_ID, 4);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse.jsonPath().getLong("id"));
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선")
         );
     }
 }
