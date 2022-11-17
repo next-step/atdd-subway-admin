@@ -135,7 +135,7 @@ public class SectionAcceptanceTest {
     private void 노선이_연장된다(LineResponse lineResponse,ExtractableResponse<Response> response, String 상행역, String 하행역) {
         assertStatus(response,HttpStatus.CREATED);
         ExtractableResponse<Response> line = 지하철_노선을_조회한다(lineResponse.getId());
-        assertThat(line.jsonPath().getList("name")).contains(상행역,하행역);
+        assertThat(line.jsonPath().getList("stations.name")).contains(상행역,하행역);
     }
 
     private ExtractableResponse<Response> 상행선에서_끝나는_외부_구간_추가(Long lineId, StationResponse 상행역, String 신규역, long distance) {

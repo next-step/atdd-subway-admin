@@ -49,4 +49,12 @@ public class Sections {
         Optional<Section> any = this.sections.stream().filter(section -> section.equals(of)).findAny();
         return any.isPresent();
     }
+
+    public void extendFromUpStation(Station upStation, Station downStation, Long distance) {
+        line.extendFromUpStation(upStation,downStation,distance);
+    }
+
+    public void extendFromDownStation(Station upStation, Station downStation, Long distance) {
+        line.extendFromDownStation(upStation,downStation,distance);
+    }
 }
