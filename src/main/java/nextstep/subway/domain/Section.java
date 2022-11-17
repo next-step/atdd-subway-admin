@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -90,7 +91,9 @@ public class Section {
     }
 
     public List<Station> getStations() {
-        return Arrays.asList(this.upStation, this.downStation);
+        return Collections.unmodifiableList(
+            Arrays.asList(this.upStation, this.downStation)
+        );
     }
 
     public Long getId() {

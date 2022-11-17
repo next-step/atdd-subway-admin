@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -63,7 +64,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.getStations();
+        return Collections.unmodifiableList(sections.getStations());
     }
 
     @Override
