@@ -31,7 +31,6 @@ public class LineResponse {
                .collect(Collectors.toList());
    }
 
-   // 하나의 매개변수는 from
     public static LineResponse from(Line persistLine) {
         return new LineResponse(persistLine);
     }

@@ -73,7 +73,8 @@ public class LineService {
         Station downStation = findStationById(Long.valueOf(sectionRequest.getDownStationId()));
 
         // 새로운 section에 위에서 가져온 line도 매핑
-        Section section = sectionRequest.toSection(upStation, downStation, line);
+        Section section = new Section(upStation, downStation, line, sectionRequest.getDistance());
+
         // line에도 새로운 section 정보 등록 (양방향) -> line.save하지 않아도 transacition 종료 후 업데이트
         line.addSection(section);
 
