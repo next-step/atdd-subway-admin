@@ -26,12 +26,9 @@ public class LineBridges {
     }
 
     private void validateDuplicate(LineBridge lineBridge) {
-        Optional<LineBridge> duplicate = lineBridges.stream()
-                .filter(element -> element.isSame(lineBridge))
-                .findFirst();
-
-        if (duplicate.isPresent()) {
-            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 등록되어 있으면 구간을 추가할 수 없습니다.");
+             lineBridges.stream()
+              .filter(element -> element.isSame(lineBridge))
+              .findFirst().orElseThrow(() -> new IllegalArgumentException("상행역과 하행역이 이미 노선에 등록되어 있으면 구간을 추가할 수 없습니다."));
         }
     }
 
