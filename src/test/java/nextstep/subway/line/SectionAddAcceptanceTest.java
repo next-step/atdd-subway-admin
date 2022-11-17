@@ -9,6 +9,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
@@ -132,4 +134,67 @@ class SectionAddAcceptanceTest extends BaseAcceptanceTest {
 		);
 	}
 
+	/**
+	 * Given 지하철 노선 "2호선"에 "강남역", "선릉역" 구간이 등록되어 있다.
+	 * When 지하철 노선 "2호선"에 "강남역"과 "선릉역" 구간을 추가한다.
+	 * Then 등록할 수 없다.
+	 */
+	@DisplayName("추가 구간의 상행/하행역이 모두 노선에 존재하는 경우 등록할 수 없다.")
+	@Test
+	void addSectionWithBothStationExist() {
+		// given
+		SectionCreateRequest request = new SectionCreateRequest(강남역, 선릉역, 10);
+		지하철_구간_등록_요청(이호선, request);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_등록_요청(이호선, new SectionCreateRequest(강남역, 선릉역, 5));
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	/**
+	 * Given 지하철 노선 "2호선"에 "강남역", "선릉역" 이 등록되어 있다.
+	 * When 지하철 노선 "2호선"에 "삼성역"과 "잠실역" 구간을 추가한다.
+	 * Then 등록할 수 없다.
+	 */
+	@DisplayName("추가 구간의 상행/하행역이 모두 노선에 존재하지 않는 경우 등록할 수 없다.")
+	@Test
+	void addSectionBothStationNotExist() {
+		// given
+		Long 삼성역 = 지하철역_생성_요청("삼성역").as(StationNameResponse.class).getId();
+		Long 잠실역 = 지하철역_생성_요청("잠실역").as(StationNameResponse.class).getId();
+		SectionCreateRequest request = new SectionCreateRequest(삼성역, 잠실역, 10);
+
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_등록_요청(이호선, request);
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
+
+	/**
+	 * Given 100 의 길이를 가진 지하철 노선 "2호선"에 "강남역", "선릉역" 이 등록되어 있다.
+	 * And 50 의 길이를 가진 "강남역" - "역삼역" 구간이 등록되어 있다.
+	 * When 지하철 노선 "2호선"에 "강남역"과 "잠실역" 구간을 추가한다.
+	 *   When 0 의 길이를 가진 구간을 추가한다.
+	 *   When 50 의 길이를 가진 구간을 추가한다.
+	 *   When 100 의 길이를 가진 구간을 추가한다.
+	 * hen 등록할 수 없다.
+	 */
+	@DisplayName("추가하려는 구간 사이의 거리가 기존 역 사이 거리보다 같거나 큰 경우 등록할 수 없다.")
+	@ParameterizedTest(name = "{index}. 길이: {0}")
+	@ValueSource(ints = {0, 50, 100})
+	void addSectionWithDistanceGreaterThanExistSection(int distance) {
+		// given
+		SectionCreateRequest request = new SectionCreateRequest(강남역, 선릉역, 100);
+		지하철_구간_등록_요청(이호선, request);
+		Long 잠실역 = 지하철역_생성_요청("잠실역").as(StationNameResponse.class).getId();
+
+		// when
+		ExtractableResponse<Response> response = 지하철_구간_등록_요청(이호선, new SectionCreateRequest(강남역, 잠실역, distance));
+
+		// then
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+	}
 }
