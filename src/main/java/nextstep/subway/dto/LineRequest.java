@@ -11,8 +11,8 @@ public class LineRequest {
     private Long downStationId;
     private Integer distance;
 
-    public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation, distance);
+    public Line toLine(Station upStation, Station downStation, Integer distance) {
+        return Line.of(name, color, upStation, downStation, distance);
     }
 
     public Long getUpStationId() {
