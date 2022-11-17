@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class LineService {
     private LineRepository lineRepository;
     private StationService stationService;
@@ -33,13 +34,11 @@ public class LineService {
         return LineResponse.of(lineRepository.save(line));
     }
 
-    @Transactional(readOnly = true)
     public List<LineResponse> findAllLine() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(NotFoundLine::new);
         return LineResponse.of(line);
