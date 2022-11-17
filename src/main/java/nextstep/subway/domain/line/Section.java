@@ -2,6 +2,7 @@ package nextstep.subway.domain.line;
 
 import java.util.Objects;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -10,12 +11,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 
+import nextstep.subway.domain.line.vo.Distance;
 import nextstep.subway.domain.station.Station;
 
 @Entity
-@Table
 public class Section {
 
 	@Id
@@ -34,7 +34,8 @@ public class Section {
 	@JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_to_down_station"))
 	private Station downStation;
 
-	private int distance;
+	@Embedded
+	private Distance distance;
 
 	protected Section() {
 	}
@@ -43,7 +44,7 @@ public class Section {
 		this.line = line;
 		this.upStation = upStation;
 		this.downStation = downStation;
-		this.distance = distance;
+		this.distance = new Distance(distance);
 	}
 
 	public Line getLine() {
@@ -59,7 +60,7 @@ public class Section {
 	}
 
 	public Integer getDistance() {
-		return distance;
+		return distance.getValue();
 	}
 
 	@Override
@@ -77,5 +78,17 @@ public class Section {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(id);
+	}
+
+	public boolean isSameUpStation(Section newSection) {
+		return isSameStation(this.upStation, newSection.upStation);
+	}
+
+	public boolean isSameDownStation(Section newSection) {
+		return isSameStation(this.downStation, newSection.downStation);
+	}
+
+	private boolean isSameStation(Station station, Station newStation) {
+		return station.equals(newStation);
 	}
 }
