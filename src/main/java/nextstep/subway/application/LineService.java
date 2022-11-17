@@ -2,7 +2,6 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.*;
 import nextstep.subway.dto.CreateLineDto;
-import nextstep.subway.dto.DtoConverter;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.UpdateLineDto;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,7 @@ public class LineService {
         Station downStation = findStationById(dto.getDownStationId());
         Distance distance = new Distance(dto.getDistance());
         Section section = new Section(upStation, downStation, distance);
-        Line line = DtoConverter.toLineEntity(dto);
+        Line line = dto.toLine();
         line.addSection(section);
         return LineResponse.of(lineRepository.save(line));
     }
@@ -37,7 +36,7 @@ public class LineService {
     @Transactional
     public void update(long id, UpdateLineDto dto) {
         Line line = findLineById(id);
-        line.update(DtoConverter.toLineEntity(dto));
+        line.update(dto.toLine());
     }
 
     @Transactional(readOnly = true)

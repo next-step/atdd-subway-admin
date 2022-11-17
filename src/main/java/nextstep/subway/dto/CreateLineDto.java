@@ -30,4 +30,8 @@ public class CreateLineDto {
     public long getDistance() {
         return distance;
     }
+
+    public Line toLine() {
+        return new Line(name, color);
+    }
 }
