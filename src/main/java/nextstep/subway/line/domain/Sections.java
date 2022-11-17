@@ -18,6 +18,10 @@ public class Sections {
         this.sections.add(section);
     }
 
+    public int size() {
+        return this.sections.size();
+    }
+
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
         Station firstUpStation = findFirstUpStation();

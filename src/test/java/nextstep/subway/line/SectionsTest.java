@@ -9,6 +9,7 @@ import static nextstep.subway.line.SectionTest.신논현역_강남역_구간;
 import static nextstep.subway.station.domain.StationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
+@DisplayName("구간들")
 class SectionsTest {
     public static final Sections 구간들;
 
@@ -18,6 +19,15 @@ class SectionsTest {
         구간들 = sections;
     }
 
+    @DisplayName("구간 추가")
+    @Test
+    void constructor() {
+        Sections sections = new Sections();
+        sections.add(논현역_신논현역_구간);
+        sections.add(신논현역_강남역_구간);
+        assertThat(sections.size()).isEqualTo(2);
+    }
+    
     @DisplayName("구간역 목록을 조회한다.")
     @Test
     void name() {
