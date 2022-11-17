@@ -94,10 +94,27 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_목록_조회() {
         // given
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", 10);
+        createLine(params);
+
+        HashMap<String, Object> params2 = new HashMap<>();
+        params2.put("name", "2호선");
+        params2.put("color", "bg-green-600");
+        params2.put("upStationId", upStationId);
+        params2.put("downStationId", downStationId);
+        params2.put("distance", 10);
+        createLine(params2);
 
         // when
+        List<Long> ids = getLines(new HashMap<>()).body().jsonPath().getList("id", Long.class);
 
         // then
+        assertThat(ids).hasSize(2);
     }
 
     /**
