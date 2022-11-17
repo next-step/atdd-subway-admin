@@ -1,5 +1,12 @@
 package nextstep.subway.section;
 
+import static nextstep.subway.line.LineAcceptanceRestAssured.지하철노선_생성;
+import static nextstep.subway.line.LineAcceptanceRestAssured.지하철노선_조회;
+import static nextstep.subway.section.SectionAcceptanceRestAssured.지하철구간_추가;
+import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역_생성;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -8,13 +15,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import static nextstep.subway.line.LineAcceptanceRestAssured.지하철노선_생성;
-import static nextstep.subway.line.LineAcceptanceRestAssured.지하철노선_조회;
-import static nextstep.subway.section.SectionAcceptanceRestAssured.지하철구간_추가;
-import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역_생성;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends BaseAcceptanceTest {

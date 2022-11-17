@@ -1,16 +1,15 @@
 package nextstep.subway.utils;
 
 import com.google.common.base.CaseFormat;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.stereotype.Component;
-import org.springframework.test.context.ActiveProfiles;
-
+import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
+import org.springframework.test.context.ActiveProfiles;
 
 @Component
 @ActiveProfiles("test")

@@ -1,9 +1,16 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "SECTION")
@@ -26,8 +33,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    protected Section() {
-    }
+    protected Section() {}
 
     private Section(Long id, Station upStation, Station downStation, Integer distance, Line line) {
         validateStations(upStation, downStation);

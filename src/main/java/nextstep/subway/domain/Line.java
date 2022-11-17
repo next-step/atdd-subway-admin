@@ -1,8 +1,14 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
 import java.util.Collections;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "LINE")
@@ -21,8 +27,7 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections;
 
-    protected Line() {
-    }
+    protected Line() {}
 
     private Line(Long id, String name, String color, Station upStation, Station downStation, Integer distance) {
         validateName(name);
@@ -82,8 +87,12 @@ public class Line extends BaseEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Line)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Line)) {
+            return false;
+        }
         Line line = (Line) o;
         return Objects.equals(id, line.id);
     }

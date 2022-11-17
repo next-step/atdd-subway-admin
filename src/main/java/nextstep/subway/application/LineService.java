@@ -1,5 +1,8 @@
 package nextstep.subway.application;
 
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
@@ -11,10 +14,6 @@ import nextstep.subway.dto.SectionRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
