@@ -265,7 +265,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회(Long id) {
+    public static ExtractableResponse<Response> 지하철_노선_조회(Long id) {
         return RestAssured.given().log().all()
                 .when().get("/lines/" + id)
                 .then().log().all()

@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceTest.생성된_지하철_노선_ID_조회;
+import static nextstep.subway.line.LineAcceptanceTest.지하철_노선_조회;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -27,12 +28,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest {
-    private Long 판교역_ID;
-    private Long 강남역_ID;
-    private Long 신분당선_구간_ID;
-    private Long 신규_역_ID;
-    private ExtractableResponse<Response> 지하철_구간_추가_결과;
-
     @LocalServerPort
     int port;
 
@@ -59,13 +54,13 @@ public class SectionAcceptanceTest {
         // given
         int distance = 10;
         String lineName = "신분당선";
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 5);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 5);
 
         // then
         지하철_구간_추가_성공_확인(지하철_구간_추가_결과);
@@ -85,13 +80,13 @@ public class SectionAcceptanceTest {
         // given
         int distance = 10;
         String lineName = "신분당선";
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 판교역_ID, 5);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 판교역_ID, 5);
 
         // then
         지하철_구간_추가_성공_확인(지하철_구간_추가_결과);
@@ -111,13 +106,13 @@ public class SectionAcceptanceTest {
         // given
         int distance = 10;
         String lineName = "신분당선";
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 강남역_ID, 신규_역_ID, 5);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 강남역_ID, 신규_역_ID, 5);
 
         // then
         지하철_구간_추가_성공_확인(지하철_구간_추가_결과);
@@ -137,13 +132,13 @@ public class SectionAcceptanceTest {
     void addSectionException(int newDistance) {
         // given
         int distance = 10;
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, newDistance);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, newDistance);
 
         // then
         지하철_구간_추가_실패(지하철_구간_추가_결과);
@@ -159,12 +154,12 @@ public class SectionAcceptanceTest {
     void addExistSectionException() {
         // given
         int distance = 10;
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 판교역_ID, 강남역_ID, 4);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 판교역_ID, 강남역_ID, 4);
 
         // then
         지하철_구간_추가_실패(지하철_구간_추가_결과);
@@ -180,18 +175,141 @@ public class SectionAcceptanceTest {
     void addNotExistSectionException() {
         // given
         int distance = 10;
-        판교역_ID = 생성된_지하철_역_ID_조회("판교역");
-        강남역_ID = 생성된_지하철_역_ID_조회("강남역");
-        신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회("신분당선", "주황색", 판교역_ID, 강남역_ID, distance);
 
-        신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
         Long 두번째_신규_역_ID = 생성된_지하철_역_ID_조회("양재시민의숲");
 
         // when
-        지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 두번째_신규_역_ID, 4);
+        ExtractableResponse<Response> 지하철_구간_추가_결과 = 지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 두번째_신규_역_ID, 4);
 
         // then
         지하철_구간_추가_실패(지하철_구간_추가_결과);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 상행역을 삭제하면
+     * Then 해당 역은 더 이상 조회되지 않는다
+     */
+    @DisplayName("상행역을 삭제할 수 있다")
+    @Test
+    void deleteEndUpSection() {
+        // given
+        int distance = 10;
+        String lineName = "신분당선";
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 판교역_ID, 4);
+
+        // when
+        지하철_구간_삭제(신분당선_구간_ID, 신규_역_ID);
+
+        // then
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회(신분당선_구간_ID);
+        지하철_추가된_구간_조회_확인(지하철_노선_조회_결과, lineName, "판교역", "강남역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 하행역을 삭제하면
+     * Then 해당 역은 더 이상 조회되지 않는다
+     */
+    @DisplayName("하행역을 삭제할 수 있다")
+    @Test
+    void deleteEndDownSection() {
+        // given
+        int distance = 10;
+        String lineName = "신분당선";
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        지하철_구간_추가(신분당선_구간_ID, 강남역_ID, 신규_역_ID, 4);
+
+        // when
+        지하철_구간_삭제(신분당선_구간_ID, 신규_역_ID);
+
+        // then
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회(신분당선_구간_ID);
+        지하철_추가된_구간_조회_확인(지하철_노선_조회_결과, lineName, "판교역", "강남역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 가운데 역을 삭제하면
+     * Then 해당 역은 더 이상 조회되지 않는다
+     */
+    @DisplayName("가운데 역을 삭제할 수 있다")
+    @Test
+    void deleteMiddleSection() {
+        // given
+        int distance = 10;
+        String lineName = "신분당선";
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 4);
+
+        // when
+        지하철_구간_삭제(신분당선_구간_ID, 신규_역_ID);
+
+        // then
+        ExtractableResponse<Response> 지하철_노선_조회_결과 = 지하철_노선_조회(신분당선_구간_ID);
+        지하철_추가된_구간_조회_확인(지하철_노선_조회_결과, lineName, "판교역", "강남역");
+    }
+
+    /**
+     * Given 지하철 노선과 구간 2개를 생성하고
+     * When 노선에 존재하지 않는 역을 삭제하면
+     * Then 삭제되지 않는다
+     */
+    @DisplayName("노선에 존재하지 않는 역을 삭제할 수 없다")
+    @Test
+    void deleteNotExistStationException() {
+        // given
+        int distance = 10;
+        String lineName = "신분당선";
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+
+        Long 신규_역_ID = 생성된_지하철_역_ID_조회("양재역");
+        지하철_구간_추가(신분당선_구간_ID, 신규_역_ID, 강남역_ID, 4);
+        Long 노선에_없는_신규_역_ID = 생성된_지하철_역_ID_조회("안드로메다역");
+
+        // when
+        ExtractableResponse<Response> 지하철_구간_삭제_결과 = 지하철_구간_삭제(신분당선_구간_ID, 노선에_없는_신규_역_ID);
+
+        // then
+        지하철_구간_삭제_실패(지하철_구간_삭제_결과);
+    }
+
+    /**
+     * Given 지하철 노선과 구간을 생성하고
+     * When 마지막 구간을 삭제하면
+     * Then 삭제되지 않는다
+     */
+    @DisplayName("마지막 구간은 삭제할 수 없다")
+    @Test
+    void deleteOneSectionStationException() {
+        // given
+        int distance = 10;
+        String lineName = "신분당선";
+        Long 판교역_ID = 생성된_지하철_역_ID_조회("판교역");
+        Long 강남역_ID = 생성된_지하철_역_ID_조회("강남역");
+        Long 신분당선_구간_ID = 생성된_지하철_노선_ID_조회(lineName, "주황색", 판교역_ID, 강남역_ID, distance);
+
+        // when
+        ExtractableResponse<Response> 지하철_구간_삭제_결과 = 지하철_구간_삭제(신분당선_구간_ID, 강남역_ID);
+
+        // then
+        지하철_구간_삭제_실패(지하철_구간_삭제_결과);
     }
 
     private ExtractableResponse<Response> 지하철_구간_추가(
@@ -218,6 +336,10 @@ public class SectionAcceptanceTest {
         assertThat(지하철_구간_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    private void 지하철_구간_삭제_실패(ExtractableResponse<Response> 지하철_구간_삭제_결과) {
+        assertThat(지하철_구간_삭제_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private void 지하철_구간_추가_성공_확인(ExtractableResponse<Response> 지하철_구간_추가_결과) {
         assertThat(지하철_구간_추가_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -238,5 +360,12 @@ public class SectionAcceptanceTest {
                 () -> assertThat(stationNames.size()).isEqualTo(expectStationNames.length),
                 () -> assertThat(stationNames).containsAll(Arrays.asList(expectStationNames))
         );
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_삭제(Long 구간_id, Long 제거_역_id) {
+        return RestAssured.given().log().all()
+                .when().delete("/lines/{id}/sections?stationId={stationId}", 구간_id, 제거_역_id)
+                .then().log().all()
+                .extract();
     }
 }
