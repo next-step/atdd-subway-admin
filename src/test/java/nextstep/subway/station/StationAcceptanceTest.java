@@ -1,16 +1,13 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.fixture.StationTestFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,13 +23,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ValidatableResponse response = createStation("강남역");
+        ValidatableResponse response = StationTestFixture.create("강남역");
 
         // then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = fetchStation().extract()
+        List<String> stationNames = StationTestFixture.fetch().extract()
                 .jsonPath()
                 .getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
@@ -47,10 +44,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        createStation("강남역");
+        StationTestFixture.create("강남역");
 
         // when
-        ValidatableResponse response = createStation("강남역");
+        ValidatableResponse response = StationTestFixture.create("강남역");
 
         // then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -65,11 +62,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        createStation("강남역");
-        createStation("양재역");
+        StationTestFixture.create("강남역");
+        StationTestFixture.create("양재역");
 
         // when
-        List<String> stationNames = fetchStation()
+        List<String> stationNames = StationTestFixture.fetch()
                 .extract()
                 .jsonPath()
                 .getList("name", String.class);
@@ -87,44 +84,20 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        long stationId = createStation("강남역").extract()
+        long stationId = StationTestFixture.create("강남역").extract()
                 .jsonPath()
                 .getLong("id");
 
         // when
-        int statusCode = deleteStation(stationId).extract()
+        int statusCode = StationTestFixture.delete(stationId).extract()
                 .response()
                 .statusCode();
         assertThat(statusCode).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
-        List<String> stationNames = fetchStation().extract()
+        List<String> stationNames = StationTestFixture.fetch().extract()
                 .jsonPath()
                 .getList("name", String.class);
         assertThat(stationNames).isEmpty();
-    }
-
-    private ValidatableResponse createStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
-    }
-
-    private ValidatableResponse deleteStation(long id) {
-        return RestAssured.given().log().all()
-                .pathParam("id", id)
-                .when().delete("/stations/{id}")
-                .then().log().all();
-    }
-
-    private ValidatableResponse fetchStation() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all();
     }
 }

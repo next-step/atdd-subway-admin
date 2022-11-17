@@ -1,27 +1,19 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.fixture.LineTestFixture;
+import nextstep.subway.fixture.StationTestFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-
-    @Autowired
-    private StationRepository stationRepository;
 
     /*
      * When 지하철 노선을 생성하면
@@ -31,12 +23,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // When
-        Station 강남역 = saveStation("강남역");
-        Station 양재역 = saveStation("양재역");
-        long lineId = createLine("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
+        Station 강남역 = StationTestFixture.create("강남역").extract().as(Station.class);
+        Station 양재역 = StationTestFixture.create("양재역").extract().as(Station.class);
+        long lineId = LineTestFixture.create("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
         // Then
-        JsonPath responseBody = fetchLines().extract().jsonPath();
+        JsonPath responseBody = LineTestFixture.fetchAll().extract().jsonPath();
         assertThat(responseBody.getList("id", Long.class)).containsAnyOf(lineId);
         assertThat(responseBody.getList("stations[0].name")).containsExactly(강남역.getName(), 양재역.getName());
     }
@@ -50,16 +42,16 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // Given
-        Station 강남역 = saveStation("강남역");
-        Station 양재역 = saveStation("양재역");
-        createLine("신분당선", "bg-red-600", 강남역, 양재역, 10).extract();
+        Station 강남역 = StationTestFixture.create("강남역").extract().as(Station.class);
+        Station 양재역 = StationTestFixture.create("양재역").extract().as(Station.class);
+        LineTestFixture.create("신분당선", "bg-red-600", 강남역, 양재역, 10).extract();
 
-        Station 야탑역 = saveStation("야탑역");
-        Station 모란역 = saveStation("모란역");
-        createLine("분당선", "bg-yellow-600", 야탑역, 모란역, 10).extract();
+        Station 야탑역 = StationTestFixture.create("야탑역").extract().as(Station.class);
+        Station 모란역 = StationTestFixture.create("모란역").extract().as(Station.class);
+        LineTestFixture.create("분당선", "bg-yellow-600", 야탑역, 모란역, 10).extract();
 
         // When
-        JsonPath responseBody = fetchLines().extract().jsonPath();
+        JsonPath responseBody = LineTestFixture.fetchAll().extract().jsonPath();
 
         // Then
         assertThat(responseBody.getList("").size()).isEqualTo(2);
@@ -74,13 +66,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // Given
-        Station 강남역 = saveStation("강남역");
-        Station 양재역 = saveStation("양재역");
+        Station 강남역 = StationTestFixture.create("강남역").extract().as(Station.class);
+        Station 양재역 = StationTestFixture.create("양재역").extract().as(Station.class);
         String lineName = "신분당선";
-        long lineId = createLine(lineName, "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
+        long lineId = LineTestFixture.create(lineName, "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
         // When
-        JsonPath responseBody = fetchLine(lineId).extract().jsonPath();
+        JsonPath responseBody = LineTestFixture.fetch(lineId).extract().jsonPath();
 
         // Then
         assertThat(responseBody.getLong("id")).isEqualTo(lineId);
@@ -97,12 +89,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // Given
-        Station 강남역 = saveStation("강남역");
-        Station 양재역 = saveStation("양재역");
-        long lineId = createLine("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
+        Station 강남역 = StationTestFixture.create("강남역").extract().as(Station.class);
+        Station 양재역 = StationTestFixture.create("양재역").extract().as(Station.class);
+        long lineId = LineTestFixture.create("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
         // When
-        ValidatableResponse response = updateLine(lineId, "구분당선", "bg-blue-600");
+        ValidatableResponse response = LineTestFixture.update(lineId, "구분당선", "bg-blue-600");
 
         // Then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -117,66 +109,14 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // Given
-        Station 강남역 = saveStation("강남역");
-        Station 양재역 = saveStation("양재역");
-        long lineId = createLine("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
+        Station 강남역 = StationTestFixture.create("강남역").extract().as(Station.class);
+        Station 양재역 = StationTestFixture.create("양재역").extract().as(Station.class);
+        long lineId = LineTestFixture.create("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
         // When
-        ValidatableResponse response = deleteLine(lineId);
+        ValidatableResponse response = LineTestFixture.delete(lineId);
 
         // Then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-    }
-
-    private ValidatableResponse createLine(String name, String color, Station upStation, Station downStation, int distance) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", upStation.getId());
-        params.put("downStationId", downStation.getId());
-        params.put("distance", distance);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all();
-    }
-
-    private ValidatableResponse fetchLines() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all();
-    }
-
-    private ValidatableResponse fetchLine(long lineId) {
-        return RestAssured.given().log().all()
-                .pathParam("id", lineId)
-                .when().get("/lines/{id}")
-                .then().log().all();
-    }
-
-    private ValidatableResponse updateLine(long lineId, String name, String color) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .pathParam("id", lineId)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{id}")
-                .then().log().all();
-    }
-
-    private ValidatableResponse deleteLine(long lineId) {
-        return RestAssured.given().log().all()
-                .pathParam("id", lineId)
-                .when().delete("/lines/{id}")
-                .then().log().all();
-    }
-
-    private Station saveStation(String name) {
-        return stationRepository.save(new Station(name));
     }
 }
