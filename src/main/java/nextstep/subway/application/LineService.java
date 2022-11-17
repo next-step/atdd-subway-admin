@@ -27,7 +27,8 @@ public class LineService {
     public LineResponse register(CreateLineDto dto) {
         Station upStation = findStationById(dto.getUpStationId());
         Station downStation = findStationById(dto.getDownStationId());
-        Section section = new Section(upStation, downStation, dto.getDistance());
+        Distance distance = new Distance(dto.getDistance());
+        Section section = new Section(upStation, downStation, distance);
         Line line = DtoConverter.toLineEntity(dto);
         line.addSection(section);
         return LineResponse.of(lineRepository.save(line));

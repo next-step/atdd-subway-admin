@@ -21,12 +21,12 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    @Column
-    private Long distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() { }
 
-    public Section(Station upStation, Station downStation, Long distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
