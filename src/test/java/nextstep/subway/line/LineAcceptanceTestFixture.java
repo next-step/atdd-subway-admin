@@ -13,7 +13,7 @@ public class LineAcceptanceTestFixture {
     private LineAcceptanceTestFixture() {
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_생성(String name, Integer upStationId, Integer downStationId) {
+    public static ExtractableResponse<Response> 지하철_노선_생성_거리_10(String name, Integer upStationId, Integer downStationId) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         params.put("color", "bg-yellow-600");

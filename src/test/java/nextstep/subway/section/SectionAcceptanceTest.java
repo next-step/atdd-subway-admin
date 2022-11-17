@@ -18,7 +18,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 
 import io.restassured.response.ExtractableResponse;
@@ -30,7 +29,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     private Integer WANGSIPLI_ID;
     private Integer JUKJUN_ID;
 
-    private Integer LINE_BUNDANG_ID;
+    private Integer LINE_BUNDANG_ID_거리_10;
 
     @BeforeEach
     public void setUp() {
@@ -39,7 +38,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         JUKJUN_ID = ID_추출(지하철역_생성(JUKJUN));
 
         // when
-        LINE_BUNDANG_ID = ID_추출(지하철_노선_생성(LINE_BUNDANG, WANGSIPLI_ID, JUKJUN_ID));
+        LINE_BUNDANG_ID_거리_10 = ID_추출(지하철_노선_생성_거리_10(LINE_BUNDANG, WANGSIPLI_ID, JUKJUN_ID));
     }
 
     /**
@@ -55,11 +54,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Integer SEOHYUN_ID = ID_추출(지하철역_생성(SEOHYUN));
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", WANGSIPLI_ID.toString());
-        params.put("downStationId", SEOHYUN_ID.toString());
-        params.put("distance", "5");
-        지하철_구간_등록(LINE_BUNDANG_ID, params);
+        Map<String, String> params = 구간_등록_요청_파라미터(WANGSIPLI_ID, SEOHYUN_ID, "5");
+        지하철_구간_등록(LINE_BUNDANG_ID_거리_10, params);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
@@ -83,11 +79,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Integer CHEONGRYANGRI_ID = ID_추출(지하철역_생성(CHEONGRYANGRI));
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", CHEONGRYANGRI_ID.toString());
-        params.put("downStationId", WANGSIPLI_ID.toString());
-        params.put("distance", "5");
-        지하철_구간_등록(LINE_BUNDANG_ID, params);
+        Map<String, String> params = 구간_등록_요청_파라미터(CHEONGRYANGRI_ID, WANGSIPLI_ID, "5");
+        지하철_구간_등록(LINE_BUNDANG_ID_거리_10, params);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
@@ -110,11 +103,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Integer GIHEUNG_ID = ID_추출(지하철역_생성(GIHEUNG));
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", GIHEUNG_ID.toString());
-        params.put("downStationId", WANGSIPLI_ID.toString());
-        params.put("distance", "5");
-        지하철_구간_등록(LINE_BUNDANG_ID, params);
+        Map<String, String> params = 구간_등록_요청_파라미터(GIHEUNG_ID, WANGSIPLI_ID, "5");
+        지하철_구간_등록(LINE_BUNDANG_ID_거리_10, params);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
@@ -136,11 +126,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Integer SEOHYUN_ID = ID_추출(지하철역_생성("서현역"));
 
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", WANGSIPLI_ID.toString());
-        params.put("downStationId", SEOHYUN_ID.toString());
-        params.put("distance", distance);
-        ExtractableResponse<Response> response = 지하철_구간_등록(LINE_BUNDANG_ID, params);
+        Map<String, String> params = 구간_등록_요청_파라미터(WANGSIPLI_ID, SEOHYUN_ID, distance);
+        ExtractableResponse<Response> response = 지하철_구간_등록(LINE_BUNDANG_ID_거리_10, params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -155,11 +142,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_alreadyExists() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", WANGSIPLI_ID.toString());
-        params.put("downStationId", JUKJUN_ID.toString());
-        params.put("distance", "5");
-        ExtractableResponse<Response> response = 지하철_구간_등록(LINE_BUNDANG_ID, params);
+        Map<String, String> params = 구간_등록_요청_파라미터(WANGSIPLI_ID, JUKJUN_ID, "5");
+        ExtractableResponse<Response> response = 지하철_구간_등록(LINE_BUNDANG_ID_거리_10, params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -177,15 +161,20 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Integer HONGDAE_ID = ID_추출(지하철역_생성("HONGDAE"));
         Integer JAMSIL_ID = ID_추출(지하철역_생성("JAMSIL"));
 
-        // when
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", HONGDAE_ID.toString());
-        params.put("downStationId", JAMSIL_ID.toString());
-        params.put("distance", "5");
-        ExtractableResponse<Response> response = 지하철_구간_등록(LINE_BUNDANG_ID, params);
+        // when 
+        Map<String, String> params = 구간_등록_요청_파라미터(HONGDAE_ID, JAMSIL_ID, "5");
+        ExtractableResponse<Response> response = 지하철_구간_등록(LINE_BUNDANG_ID_거리_10, params);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private Map<String, String> 구간_등록_요청_파라미터(Integer upStationId, Integer downStationId, String distance) {
+        Map<String, String> params = new HashMap<>();
+        params.put("upStationId", upStationId.toString());
+        params.put("downStationId", downStationId.toString());
+        params.put("distance", distance);
+        return params;
     }
 
     private Integer ID_추출(ExtractableResponse<Response> response) {

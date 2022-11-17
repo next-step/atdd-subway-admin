@@ -44,7 +44,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationLine() {
         // when
-        지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID);
+        지하철_노선_생성_거리_10(LINE_2, GANGNAM_ID, WANGSIPLI_ID);
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
@@ -65,8 +65,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getStationLines() {
         // given
-        지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID);
-        지하철_노선_생성(LINE_BUNDANG, WANGSIPLI_ID, JUKJUN_ID);
+        지하철_노선_생성_거리_10(LINE_2, GANGNAM_ID, WANGSIPLI_ID);
+        지하철_노선_생성_거리_10(LINE_BUNDANG, WANGSIPLI_ID, JUKJUN_ID);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
@@ -88,7 +88,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getStationLine() {
         // given
-        Integer id = JsonPathUtils.extractInteger(지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID), "$.id");
+        Integer id = JsonPathUtils.extractInteger(지하철_노선_생성_거리_10(LINE_2, GANGNAM_ID, WANGSIPLI_ID), "$.id");
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회(id);
@@ -110,7 +110,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateStationLine() {
         // given
-        Integer id = JsonPathUtils.extractInteger(지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID), "$.id");
+        Integer id = JsonPathUtils.extractInteger(지하철_노선_생성_거리_10(LINE_2, GANGNAM_ID, WANGSIPLI_ID), "$.id");
 
         // when
         String CHANGED_NAME = "8호선";
@@ -134,7 +134,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStationLine() {
         // given
-        Integer id = JsonPathUtils.extractInteger(지하철_노선_생성(LINE_2, GANGNAM_ID, WANGSIPLI_ID), "$.id");
+        Integer id = JsonPathUtils.extractInteger(지하철_노선_생성_거리_10(LINE_2, GANGNAM_ID, WANGSIPLI_ID), "$.id");
 
         // when
         ExtractableResponse<Response> response = LineAcceptanceTestFixture.지하철_노선_삭제(id);
