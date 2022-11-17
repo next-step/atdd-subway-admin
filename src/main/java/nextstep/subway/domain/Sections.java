@@ -36,6 +36,9 @@ public class Sections {
     }
 
     private void validationSection(Section newSection) {
+        if (newSection == null) {
+            throw new NullPointerException(EMPTY_SECTION.getMessage());
+        }
         if (isContainsAllStation(newSection)) {
             throw new SectionsException(ALREADY_CONTAINS_SECTION.getMessage());
         }
