@@ -30,7 +30,7 @@ public class LineService {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
             .orElseThrow(() -> new IllegalArgumentException(String.format("역을 찾을 수 없습니다 id = %d", lineRequest.getUpStationId())));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-            .orElseThrow(() -> new IllegalArgumentException(String.format("역을 찾을 수 없습니다 id = %d", lineRequest.getUpStationId())));
+            .orElseThrow(() -> new IllegalArgumentException(String.format("역을 찾을 수 없습니다 id = %d", lineRequest.getDownStationId())));
         Line saveLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.from(saveLine);
     }
