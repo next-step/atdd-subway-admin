@@ -36,6 +36,7 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(gangnamStationId)
                 .downStationId(nonhyunStationId)
+                .distance(10)
                 .build());
         //then
         List<LineResponse> lines = 지하철_노선_전체조회().jsonPath().getList(".", LineResponse.class).stream().collect(Collectors.toList());
@@ -64,12 +65,14 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(gangnamStationId)
                 .downStationId(nonhyunStationId)
+                .distance(10)
                 .build());
         지하철_노선_등록(LineRequest.builder()
                 .name("1호선")
                 .color("blue")
                 .upStationId(kildongStationId)
                 .downStationId(sinlimStationId)
+                .distance(10)
                 .build());
 
         //when
@@ -101,6 +104,7 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(upStationId)
                 .downStationId(downStationId)
+                .distance(10)
                 .build()).jsonPath().getLong("id");
 
         //then
@@ -132,6 +136,7 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(upStationId)
                 .downStationId(downStationId)
+                .distance(10)
                 .build()).jsonPath().getLong("id");
 
         // when
@@ -159,12 +164,14 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(gangnamStationId)
                 .downStationId(nonhyunStationId)
+                .distance(10)
                 .build());
         long lineId = 지하철_노선_등록(LineRequest.builder()
                 .name("1호선")
                 .color("blue")
                 .upStationId(kildongStationId)
                 .downStationId(sinlimStationId)
+                .distance(10)
                 .build()).jsonPath().getLong("id");
 
         //when
@@ -190,6 +197,7 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(upStationId)
                 .downStationId(downStationId)
+                .distance(10)
                 .build()).jsonPath().getLong("id");
 
         //when
