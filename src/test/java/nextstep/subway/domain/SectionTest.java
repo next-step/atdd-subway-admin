@@ -39,7 +39,7 @@ class SectionTest {
         assertAll(
             () -> assertThat(section.getUpStation()).isEqualTo(SANGWANGSIPLI),
             () -> assertThat(section.getDownStation()).isEqualTo(DDP),
-            () -> assertThat(section.getDistance()).isEqualTo(5L)
+            () -> assertThat(section.getDistance()).isEqualTo(Distance.of(5L))
         );
     }
 
@@ -53,7 +53,7 @@ class SectionTest {
         assertAll(
             () -> assertThat(section.getUpStation()).isEqualTo(WANGSIPLI),
             () -> assertThat(section.getDownStation()).isEqualTo(SINDANG),
-            () -> assertThat(section.getDistance()).isEqualTo(5L)
+            () -> assertThat(section.getDistance()).isEqualTo(Distance.of(5L))
         );
     }
 
@@ -67,7 +67,7 @@ class SectionTest {
         assertAll(
             () -> assertThat(section.getUpStation()).isEqualTo(WANGSIPLI),
             () -> assertThat(section.getDownStation()).isEqualTo(SANGWANGSIPLI),
-            () -> assertThat(section.getDistance()).isEqualTo(10L)
+            () -> assertThat(section.getDistance()).isEqualTo(Distance.of(10L))
         );
     }
 

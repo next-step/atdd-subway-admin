@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,8 +16,6 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Section {
-    private static final String DISTANCE_OVER_ERROR_MESSAGE = "추가할 구간의 거리가 기존 역 사이 거리보다 길 수는 없습니다.";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -33,28 +32,29 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private Long distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Long id, Line line, Station upStation, Station downStation, Long distance) {
+    public Section(Long id, Line line, Station upStation, Station downStation, long distance) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = Distance.of(distance);
     }
 
-    public Section(Long id, Station upStation, Station downStation, Long distance) {
+    public Section(Long id, Station upStation, Station downStation, long distance) {
         this(id, null, upStation, downStation, distance);
     }
 
-    public Section(Line line, Station upStation, Station downStation, Long distance) {
+    public Section(Line line, Station upStation, Station downStation, long distance) {
         this(null, line, upStation, downStation, distance);
     }
 
-    public Section(Station upStation, Station downStation, Long distance) {
+    public Section(Station upStation, Station downStation, long distance) {
         this(null, null, upStation, downStation, distance);
     }
 
@@ -68,7 +68,7 @@ public class Section {
             return;
         }
         this.upStation = section.downStation;
-        modifyDistance(section.distance);
+        this.distance = this.distance.sub(section.distance);
     }
 
     private void modifyDownStation(Section section) {
@@ -76,18 +76,7 @@ public class Section {
             return;
         }
         this.downStation = section.upStation;
-        modifyDistance(section.distance);
-    }
-
-    private void modifyDistance(Long distance) {
-        validateDistanceOver(distance);
-        this.distance = this.distance - distance;
-    }
-
-    private void validateDistanceOver(Long distance) {
-        if (distance >= this.distance) {
-            throw new IllegalArgumentException(DISTANCE_OVER_ERROR_MESSAGE);
-        }
+        this.distance = this.distance.sub(section.distance);
     }
 
     public List<Station> getStations() {
@@ -112,7 +101,7 @@ public class Section {
         return downStation;
     }
 
-    public Long getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
