@@ -27,10 +27,8 @@ public class LineService {
         Station upStation = findStationById(Long.valueOf(lineRequest.getUpLastStationId()));
         Station downStation = findStationById(Long.valueOf(lineRequest.getDownLastStationId()));
 
-        Line temp = lineRequest.toLine(upStation, downStation);
-
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     public List<LineResponse> findAllLines() {
@@ -41,7 +39,7 @@ public class LineService {
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     // @Transactional 이 있어야 update문 탐

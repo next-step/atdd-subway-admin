@@ -27,11 +27,12 @@ public class LineResponse {
        LineResponse.builder().build();
 
        return lines.stream()
-               .map(line -> LineResponse.of(line))
+               .map(line -> LineResponse.from(line))
                .collect(Collectors.toList());
    }
 
-    public static LineResponse of(Line persistLine) {
+   // 하나의 매개변수는 from
+    public static LineResponse from(Line persistLine) {
         return new LineResponse(persistLine);
     }
 
