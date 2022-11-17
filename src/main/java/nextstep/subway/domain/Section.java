@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.SectionException;
-import nextstep.subway.exception.SectionExceptionMessage;
-import nextstep.subway.exception.SectionsException;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -42,7 +40,7 @@ public class Section extends BaseEntity {
     }
 
     private void validateDistance(long distance) {
-        if(distance <= 0){
+        if (distance <= 0) {
             throw new SectionException(LESS_THEN_ZERO_DISTANCE.getMessage());
         }
     }
@@ -67,7 +65,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean isSameDownStation(Section newSection) {
-        return downStation.equals(newSection);
+        return downStation.equals(newSection.getDownStation());
     }
 
     public Station getUpStation() {
