@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.SectionsException;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.SectionsExceptionMessage.*;
 
+@Embeddable
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
