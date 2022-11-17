@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.acceptance.line;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
 import org.springframework.http.MediaType;
 
-import static nextstep.subway.station.StationAcceptaneCommon.지하철_역_등록;
+import static nextstep.subway.acceptance.station.StationAcceptaneCommon.지하철_역_등록;
 
 public class LineAcceptanceCommon {
 
@@ -36,7 +36,7 @@ public class LineAcceptanceCommon {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_등록(String name, String color, long upStationId,long downStationId, long distance) {
+    public static ExtractableResponse<Response> 지하철_노선_등록(String name, String color, long upStationId, long downStationId, long distance) {
         return RestAssured.given().log().all()
                 .body(LineRequest.builder()
                         .name(name)
