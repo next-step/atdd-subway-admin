@@ -24,12 +24,19 @@ public class Line extends BaseEntity {
 
     public Line(String name, String color) {
         validateLine(name);
+        validateColor(color);
         this.name = name;
         this.color = color;
     }
 
     private void validateLine(String name) {
         if (name == null || name.isEmpty()) {
+            throw new LineException(EMPTY_LINE_NAME.getMessage());
+        }
+    }
+
+    private void validateColor(String color){
+        if (color == null || color.isEmpty()) {
             throw new LineException(EMPTY_LINE_NAME.getMessage());
         }
     }
