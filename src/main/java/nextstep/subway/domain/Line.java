@@ -3,6 +3,8 @@ package nextstep.subway.domain;
 import org.springframework.util.StringUtils;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -32,6 +34,9 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private Long distance;
 
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    private List<Section> sections = new ArrayList<>();
+
     protected Line() {
     }
 
@@ -45,19 +50,19 @@ public class Line extends BaseEntity {
         validateNotNullStation(upStation, downStation);
         validateStationId(upStation);
         validateStationId(downStation);
-        validateNotSameStation(upStation,downStation);
+        validateNotSameStation(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
     }
 
     private void validateNotSameStation(Station upStation, Station downStation) {
-        if(upStation.equals(downStation)){
+        if (upStation.equals(downStation)) {
             throw new IllegalArgumentException(MESSAGE_STATION_SHOULD_BE_DIFFERENT);
         }
     }
 
     private void validateStationId(Station station) {
-        if(!station.hasId()){
+        if (!station.hasId()) {
             throw new IllegalArgumentException(MESSAGE_STATION_SHOULD_HAS_ID);
         }
     }
@@ -112,5 +117,29 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, name, color, upStation, downStation, distance);
+    }
+
+    public List<Section> getSections() {
+        return this.sections;
+    }
+
+    public Sections toSections() {
+        return Sections.of(this);
+    }
+
+    public Section toSection() {
+        return Section.of(this, getUpStation(), getDownStation(), getDistance());
+    }
+
+    public boolean startFrom(Long upStationId) {
+        return this.getUpStation().hasSameId(upStationId);
+    }
+
+    public boolean endAt(Long downStationId) {
+        return this.getDownStation().hasSameId(downStationId);
+    }
+
+    public void addSection(Section newSection) {
+        this.sections.add(newSection);
     }
 }

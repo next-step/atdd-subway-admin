@@ -47,4 +47,8 @@ public class Station extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id, name);
     }
+
+    public boolean hasSameId(Long upStationId) {
+        return id.equals(upStationId);
+    }
 }

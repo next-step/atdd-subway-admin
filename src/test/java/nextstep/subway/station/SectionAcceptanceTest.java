@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import nextstep.subway.constants.ServiceUrl;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionListResponse;
-import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.util.DatabaseCleaner;
 import nextstep.subway.util.RequestUtil;
@@ -16,10 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 
 import java.util.Arrays;
 import java.util.HashMap;
 
+import static nextstep.subway.station.StationAcceptanceTest.assertStatus;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
@@ -48,25 +49,20 @@ public class SectionAcceptanceTest {
     /**
      * Given 노선이 등록되어 있을 때
      * When 상행역에서 시작한 연결된 구간을 추가하면
-     * Then 구간을 조회할 수 있다.
+     * Then 구간이 생성된다.
      */
     @Test
     void 구간_추가_정상() {
 
         LineResponse lineResponse = LineAcceptanceTest.지하철_노선을_생성한다("노선", "색상", 10L, Arrays.asList(상행역.getId(), 하행역.getId())).as(LineResponse.class);
 
-        SectionResponse sectionResponse = 상행역에서_시작하는_구간을_추가한다(lineResponse.getId(),상행역,"신규역",5L).as(SectionResponse.class);
+        ExtractableResponse<Response> response = 상행역에서_시작하는_구간을_추가한다(lineResponse.getId(), 상행역, "신규역", 5L);
 
-        추가된_구간을_확인할_수_있다(lineResponse.getId(),sectionResponse);
+        추가된_구간을_확인할_수_있다(response);
     }
 
-    private void 추가된_구간을_확인할_수_있다(Long lineId, SectionResponse sectionResponse) {
-        SectionListResponse sectionListResponse = 노선의_구간을_조회한다(lineId).as(SectionListResponse.class);
-        assertThat(sectionListResponse.hasSection(sectionResponse.getSectionId())).isTrue();
-    }
-
-    private ExtractableResponse<Response> 노선의_구간을_조회한다(Long lineId) {
-        return RequestUtil.getRequest(String.format(ServiceUrl.URL_SECTIONS,lineId));
+    private void 추가된_구간을_확인할_수_있다(ExtractableResponse<Response> response) {
+        assertStatus(response, HttpStatus.CREATED);
     }
 
     private ExtractableResponse<Response> 상행역에서_시작하는_구간을_추가한다(Long lineId, StationResponse 상행역, String 신규역, long distance) {

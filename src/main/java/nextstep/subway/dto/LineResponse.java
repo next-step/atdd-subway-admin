@@ -2,7 +2,6 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -50,5 +49,6 @@ public class LineResponse {
     public Long getDistance() {
         return distance;
     }
+
 }
 
