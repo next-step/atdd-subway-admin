@@ -10,8 +10,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.DatabaseCleanup;
-import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,9 +50,9 @@ public class LineAcceptanceTest {
             .then().log().all().extract().as(StationResponse.class);
     }
 
-    public ExtractableResponse<Response> 노선_생성_요청(LineRequest lineRequest) {
+    public ExtractableResponse<Response> 노선_생성_요청(LineCreateRequest lineCreateRequest) {
         return RestAssured.given().log().all()
-            .body(lineRequest)
+            .body(lineCreateRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(LINE_URI)
@@ -76,10 +77,10 @@ public class LineAcceptanceTest {
             .then().log().all().extract();
     }
 
-    ExtractableResponse<Response> 노선_수정_요청(Long id, LineRequest lineRequest) {
+    ExtractableResponse<Response> 노선_수정_요청(Long id, LineUpdateRequest lineUpdateRequest) {
         return RestAssured
             .given().log().all()
-            .body(lineRequest)
+            .body(lineUpdateRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().put(LINE_URI + "/" + id)
             .then().log().all().extract();
@@ -145,7 +146,7 @@ public class LineAcceptanceTest {
     @Test
     void creatLine() {
         //when
-        LineRequest 신분당선_생성_요청_값 = new LineRequest("신분당선", "RED", 강남역.getId(), 판교역.getId(), 10);
+        LineCreateRequest 신분당선_생성_요청_값 = new LineCreateRequest("신분당선", "RED", 강남역.getId(), 판교역.getId(), 10);
 
         ExtractableResponse<Response> response = 노선_생성_요청(신분당선_생성_요청_값);
 
@@ -162,8 +163,8 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        LineRequest 신분당선_생성_요청_값 = new LineRequest("신분당선", "RED", 강남역.getId(), 판교역.getId(), 10);
-        LineRequest 이호선_생성_요청_값 = new LineRequest("이호선", "GREEN", 강남역.getId(), 선릉역.getId(), 10);
+        LineCreateRequest 신분당선_생성_요청_값 = new LineCreateRequest("신분당선", "RED", 강남역.getId(), 판교역.getId(), 10);
+        LineCreateRequest 이호선_생성_요청_값 = new LineCreateRequest("이호선", "GREEN", 강남역.getId(), 선릉역.getId(), 10);
         LineResponse 신분당선_생선됨 = 노선_생성_요청(신분당선_생성_요청_값).as(LineResponse.class);
         LineResponse 이호선_생선됨 = 노선_생성_요청(이호선_생성_요청_값).as(LineResponse.class);
 
@@ -189,7 +190,7 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineRequest 신분당선_생성_요청_값 = new LineRequest("신분당선", "RED", 강남역.getId(), 판교역.getId(), 10);
+        LineCreateRequest 신분당선_생성_요청_값 = new LineCreateRequest("신분당선", "RED", 강남역.getId(), 판교역.getId(), 10);
         LineResponse 신분당선_생선됨 = 노선_생성_요청(신분당선_생성_요청_값).as(LineResponse.class);
 
         // when
@@ -214,11 +215,11 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineRequest 신분당선_생성_요청_값 = new LineRequest("신분당선", "RED", 강남역.getId(), 판교역.getId(), 10);
+        LineCreateRequest 신분당선_생성_요청_값 = new LineCreateRequest("신분당선", "RED", 강남역.getId(), 판교역.getId(), 10);
         LineResponse 신분당선_생선됨 = 노선_생성_요청(신분당선_생성_요청_값).as(LineResponse.class);
 
         // when
-        LineRequest 신분당선_수정_요청_값 = new LineRequest("신분당선", "RED", 강남역.getId(), 청계산역.getId(), 10);
+        LineUpdateRequest 신분당선_수정_요청_값 = new LineUpdateRequest("신분당선", "RED", 강남역.getId(), 청계산역.getId(), 10);
         LineResponse response = 노선_수정_요청(신분당선_생선됨.getId(), 신분당선_수정_요청_값).as(LineResponse.class);
 
         // then
@@ -237,7 +238,7 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineRequest 신분당선_생성_요청_값 = new LineRequest("신분당선", "RED", 강남역.getId(), 판교역.getId(), 10);
+        LineCreateRequest 신분당선_생성_요청_값 = new LineCreateRequest("신분당선", "RED", 강남역.getId(), 판교역.getId(), 10);
         LineResponse 신분당선_생선됨 = 노선_생성_요청(신분당선_생성_요청_값).as(LineResponse.class);
 
         // when

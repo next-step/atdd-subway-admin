@@ -6,8 +6,9 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +25,12 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
-        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
+    public LineResponse saveLine(LineCreateRequest lineCreateRequest) {
+        Station upStation = stationService.findStationById(lineCreateRequest.getUpStationId());
+        Station downStation = stationService.findStationById(lineCreateRequest.getDownStationId());
 
-        Line line = lineRequest.toLine();
-        line.addSection(new Section(line, upStation, downStation, lineRequest.getDistance()));
+        Line line = lineCreateRequest.toLine();
+        line.addSection(new Section(line, upStation, downStation, lineCreateRequest.getDistance()));
 
         Line persistLine = lineRepository.save(line);
 
@@ -49,12 +50,12 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse updateLine(Long lineId, LineRequest lineRequest) {
+    public LineResponse updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(() ->
             new IllegalArgumentException("해당 id 에 존재하는 Line 이 없습니다.")
         );
 
-        line.update(lineRequest.toLine());
+        line.update(lineUpdateRequest.toLine());
 
         return LineResponse.of(line);
     }

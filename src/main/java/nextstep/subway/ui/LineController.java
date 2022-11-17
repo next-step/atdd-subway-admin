@@ -3,8 +3,9 @@ package nextstep.subway.ui;
 import java.net.URI;
 import java.util.List;
 import nextstep.subway.application.LineService;
-import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,9 +33,8 @@ public class LineController {
     }
 
     @PostMapping()
-    public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-        System.out.println("check pint");
-        LineResponse line = lineService.saveLine(lineRequest);
+    public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
+        LineResponse line = lineService.saveLine(lineCreateRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
@@ -47,9 +47,9 @@ public class LineController {
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(
-        @PathVariable("id") Long id, @RequestBody LineRequest lineRequest
+        @PathVariable("id") Long id, @RequestBody LineUpdateRequest lineuUpdateRequest
     ) {
-        return ResponseEntity.ok(lineService.updateLine(id, lineRequest));
+        return ResponseEntity.ok(lineService.updateLine(id, lineuUpdateRequest));
     }
 
     @DeleteMapping("/{id}")
