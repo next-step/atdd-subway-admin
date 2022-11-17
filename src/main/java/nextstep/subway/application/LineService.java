@@ -33,8 +33,26 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
+    public LineResponse findLineById(Long id) {
+        return LineResponse.of(lineRepository.findById(id).get());
+    }
+
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public LineResponse updateLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).get();
+
+        line.setColor(lineRequest.getColor());
+        line.setDistance(lineRequest.getDistance());
+        line.setUpStationId(lineRequest.getUpStationId());
+        line.setDownStationId(lineRequest.getDownStationId());
+
+        Line persistLine = lineRepository.save(line);
+
+        return LineResponse.of(persistLine);
     }
 }

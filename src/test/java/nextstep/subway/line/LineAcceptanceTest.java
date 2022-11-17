@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.Line;
 import nextstep.subway.utils.DatabaseCleanup;
+import org.apache.http.protocol.HTTP;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -144,6 +145,28 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_수정_테스트() {
 
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response1 = createLine(params);
+
+        // when
+        params.put("downStationId", "17");
+
+        ExtractableResponse<Response> response2 = updateLine(response1.header("Location"), params);
+
+        // then
+        List<Line> line = retrieveLineByName(params.get("name"));
+
+        assertAll(
+                () -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(line.get(0).getDownStationId()).isEqualTo(17)
+        );
     }
 
     /**
@@ -193,6 +216,22 @@ public class LineAcceptanceTest {
                         .jsonPath().getList(".", Line.class);
 
         return line;
+    }
+
+    private static ExtractableResponse<Response> updateLine(String location, Map<String, String> params) {
+
+        String id = location.substring(location.lastIndexOf("/"), location.length());
+        System.out.println("debug : " + BASE_URL + id);
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().put(BASE_URL + id)
+                        .then().log().all()
+                        .extract();
+
+        return response;
     }
 
 }

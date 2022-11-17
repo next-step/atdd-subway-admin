@@ -58,4 +58,20 @@ public class Line extends BaseEntity {
         return downStationId;
     }
 
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public void setUpStationId(Long upStationId) {
+        this.upStationId = upStationId;
+    }
+
+    public void setDownStationId(Long downStationId) {
+        this.downStationId = downStationId;
+    }
+
+    public void setDistance(Long distance) {
+        this.distance = distance;
+    }
+
 }
