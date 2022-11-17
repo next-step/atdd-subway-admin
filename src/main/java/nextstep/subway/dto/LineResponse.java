@@ -1,10 +1,8 @@
 package nextstep.subway.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 
 public class LineResponse {
     private Long id;
@@ -25,7 +23,7 @@ public class LineResponse {
         this.stations = stations;
     }
 
-    public static LineResponse of(Line line) {
+    public static LineResponse from(Line line) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations());
     }
 
