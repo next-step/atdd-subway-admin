@@ -25,8 +25,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).get();
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).get();
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(RuntimeException::new);
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(RuntimeException::new);
 
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
@@ -40,12 +40,12 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long lineId) {
-        return LineResponse.of(lineRepository.findById(lineId).get());
+        return LineResponse.of(lineRepository.findById(lineId).orElseThrow(RuntimeException::new));
     }
 
     @Transactional
     public void updateLine(Long lineId, LineRequest lineRequest) {
-        Line line = lineRepository.findById(lineId).get();
+        Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
         line.setName(lineRequest.getName());
         line.setColor(lineRequest.getColor());
 
