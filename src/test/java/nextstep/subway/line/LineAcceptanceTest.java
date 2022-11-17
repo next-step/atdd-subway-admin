@@ -7,43 +7,33 @@ import static nextstep.subway.utils.JsonPathUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.utils.DatabaseCleaner;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.utils.JsonPathUtils;
 
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-    private static final String LINE_2 = "2호선";
-    private static final String LINE_BUNDANG = "분당선";
-    @LocalServerPort
-    int port;
-    @Autowired
-    DatabaseCleaner databaseCleaner;
+public class LineAcceptanceTest extends AcceptanceTest {
+    public static final String LINE_2 = "2호선";
+    public static final String LINE_BUNDANG = "분당선";
+
     private Integer GANGNAM_ID;
     private Integer WANGSIPLI_ID;
     private Integer JUKJUN_ID;
 
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleaner.execute();
-
-        GANGNAM_ID = extractInteger(지하철역_생성(GANGNAM), "$.id");
-        WANGSIPLI_ID = extractInteger(지하철역_생성(WANGSIPLI), "$.id");
-        JUKJUN_ID = extractInteger(지하철역_생성(JUKJUN), "$.id");
+        super.setUp();
+        GANGNAM_ID = ID_추출(지하철역_생성(GANGNAM));
+        WANGSIPLI_ID = ID_추출(지하철역_생성(WANGSIPLI));
+        JUKJUN_ID = ID_추출(지하철역_생성(JUKJUN));
     }
 
     /**
@@ -61,8 +51,8 @@ public class LineAcceptanceTest {
 
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(extractList(response, "$[*].name")).contains(LINE_2),
-            () -> assertThat(extractList(response, "$[*].stations[*].name")).contains(GANGNAM, WANGSIPLI)
+            () -> assertThat(노선목록_이름_추출(response)).contains(LINE_2),
+            () -> assertThat(노선목록_역목록_이름_추출(response)).contains(GANGNAM, WANGSIPLI)
         );
     }
 
@@ -84,8 +74,8 @@ public class LineAcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(extractList(response, "$[*].name")).contains(LINE_2, LINE_BUNDANG),
-            () -> assertThat(extractList(response, "$[*].stations[*].name")).contains(GANGNAM, WANGSIPLI, JUKJUN)
+            () -> assertThat(노선목록_이름_추출(response)).contains(LINE_2, LINE_BUNDANG),
+            () -> assertThat(노선목록_역목록_이름_추출(response)).contains(GANGNAM, WANGSIPLI, JUKJUN)
         );
     }
 
@@ -106,8 +96,8 @@ public class LineAcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(extractString(response, "$.name")).isEqualTo(LINE_2),
-            () -> assertThat(extractList(response, "$.stations[*].name")).contains(GANGNAM, WANGSIPLI)
+            () -> assertThat(노선_이름_추출(response)).isEqualTo(LINE_2),
+            () -> assertThat(역목록_이름_추출(response)).contains(GANGNAM, WANGSIPLI)
         );
     }
 
@@ -130,8 +120,8 @@ public class LineAcceptanceTest {
         // then
         assertAll(
             () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-            () -> assertThat(extractString(response, "$.name")).isEqualTo(CHANGED_NAME),
-            () -> assertThat(extractString(response, "$.color")).isEqualTo(CHANGED_COLOR)
+            () -> assertThat(노선_이름_추출(response)).isEqualTo(CHANGED_NAME),
+            () -> assertThat(노선_색_추출(response)).isEqualTo(CHANGED_COLOR)
         );
     }
 
@@ -151,6 +141,30 @@ public class LineAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(extractList(지하철_노선_목록_조회(), "$[*].name")).doesNotContain(LINE_2);
+        assertThat(노선목록_이름_추출(지하철_노선_목록_조회())).doesNotContain(LINE_2);
+    }
+
+    private Integer ID_추출(ExtractableResponse<Response> response) {
+        return extractInteger(response, "$.id");
+    }
+
+    private List<String> 역목록_이름_추출(ExtractableResponse<Response> response) {
+        return extractList(response, "$.stations[*].name");
+    }
+
+    private String 노선_이름_추출(ExtractableResponse<Response> response) {
+        return extractString(response, "$.name");
+    }
+
+    private String 노선_색_추출(ExtractableResponse<Response> response) {
+        return extractString(response, "$.color");
+    }
+
+    private List<String> 노선목록_이름_추출(ExtractableResponse<Response> response) {
+        return extractList(response, "$[*].name");
+    }
+
+    private List<String> 노선목록_역목록_이름_추출(ExtractableResponse<Response> response) {
+        return extractList(response, "$[*].stations[*].name");
     }
 }
