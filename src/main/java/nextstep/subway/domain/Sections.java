@@ -45,23 +45,24 @@ public class Sections {
     }
 
     private void modifyUpStation(Section newSection) {
-        Section findSection = sections.stream().filter(section -> section.isSameUpStation(newSection))
-                .findFirst().orElse(null);
-        if (findSection == null) {
-            return;
-        }
-        validationDistance(findSection, newSection);
-        findSection.modifyUpStation(newSection);
+        sections.stream()
+                .filter(section -> section.isSameUpStation(newSection))
+                .findFirst()
+                .ifPresent(section -> {
+                    validationDistance(section, newSection);
+                    section.modifyUpStation(newSection);
+                });
+
     }
 
     private void modifyDownStation(Section newSection) {
-        Section findSection = sections.stream().filter(section -> section.isSameDownStation(newSection))
-                .findFirst().orElse(null);
-        if (findSection == null) {
-            return;
-        }
-        validationDistance(findSection, newSection);
-        findSection.modifyDownStation(newSection);
+        sections.stream()
+                .filter(section -> section.isSameDownStation(newSection))
+                .findFirst()
+                .ifPresent(section -> {
+                    validationDistance(section, newSection);
+                    section.modifyDownStation(newSection);
+                });
     }
 
     public List<Station> getStations() {
