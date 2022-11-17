@@ -1,5 +1,6 @@
 package nextstep.subway.line.domain;
 
+import nextstep.subway.common.domain.BaseEntity;
 import nextstep.subway.common.vo.Color;
 import nextstep.subway.common.vo.Distance;
 import nextstep.subway.common.vo.Name;
@@ -9,7 +10,7 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class Line {
+public class Line extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
