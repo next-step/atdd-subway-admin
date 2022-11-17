@@ -100,4 +100,11 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("노선의 마지막 구간은 삭제할 수 없습니다.");
     }
+
+    @Test
+    void 노선에_포함되지_않은_역은_삭제할_수_없다() {
+        assertThatThrownBy(() -> sections.delete(Station.from("새로운역")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선에 포함되지 않은 지하철 역은 삭제할 수 없습니다.");
+    }
 }

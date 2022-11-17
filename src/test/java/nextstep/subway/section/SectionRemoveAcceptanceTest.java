@@ -13,6 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.base.AcceptanceTest;
+import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -121,6 +122,11 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선에 포함되지 않는 역을 제거할 수 없다.")
     @Test
     void removeStationNotContainsLine() {
+        // when
+        Long 새로운역 = getId(createStation("새로운역"));
+        ExtractableResponse<Response> removeSectionResponse = deleteSection(이호선, 새로운역);
 
+        // then
+        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
