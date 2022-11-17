@@ -117,8 +117,10 @@ public class StationAcceptanceTest {
         // then
         List<Station> station = retrieveStationByName("강남역");
 
-        assertThat(response1.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
-        assertThat(station).isEmpty();
+        assertAll(
+                () -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(station).isEmpty()
+        );
 
     }
 
