@@ -55,7 +55,6 @@ class LineServiceTest {
         lineRepository.save(이호선.of(station1, station2));
         lineRepository.save(삼호선.of(station1, station2));
 
-        lineRepository.findAll();
         assertThat(lineRepository.findAll()).hasSize(2);
     }
 
