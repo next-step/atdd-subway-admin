@@ -68,8 +68,21 @@ public class Section {
         }
     }
 
+    public void merge(Section section) {
+        this.downStation = section.downStation;
+        this.distance = this.distance.plus(section.distance);
+    }
+
     public boolean isNext(Section section) {
         return this.upStation.equals(section.downStation);
+    }
+
+    public boolean isDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
     }
 
     private boolean isSameUpStation(Section newSection) {

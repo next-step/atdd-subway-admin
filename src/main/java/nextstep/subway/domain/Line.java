@@ -65,6 +65,10 @@ public class Line {
         section.addLine(this);
     }
 
+    public void deleteSection(Station station) {
+        this.sections.delete(station);
+    }
+
     public static class Builder {
         private String name;
         private int distance;
