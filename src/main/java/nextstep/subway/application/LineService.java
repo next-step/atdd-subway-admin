@@ -66,10 +66,8 @@ public class LineService {
     public void saveSection(Long id, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
-                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
-                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+        Station upStation = findStation(sectionRequest.getUpStationId());
+        Station downStation = findStation(sectionRequest.getDownStationId());
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
     }
 }
