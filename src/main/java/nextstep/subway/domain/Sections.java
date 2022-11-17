@@ -22,16 +22,6 @@ public class Sections {
         return new Sections(line);
     }
 
-    public boolean canInsert(Long upStationId, Long downStationId, Long distance) {
-        if (line.startFrom(upStationId) && distance < line.getDistance()) {
-            return true;
-        }
-        if (line.endAt(downStationId) && distance < line.getDistance()) {
-            return true;
-        }
-        return false;
-    }
-
     public void insertInsideFromUpStation(Station upStation, Station newStation, long distance) {
         Optional<Section> first = this.sections.stream()
                 .filter(section -> section.hasUpStation(upStation))

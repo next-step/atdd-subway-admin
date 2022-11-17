@@ -29,40 +29,6 @@ class SectionsTest {
     }
 
     @Test
-    @DisplayName("상행역에서 시작하고, 거리가 100이내이면 추가할 수 있다고 판단함")
-    void canInsert() {
-        boolean b = emptySections.canInsert(1L, 3L, 50L);
-
-        assertThat(b).isTrue();
-    }
-
-    @Test
-    @DisplayName("하행역에서 시작하고, 거리가 100이내이면 추가할 수 있다고 판단함")
-    void canInsert2() {
-        boolean b = emptySections.canInsert(3L, 2L, 50L);
-
-        assertThat(b).isTrue();
-    }
-
-    @ParameterizedTest
-    @ValueSource(longs = {100, 101})
-    @DisplayName("상행역에서 시작할 때 거리가 같거나 크면 추가할 수 없음")
-    void canInsert3(Long wrongDistance) {
-        boolean b = emptySections.canInsert(1L, 3L, wrongDistance);
-
-        assertThat(b).isFalse();
-    }
-
-    @ParameterizedTest
-    @ValueSource(longs = {100, 101})
-    @DisplayName("하행역에서 시작할 때 거리가 같거나 크면 추가할 수 없음")
-    void canInsert4(Long wrongDistance) {
-        boolean b = emptySections.canInsert(3L, 2L, wrongDistance);
-
-        assertThat(b).isFalse();
-    }
-
-    @Test
     @DisplayName("상행역에서 시작하고, 거리가 100이내이면 구간이 추가되고, 2개의 구간을 갖게 됨")
     void canInsert5() {
         Station 중간역 = new Station(3L, "중간역");
