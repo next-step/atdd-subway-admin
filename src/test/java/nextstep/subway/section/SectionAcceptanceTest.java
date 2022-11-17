@@ -56,7 +56,8 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         JsonPath jsonPath = 지하철노선_조회_결과.jsonPath();
         assertAll(
                 () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(jsonPath.getList("stations")).hasSize(3)
+                () -> assertThat(jsonPath.getList("stations")).hasSize(3),
+                () -> assertThat(jsonPath.getList("stations.name")).containsExactly("잠실역", "가락시장역", "석촌역")
         );
     }
 
@@ -83,7 +84,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertAll(
                 () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(jsonPath.getList("stations")).hasSize(3),
-                () -> assertThat(jsonPath.getList("stations.name")).contains("잠실역", "가락시장역", "강변역")
+                () -> assertThat(jsonPath.getList("stations.name")).containsExactly("잠실역", "가락시장역", "강변역")
         );
     }
 
@@ -110,7 +111,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertAll(
                 () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(jsonPath.getList("stations")).hasSize(3),
-                () -> assertThat(jsonPath.getList("stations.name")).contains("잠실역", "가락시장역", "문정역")
+                () -> assertThat(jsonPath.getList("stations.name")).containsExactly("잠실역", "가락시장역", "문정역")
         );
     }
 

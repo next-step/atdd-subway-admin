@@ -16,6 +16,8 @@ import javax.persistence.Table;
 @Table(name = "SECTION")
 public class Section extends BaseEntity {
 
+    private static int MIN_DISTANCE = 1;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -60,8 +62,8 @@ public class Section extends BaseEntity {
     }
 
     private void validateDistance(Integer distance) {
-        if (distance == null || distance < 1) {
-            throw new IllegalArgumentException("구간길이는 1 이상이여 합니다.");
+        if (distance == null || distance < MIN_DISTANCE) {
+            throw new IllegalArgumentException(String.format("구간길이는 %d 이상이여 합니다.", MIN_DISTANCE));
         }
     }
 

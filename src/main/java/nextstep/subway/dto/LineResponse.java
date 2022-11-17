@@ -1,5 +1,6 @@
 package nextstep.subway.dto;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
@@ -20,6 +21,7 @@ public class LineResponse {
         this.stations = sections.getStations()
                 .stream()
                 .map(StationResponse::from)
+                .sorted(Comparator.comparing(StationResponse::getId))
                 .collect(Collectors.toList());
     }
 
@@ -55,6 +57,10 @@ public class LineResponse {
 
         private static StationResponse from(Station station) {
             return new StationResponse(station.getId(), station.getName());
+        }
+
+        public Long getId() {
+            return id;
         }
     }
 
