@@ -47,5 +47,13 @@ public class LineRequest {
     public Line toLine() {
         return new Line(new Name(this.name), new Color(this.color));
     }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getColor() {
+        return this.color;
+    }
 }
 

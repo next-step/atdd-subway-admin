@@ -75,12 +75,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "red", 신논현역_ID, 논현역_ID, 4);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse.jsonPath().getLong("id"));
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
 
         // then
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(response.jsonPath().getString("name")).isEqualTo("신분당선")
+        );
+    }
+
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @DisplayName("지하철 노선 수정")
+    @Test
+    void updateLine() {
+        // Given
+        Long 신논현역_ID = 지하철역_생성(SHINNONHYUN_STATION).jsonPath().getLong("id");
+        Long 논현역_ID = 지하철역_생성(NONHYUN_STATION).jsonPath().getLong("id");
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "red", 신논현역_ID, 논현역_ID, 4);
+
+        // when
+        지하철_노선_수정_요청(createResponse.header("location"), "분당선", "blue");
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath().getString("color")).isEqualTo("blue"),
+                () -> assertThat(response.jsonPath().getString("name")).isEqualTo("분당선")
         );
     }
 }

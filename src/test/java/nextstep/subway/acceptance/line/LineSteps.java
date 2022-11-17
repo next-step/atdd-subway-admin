@@ -31,9 +31,20 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
         return given()
-                .when().get("/lines/{id}", id)
+                .when().get(createResponse.header("location"))
+                .then().log().all().extract();
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_수정_요청(String location, String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("color", color);
+        params.put("name", name);
+        return given()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put( location)
                 .then().log().all().extract();
     }
 }

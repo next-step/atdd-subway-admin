@@ -58,4 +58,9 @@ public class Line {
     public void addSection(Station upStation, Station downStation, int distance) {
         this.sections.add(new Section(this, upStation, downStation, new Distance(distance)));
     }
+
+    public void update(String name, String color) {
+        this.name = new Name(name);
+        this.color = new Color(color);
+    }
 }
