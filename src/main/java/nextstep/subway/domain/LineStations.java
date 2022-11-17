@@ -39,10 +39,10 @@ public class LineStations {
     private void validateNotMatchedStation(LineStation lineStation){
         boolean anyMatch = lineStations.stream()
                 .anyMatch(it ->
-                        it.getUpStation() == lineStation.getUpStation()
-                                || it.getUpStation() == lineStation.getDownStation()
-                                || it.getDownStation() == lineStation.getUpStation()
-                                || it.getDownStation() == lineStation.getDownStation()
+                       it.getUpStation() == lineStation.getUpStation()
+                    || it.getUpStation() == lineStation.getDownStation()
+                    || it.getDownStation() == lineStation.getUpStation()
+                    || it.getDownStation() == lineStation.getDownStation()
                 );
         if(!anyMatch){
             throw new IllegalArgumentException();
@@ -52,8 +52,8 @@ public class LineStations {
     private void validateDuplicated(LineStation lineStation){
         boolean anyMatch = lineStations.stream()
                 .anyMatch(it ->
-                        it.getUpStation() == lineStation.getUpStation()
-                                && it.getDownStation() == lineStation.getDownStation()
+                       it.getUpStation() == lineStation.getUpStation()
+                    && it.getDownStation() == lineStation.getDownStation()
                 );
         if(anyMatch){
             throw new IllegalArgumentException();

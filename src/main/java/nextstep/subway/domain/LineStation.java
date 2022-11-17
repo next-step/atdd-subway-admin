@@ -47,14 +47,8 @@ public class LineStation {
     }
 
     public void updateDistance(int distance) {
-        if(this.distance <= distance){
-            throw new IllegalArgumentException();
-        }
+        validateDistance(distance);
         this.distance -= distance;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {
@@ -67,6 +61,12 @@ public class LineStation {
 
     public int getDistance() {
         return distance;
+    }
+
+    private void validateDistance(int distance){
+        if(this.distance <= distance){
+            throw new IllegalArgumentException();
+        }
     }
 
     @Override
