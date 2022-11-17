@@ -70,7 +70,7 @@ public class LineAcceptanceTest {
         노선_2개를_생성한다();
 
         // then
-        List<String> lineNames = 노선을_조회한다_노선아이디가_없으면_모든_노선이_조회된다("").jsonPath().getList("name", String.class);
+        List<String> lineNames = 지하철노선_목록_조회_요청().jsonPath().getList("name", String.class);
 
         // then
         생성한_2개의_노선을_찾을_수_있다(lineNames);
@@ -176,50 +176,4 @@ public class LineAcceptanceTest {
                 .setDownStationId(downStationId2)
                 .setDistance(10));
     }
-
-    public static ExtractableResponse<Response> 지하철_노선을_수정한다(LineDto.UpdateRequest line, int lineId) {
-        return RestAssured.given()
-                .body(line).log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/"+lineId)
-                .then().log().all()
-                .extract();
-
-    }
-
-    public ExtractableResponse<Response> 해당_노선을_제거한다(int stationId) {
-        return RestAssured.given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/" + stationId)
-                .then().log().all()
-                .extract();
-    }
-
-    public void 생성한_노선을_찾을_수_있다(List<String> actual, String expect) {
-        assertThat(actual).containsAnyOf(expect);
-    }
-
-    public void 생성한_2개의_노선을_찾을_수_있다(List<String> actual) {
-        assertThat(actual).hasSize(2);
-    }
-
-    public void 생성한_지하철_노선의_정보를_응답받을_수_있다(ExtractableResponse<Response> response, LineDto.CreateRequest expect) {
-        assertAll(
-                () -> assertThat(response.jsonPath().get("id").toString()).isEqualTo("1"),
-                () -> assertThat(response.jsonPath().get("name").toString()).isEqualTo(expect.getName()),
-                ()-> assertThat(response.jsonPath().get("color").toString()).isEqualTo(expect.getColor())
-        );
-    }
-
-    public void 지하철_노선의_정보가_수정된다(ExtractableResponse<Response> response){
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
-    }
-
-    public void 지하철_노선의_정보가_삭제된다(int lineId){
-        ExtractableResponse<Response> response = 노선을_조회한다_노선아이디가_없으면_모든_노선이_조회된다("/"+lineId);
-        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
-    }
-
-
-
 }
