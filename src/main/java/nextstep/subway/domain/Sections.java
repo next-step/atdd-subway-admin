@@ -17,6 +17,7 @@ public class Sections {
     private static final String NOT_INCLUDE_UP_DOWN_STATIONS = "상행역과 하행역 모두 노선에 포함되어 있지 않습니다.";
     private static final int ONE_SECTION = 1;
     private static final String CAN_NOT_DELETE_LAST_SECTION = "노선의 마지막 구간은 삭제할 수 없습니다.";
+    private static final String CAN_NOT_DELETE_NOT_INCLUDED_STATION = "노선에 포함되지 않은 지하철 역은 삭제할 수 없습니다.";
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections;
 
@@ -81,6 +82,7 @@ public class Sections {
     }
 
     public void delete(Station station) {
+        validateNotIncludeStation(station);
         validateIsLastSection();
         Optional<Section> prevSection = findPrevSection(station);
         Optional<Section> nextSection = findNextSection(station);
@@ -94,6 +96,12 @@ public class Sections {
     private void validateIsLastSection() {
         if (sections.size() == ONE_SECTION) {
             throw new IllegalArgumentException(CAN_NOT_DELETE_LAST_SECTION);
+        }
+    }
+
+    private void validateNotIncludeStation(Station station) {
+        if (!assignedStations().contains(station)) {
+            throw new IllegalArgumentException(CAN_NOT_DELETE_NOT_INCLUDED_STATION);
         }
     }
 
