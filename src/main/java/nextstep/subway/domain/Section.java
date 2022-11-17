@@ -28,6 +28,9 @@ public class Section extends BaseEntity{
     }
 
     public Section(Line line, Station upStation, Station downStation, Long distance) {
+        if(distance <= 0){
+            throw new IllegalArgumentException("구간 거리는 0보다 커야 합니다");
+        }
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -56,10 +59,6 @@ public class Section extends BaseEntity{
     }
     public boolean hasDownStation(Station downStation) {
         return this.downStation.equals(downStation);
-    }
-
-    public boolean hasBiggerDistance(long distance) {
-        return this.distance > distance;
     }
 
     public void splitFromUpStation(Station newStation, long distance) {

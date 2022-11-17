@@ -34,7 +34,7 @@ public class Sections {
 
     public void insertInsideFromUpStation(Station upStation, Station newStation, long distance) {
         Optional<Section> first = this.sections.stream()
-                .filter(section -> section.hasUpStation(upStation) && section.hasBiggerDistance(distance))
+                .filter(section -> section.hasUpStation(upStation))
                 .findFirst();
 
         if (first.isPresent()) {
@@ -46,7 +46,7 @@ public class Sections {
 
     public void insertInsideFromDownStation(Station downStation, Station newStation, long distance) {
         Optional<Section> first = this.sections.stream()
-                .filter(section -> section.hasDownStation(downStation) && section.hasBiggerDistance(distance))
+                .filter(section -> section.hasDownStation(downStation))
                 .findFirst();
 
         if (first.isPresent()) {

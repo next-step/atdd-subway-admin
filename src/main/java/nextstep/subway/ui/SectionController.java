@@ -27,4 +27,8 @@ public class SectionController {
         SectionListResponse response = sectionService.querySections(lineId);
         return ResponseEntity.ok().body(response);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity IllegalArgumentException() {return ResponseEntity.badRequest().build();}
+
 }
