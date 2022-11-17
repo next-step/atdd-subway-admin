@@ -24,21 +24,21 @@ class SectionsTest {
         Station 교대역 = Station.from("교대역");
         Section newSection = Section.from(서초역, 교대역, Distance.from(5));
         sections.add(newSection);
-        assertThat(sections.assignedStations()).contains(서초역, 교대역, 강남역);
+        assertThat(sections.assignedStations()).containsExactly(서초역, 교대역, 강남역);
     }
 
     @Test
     void 새로운_역을_상행_종점으로_등록() {
         Station 방배역 = Station.from("방배역");
         sections.add(Section.from(방배역, 서초역, Distance.from(5)));
-        assertThat(sections.assignedStations()).contains(방배역, 서초역, 강남역);
+        assertThat(sections.assignedStations()).containsExactly(방배역, 서초역, 강남역);
     }
 
     @Test
     void 새로운_역을_하행_종점으로_등록() {
         Station 역삼역 = Station.from("역삼역");
         sections.add(Section.from(강남역, 역삼역, Distance.from(5)));
-        assertThat(sections.assignedStations()).contains(서초역, 강남역, 역삼역);
+        assertThat(sections.assignedStations()).containsExactly(서초역, 강남역, 역삼역);
     }
 
     @ParameterizedTest
