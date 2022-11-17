@@ -29,4 +29,12 @@ public class StationRequestTestFixture {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> deleteStationById(long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations/{id}", stationId)
+                .then().log().all()
+                .extract();
+    }
 }

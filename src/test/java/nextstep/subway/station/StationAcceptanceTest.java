@@ -123,5 +123,16 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        ExtractableResponse<Response> createStationResponse = StationRequestTestFixture.createStationByName("강남역");
+        long newStationId = createStationResponse.jsonPath().getLong("id");
+
+        ExtractableResponse<Response> deleteStationResponse = StationRequestTestFixture.deleteStationById(newStationId);
+
+        ExtractableResponse<Response> findStationsResponse = StationRequestTestFixture.findAllStations();
+        List<Long> stationIds = findStationsResponse.jsonPath().getList("id", Long.class);
+        assertAll(
+                () -> assertThat(deleteStationResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(stationIds).doesNotContain(newStationId)
+        );
     }
 }
