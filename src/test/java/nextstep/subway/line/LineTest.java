@@ -1,8 +1,8 @@
 package nextstep.subway.line;
 
-import nextstep.subway.common.vo.Color;
+import nextstep.subway.line.domain.Color;
 import nextstep.subway.common.vo.ColorTest;
-import nextstep.subway.common.vo.Name;
+import nextstep.subway.common.domain.Name;
 import nextstep.subway.line.domain.Line;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

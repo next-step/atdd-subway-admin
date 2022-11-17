@@ -1,9 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.common.vo.Color;
-import nextstep.subway.common.vo.Distance;
-import nextstep.subway.common.vo.Name;
+import nextstep.subway.common.domain.Name;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;

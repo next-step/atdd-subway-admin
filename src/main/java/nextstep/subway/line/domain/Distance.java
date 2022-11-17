@@ -1,4 +1,4 @@
-package nextstep.subway.common.vo;
+package nextstep.subway.line.domain;
 
 import javax.persistence.Embeddable;
 

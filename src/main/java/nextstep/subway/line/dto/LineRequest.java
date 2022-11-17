@@ -1,7 +1,7 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.common.vo.Color;
-import nextstep.subway.common.vo.Name;
+import nextstep.subway.line.domain.Color;
+import nextstep.subway.common.domain.Name;
 import nextstep.subway.line.domain.Line;
 
 public class LineRequest {

@@ -1,11 +1,12 @@
 package nextstep.subway.common.vo;
 
+import nextstep.subway.line.domain.Color;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
-import static nextstep.subway.common.vo.Color.NULL_AND_EMPTY_EXCEPTION_MESSAGE;
+import static nextstep.subway.line.domain.Color.NULL_AND_EMPTY_EXCEPTION_MESSAGE;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 

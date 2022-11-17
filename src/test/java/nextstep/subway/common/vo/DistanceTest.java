@@ -1,5 +1,6 @@
 package nextstep.subway.common.vo;
 
+import nextstep.subway.line.domain.Distance;
 import org.junit.jupiter.api.DisplayName;
 
 @DisplayName("거리")

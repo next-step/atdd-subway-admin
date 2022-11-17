@@ -1,11 +1,12 @@
 package nextstep.subway.common.vo;
 
+import nextstep.subway.common.domain.Name;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
-import static nextstep.subway.common.vo.Name.NULL_AND_EMPTY_EXCEPTION_MESSAGE;
+import static nextstep.subway.common.domain.Name.NULL_AND_EMPTY_EXCEPTION_MESSAGE;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
