@@ -40,25 +40,51 @@ public class SectionAcceptanceTest {
         }
         databaseCleanup.execute();
         initializationEntity.initStations();
+        initializationEntity.initLineStation();
         initializationEntity.initLine();
     }
 
     /**
-     * When 상행역과 하행역 사이의 새로운 역을 등록하면
+     * When 상행역을 기준으로 상행역과 하행역 사이의 새로운 역을 등록하면
      * Then 정상적으로 등록되고
-     * Then 지하철 노선 조회시 3개의 지하철 역을 보유하고 있고
-     * Then 상행역과 하행역은 변화가 없다.
+     * Then 지하철 노선 조회시 3개의 지하철 역을 가지게 된다.
      */
-    @DisplayName("역 사이에 새로운 역을 등록한다.")
+    @DisplayName("상행역을 기준으로 역 사이에 새로운 역을 등록한다.")
     @Test
-    void createSectionInside() {
+    void createSectionUpStationInside() {
         String location = "/lines/" + line_1.getId();
         // when
         executeRestEntity.insertSectionSuccess(
-                location, executeRestEntity.generateSectionRequest(station_1.getId(), station_3.getId(), 5));
+                location, executeRestEntity.generateSectionRequest(upStation.getId(), station_3.getId(), 5));
 
         // then
-        List<StationResponse> stations = executeRestEntity.selectLine(location).extract().jsonPath().getList("stations", StationResponse.class);
+        List<StationResponse> stations = executeRestEntity
+                .selectLine(location)
+                .extract()
+                .jsonPath()
+                .getList("stations", StationResponse.class);
+        assertThat(stations.size()).isEqualTo(3);
+    }
+
+    /**
+     * When 하행역을 기준으로 상행역과 하행역 사이의 새로운 역을 등록하면
+     * Then 정상적으로 등록되고
+     * Then 지하철 노선 조회시 3개의 지하철 역을 가지게 된다.
+     */
+    @DisplayName("하행역을 기준으로 역 사이에 새로운 역을 등록한다.")
+    @Test
+    void createSectionDownStationInside() {
+        String location = "/lines/" + line_1.getId();
+        // when
+        executeRestEntity.insertSectionSuccess(
+                location, executeRestEntity.generateSectionRequest(station_3.getId(), downStation.getId(), 5));
+
+        // then
+        List<StationResponse> stations = executeRestEntity
+                .selectLine(location)
+                .extract()
+                .jsonPath()
+                .getList("stations", StationResponse.class);
         assertThat(stations.size()).isEqualTo(3);
     }
 

@@ -51,7 +51,7 @@ public class LineAcceptanceTest {
     void createLine() {
         // when
         String location = executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("1호선", station_1.getId(), station_2.getId()))
+                executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
                 .header("Location");
 
         // then
@@ -69,7 +69,7 @@ public class LineAcceptanceTest {
     void getLines() {
         // given
         executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("1호선", station_1.getId(), station_2.getId()))
+                executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
                 .header("Location");
         executeRestEntity.insertLineSuccess(
                 executeRestEntity.generateLineRequest("2호선", station_3.getId(), station_4.getId()))
@@ -96,7 +96,7 @@ public class LineAcceptanceTest {
     void getLine() {
         // given
         String location = executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("1호선", station_1.getId(), station_2.getId()))
+                executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
                 .header("Location");
 
         // when
@@ -117,7 +117,7 @@ public class LineAcceptanceTest {
     void updateLine() {
         // given
         String location = executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("1호선", station_1.getId(), station_2.getId()))
+                executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
                 .header("Location");
 
         // when
@@ -139,7 +139,7 @@ public class LineAcceptanceTest {
     void deleteLine() {
         // given
         String location = executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("1호선", station_1.getId(), station_2.getId()))
+                executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
                 .header("Location");
 
         // when

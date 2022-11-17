@@ -31,8 +31,16 @@ public class LineStation {
         this.distance = distance;
     }
 
+    public void resetPreStation(Station station) {
+        this.preStation = station;
+    }
+
     public Station getStation() {
         return station;
+    }
+
+    public Station getPreStation() {
+        return preStation;
     }
 
 }
