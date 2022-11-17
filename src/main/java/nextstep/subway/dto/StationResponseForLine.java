@@ -1,8 +1,8 @@
 package nextstep.subway.dto;
 
 public class StationResponseForLine {
-    private Long id;
-    private String name;
+    private final Long id;
+    private final String name;
 
     public StationResponseForLine(Long id, String name) {
         this.id = id;
@@ -13,15 +13,7 @@ public class StationResponseForLine {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 }

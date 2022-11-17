@@ -260,7 +260,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - 프론트엔드 : 노선 관리 페이지에서 기능이 제대로 동작하는 지 확인
 
 ### 2단계 피드백
-- [ ] 모든 유형의 변수에 final을 붙이는 습관을 들이자!
+- [x] 모든 유형의 변수에 final을 붙이는 습관을 들이자!
 - [ ] `@DataJpaTest`와 `DatabaseCleanup`를 동시에 사용할 수 있는 방법 모색
 - [ ] repository에서 바로 get하기 보단 메소드를 감쌀 것
   ```java
