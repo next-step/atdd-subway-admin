@@ -25,18 +25,21 @@ public class SectionService {
     public void createSection(Long lineId, SectionRequest request) {
         Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(EntityNotFoundException::new);
         Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(EntityNotFoundException::new);
-        Line line = addSection(lineId, request, upStation, downStation);
+        Line line = getLine(lineId);
+
+        boolean added = addSection(line, request, upStation, downStation);
+        if(!added){
+            throw new IllegalArgumentException();
+        }
         lineRepository.save(line);
     }
 
-    private Line addSection(Long lineId, SectionRequest request, Station upStation, Station downStation) {
-        Line line = getLine(lineId);
+    private boolean addSection(Line line, SectionRequest request, Station upStation, Station downStation) {
         Sections sections = line.toSections();
-        sections.insertInsideFromUpStation(upStation, downStation, request.getDistance());
-        sections.insertInsideFromDownStation(downStation, upStation, request.getDistance());
-        sections.extendFromUpStation(upStation, downStation, request.getDistance());
-        sections.extendFromDownStation(upStation, downStation, request.getDistance());
-        return line;
+        return sections.insertInsideFromUpStation(upStation, downStation, request.getDistance()) ||
+                sections.insertInsideFromDownStation(downStation, upStation, request.getDistance()) ||
+                sections.extendFromUpStation(upStation, downStation, request.getDistance()) ||
+                sections.extendFromDownStation(upStation, downStation, request.getDistance());
     }
 
     private Line getLine(Long lineId) {

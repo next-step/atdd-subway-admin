@@ -22,27 +22,33 @@ public class Sections {
         return new Sections(line);
     }
 
-    public void insertInsideFromUpStation(Station upStation, Station newStation, long distance) {
+    public boolean insertInsideFromUpStation(Station upStation, Station newStation, long distance) {
         Optional<Section> first = this.sections.stream()
                 .filter(section -> section.hasUpStation(upStation))
                 .findFirst();
 
-        if (first.isPresent()) {
-            Section section = first.get();
-            section.splitFromUpStation(newStation, distance);
+        if (!first.isPresent()) {
+            return false;
         }
+
+        Section section = first.get();
+        section.splitFromUpStation(newStation, distance);
+        return true;
     }
 
 
-    public void insertInsideFromDownStation(Station downStation, Station newStation, long distance) {
+    public boolean insertInsideFromDownStation(Station downStation, Station newStation, long distance) {
         Optional<Section> first = this.sections.stream()
                 .filter(section -> section.hasDownStation(downStation))
                 .findFirst();
 
-        if (first.isPresent()) {
-            Section section = first.get();
-            section.splitFromDownStation(newStation, distance);
+        if (!first.isPresent()) {
+            return false;
         }
+
+        Section section = first.get();
+        section.splitFromDownStation(newStation, distance);
+        return true;
     }
 
     public boolean hasSection(Section of) {
@@ -50,11 +56,11 @@ public class Sections {
         return any.isPresent();
     }
 
-    public void extendFromUpStation(Station upStation, Station downStation, Long distance) {
-        line.extendFromUpStation(upStation,downStation,distance);
+    public boolean extendFromUpStation(Station upStation, Station downStation, Long distance) {
+        return line.extendFromUpStation(upStation, downStation, distance);
     }
 
-    public void extendFromDownStation(Station upStation, Station downStation, Long distance) {
-        line.extendFromDownStation(upStation,downStation,distance);
+    public boolean extendFromDownStation(Station upStation, Station downStation, Long distance) {
+        return line.extendFromDownStation(upStation, downStation, distance);
     }
 }

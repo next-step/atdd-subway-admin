@@ -148,21 +148,23 @@ public class Line extends BaseEntity {
         this.distance += distance;
     }
 
-    public void extendFromUpStation(Station upStation, Station downStation, Long distance) {
+    public boolean extendFromUpStation(Station upStation, Station downStation, Long distance) {
         if (!this.upStation.equals(downStation)) {
-            return;
+            return false;
         }
         this.upStation = upStation;
         this.distance += distance;
         this.sections.add(Section.of(this, upStation, downStation, distance));
+        return true;
     }
 
-    public void extendFromDownStation(Station upStation, Station downStation, Long distance) {
+    public boolean extendFromDownStation(Station upStation, Station downStation, Long distance) {
         if (!this.downStation.equals(upStation)) {
-            return;
+            return false;
         }
         this.downStation = downStation;
         this.distance += distance;
         this.sections.add(Section.of(this, upStation, downStation, distance));
+        return true;
     }
 }
