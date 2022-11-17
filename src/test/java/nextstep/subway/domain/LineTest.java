@@ -1,12 +1,13 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.context.annotation.Import;
 
 import java.util.Arrays;
 
@@ -14,7 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Import(DatabaseCleanup.class)
 public class LineTest {
     @Autowired
     private LineRepository lineRepository;
@@ -22,11 +23,14 @@ public class LineTest {
     private StationRepository stationRepository;
     @Autowired
     private TestEntityManager entityManager;
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
     private Station upStation;
     private Station downStation;
 
     @BeforeEach
     void setUp() {
+        databaseCleanup.execute();
         upStation = new Station("신사역");
         downStation = new Station("광교(경기대)역");
         stationRepository.saveAll(Arrays.asList(upStation, downStation));

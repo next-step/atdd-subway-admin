@@ -261,7 +261,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 
 ### 2단계 피드백
 - [x] 모든 유형의 변수에 final을 붙이는 습관을 들이자!
-- [ ] `@DataJpaTest`와 `DatabaseCleanup`를 동시에 사용할 수 있는 방법 모색
+- [x] `@DataJpaTest`와 `DatabaseCleanup`를 동시에 사용할 수 있는 방법 모색
 - [ ] repository에서 바로 get하기 보단 메소드를 감쌀 것
   ```java
   // 예시
