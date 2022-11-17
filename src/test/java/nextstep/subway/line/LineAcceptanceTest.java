@@ -126,10 +126,22 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_조회() {
         // given
+        HashMap<String, Object> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", 10);
+        Long createdLineId = createLine(params).body().jsonPath().getLong("id");
 
         // when
+        ExtractableResponse<Response> extract = RestAssured.given().log().all()
+                .when()
+                .get("/lines/{id}", createdLineId)
+                .then().log().all().extract();
 
         // then
+        assertThat(extract.body().jsonPath().getString("name")).isEqualTo("신분당선");
     }
 
     /**

@@ -36,4 +36,9 @@ public class LineService {
                 .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findLine(Long id) throws IllegalArgumentException {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(""));
+        return LineResponse.of(line);
+    }
 }
