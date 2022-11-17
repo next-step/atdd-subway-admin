@@ -61,16 +61,19 @@ class LineServiceTest {
     @Test
     @Transactional
     void deleteLineById() {
+        //given
         Station station1 = stationRepository.save(강남역.toStation());
         Station station2 = stationRepository.save(역삼역.toStation());
-        LineDto.CreateRequest 이호선 = new LineDto.CreateRequest()
-            .setColor("green")
-            .setName("2호선")
-            .setDistance(10);
+        LineDto.CreateRequest 이호선_요청_파라미터 = new LineDto.CreateRequest()
+                .setColor("green")
+                .setName("2호선")
+                .setDistance(10);
+        Line 이호선 = lineRepository.save(이호선_요청_파라미터.of(station1, station2));
+        //when
+        lineRepository.delete(이호선);
 
-        Line expect = lineRepository.save(이호선.of(station1, station2));
-        lineRepository.delete(expect);
-        assertThat(lineRepository.findById(expect.getId()).isPresent()).isFalse();
+        //then
+        assertThat(lineRepository.findById(이호선.getId()).isPresent()).isFalse();
     }
 
     @Test
