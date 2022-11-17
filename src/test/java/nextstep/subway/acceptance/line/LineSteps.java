@@ -31,9 +31,9 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> createResponse) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(String location) {
         return given()
-                .when().get(createResponse.header("location"))
+                .when().get(location)
                 .then().log().all().extract();
     }
 
@@ -44,7 +44,7 @@ public class LineSteps {
         return given()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put( location)
+                .when().put(location)
                 .then().log().all().extract();
     }
 

@@ -75,7 +75,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청("신분당선", "red", 신논현역_ID, 논현역_ID, 4);
 
         // when
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse.header("location"));
 
         // then
         assertAll(
@@ -102,7 +102,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_수정_요청(createResponse.header("location"), "분당선", "blue");
 
         // then
-        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse);
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse.header("location"));
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
