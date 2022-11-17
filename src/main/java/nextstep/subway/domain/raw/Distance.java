@@ -1,7 +1,9 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.raw;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+
+import java.util.Objects;
 
 import static nextstep.subway.constant.Message.NOT_VALID_UNDER_ZERO_DISTANCE;
 
