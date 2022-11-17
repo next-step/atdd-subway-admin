@@ -1,14 +1,13 @@
 package nextstep.subway.domain.line;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
 
 import nextstep.subway.domain.station.Station;
 
@@ -25,18 +24,8 @@ public class Line {
 	@Column(nullable = false, length = 20)
 	private String color;
 
-	@OneToOne
-	@JoinColumn(name = "up_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_up_station"))
-	private Station upStation;
-
-	@OneToOne
-	@JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_down_station"))
-	private Station downStation;
-
 	@Embedded
 	private Sections sections;
-
-	private int distance;
 
 	protected Line() {
 	}
@@ -55,14 +44,6 @@ public class Line {
 		return this.id;
 	}
 
-	public Station getUpStation() {
-		return this.upStation;
-	}
-
-	public Station getDownStation() {
-		return this.downStation;
-	}
-
 	public void updateLine(String name, String color) {
 		this.name = name;
 		this.color = color;
@@ -76,7 +57,11 @@ public class Line {
 		return this.color;
 	}
 
-	public int getDistance() {
-		return this.distance;
+	public Sections getSections() {
+		return this.sections;
+	}
+
+	public List<Station> allStations() {
+		return sections.allStations();
 	}
 }

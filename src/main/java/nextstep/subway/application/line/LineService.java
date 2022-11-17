@@ -1,6 +1,5 @@
 package nextstep.subway.application.line;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,13 +75,8 @@ public class LineService {
 	}
 
 	private List<StationNameResponse> stationsNameResponses(Line line) {
-		return stationsNameResponses(line.getUpStation(), line.getDownStation());
-	}
-
-	private List<StationNameResponse> stationsNameResponses(Station upStation, Station downStation) {
-		StationNameResponse upStationNameResponse = new StationNameResponse(upStation.getId(), upStation.getName());
-		StationNameResponse downStationNameResponse = new StationNameResponse(downStation.getId(),
-			downStation.getName());
-		return Arrays.asList(upStationNameResponse, downStationNameResponse);
+		return line.allStations().stream()
+			.map(station -> new StationNameResponse(station.getId(), station.getName()))
+			.collect(Collectors.toList());
 	}
 }
