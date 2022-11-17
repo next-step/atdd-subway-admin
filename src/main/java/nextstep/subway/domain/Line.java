@@ -53,4 +53,9 @@ public class Line extends BaseEntity {
     public int getDistance() {
         return distance;
     }
+
+    public void update(String name, String color){
+        this.name = name;
+        this.color = color;
+    }
 }

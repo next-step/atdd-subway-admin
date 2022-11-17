@@ -8,6 +8,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -72,7 +74,7 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_생성후_조회() {
         // when
-        HashMap<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
         params.put("upStationId", upStationId);
@@ -94,7 +96,7 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_목록_조회() {
         // given
-        HashMap<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
         params.put("upStationId", upStationId);
@@ -102,7 +104,7 @@ public class LineAcceptanceTest {
         params.put("distance", 10);
         createLine(params);
 
-        HashMap<String, Object> params2 = new HashMap<>();
+        Map<String, Object> params2 = new HashMap<>();
         params2.put("name", "2호선");
         params2.put("color", "bg-green-600");
         params2.put("upStationId", upStationId);
@@ -126,7 +128,7 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_조회() {
         // given
-        HashMap<String, Object> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
         params.put("upStationId", upStationId);
@@ -153,10 +155,34 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_수정() {
         // given
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", 10);
+        Long createdLineId = createLine(params).body().jsonPath().getLong("id");
 
+        Map<String, String> reqBody = new HashMap<>();
+        reqBody.put("name", "다른분당선");
+        reqBody.put("color", "bg-green-600");
         // when
+        ExtractableResponse<Response> updateResponse = RestAssured.given().log().all()
+                .body(reqBody)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when()
+                .put("/lines/{id}", createdLineId)
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
+                .when()
+                .get("/lines/{id}", createdLineId)
+                .then().log().all().extract();
 
         // then
+        assertAll(() -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(findResponse.body().jsonPath().getString("name")).isEqualTo("다른분당선"));
     }
 
     /**
