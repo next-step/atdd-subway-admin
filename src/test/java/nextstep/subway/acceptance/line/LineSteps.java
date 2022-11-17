@@ -47,4 +47,11 @@ public class LineSteps {
                 .when().put( location)
                 .then().log().all().extract();
     }
+
+
+    public static ExtractableResponse<Response> 지하철_노선_삭제_요청(String location) {
+        return given()
+                .when().delete(location)
+                .then().log().all().extract();
+    }
 }

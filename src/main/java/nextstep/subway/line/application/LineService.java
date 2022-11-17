@@ -49,4 +49,9 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow();
         line.update(lineRequest.getName(), lineRequest.getColor());
     }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
