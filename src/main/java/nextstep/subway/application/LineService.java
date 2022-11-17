@@ -1,7 +1,7 @@
 package nextstep.subway.application;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -28,20 +28,15 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NotFoundException::new);
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NotFoundException::new);
-
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.from(persistLine);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
-        List<LineResponse> lineResponses = new ArrayList<>();
-        for(Line line : lines){
-            LineResponse lineResponse = LineResponse.from(line);
-            lineResponses.add(lineResponse);
-        }
-        return lineResponses;
+        return lines.stream()
+                .map(LineResponse::from)
+                .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long lineId) {
