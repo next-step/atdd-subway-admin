@@ -75,7 +75,33 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void 지하철_노선_목록_조회_테스트() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
 
+        ExtractableResponse<Response> response1 = createLine(params);
+
+        params.clear();
+        params.put("name", "분당선");
+        params.put("color", "bg-green-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "3");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response2 = createLine(params);
+
+        // when
+        List<String> lines = retrieveLineNames();
+
+        // then
+        assertAll(
+                () -> assertThat(lines).hasSize(2),
+                () -> assertThat(lines).contains("신분당선", "분당선")
+        );
     }
 
     /**
@@ -86,6 +112,26 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void 지하철_노선_조회_테스트() {
+
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response = createLine(params);
+
+        // when
+        List<Line> line = retrieveLineByName(params.get("name"));
+
+        // then
+        assertAll(
+                () -> assertThat(line).isNotEmpty(),
+                () -> assertThat(line.get(0).getName()).isEqualTo(params.get("name")),
+                () -> assertThat(line.get(0).getColor()).isEqualTo(params.get("color"))
+        );
 
     }
 
@@ -136,7 +182,7 @@ public class LineAcceptanceTest {
         return lineNames;
     }
 
-    public static List<Line> retrieveLine(String lineName) {
+    public static List<Line> retrieveLineByName(String lineName) {
         List<Line> line =
                 RestAssured.given().log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
