@@ -34,4 +34,12 @@ public class Section {
         this.downStation = downStation;
         this.distance = distance;
     }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
 }
