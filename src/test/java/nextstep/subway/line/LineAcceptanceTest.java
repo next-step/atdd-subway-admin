@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("노선 관련 기능")
+@DisplayName("노선 인수 테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
     /*

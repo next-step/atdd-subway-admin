@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,6 +22,9 @@ public class Sections {
     }
 
     public List<Map<String, Object>> getStations() {
+        if (sections.size() == 0) {
+            return Collections.emptyList();
+        }
         List<Map<String, Object>> stations = sections.stream()
                 .map(section -> section.getUpStation().toMapForOpen())
                 .collect(Collectors.toList());

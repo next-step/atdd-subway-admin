@@ -3,6 +3,7 @@ package nextstep.subway.dto;
 import nextstep.subway.domain.Line;
 
 public class CreateLineDto {
+
     private String name;
 
     private String color;
@@ -12,6 +13,14 @@ public class CreateLineDto {
     private long downStationId;
 
     private long distance;
+
+    public CreateLineDto(String name, String color, long upStationId, long downStationId, long distance) {
+        this.name = name;
+        this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
 
     public String getName() {
         return name;
