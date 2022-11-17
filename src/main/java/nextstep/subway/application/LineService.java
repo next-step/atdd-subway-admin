@@ -4,13 +4,12 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.LineCreateRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,13 +39,18 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) throws IllegalArgumentException {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(""));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException(""));
         return LineResponse.of(line);
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) throws IllegalArgumentException {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(""));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException(""));
         line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+    }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
     }
 }

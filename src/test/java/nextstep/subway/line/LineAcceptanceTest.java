@@ -57,9 +57,8 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> getLines(Map<String, Object> params) {
+    private ExtractableResponse<Response> getLines() {
         return RestAssured.given().log().all()
-                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines")
                 .then().log().all()
@@ -83,7 +82,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = createLine(params);
 
         // then
-        List<String> stationNames = getLines(params).jsonPath().getList("name", String.class);
+        List<String> stationNames = getLines().jsonPath().getList("name", String.class);
         assertThat(stationNames).containsAnyOf("신분당선");
     }
 
@@ -113,7 +112,7 @@ public class LineAcceptanceTest {
         createLine(params2);
 
         // when
-        List<Long> ids = getLines(new HashMap<>()).body().jsonPath().getList("id", Long.class);
+        List<Long> ids = getLines().body().jsonPath().getList("id", Long.class);
 
         // then
         assertThat(ids).hasSize(2);
@@ -175,12 +174,12 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .extract();
 
+
+        // then
         ExtractableResponse<Response> findResponse = RestAssured.given().log().all()
                 .when()
                 .get("/lines/{id}", createdLineId)
                 .then().log().all().extract();
-
-        // then
         assertAll(() -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(findResponse.body().jsonPath().getString("name")).isEqualTo("다른분당선"));
     }
@@ -194,9 +193,24 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선_삭제() {
         // given
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", 10);
+        Long createdLineId = createLine(params).body().jsonPath().getLong("id");
 
         // when
+        ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
+                .when()
+                .delete("/lines/{id}", createdLineId)
+                .then().log().all()
+                .extract();
 
         // then
+        ExtractableResponse<Response> findResponse = getLines();
+        assertAll(() -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(getLines().body().jsonPath().getList("id")).isEmpty());
     }
 }

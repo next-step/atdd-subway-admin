@@ -4,7 +4,6 @@ import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,5 +39,11 @@ public class LineController {
     public ResponseEntity updateStation(@PathVariable Long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
         lineService.updateLine(id, lineUpdateRequest);
         return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/lines/{id}")
+    public ResponseEntity deleteLine(@PathVariable Long id) {
+        lineService.deleteLine(id);
+        return ResponseEntity.noContent().build();
     }
 }
