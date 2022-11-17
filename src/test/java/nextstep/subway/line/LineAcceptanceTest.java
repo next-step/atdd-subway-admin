@@ -177,6 +177,26 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void 지하철_노선_삭제_테스트() {
+        // given
+        Map<String, String> params = new HashMap<>();
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        params.put("distance", "10");
+
+        ExtractableResponse<Response> response1 = createLine(params);
+
+        // when
+        ExtractableResponse<Response> response2 = deleteLineByIe(response1.header("Location"));
+
+        // then
+        List<Line> line = retrieveLineByName(params.get("name"));
+
+        assertAll(
+                () -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(line).isEmpty()
+        );
 
     }
 
@@ -233,4 +253,14 @@ public class LineAcceptanceTest {
         return response;
     }
 
+    private static ExtractableResponse<Response> deleteLineByIe(String location) {
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(location)
+                .then().log().all()
+                .extract();
+
+        return response;
+    }
 }
