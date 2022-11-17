@@ -3,11 +3,10 @@ package nextstep.subway.application;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineSaveRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.exception.NotFoundLine;
-import nextstep.subway.exception.NotFoundStation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +25,10 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveStation(LineRequest lineRequest) {
-        Station upStation = stationService.findStation(lineRequest.getUpStationId());
-        Station downStation = stationService.findStation(lineRequest.getDownStationId());
-        Line line = lineRequest.toLine();
+    public LineResponse saveStation(LineSaveRequest lineSaveRequest) {
+        Station upStation = stationService.findStation(lineSaveRequest.getUpStationId());
+        Station downStation = stationService.findStation(lineSaveRequest.getDownStationId());
+        Line line = lineSaveRequest.toLine();
         line.addStations(upStation, downStation);
         return LineResponse.of(lineRepository.save(line));
     }
@@ -45,9 +44,9 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(Long id, LineRequest lineRequest) {
+    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id).orElseThrow(NotFoundLine::new);
-        line.update(lineRequest);
+        line.update(lineUpdateRequest);
     }
 
     @Transactional

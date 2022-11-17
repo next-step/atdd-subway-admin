@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineUpdateRequest;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -70,8 +70,8 @@ public class Line extends BaseEntity {
         return Objects.hash(name);
     }
 
-    public void update(LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+    public void update(LineUpdateRequest lineUpdateRequest) {
+        this.name = lineUpdateRequest.getName();
+        this.color = lineUpdateRequest.getColor();
     }
 }

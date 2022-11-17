@@ -7,7 +7,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 
 
-public class LineRequest {
+public class LineSaveRequest {
     @NotBlank(message = "name is not null or blank")
     private String name;
     @NotBlank(message = "color is not null or blank")
