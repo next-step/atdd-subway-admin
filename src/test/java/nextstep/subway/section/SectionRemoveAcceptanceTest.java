@@ -45,7 +45,17 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
     @DisplayName("상행 종점을 제거한다.")
     @Test
     void removeSectionOfHeadLine() {
+        // given
+        addSection(이호선, 서초역, 교대역, 5);
 
+        // when
+        ExtractableResponse<Response> removeSectionResponse = deleteSection(이호선, 서초역);
+        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        ExtractableResponse<Response> findLineResponse = findLine(이호선);
+        assertThat(getStations((findLineResponse))).hasSize(2);
+        assertThat(getStationNames(findLineResponse)).containsExactly("교대역", "강남역");
     }
 
     /**
