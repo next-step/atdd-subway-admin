@@ -23,14 +23,14 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private Sections lineStations = new Sections();
+    private Sections sections = new Sections();
 
     protected Line(){}
 
     public Line(String name, String color, Station preStation, Station station, Integer distance) {
         this(name, color);
-        lineStations.add(null, preStation, 0);
-        lineStations.add(preStation, station, distance);
+        sections.add(null, preStation, 0);
+        sections.add(preStation, station, distance);
     }
 
     public Line(String name, String color) {
@@ -61,14 +61,14 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Station preStation, Station station, Integer distance) {
-        lineStations.addSection(preStation, station, distance);
+        sections.addSection(preStation, station, distance);
     }
 
     public List<Section> getOrderStations(){
-        return lineStations.getOrderStations();
+        return sections.getOrderStations();
     }
 
-    public Sections getLineStations() {
-        return lineStations;
+    public Sections getSections() {
+        return sections;
     }
 }

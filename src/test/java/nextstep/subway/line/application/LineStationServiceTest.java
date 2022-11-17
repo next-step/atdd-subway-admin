@@ -57,7 +57,7 @@ public class LineStationServiceTest {
         lineStationService.addSection(line.getId(), new SectionRequest(newStation.getId(), station1.getId(), 10));
 
         // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getLineStations().getSections()).hasSize(3);
+        assertThat(line.getSections().getSections()).hasSize(3);
     }
 
     @Test
@@ -70,7 +70,7 @@ public class LineStationServiceTest {
         lineStationService.addSection(line.getId(), new SectionRequest(station2.getId(), newStation.getId(), 10));
 
         // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getLineStations().getSections()).hasSize(3);
+        assertThat(line.getSections().getSections()).hasSize(3);
     }
 
     @Test
@@ -83,7 +83,7 @@ public class LineStationServiceTest {
         lineStationService.addSection(line.getId(), new SectionRequest(station1.getId(), newStation.getId(), 5));
 
         // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getLineStations().getSections()).hasSize(3);
+        assertThat(line.getSections().getSections()).hasSize(3);
     }
 
     @Test
@@ -96,7 +96,7 @@ public class LineStationServiceTest {
         lineStationService.addSection(line.getId(), new SectionRequest(newStation.getId(), station2.getId(), 5));
 
         // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getLineStations().getSections()).hasSize(3);
+        assertThat(line.getSections().getSections()).hasSize(3);
     }
 
     @Test
