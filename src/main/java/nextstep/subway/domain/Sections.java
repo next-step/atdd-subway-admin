@@ -72,9 +72,7 @@ public class Sections {
     }
 
     private boolean isContainsAllStation(Section newSection) {
-        boolean isSameSection = sections.stream().anyMatch(section -> section.isSameSection(newSection));
-        boolean isContainsAllStation = newSection.isComponentAllOfStations(getStations());
-        return isSameSection || isContainsAllStation;
+        return newSection.isComponentAllOfStations(getStations());
     }
 
     private boolean isNotContainsAnyStation(Section newSection) {
