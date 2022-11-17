@@ -30,4 +30,16 @@ public class LineResponse {
     public Long getId() {
         return this.id;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
+    }
 }
