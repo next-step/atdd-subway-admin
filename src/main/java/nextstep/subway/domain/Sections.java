@@ -85,8 +85,7 @@ public class Sections {
             deleteMiddle(prevSection.get(), nextSection.get());
             return;
         }
-        nextSection.ifPresent(sections::remove);
-        prevSection.ifPresent(sections::remove);
+        deleteFirstOrLast(nextSection, prevSection);
     }
 
     private Optional<Section> findPrevSection(Station station) {
@@ -108,5 +107,10 @@ public class Sections {
     private void deleteMiddle(Section prevSection, Section nextSection) {
         prevSection.merge(nextSection);
         this.sections.remove(nextSection);
+    }
+
+    private void deleteFirstOrLast(Optional<Section> nextSection, Optional<Section> prevSection) {
+        nextSection.ifPresent(sections::remove);
+        prevSection.ifPresent(sections::remove);
     }
 }
