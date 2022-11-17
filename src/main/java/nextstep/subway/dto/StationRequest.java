@@ -1,11 +1,12 @@
 package nextstep.subway.dto;
 
+import nextstep.subway.domain.Name;
 import nextstep.subway.domain.Station;
 
 public class StationRequest {
-    private String name;
+    private Name name;
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 

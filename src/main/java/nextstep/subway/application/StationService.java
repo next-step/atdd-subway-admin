@@ -25,12 +25,17 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
                 .map(station -> StationResponse.of(station))
                 .collect(Collectors.toList());
+    }
+
+    public List<Station> findAllById(List<Long> stationIds) {
+        return stationRepository.findAllById(stationIds);
     }
 
     @Transactional
