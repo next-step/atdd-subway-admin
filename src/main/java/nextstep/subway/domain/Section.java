@@ -45,10 +45,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean isShortDistance(Section section) {
-        if (distance <= section.getDistance()) {
-            return true;
-        }
-        return false;
+        return distance <= section.getDistance();
     }
 
     public boolean isSameSection(Section section) {
