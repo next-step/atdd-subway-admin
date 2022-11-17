@@ -16,7 +16,7 @@ public class LineSaveRequest {
     public LineSaveRequest(String name, String color, Long distance, Long upStationId, Long downStationId) {
         validateName(name);
         validateColor(color);
-        validateDistacne(distance);
+        validateDistance(distance);
         validateStationId(upStationId);
         validateStationId(downStationId);
         this.name = name;
@@ -63,7 +63,7 @@ public class LineSaveRequest {
         }
     }
 
-    private void validateDistacne(Long distance) {
+    private void validateDistance(Long distance) {
         if (distance <= MIN_DISTANCE) {
             throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_DISTANCE.getMessage());
         }
