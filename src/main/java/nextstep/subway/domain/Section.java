@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.domain.raw.Distance;
+import nextstep.subway.dto.LineResponse;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
@@ -22,8 +25,8 @@ public class Section extends BaseEntity implements Comparable<Section> {
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
-    @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     public Section() {
     }
@@ -32,7 +35,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.upStation = upStation;
         this.downStation = downStation;
         this.line = line;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
 
@@ -53,7 +56,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 
 
@@ -87,8 +90,8 @@ public class Section extends BaseEntity implements Comparable<Section> {
         changeStation(newSection);
     }
 
-    private void changeDistance(int distance) {
-        this.distance -= distance;
+    private void changeDistance(Distance distance) {
+        this.distance.subtract(distance.getDistance());
     }
 
     private void changeStation(Section newSection) {
@@ -98,7 +101,6 @@ public class Section extends BaseEntity implements Comparable<Section> {
         if (isUpStation(newSection.upStation)) {
             changeUpStation(newSection);
             changeDistance(newSection.distance);
-            return;
         }
 
 
@@ -108,14 +110,6 @@ public class Section extends BaseEntity implements Comparable<Section> {
             changeDownStation(newSection);
             changeDistance(newSection.distance);
         }
-    }
-
-    public void changeSort(Section sortedSection) {
-        this.upStation = sortedSection.upStation;
-        this.downStation = sortedSection.downStation;
-        this.line = sortedSection.line;
-        this.distance = sortedSection.distance;
-
     }
 
     public boolean isLastStation(List<Section> sections) {
@@ -134,6 +128,15 @@ public class Section extends BaseEntity implements Comparable<Section> {
 
     private void changeDownStation(Section newSection) {
         this.downStation = newSection.upStation;
+    }
+
+    public LineResponse.Section from() {
+        return LineResponse.Section.builder()
+                .id(id)
+                .upStationId(upStation.getId())
+                .downStationId(downStation.getId())
+                .distance(distance.getDistance())
+                .build();
     }
 
 
@@ -168,6 +171,7 @@ public class Section extends BaseEntity implements Comparable<Section> {
         else if (this.upStation.getId().equals(s.downStation.getId())) return 1;
         return 0;
     }
+
 
 
 }

@@ -78,10 +78,14 @@ public class Sections {
         });
     }
 
-    public List<Section> sortSection() {
-        List<Section> sortedSections = sections.stream()
-                .sorted(Section::compareTo)
-                .collect(Collectors.toList());
-        return Collections.unmodifiableList(sortedSections);
+    public List<Station> getAllStations() {
+        List<Station> allStations = new ArrayList<>();
+        this.getSections().forEach(section -> {
+            allStations.add(section.getUpStation());
+            allStations.add(section.getDownStation());
+        });
+
+        // 중복제거
+        return allStations.stream().distinct().collect(Collectors.toList());
     }
 }

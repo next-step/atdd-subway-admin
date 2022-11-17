@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,18 +18,18 @@ public class LineResponse {
     public String name;
     public String color;
     public List<StationResponse> stations;
-    public List<SectionResponse.Section> sections;
+    public List<Section> sections;
 
 
-   public static List<LineResponse> of(List<Line> lines) {
-       LineResponse.builder().build();
+    public static List<LineResponse> of(List<Line> lines) {
+        LineResponse.builder().build();
 
-       return lines.stream()
-               .map(line -> LineResponse.of(line))
-               .collect(Collectors.toList());
-   }
+        return lines.stream()
+                .map(line -> LineResponse.from(line))
+                .collect(Collectors.toList());
+    }
 
-    public static LineResponse of(Line persistLine) {
+    public static LineResponse from(Line persistLine) {
         return new LineResponse(persistLine);
     }
 
@@ -40,6 +38,17 @@ public class LineResponse {
         name = line.getName();
         color = line.getColor();
         stations = line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
-        sections = line.getSections().stream().map(SectionResponse::of).collect(Collectors.toList());
+        sections = line.getSections().stream().map(s -> s.from()).collect(Collectors.toList());
+    }
+
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class Section {
+        private Long id;
+        private Long upStationId;
+        private Long downStationId;
+        private int distance;
     }
 }

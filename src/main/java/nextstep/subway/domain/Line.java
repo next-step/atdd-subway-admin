@@ -2,6 +2,8 @@ package nextstep.subway.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import nextstep.subway.domain.raw.Color;
+import nextstep.subway.domain.raw.Name;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.StationResponse;
 
@@ -19,11 +21,11 @@ public class Line extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String name;
+    @Embedded
+    private Name name;
 
-    @Column(nullable = false)
-    private String color;
+    @Embedded
+    private Color color;
 
     @Embedded
     private Sections sections;
@@ -32,8 +34,8 @@ public class Line extends BaseEntity {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
+        this.name = new Name(name);
+        this.color = new Color(color);
         // Line과 매핑하기 위해 this를 넘겨줌
         this.sections = new Sections(new Section(upStation, downStation, this, distance));
     }
@@ -43,22 +45,15 @@ public class Line extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public String getColor() {
-        return color;
+        return color.getColor();
     }
 
     public List<Station> getStations() {
-        List<Station> allStations = new ArrayList<>();
-        sections.getSections().forEach(section -> {
-            allStations.add(section.getUpStation());
-            allStations.add(section.getDownStation());
-        });
-
-        // 중복제거
-        return allStations.stream().distinct().collect(Collectors.toList());
+        return sections.getAllStations();
     }
 
     public List<Section> getSections() {
@@ -67,10 +62,10 @@ public class Line extends BaseEntity {
 
     public void update(LineRequest updateRequest) {
         if (!updateRequest.getName().isEmpty() && updateRequest.getName() != "") {
-            this.name = updateRequest.getName();
+            this.name = new Name(updateRequest.getName());
         }
         if (!updateRequest.getColor().isEmpty() && updateRequest.getColor() != "") {
-            this.color = updateRequest.getColor();
+            this.color = new Color(updateRequest.getColor());
         }
     }
 
