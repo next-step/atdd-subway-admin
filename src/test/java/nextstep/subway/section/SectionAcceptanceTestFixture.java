@@ -21,4 +21,11 @@ public class SectionAcceptanceTestFixture {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> deleteSection(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .when().delete("/lines/{id}/sections?stationId={stationId}", lineId, stationId)
+                .then().log().all()
+                .extract();
+    }
 }

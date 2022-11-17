@@ -41,6 +41,15 @@ class SectionsTest {
         assertThat(sections.assignedStations()).containsExactly(서초역, 강남역, 역삼역);
     }
 
+    @Test
+    void 가운데_역을_제거() {
+        Station 교대역 = Station.from("교대역");
+        sections.add(Section.from(서초역, 교대역, Distance.from(5)));
+        assertThat(sections.assignedStations()).containsExactly(서초역, 교대역, 강남역);
+        sections.delete(교대역);
+        assertThat(sections.assignedStations()).containsExactly(서초역, 강남역);
+    }
+
     @ParameterizedTest
     @ValueSource(ints = {10, 11})
     void 추가하려는_구간의_길이가_기존_구간의_길이보다_크거나_같을경우_예외(int distance) {
