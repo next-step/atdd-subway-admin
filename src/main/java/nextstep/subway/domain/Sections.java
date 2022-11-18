@@ -51,6 +51,16 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    private List<Section> orderedSection() {
+        List<Section> orderedSections = new LinkedList<>();
+        Optional<Section> section = findFirstSection();
+        while (section.isPresent()) {
+            section.ifPresent(orderedSections::add);
+            section = findNextSection(section.get());
+        }
+        return orderedSections;
+    }
+
     private Optional<Section> findFirstSection() {
         List<Station> downStations = this.sections.stream().map(Section::getDownStation).collect(Collectors.toList());
         return this.sections.stream()
@@ -93,14 +103,10 @@ public class Sections {
     public void delete(Station station) {
         validateNotIncludeStation(station);
         validateIsLastSection();
-        Optional<Section> prevSection = findPrevSection(station);
-        Optional<Section> nextSection = findNextSection(station);
-        if (prevSection.isPresent() && nextSection.isPresent()) {
-            deleteMiddle(prevSection.get(), nextSection.get());
-            return;
-        }
-        nextSection.ifPresent(sections::remove);
-        prevSection.ifPresent(sections::remove);
+        List<Section> orderedSections = orderedSection();
+        deleteMiddle(station);
+        deleteFirst(orderedSections, station);
+        deleteLast(orderedSections, station);
     }
 
     private void validateIsLastSection() {
@@ -116,6 +122,15 @@ public class Sections {
         }
     }
 
+    private void deleteMiddle(Station station) {
+        Optional<Section> prevSection = findPrevSection(station);
+        Optional<Section> nextSection = findNextSection(station);
+        if (prevSection.isPresent() && nextSection.isPresent()) {
+            prevSection.get().merge(nextSection.get());
+            sections.remove(nextSection.get());
+        }
+    }
+
     private Optional<Section> findPrevSection(Station station) {
         return this.sections.stream()
                 .filter(section -> section.isDownStation(station))
@@ -128,8 +143,21 @@ public class Sections {
                 .findFirst();
     }
 
-    private void deleteMiddle(Section prevSection, Section nextSection) {
-        prevSection.merge(nextSection);
-        this.sections.remove(nextSection);
+    private void deleteFirst(List<Section> orderedSections, Station station) {
+        orderedSections.stream()
+                .findFirst()
+                .ifPresent(section -> deleteFirstOrLastSection(section, station));
+    }
+
+    private void deleteLast(List<Section> orderedSections, Station station) {
+        orderedSections.stream()
+                .reduce((first, second) -> second)
+                .ifPresent(section -> deleteFirstOrLastSection(section, station));
+    }
+
+    private void deleteFirstOrLastSection(Section section, Station station) {
+        if (section.isUpStation(station) || section.isDownStation(station)) {
+            this.sections.remove(section);
+        }
     }
 }
