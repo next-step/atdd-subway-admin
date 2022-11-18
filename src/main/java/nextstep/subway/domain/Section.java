@@ -85,6 +85,14 @@ public class Section extends BaseEntity {
         setDistance(calDeleteDistance(section));
     }
 
+    public void setLine(Line line) {
+        if (this.line != null) {
+            this.line.getSections().remove(this);
+        }
+        this.line = line;
+        line.addSection(this);
+    }
+
     private int calDeleteDistance(Section section) {
         if (isEndSection()) {
             return END_SECTION_DISTANCE;
@@ -118,13 +126,5 @@ public class Section extends BaseEntity {
 
     private void setDistance(Integer distance) {
         this.distance = distance;
-    }
-
-    public void setLine(Line line) {
-        if (this.line != null) {
-            this.line.getSections().remove(this);
-        }
-        this.line = line;
-        line.addSection(this);
     }
 }
