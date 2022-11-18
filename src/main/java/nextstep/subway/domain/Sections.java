@@ -109,10 +109,25 @@ public class Sections {
 
     public void deleteSection(Station station) {
         validDeleteStation(station);
+        Section upSection = findUpStationSection(station).orElse(null);
+        Section downSection = findDownStationSection(station).orElse(null);
+
+        // TODO: 종점에 있는 경우는 그냥 삭제
+        if (upSection == null) {
+            sections.remove(downSection);
+            return;
+        }
+        if (downSection == null) {
+            sections.remove(upSection);
+            return;
+        }
+        sectionConnectChange(upSection, downSection);
 
         // TODO: 중간 구역을 삭제하는 경우 기존 상행 하행 연결 필요
-        // TODO: 종점에 있는 경우는 그냥 삭제
 
+    }
+
+    private void sectionConnectChange(Section upSection, Section downSection) {
     }
 
     private void validDeleteStation(Station station) {
@@ -123,6 +138,17 @@ public class Sections {
         if (!distinctStations().contains(station)) {
             throw new IllegalArgumentException(STATION_NOT_CONTAINS_NOT_DELETE.getMessage());
         }
+    }
+
+    private Optional<Section> findUpStationSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasUpStation(station))
+                .findFirst();
+    }
+    private Optional<Section> findDownStationSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasDownStation(station))
+                .findFirst();
     }
 
 }

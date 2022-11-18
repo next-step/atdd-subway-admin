@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.exception.ErrorMessage.ONE_SECTION_NOT_DELETE;
 import static nextstep.subway.exception.ErrorMessage.STATION_NOT_CONTAINS_NOT_DELETE;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철 구간 테스트")
@@ -49,6 +50,24 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.deleteSection(왕십리역))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(STATION_NOT_CONTAINS_NOT_DELETE.getMessage());
+    }
+
+    @Test
+    @DisplayName("지하철 첫 구간 삭제")
+    void delete_first_section() {
+        // given
+        Sections sections = new Sections();
+        Section 신림_강남_구간 = new Section(신림역, 강남역, 10);
+        sections.addSection(신림_강남_구간);
+        Section 강남_잠실_구간 = new Section(강남역, 잠실역, 10);
+        sections.addSection(강남_잠실_구간);
+
+        // when
+        sections.deleteSection(신림역);
+
+        // then
+        assertThat(sections.stationsBySorted())
+                .containsExactly(강남역, 잠실역);
     }
 
 }

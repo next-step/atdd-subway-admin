@@ -88,4 +88,11 @@ public class Section {
         return distance;
     }
 
+    public boolean hasUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean hasDownStation(Station station) {
+        return downStation.equals(station);
+    }
 }

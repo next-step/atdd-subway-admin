@@ -211,9 +211,57 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         요청_실패(지하철_구간_생성_요청);
     }
 
-    @DisplayName("3개의 구간이 있는 노선에서 중앙 구간을 제거")
+    @DisplayName("2개의 구간이 있는 노선에서 종점 상행역 제거")
     @Test
-    void remove_the_middle_of_the_line() {
+    void delete_first_station_of_line() {
+
+        // given
+        ExtractableResponse<Response> 사당역 = 지하철역_생성_요청("사당역");
+        SectionRequest 신림_사당_구간_요청 = new SectionRequest(식별_아이디_조회(신림역), 식별_아이디_조회(사당역), 5);
+        지하철_구간_생성_요청(식별_아이디_조회(신림_강남_노선), 신림_사당_구간_요청);
+
+        // when
+        String uri = "/lines/" + 식별_아이디_조회(신림_강남_노선) + "/sections";
+        ExtractableResponse<Response> 신림역_제거_응답 = RestAssured.given().log().all()
+                .param("stationId", 식별_아이디_조회(신림역))
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        ExtractableResponse<Response> 사당_강남_노선_응답 = 지하철_노선_조회_요청(식별_아이디_조회(신림_강남_노선));
+        List<String> 지하철_노선_구간 = 제이슨_경로_얻기(사당_강남_노선_응답).getList("stations.name");
+
+        // then
+        삭제_요청_성공(신림역_제거_응답);
+        assertThat(지하철_노선_구간).containsExactly("사당역", "강남역");
+    }
+
+    @DisplayName("2개의 구간이 있는 노선에서 종점 하행역 제거")
+    @Test
+    void delete_last_station_of_line() {
+
+        // given
+        ExtractableResponse<Response> 사당역 = 지하철역_생성_요청("사당역");
+        SectionRequest 신림_사당_구간_요청 = new SectionRequest(식별_아이디_조회(신림역), 식별_아이디_조회(사당역), 5);
+        지하철_구간_생성_요청(식별_아이디_조회(신림_강남_노선), 신림_사당_구간_요청);
+        ExtractableResponse<Response> 신림_사당_강남_노선_응답 = 지하철_노선_조회_요청(식별_아이디_조회(신림_강남_노선));
+
+        String uri = "/lines/" + 식별_아이디_조회(신림_사당_강남_노선_응답) + "/sections";
+        // when
+        ExtractableResponse<Response> 강남역_제거_응답 = RestAssured.given().log().all()
+                .param("stationId", 식별_아이디_조회(강남역))
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        삭제_요청_성공(강남역_제거_응답);
+    }
+
+    @DisplayName("2개의 구간이 있는 노선에서 가운데 역을 제거")
+    @Test
+    void delete_middle_station_of_line() {
 
         // given
         ExtractableResponse<Response> 사당역 = 지하철역_생성_요청("사당역");
