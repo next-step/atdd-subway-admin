@@ -22,19 +22,19 @@ public class LineStations {
     }
 
     public void infixSection(LineStation infixLineStation) {
-        LineStation existedStation = getTargetExistedStation(infixLineStation);
+        LineStation needChangedStation = getNeedChangedStationStation(infixLineStation);
 
-        if (existedStation == null) {
+        if (needChangedStation == null) {
             add(infixLineStation);
             return;
         }
-        checkValidationParameter(existedStation, infixLineStation);
+        checkValidationParameter(needChangedStation, infixLineStation);
 
-        if (existedStation.isEqualsId(infixLineStation.getStation().getId())) {
+        if (needChangedStation.isEqualsId(infixLineStation.getStation().getId())) {
             infixLineStation.resetStation(infixLineStation.getPreStation());
-            infixLineStation.resetPreStation(existedStation.getPreStation());
+            infixLineStation.resetPreStation(needChangedStation.getPreStation());
         }
-        existedStation.resetPreStation(infixLineStation.getStation());
+        needChangedStation.resetPreStation(infixLineStation.getStation());
 
         add(infixLineStation);
     }
@@ -81,7 +81,7 @@ public class LineStations {
                 .orElseThrow(() -> new ElementNotFoundException());
     }
 
-    private LineStation getTargetExistedStation(LineStation infixLineStation) {
+    private LineStation getNeedChangedStationStation(LineStation infixLineStation) {
         LineStation existedStation = lineStations
                 .stream()
                 .filter(lineStation -> lineStation.isEqualsId(infixLineStation.getStation().getId()))
@@ -99,11 +99,11 @@ public class LineStations {
     }
 
     private void checkValidationParameter(LineStation existedStation, LineStation infixLineStation) {
-        if (existedStation.getStation().equals(infixLineStation.getPreStation())) {
+        if (existedStation.isEqualsId(infixLineStation.getPreStation().getId())) {
             throw new InvalidParameterException("상행선과 하행선을 모두 동일하게 등록할 수 없습니다.");
         }
 
-        if (existedStation.isGatherThanPrice(infixLineStation)) {
+        if (existedStation.isGatherThanDistance(infixLineStation)) {
             throw new InvalidParameterException("기존의 역 사이보다 더 긴 길이의 역을 등록할 수 없습니다.");
         }
     }

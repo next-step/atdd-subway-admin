@@ -35,11 +35,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Long upStationId = lineRequest.getUpStationId();
-        Long downStationId = lineRequest.getDownStationId();
-
-        Station upStation = getStation(upStationId);
-        Station downStation = getStation(downStationId);
+        Station upStation = getStation(lineRequest.getUpStationId());
+        Station downStation = getStation(lineRequest.getDownStationId());
 
         LineStations lineStations = new LineStations();
         lineStations.add(lineStationRepository.save(upStation.toLineUpStation()));

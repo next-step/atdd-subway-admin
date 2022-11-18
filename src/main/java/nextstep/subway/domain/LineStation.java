@@ -39,7 +39,7 @@ public class LineStation {
         this.preStation = station;
     }
 
-    public boolean isGatherThanPrice(LineStation infixLineStation) {
+    public boolean isGatherThanDistance(LineStation infixLineStation) {
         if (this.distance == 0) {
             return false;
         }

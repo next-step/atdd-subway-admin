@@ -35,7 +35,6 @@ public class SectionService {
         checkValidationParameter(sectionRequest);
 
         Line line = getLine(lineId);
-
         LineStation lineStation = lineStationRepository.save(
                         new LineStation(getStation(sectionRequest.getUpStationId()),
                         getStation(sectionRequest.getDownStationId()),
@@ -47,7 +46,7 @@ public class SectionService {
     }
 
     private void checkValidationParameter(SectionRequest sectionRequest) {
-        if (sectionRequest.getUpStationId() == null || sectionRequest.getDownStationId() == null) {
+        if (sectionRequest.hasNullValue()) {
             throw new InvalidParameterException("상행역과 하행역이 모두 등록되어 있어야 합니다.");
         }
     }

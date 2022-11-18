@@ -16,6 +16,10 @@ public class SectionRequest {
         this.distance = distance;
     }
 
+    public boolean hasNullValue() {
+        return upStationId == null || downStationId == null;
+    }
+
     public int getDistance() {
         return distance;
     }
