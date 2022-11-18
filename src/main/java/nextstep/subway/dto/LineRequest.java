@@ -34,12 +34,6 @@ public class LineRequest {
         return this.distance;
     }
 
-//    public List<LineStation> getLineStation(){
-//        List<LineStation> lineStations = new ArrayList<>();
-//        lineStations.add(new LineStation(this.upStationId, this.downStationId, this.distance));
-//        return lineStations;
-//    }
-
     public Line toLine(Station upStation, Station downStation) {
         return new Line(this.name, this.color, upStation, downStation, distance);
     }
