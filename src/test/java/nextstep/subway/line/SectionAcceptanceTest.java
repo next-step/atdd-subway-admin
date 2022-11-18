@@ -50,7 +50,7 @@ public class SectionAcceptanceTest extends BaseTest {
     /**
      * Given
      * When 지하철 노선에 지하철역 등록 요청
-     * Then 500 Internal Server Error 발생
+     * Then 등록 불가능
      */
     @Test
     void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없음() {
@@ -61,7 +61,7 @@ public class SectionAcceptanceTest extends BaseTest {
     /**
      * Given
      * When 지하철 노선에 지하철역 등록 요청
-     * Then 500 Internal Server Error 발생
+     * Then 등록 불가능
      */
     @Test
     void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
@@ -72,7 +72,7 @@ public class SectionAcceptanceTest extends BaseTest {
     /**
      * Given
      * When 지하철 노선에 지하철역 등록 요청
-     * Then 500 Internal Server Error 발생
+     * Then 등록 불가능
      */
     @Test
     void 상행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없음() {
