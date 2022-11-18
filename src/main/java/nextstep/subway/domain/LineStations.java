@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ElementNotFoundException;
+import nextstep.subway.exception.InvalidParameterException;
+
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -19,43 +22,21 @@ public class LineStations {
     }
 
     public void infixSection(LineStation infixLineStation) {
-        Long preStationId = infixLineStation.getPreStation().getId();
-        Long stationId = infixLineStation.getStation().getId();
+        LineStation existedStation = getTargetExistedStation(infixLineStation);
 
-        lineStations.stream().forEach(lineStation -> {
-            Long id = lineStation.getStation().getId();
-            checkValidLineStation(preStationId, stationId, id);
-            if (preStationId.equals(id)) {
-                getTargetLineStation(preStationId, infixLineStation.getPreStation())
-                        .resetPreStation(infixLineStation.getStation());
-                return;
-            }
-            if (stationId.equals(id)) {
-                resetLineStationByDownStandard(lineStation, infixLineStation);
-                return;
-            }
-        });
-        add(infixLineStation);
-    }
-
-    private void checkValidLineStation(Long preStationId, Long stationId, Long id) {
-        if (preStationId.equals(id) && stationId.equals(id)) {
-            throw new RuntimeException();
+        if (existedStation == null) {
+            add(infixLineStation);
+            return;
         }
-    }
+        checkValidationParameter(existedStation, infixLineStation);
 
-    private void resetLineStationByDownStandard(LineStation lineStation, LineStation infixLineStation) {
-        Station temp = lineStation.getPreStation();
-        lineStation.resetPreStation(infixLineStation.getPreStation());
-        infixLineStation.reverseStation();
-        infixLineStation.resetPreStation(temp);
-    }
+        if (existedStation.isEqualsId(infixLineStation.getStation().getId())) {
+            infixLineStation.resetStation(infixLineStation.getPreStation());
+            infixLineStation.resetPreStation(existedStation.getPreStation());
+        }
+        existedStation.resetPreStation(infixLineStation.getStation());
 
-    private LineStation getTargetLineStation(Long id, Station station) {
-        return lineStations.stream()
-                .filter(lineStation -> lineStation.getPreStation() != null)
-                .filter(lineStation -> lineStation.getPreStation().getId().equals(id))
-                .findFirst().orElse(new LineStation(station));
+        add(infixLineStation);
     }
 
     public List<LineStation> getList() {
@@ -65,26 +46,66 @@ public class LineStations {
     public List<LineStation> getSortList() {
         List<LineStation> sortList = new ArrayList<>();
 
-        LineStation upStation = getPreLineStation();
+        LineStation upStation = getUpLineStation();
         sortList.add(upStation);
 
         for (int i = 1; i < lineStations.size(); i++) {
-            for (LineStation lineStation : lineStations) {
-                if (lineStation.getPreStation() == null) {
-                    continue;
-                }
-                if (upStation.getStation().getId().equals(lineStation.getPreStation().getId())) {
-                    upStation = lineStation;
-                    sortList.add(lineStation);
-                }
-            }
+            LineStation finalUpStation = upStation;
+
+            LineStation station = lineStations
+                    .stream()
+                    .filter(lineStation
+                            -> lineStation.getPreStation() != null
+                            && finalUpStation.isEqualsId(lineStation.getPreStation().getId()))
+                    .findAny()
+                    .orElseThrow(() -> new ElementNotFoundException());
+
+            upStation = station;
+            sortList.add(station);
         }
 
         return sortList;
     }
 
-    private LineStation getPreLineStation() {
-        return lineStations.stream().filter(lineStations -> lineStations.getPreStation() == null).findFirst().get();
+    private LineStation getNextStationByStationId(Long id) {
+        return lineStations.stream()
+                .filter(lineStation -> lineStation.getPreStation() != null)
+                .filter(lineStation -> lineStation.getPreStation().getId().equals(id))
+                .findAny().orElse(null);
+    }
+
+    private LineStation getUpLineStation() {
+        return lineStations.stream()
+                .filter(lineStations -> lineStations.getPreStation() == null)
+                .findAny()
+                .orElseThrow(() -> new ElementNotFoundException());
+    }
+
+    private LineStation getTargetExistedStation(LineStation infixLineStation) {
+        LineStation existedStation = lineStations
+                .stream()
+                .filter(lineStation -> lineStation.isEqualsId(infixLineStation.getStation().getId()))
+                .findAny()
+                .orElse(lineStations
+                        .stream()
+                        .filter(lineStation -> lineStation.isEqualsId(infixLineStation.getPreStation().getId()))
+                        .findAny()
+                        .orElse(null));
+
+        if (existedStation.isEqualsId(infixLineStation.getPreStation().getId())) {
+            existedStation = getNextStationByStationId(existedStation.getStation().getId());
+        }
+        return existedStation;
+    }
+
+    private void checkValidationParameter(LineStation existedStation, LineStation infixLineStation) {
+        if (existedStation.getStation().equals(infixLineStation.getPreStation())) {
+            throw new InvalidParameterException("상행선과 하행선을 모두 동일하게 등록할 수 없습니다.");
+        }
+
+        if (existedStation.isGatherThanPrice(infixLineStation)) {
+            throw new InvalidParameterException("기존의 역 사이보다 더 긴 길이의 역을 등록할 수 없습니다.");
+        }
     }
 
 }

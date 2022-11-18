@@ -1,6 +1,8 @@
 package nextstep.subway.section;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.util.DatabaseCleanup;
 import nextstep.subway.util.ExecuteRestEntity;
@@ -11,11 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
 import static nextstep.subway.util.InitializationEntity.*;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -56,7 +60,8 @@ public class SectionAcceptanceTest {
         String location = "/lines/" + line_1.getId();
         // when
         executeRestEntity.insertSectionSuccess(
-                location, executeRestEntity.generateSectionRequest(upStation.getId(), station_3.getId(), 5));
+                location + "/sections",
+                executeRestEntity.generateSectionRequest(upStation.getId(), station_3.getId(), 5));
 
         // then
         checkCreateSuccessCondition(location, upStation.getName(), downStation.getName());
@@ -74,7 +79,7 @@ public class SectionAcceptanceTest {
         String location = "/lines/" + line_1.getId();
         // when
         executeRestEntity.insertSectionSuccess(
-                location, executeRestEntity.generateSectionRequest(station_3.getId(), downStation.getId(), 5));
+                location + "/sections", executeRestEntity.generateSectionRequest(station_3.getId(), downStation.getId(), 5));
 
         // then
         checkCreateSuccessCondition(location, upStation.getName(), downStation.getName());
@@ -92,7 +97,7 @@ public class SectionAcceptanceTest {
         String location = "/lines/" + line_1.getId();
         // when
         executeRestEntity.insertSectionSuccess(
-                location, executeRestEntity.generateSectionRequest(station_3.getId(), upStation.getId(), 5));
+                location + "/sections", executeRestEntity.generateSectionRequest(station_3.getId(), upStation.getId(), 5));
 
         // then
         checkCreateSuccessCondition(location, station_3.getName(), downStation.getName());
@@ -110,7 +115,7 @@ public class SectionAcceptanceTest {
         String location = "/lines/" + line_1.getId();
         // when
         executeRestEntity.insertSectionSuccess(
-                location, executeRestEntity.generateSectionRequest(downStation.getId(), station_3.getId(), 5));
+                location + "/sections", executeRestEntity.generateSectionRequest(downStation.getId(), station_3.getId(), 5));
         // then
         checkCreateSuccessCondition(location, upStation.getName(), station_3.getName());
     }
@@ -122,7 +127,13 @@ public class SectionAcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.")
     @Test
     void createFailSectionSameAndGatherDistance() {
-
+        String location = "/lines/" + line_1.getId() + "/sections";
+        // when
+        ExtractableResponse<Response> response = executeRestEntity
+                .insert(executeRestEntity.generateSectionRequest(upStation.getId(), station_3.getId(), 15), location)
+                .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -132,7 +143,13 @@ public class SectionAcceptanceTest {
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 등록할 수 없다.")
     @Test
     void createFailSectionSameStation() {
-
+        String location = "/lines/" + line_1.getId() + "/sections";
+        // when
+        ExtractableResponse<Response> response = executeRestEntity
+                .insert(executeRestEntity.generateSectionRequest(upStation.getId(), downStation.getId(), 15), location)
+                .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -142,7 +159,13 @@ public class SectionAcceptanceTest {
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 등록할 수 없다.")
     @Test
     void createFailSectionNoneStation() {
-
+        String location = "/lines/" + line_1.getId() + "/sections";
+        // when
+        ExtractableResponse<Response> response = executeRestEntity
+                .insert(executeRestEntity.generateSectionRequest(upStation.getId(), null, 15), location)
+                .extract();
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private void checkCreateSuccessCondition(String location, String upStationName, String downStationName) {

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -39,10 +38,8 @@ public class LineService {
         Long upStationId = lineRequest.getUpStationId();
         Long downStationId = lineRequest.getDownStationId();
 
-        Station upStation = getStation(upStationId)
-                .orElseThrow(() -> new EntityNotFoundException("Station", upStationId));;
-        Station downStation = getStation(downStationId)
-                .orElseThrow(() -> new EntityNotFoundException("Station", downStationId));;
+        Station upStation = getStation(upStationId);
+        Station downStation = getStation(downStationId);
 
         LineStations lineStations = new LineStations();
         lineStations.add(lineStationRepository.save(upStation.toLineUpStation()));
@@ -53,8 +50,7 @@ public class LineService {
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return LineResponse.of(getLine(id)
-                .orElseThrow(() -> new EntityNotFoundException("Line", id)));
+        return LineResponse.of(getLine(id));
     }
 
     @Transactional(readOnly = true)
@@ -67,23 +63,24 @@ public class LineService {
 
     @Transactional
     public LineResponse updateById(Long id, LineRequest lineRequest) {
-        Line line = getLine(id)
-                .orElseThrow(() -> new EntityNotFoundException("Line", id));
+        Line line = getLine(id);
         return LineResponse.of(line.updateInfo(lineRequest));
     }
 
     @Transactional
     public void deleteById(Long id) {
-        getLine(id).orElseThrow(() -> new EntityNotFoundException("Line", id));
+        getLine(id);
         lineRepository.deleteById(id);
     }
 
-    public Optional<Line> getLine(Long id) {
-        return lineRepository.findById(id);
+    public Line getLine(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Line", id));
     }
 
-    private Optional<Station> getStation(Long id) {
-        return stationRepository.findById(id);
+    private Station getStation(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Station", id));
     }
 
 }

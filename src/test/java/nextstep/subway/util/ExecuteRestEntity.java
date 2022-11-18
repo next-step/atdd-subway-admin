@@ -34,7 +34,7 @@ public class ExecuteRestEntity {
     }
 
     public ExtractableResponse<Response> insertSectionSuccess(String location, SectionRequest request) {
-        ExtractableResponse<Response> response = insert(request, location + "/sections").extract();
+        ExtractableResponse<Response> response = insert(request, location).extract();
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         return response;
     }

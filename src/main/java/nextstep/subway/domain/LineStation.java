@@ -31,14 +31,23 @@ public class LineStation {
         this.distance = distance;
     }
 
-    public void reverseStation() {
-        Station temp = this.preStation;
-        this.preStation = this.station;
-        this.station = temp;
+    public void resetStation(Station station) {
+        this.station = station;
     }
 
     public void resetPreStation(Station station) {
         this.preStation = station;
+    }
+
+    public boolean isGatherThanPrice(LineStation infixLineStation) {
+        if (this.distance == 0) {
+            return false;
+        }
+        return infixLineStation.distance >= this.distance;
+    }
+
+    public boolean isEqualsId(Long id) {
+        return station.getId().equals(id);
     }
 
     public Station getStation() {
