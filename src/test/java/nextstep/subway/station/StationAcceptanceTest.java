@@ -69,7 +69,7 @@ public class StationAcceptanceTest extends BaseTest {
         List<String> stationNames = getStations();
 
         // then
-        assertThat(stationNames.size()).isEqualTo(9);   // BaseTest에서 생성한 지하철역 포함
+        assertThat(stationNames.size()).isEqualTo(10);   // BaseTest에서 생성한 지하철역 포함
         assertThat(stationNames).contains("여의도역");
         assertThat(stationNames).contains("국회의사당역");
     }
