@@ -8,6 +8,7 @@ import java.util.NoSuchElementException;
 import nextstep.subway.common.exception.ErrorEnum;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,11 @@ public class StationRepositoryTest {
 
     @Autowired
     private StationRepository stationRepository;
+
+    @BeforeEach
+    public void setUp() {
+
+    }
 
     @Test
     void 지하철역_등록() {
