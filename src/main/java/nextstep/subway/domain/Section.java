@@ -14,7 +14,8 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Section extends BaseEntity {
 
-    public static final int END_SECTION_DISTANCE = 0;
+    private static final int END_SECTION_DISTANCE = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;

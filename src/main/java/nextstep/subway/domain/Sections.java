@@ -10,7 +10,8 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
-    public static final int MINIMUM_SECTIONS_SIZE = 3;
+    private static final int MINIMUM_SECTIONS_SIZE = 3;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
