@@ -21,7 +21,7 @@ public class Sections {
         addSection(section);
     }
 
-    private void validateStationExist(Section section) {
+    private void validateSectionExist(Section section) {
         boolean isExist = this.values.stream().noneMatch(v -> v.anyMatch(section));
         if (isExist) {
             throw new IllegalRequestBody(ErrorStatus.SECTION_STATION_ERROR.getMessage());
@@ -33,13 +33,13 @@ public class Sections {
             values.add(section);
             return;
         }
-        validateStationExist(section);
+        validateSectionExist(section);
         add(section);
 
     }
 
     private void add(Section section) {
-        if (isAddUpStaTionTerminus(section)) {
+        if (isAddUpStationTerminus(section)) {
             this.values.add(section);
             return;
         }
@@ -54,12 +54,12 @@ public class Sections {
         return this.values.stream().anyMatch(v -> v.getDownStation().equals(section.getUpStation()));
     }
 
-    private boolean isAddUpStaTionTerminus(Section section) {
+    private boolean isAddUpStationTerminus(Section section) {
         return this.values.stream().anyMatch(v -> v.getUpStation().equals(section.getDownStation()));
     }
 
     private void addMiddle(Section newSection) {
-        if (isAddMiddleFromUpstaion(newSection)) {
+        if (isAddMiddleFromUpStation(newSection)) {
             updateUpStation(newSection);
             values.add(newSection);
             return;
@@ -82,7 +82,7 @@ public class Sections {
                 .anyMatch(v -> v.getDownStation().equals(newSection.getDownStation()));
     }
 
-    private boolean isAddMiddleFromUpstaion(Section newSection) {
+    private boolean isAddMiddleFromUpStation(Section newSection) {
         return this.values.stream()
                 .anyMatch(v -> v.getUpStation().equals(newSection.getUpStation()));
     }
