@@ -37,7 +37,7 @@ public class Sections {
     private void validateNotMatchedStaton(Section newSection) {
         // 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
         boolean anyMatch = sections.stream()
-                .anyMatch(s -> s.isContainAnyStaion(newSection));
+                .anyMatch(s -> s.isContainAnyStation(newSection));
 
         if (!anyMatch) {
             throw new IllegalArgumentException(NOT_VALID_ANY_STATION);

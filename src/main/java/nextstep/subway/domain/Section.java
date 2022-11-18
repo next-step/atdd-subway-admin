@@ -81,7 +81,7 @@ public class Section extends BaseEntity {
         return isUpStation(section.upStation) && isDownStation(section.downStation);
     }
 
-    public boolean isContainAnyStaion(Section section) {
+    public boolean isContainAnyStation(Section section) {
         if (Objects.isNull(section)) {
             return false;
         }
