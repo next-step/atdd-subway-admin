@@ -66,7 +66,7 @@ public class Sections {
                 .findFirst()
                 .ifPresent(it -> {
                     it.updateUpStation(section.getDownStation());
-                    it.updateDistance(section.getDistance());
+                    it.minusDistance(section.getDistance());
                 });
     }
 
@@ -76,7 +76,7 @@ public class Sections {
                 .findFirst()
                 .ifPresent(it -> {
                     it.updateDownStation(section.getUpStation());
-                    it.updateDistance(section.getDistance());
+                    it.minusDistance(section.getDistance());
                 });
     }
 

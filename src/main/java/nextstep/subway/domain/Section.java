@@ -46,7 +46,7 @@ public class Section {
         this.downStation = newDownStation;
     }
 
-    public void updateDistance(int distance) {
+    public void minusDistance(int distance) {
         validateDistance(distance);
         this.distance -= distance;
     }
