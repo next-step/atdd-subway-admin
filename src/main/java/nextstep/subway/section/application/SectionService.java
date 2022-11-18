@@ -1,6 +1,6 @@
 package nextstep.subway.section.application;
 
-import nextstep.subway.common.exception.ErrorMessageConstant;
+import nextstep.subway.common.exception.ErrorEnum;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;
@@ -40,11 +40,11 @@ public class SectionService {
 
     public Line findLineById(Long lineId) {
         return lineRepository.findById(lineId)
-                .orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_LINE));
+                .orElseThrow(() -> new RuntimeException(ErrorEnum.NOT_EXISTS_LINE.message()));
     }
 
     private Station findStation(Long sectionRequest) {
         return stationRepository.findById(sectionRequest)
-                .orElseThrow(() -> new RuntimeException(ErrorMessageConstant.NOT_EXISTS_STATION));
+                .orElseThrow(() -> new RuntimeException(ErrorEnum.NOT_EXISTS_STATION.message()));
     }
 }

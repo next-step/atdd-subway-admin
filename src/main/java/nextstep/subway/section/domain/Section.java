@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.common.exception.ErrorMessageConstant;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.line.domain.Line;
 

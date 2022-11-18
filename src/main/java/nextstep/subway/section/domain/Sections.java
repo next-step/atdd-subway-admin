@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import nextstep.subway.common.exception.ErrorMessageConstant;
+import nextstep.subway.common.exception.ErrorEnum;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -53,13 +53,13 @@ public class Sections {
 
     private void validateHasStations(Section newSection) {
         if (new HashSet<>(getStations()).containsAll(newSection.findStations())) {
-            throw new IllegalArgumentException(ErrorMessageConstant.EXISTS_STATION);
+            throw new IllegalArgumentException(ErrorEnum.EXISTS_STATION.message());
         }
     }
 
     private void validateHasNotBothStations(Section newSection) {
         if (hasNotBothStations(newSection)) {
-            throw new IllegalArgumentException(ErrorMessageConstant.EXISTS_UP_STATION_AND_DOWN_STATION);
+            throw new IllegalArgumentException(ErrorEnum.EXISTS_UP_STATION_AND_DOWN_STATION.message());
         }
     }
 
@@ -83,7 +83,7 @@ public class Sections {
 
     private void deleteValidate() {
         if (sections.size() == ONE_SECTION_SIZE) {
-            throw new IllegalArgumentException(ErrorMessageConstant.LAST_STATION_NOT_DELETE);
+            throw new IllegalArgumentException(ErrorEnum.LAST_STATION_NOT_DELETE.message());
         }
     }
 

@@ -2,7 +2,7 @@ package nextstep.subway.section.domain;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import nextstep.subway.common.exception.ErrorMessageConstant;
+import nextstep.subway.common.exception.ErrorEnum;
 
 @Embeddable
 public class Distance {
@@ -21,13 +21,13 @@ public class Distance {
 
     private void validate(int distance) {
        if(distance <= ZERO) {
-            throw new IllegalArgumentException(ErrorMessageConstant.VALID_LINE_LENGTH_GREATER_THAN_ZERO);
+            throw new IllegalArgumentException(ErrorEnum.VALID_LINE_LENGTH_GREATER_THAN_ZERO.message());
         }
     }
 
     public void validNewDistance(int newDistance) {
         if(distance <= newDistance){
-            throw new IllegalArgumentException(ErrorMessageConstant.VALID_GREATER_OR_EQUAL_LENGTH_BETWEEN_STATION);
+            throw new IllegalArgumentException(ErrorEnum.VALID_GREATER_OR_EQUAL_LENGTH_BETWEEN_STATION.message());
         }
     }
 
