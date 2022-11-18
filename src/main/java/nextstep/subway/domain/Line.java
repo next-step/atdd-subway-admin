@@ -44,7 +44,7 @@ public class Line extends BaseEntity {
     }
 
     public static Line of(String name, String color, int distance, Station upStation, Station downStation) {
-        return new Line(null, name, color,distance, upStation,downStation );
+        return new Line(null, name, color, distance, upStation, downStation );
     }
 
     public Long getId() {
