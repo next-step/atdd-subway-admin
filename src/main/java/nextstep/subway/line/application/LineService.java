@@ -10,6 +10,7 @@ import nextstep.subway.station.domain.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,8 +28,8 @@ public class LineService {
     @Transactional
     public LineResponse saveStation(LineRequest lineRequest) {
         Line line = lineRequest.toLine();
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow();
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow();
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new);
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new);
         line.addSection(upStation, downStation, lineRequest.getDistance());
         Line saveLine = lineRepository.save(line);
         return LineResponse.of(saveLine);
@@ -42,12 +43,12 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        return LineResponse.of(lineRepository.findById(id).orElseThrow());
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(id).orElseThrow();
+        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         line.update(lineUpdateRequest.toName(), lineUpdateRequest.toColor());
     }
 
