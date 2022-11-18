@@ -10,8 +10,8 @@ import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.acceptance.line.LineSteps.*;
 import static nextstep.subway.acceptance.station.StationSteps.*;
-import static nextstep.subway.line.DistanceTest.논현역_신논현역_거리;
 import static nextstep.subway.line.LineTest.*;
+import static nextstep.subway.line.SectionTest.논현역_신논현역_거리;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
