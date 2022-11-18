@@ -6,28 +6,22 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.DefaultAcceptanceTest;
+import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
+public class StationAcceptanceTest extends DefaultAcceptanceTest {
 
     private final String STATION_URI = "/stations";
-    @LocalServerPort
-    int port;
 
-    public ExtractableResponse<Response> 지하철역_생성_요청(Map<String, String> params) {
+    public ExtractableResponse<Response> 지하철역_생성_요청(StationRequest stationRequest) {
         return RestAssured.given().log().all()
-            .body(params)
+            .body(stationRequest)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when()
             .post(STATION_URI)
@@ -52,13 +46,6 @@ public class StationAcceptanceTest {
 
     }
 
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
-
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -68,8 +55,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> 강남역_생성_요청_값 = new HashMap<>();
-        강남역_생성_요청_값.put("name", "강남역");
+        StationRequest 강남역_생성_요청_값 = new StationRequest("강남역");
 
         ExtractableResponse<Response> response = 지하철역_생성_요청(강남역_생성_요청_값);
 
@@ -90,8 +76,7 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> 강남역_생성_요청_값 = new HashMap<>();
-        강남역_생성_요청_값.put("name", "강남역");
+        StationRequest 강남역_생성_요청_값 = new StationRequest("강남역");
 
         지하철역_생성_요청(강남역_생성_요청_값);
 
@@ -111,14 +96,10 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         //given
-        Map<String, String> 강남역_생성_요청_값 = new HashMap<>();
-        강남역_생성_요청_값.put("name", "강남역");
-
+        StationRequest 강남역_생성_요청_값 = new StationRequest("강남역");
         지하철역_생성_요청(강남역_생성_요청_값);
 
-        Map<String, String> 판교역_생성_요청_값 = new HashMap<>();
-        판교역_생성_요청_값.put("name", "판교역");
-
+        StationRequest 판교역_생성_요청_값 = new StationRequest("판교역");
         지하철역_생성_요청(판교역_생성_요청_값);
 
         //when, then
@@ -136,9 +117,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> 강남역_생성_요청_값 = new HashMap<>();
-        강남역_생성_요청_값.put("name", "강남역");
-
+        StationRequest 강남역_생성_요청_값 = new StationRequest("강남역");
         ExtractableResponse<Response> createResponse = 지하철역_생성_요청(강남역_생성_요청_값);
 
         // when
