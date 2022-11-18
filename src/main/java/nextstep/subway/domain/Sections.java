@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,7 +33,7 @@ public class Sections {
         return new Sections(sections);
     }
 
-    public Set<Station> assignedStations() {
+    public Set<Station> assignedOrderedStation() {
         Set<Station> sortedStations = new LinkedHashSet<>();
         Optional<Section> section = findFirstSection();
         while (section.isPresent()) {
@@ -40,6 +41,14 @@ public class Sections {
             section = findNextSection(section.get());
         }
         return sortedStations;
+    }
+
+    private List<Station> assignedStations() {
+        return this.sections.stream()
+                .map(Section::stations)
+                .flatMap(Collection::stream)
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private Optional<Section> findFirstSection() {
@@ -76,7 +85,7 @@ public class Sections {
     }
 
     private boolean notInclude(Section newSection) {
-        Set<Station> assignedStations = this.assignedStations();
+        List<Station> assignedStations = this.assignedStations();
         return newSection.stations().stream()
                 .noneMatch(assignedStations::contains);
     }
@@ -100,7 +109,8 @@ public class Sections {
     }
 
     private void validateNotIncludeStation(Station station) {
-        if (!assignedStations().contains(station)) {
+        boolean isNotInclude = this.assignedStations().stream().noneMatch(station::equals);
+        if (isNotInclude) {
             throw new IllegalArgumentException(CAN_NOT_DELETE_NOT_INCLUDED_STATION);
         }
     }

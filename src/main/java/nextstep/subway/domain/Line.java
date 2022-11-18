@@ -57,7 +57,7 @@ public class Line {
     }
 
     public Set<Station> findAssignedStations() {
-        return sections.assignedStations();
+        return sections.assignedOrderedStation();
     }
 
     public void addSection(Section section) {
