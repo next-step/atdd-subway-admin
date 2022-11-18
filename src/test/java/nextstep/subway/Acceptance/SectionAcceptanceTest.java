@@ -191,7 +191,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         //when
         ExtractableResponse<Response> response = 지하철_역_제거_요청(신분당선.getId(), 강남역.getId());
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId()))
                 .containsExactly((int)(long)정자역.getId(), (int)(long)광교역.getId());
     }
@@ -212,7 +212,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         //when
         ExtractableResponse<Response> response = 지하철_역_제거_요청(신분당선.getId(), 정자역.getId());
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId()))
                 .containsExactly((int)(long)신사역.getId(), (int)(long)강남역.getId());
     }
@@ -232,7 +232,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         //when
         ExtractableResponse<Response> response = 지하철_역_제거_요청(신분당선.getId(), 정자역.getId());
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId()))
                 .containsExactly((int)(long)강남역.getId(), (int)(long)광교역.getId());
     }
