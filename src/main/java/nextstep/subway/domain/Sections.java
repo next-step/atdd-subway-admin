@@ -113,16 +113,19 @@ public class Sections {
         Section downSection = findDownStationSection(station).orElse(null);
 
         if (upSection == null) {
-            sections.remove(downSection);
+            deleteSection(downSection);
             return;
         }
         if (downSection == null) {
-            sections.remove(upSection);
+            deleteSection(upSection);
             return;
         }
-        upSection.disConnectedUpSection(downSection);
-        sections.remove(downSection);
+        upSection.disconnectDownSection(downSection);
+        deleteSection(downSection);
+    }
 
+    private void deleteSection(Section upSection) {
+        sections.remove(upSection);
     }
 
     private void validDeleteStation(Station station) {
@@ -140,6 +143,7 @@ public class Sections {
                 .filter(section -> section.hasDownStation(station))
                 .findFirst();
     }
+
     private Optional<Section> findDownStationSection(Station station) {
         return sections.stream()
                 .filter(section -> section.hasUpStation(station))

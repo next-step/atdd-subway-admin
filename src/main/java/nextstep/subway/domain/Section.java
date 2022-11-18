@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.stream.Stream;
 
-import static nextstep.subway.exception.ErrorMessage.DISTANCE_CANNOT_BE_ZERO;
 import static nextstep.subway.exception.ErrorMessage.SAME_SUBWAY_SECTION_ERROR;
 
 @Entity
@@ -71,7 +70,7 @@ public class Section {
         return downStation.equals(station);
     }
 
-    public void disConnectedUpSection(Section downSection) {
+    public void disconnectDownSection(Section downSection) {
         this.downStation = downSection.downStation;
         this.distance.plus(downSection.distance);
     }
