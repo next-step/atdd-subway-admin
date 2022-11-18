@@ -26,17 +26,17 @@ public class LineAcceptanceTest extends AcceptanceTest {
     protected static final String LINE_MAIN_PATH = "/lines";
     private static final String LINE_NAME = "name";
     private static final String COLOR = "color";
-    protected static final String DISTANCE = "distance";
-    protected static final String UP_STATION = "upStationId";
-    protected static final String DOWN_STATION = "downStationId";
+    public static final String DISTANCE = "distance";
+    public static final String UP_STATION = "upStationId";
+    public static final String DOWN_STATION = "downStationId";
     private static final String LINE_ID = "id";
 
     @Autowired
     private StationRepository stationRepository;
-    protected Station upStation;
-    protected Station downStation;
-    protected Station otherUpStation;
-    protected Station otherDownStation;
+    private Station upStation;
+    private Station downStation;
+    private Station otherUpStation;
+    private Station otherDownStation;
 
     @BeforeEach
     void init() {
@@ -212,7 +212,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> findById(Long id) {
+    public static ExtractableResponse<Response> findById(Long id) {
         return RestAssured.given().log().all()
                 .when().get(LINE_MAIN_PATH + "/" + id)
                 .then().log().all()
