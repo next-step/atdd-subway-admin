@@ -41,14 +41,14 @@ public class SectionService {
         Long downStationId = sectionRequest.getDownStationId();
 
         Station upStation = getStation(upStationId)
-                .orElseThrow(() -> new EntityNotFoundException("Station", upStationId));;
+                .orElseThrow(() -> new EntityNotFoundException("Station", upStationId));
         Station downStation = getStation(downStationId)
-                .orElseThrow(() -> new EntityNotFoundException("Station", downStationId));;
+                .orElseThrow(() -> new EntityNotFoundException("Station", downStationId));
 
-        LineStation lineStation = lineStationRepository.save(
-                new LineStation(upStation, downStation, sectionRequest.getDistance()));
+        LineStation lineStation = lineStationRepository
+                .save(new LineStation(upStation, downStation, sectionRequest.getDistance()));
 
-        lineStations.addSection(lineStation);
+        lineStations.infixSection(lineStation);
 
         return LineResponse.of(line);
     }

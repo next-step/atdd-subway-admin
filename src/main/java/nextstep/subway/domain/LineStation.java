@@ -31,6 +31,12 @@ public class LineStation {
         this.distance = distance;
     }
 
+    public void reverseStation() {
+        Station temp = this.preStation;
+        this.preStation = this.station;
+        this.station = temp;
+    }
+
     public void resetPreStation(Station station) {
         this.preStation = station;
     }

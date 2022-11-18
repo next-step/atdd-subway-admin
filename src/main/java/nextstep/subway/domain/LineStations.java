@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.EntityNotFoundException;
-
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -20,37 +18,73 @@ public class LineStations {
         this.lineStations.add(lineStation);
     }
 
-    public void addSection(LineStation newLineStation) {
-        LineStation station = getLineStationByStandardStation(newLineStation);
-        station.resetPreStation(newLineStation.getStation());
-        add(newLineStation);
+    public void infixSection(LineStation infixLineStation) {
+        Long preStationId = infixLineStation.getPreStation().getId();
+        Long stationId = infixLineStation.getStation().getId();
+
+        lineStations.stream().forEach(lineStation -> {
+            Long id = lineStation.getStation().getId();
+            checkValidLineStation(preStationId, stationId, id);
+            if (preStationId.equals(id)) {
+                getTargetLineStation(preStationId, infixLineStation.getPreStation())
+                        .resetPreStation(infixLineStation.getStation());
+                return;
+            }
+            if (stationId.equals(id)) {
+                resetLineStationByDownStandard(lineStation, infixLineStation);
+                return;
+            }
+        });
+        add(infixLineStation);
     }
 
-    private LineStation getLineStationByStandardStation(LineStation newLineStation) {
-        if (isStandardDownStation(newLineStation)) {
-            return lineStations.stream()
-                    .filter(lineStation -> lineStation.getStation().equals(newLineStation.getStation()))
-                    .findFirst().get();
+    private void checkValidLineStation(Long preStationId, Long stationId, Long id) {
+        if (preStationId.equals(id) && stationId.equals(id)) {
+            throw new RuntimeException();
         }
-        return lineStations.stream()
-                .filter(lineStation -> lineStation.getStation().equals(newLineStation.getPreStation()))
-                .findFirst().get();
     }
 
-    private boolean isStandardDownStation(LineStation newLineStation) {
+    private void resetLineStationByDownStandard(LineStation lineStation, LineStation infixLineStation) {
+        Station temp = lineStation.getPreStation();
+        lineStation.resetPreStation(infixLineStation.getPreStation());
+        infixLineStation.reverseStation();
+        infixLineStation.resetPreStation(temp);
+    }
+
+    private LineStation getTargetLineStation(Long id, Station station) {
         return lineStations.stream()
-                .anyMatch(lineStation -> lineStation.getStation().getId().equals(newLineStation.getStation().getId()));
+                .filter(lineStation -> lineStation.getPreStation() != null)
+                .filter(lineStation -> lineStation.getPreStation().getId().equals(id))
+                .findFirst().orElse(new LineStation(station));
     }
 
     public List<LineStation> getList() {
         return lineStations;
     }
 
-    public LineStation findUpLineStation() {
-        return lineStations.stream()
-                .filter(lineStation -> lineStation.getPreStation() == null)
-                .findFirst()
-                .orElseThrow(() -> new EntityNotFoundException("LineStation", null));
+    public List<LineStation> getSortList() {
+        List<LineStation> sortList = new ArrayList<>();
+
+        LineStation upStation = getPreLineStation();
+        sortList.add(upStation);
+
+        for (int i = 1; i < lineStations.size(); i++) {
+            for (LineStation lineStation : lineStations) {
+                if (lineStation.getPreStation() == null) {
+                    continue;
+                }
+                if (upStation.getStation().getId().equals(lineStation.getPreStation().getId())) {
+                    upStation = lineStation;
+                    sortList.add(lineStation);
+                }
+            }
+        }
+
+        return sortList;
+    }
+
+    private LineStation getPreLineStation() {
+        return lineStations.stream().filter(lineStations -> lineStations.getPreStation() == null).findFirst().get();
     }
 
 }
