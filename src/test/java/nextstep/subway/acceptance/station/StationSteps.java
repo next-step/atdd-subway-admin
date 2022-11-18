@@ -3,6 +3,7 @@ package nextstep.subway.acceptance.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class StationSteps {
 
@@ -43,8 +45,11 @@ public class StationSteps {
                 .extract();
     }
 
-    public static void 역_삭제_검증(String stationName) {
+    public static void 역_삭제_검증(ExtractableResponse<Response> response, String stationName) {
         List<String> stationNames = 지하철역_목록_조회().jsonPath().getList("name");
-        assertThat(stationNames).doesNotContain(stationName);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(stationNames).doesNotContain(stationName)
+        );
     }
 }

@@ -89,8 +89,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
         // Given
         ExtractableResponse<Response> createResponse = 지하철역_생성(GANGNAM_STATION);
         // When
-        지하철역_삭제(createResponse.jsonPath().getLong("id"));
+        ExtractableResponse<Response> deleteResponse = 지하철역_삭제(createResponse.jsonPath().getLong("id"));
         // Then
-        역_삭제_검증(GANGNAM_STATION);
+        역_삭제_검증(deleteResponse, GANGNAM_STATION);
     }
 }
