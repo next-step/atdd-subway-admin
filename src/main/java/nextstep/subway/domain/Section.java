@@ -95,4 +95,10 @@ public class Section {
     public boolean hasDownStation(Station station) {
         return downStation.equals(station);
     }
+
+    public void disConnectedUpSection(Section downSection) {
+        this.downStation = downSection.downStation;
+        // TODO: 거리 관련 처리 필요
+        this.distance = distance + downSection.distance;
+    }
 }
