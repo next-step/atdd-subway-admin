@@ -10,7 +10,9 @@ public enum SectionExceptionCode {
     CANNOT_UPDATE_SAME_SECTION("The same section cannot be updated."),
     INVALID_DISTANCE("The distance cannot be greater than the specified distance."),
     ALREADY_EXISTS_SECTION("The section already exists."),
-    CANNOT_CONNECT_SECTION("The requested section is an connect section.");
+    CANNOT_CONNECT_SECTION("The requested section is an connect section."),
+    CANNOT_DELETE_SECTION("The section containing the requested station cannot be deleted."),
+    CANNOT_DELETE_LAST_ONE_SECTION("The last one section cannot be deleted.");;
 
     private String title = "[ERROR] ";
     private String message;
