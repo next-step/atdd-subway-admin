@@ -15,7 +15,7 @@ public final class CollectionUtils {
         return list.get(list.size() - ONE);
     }
 
-    public static <T> boolean isSingletonList(List<T> list)  {
+    public static <T> boolean hasOneSize(List<T> list)  {
         return list.size() == ONE;
     }
 }

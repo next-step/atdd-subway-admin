@@ -159,7 +159,7 @@ public class Sections {
     }
 
     private void verifyRemoveSection(Station station) {
-        if (CollectionUtils.isSingletonList(sectionList)) {
+        if (CollectionUtils.hasOneSize(sectionList)) {
             throw new CannotRemoveSectionException(ONE_SECTION_REMAINS);
         }
         if (!hasStation(station)) {
