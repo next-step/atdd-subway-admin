@@ -28,7 +28,7 @@ public class LineSaveRequest {
 
 
     public Line toLine() {
-        return new Line(name, color, distance);
+        return new Line(name, color);
     }
 
     public Long getUpStationId() {

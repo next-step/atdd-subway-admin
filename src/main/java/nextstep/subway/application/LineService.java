@@ -29,7 +29,7 @@ public class LineService {
         Station upStation = stationService.findStation(lineSaveRequest.getUpStationId());
         Station downStation = stationService.findStation(lineSaveRequest.getDownStationId());
         Line line = lineSaveRequest.toLine();
-        line.addStations(upStation, downStation);
+        line.addStations(upStation, downStation, lineSaveRequest.getDistance());
         return LineResponse.of(lineRepository.save(line));
     }
 
