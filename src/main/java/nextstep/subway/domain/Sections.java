@@ -106,4 +106,23 @@ public class Sections {
         return sections.stream()
                 .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
     }
+
+    public void deleteSection(Station station) {
+        validDeleteStation(station);
+
+        // TODO: 중간 구역을 삭제하는 경우 기존 상행 하행 연결 필요
+        // TODO: 종점에 있는 경우는 그냥 삭제
+
+    }
+
+    private void validDeleteStation(Station station) {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException(ONE_SECTION_NOT_DELETE.getMessage());
+        }
+
+        if (!distinctStations().contains(station)) {
+            throw new IllegalArgumentException(STATION_NOT_CONTAINS_NOT_DELETE.getMessage());
+        }
+    }
+
 }

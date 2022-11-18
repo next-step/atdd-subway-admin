@@ -11,6 +11,8 @@ public enum ErrorMessage {
     UP_STATION_AND_DOWN_STATION_ENROLLMENT("상행역과 하행역이 모두 등록되어 있습니다."),
     UP_STATION_AND_DOWN_STATION_NOT_FOUND("상행역과 하행역이 모두 등록되어 있지 않습니다."),
     UP_STATION_NOT_FOUND("해당 노선의 상행역을 찾지 못했습니다."),
+    ONE_SECTION_NOT_DELETE("지하철 구간이 1개인 경우 삭제할 수 없습니다."),
+    STATION_NOT_CONTAINS_NOT_DELETE("삭제하려는 지하철 역이 올바르지 않습니다."),
     ;
     private final String message;
 

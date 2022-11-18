@@ -20,6 +20,7 @@ public class Section {
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
+    // TODO: Value Object 랩핑해보기
     private int distance;
 
     @ManyToOne(fetch = FetchType.LAZY)

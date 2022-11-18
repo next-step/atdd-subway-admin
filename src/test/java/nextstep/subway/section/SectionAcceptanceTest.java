@@ -1,7 +1,9 @@
 package nextstep.subway.section;
 
+import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import io.restassured.specification.ResponseSpecification;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.SectionRequest;
 import org.junit.jupiter.api.Assertions;
@@ -10,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static nextstep.subway.AcceptanceFixture.*;
 import static nextstep.subway.line.LineAcceptanceFixture.지하철_노선_생성_요청;
@@ -17,6 +20,7 @@ import static nextstep.subway.line.LineAcceptanceFixture.지하철_노선_조회
 import static nextstep.subway.section.SectionAcceptanceFixture.지하철_구간_생성_요청;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 @DisplayName("지하철 구간 등록 인수 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -205,5 +209,27 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         요청_실패(지하철_구간_생성_요청);
+    }
+
+    @DisplayName("3개의 구간이 있는 노선에서 중앙 구간을 제거")
+    @Test
+    void remove_the_middle_of_the_line() {
+
+        // given
+        ExtractableResponse<Response> 사당역 = 지하철역_생성_요청("사당역");
+        SectionRequest 신림_사당_구간_요청 = new SectionRequest(식별_아이디_조회(신림역), 식별_아이디_조회(사당역), 5);
+        지하철_구간_생성_요청(식별_아이디_조회(신림_강남_노선), 신림_사당_구간_요청);
+        ExtractableResponse<Response> 신림_사당_강남_노선_응답 = 지하철_노선_조회_요청(식별_아이디_조회(신림_강남_노선));
+
+        String uri = "/lines/" + 식별_아이디_조회(신림_사당_강남_노선_응답) + "/sections";
+        // when
+        ExtractableResponse<Response> 사당역_제거_응답 = RestAssured.given().log().all()
+                .param("stationId", 식별_아이디_조회(사당역))
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+
+        fail("인수 테스트 작성중");
     }
 }
