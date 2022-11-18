@@ -77,6 +77,11 @@ public class Line extends BaseEntity {
         sections.addSection(newSection);
     }
 
+    public void removeSection(Station station) {
+        this.sections.removeSection(station);
+
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -100,4 +105,6 @@ public class Line extends BaseEntity {
                 ", sections=" + sections +
                 '}';
     }
+
+
 }

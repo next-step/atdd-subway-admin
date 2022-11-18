@@ -10,7 +10,7 @@ import java.util.Objects;
 import static nextstep.subway.constant.Message.STATION_IS_NOT_NULL;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section extends BaseEntity implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -98,7 +98,7 @@ public class Section extends BaseEntity {
     }
 
     public void changeUpStation(Section newSection) {
-        validateStationIsNotNull(newSection.getUpStation());
+        validateStationIsNotNull(newSection.upStation);
         this.upStation = newSection.downStation;
         this.distance = subtractDistance(newSection.getDistance());
     }
@@ -107,6 +107,16 @@ public class Section extends BaseEntity {
         Station firstStation = sections.get(0).upStation;
         Station lastStation = sections.get(sections.size() - 1).downStation;
         return firstStation.equals(upStation) || lastStation.equals(downStation);
+    }
+
+    public void changeDownStation(Section section) {
+        validateStationIsNotNull(section.downStation);
+        this.downStation = section.downStation;
+        this.distance = plusDistance(section.getDistance());
+    }
+
+    private Distance plusDistance(int distance) {
+        return this.distance.plusDistance(distance);
     }
 
     public void updateLine(Line line) {
@@ -153,4 +163,13 @@ public class Section extends BaseEntity {
         Section section = (Section) o;
         return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line);
     }
+
+    @Override
+    public int compareTo(Section s) {
+        if (this.downStation.getId().equals(s.getUpStation().getId())) return -1;
+        else if (this.upStation.getId().equals(s.getDownStation().getId())) return 1;
+        return 0;
+    }
+
+
 }

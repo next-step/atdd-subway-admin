@@ -33,4 +33,8 @@ public class Distance {
     public Distance subtract(int distance) {
         return new Distance(this.distance - distance);
     }
+
+    public Distance plusDistance(int distance) {
+        return new Distance(this.distance + distance);
+    }
 }

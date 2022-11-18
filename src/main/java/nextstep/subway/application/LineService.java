@@ -79,10 +79,20 @@ public class LineService {
         return LineResponse.from(line);
     }
 
+    @Transactional
+    public void removeSection(Long lineId, Long stationId) {
+        Line line = findById(lineId);
+        line.removeSection(findStationById(stationId));
+
+
+    }
+
     private Section toSection(SectionRequest sectionRequest) {
         Station upStation = findStationById(sectionRequest.getUpStationId());
         Station downStation = findStationById(sectionRequest.getDownStationId());
 
         return Section.of(upStation, downStation, sectionRequest.getDistance());
     }
+
+
 }

@@ -31,6 +31,79 @@ public class Sections {
         sections.add(newSection);
     }
 
+    public void removeSection(Station station) {
+        validateContainStation(station);
+        validateOnlyOneSection();
+
+        deleteSection(station);
+    }
+
+    private void deleteSection(Station station) {
+        // 순서대로 정렬
+        List<Section> sortedSections = sections.stream()
+                .sorted(Section::compareTo)
+                .collect(Collectors.toList());
+
+        // 종점 구간 찾기
+        Section firstSection = sortedSections.get(0);
+        Section lastSection = sortedSections.get(sortedSections.size() - 1);
+
+
+        // 역으로 타켓 구간 찾기
+        Section targetSection = sections.stream()
+                .filter(s -> s.getDownStation().equals(station))
+                .findFirst().get();
+
+
+
+        if (isLastStation(firstSection, lastSection, station)) {
+            // 종점 구간 삭제
+            deleteSection(targetSection);
+        }
+
+        if (!isLastStation(firstSection, lastSection, station)) {
+            // 중간 구간 삭제
+            sections.stream()
+                    .filter(s -> s.getDownStation().equals(station))
+                    .findAny()
+                    .ifPresent(s -> changeSectionsAndRemove(station, s));
+        }
+    }
+
+    private void changeSectionsAndRemove(Station station, Section section) {
+        Section upSection = sections.stream()
+                .filter(u -> u.getUpStation().equals(station))
+                .findFirst().get();
+        section.changeDownStation(upSection);
+
+        //
+        sections.remove(upSection);
+    }
+
+    private void deleteSection(Section section) {
+        sections.remove(section);
+    }
+
+    private boolean isLastStation(Section firstSection, Section lastSection, Station targetStation) {
+        return firstSection.getDownStation().equals(targetStation) || lastSection.getDownStation().equals(targetStation);
+    }
+
+    private void validateContainStation(Station targetStation) {
+        Optional<Section> invalidSections = sections.stream()
+                .filter(s -> s.getDownStation().equals(targetStation))
+                .findAny();
+
+        if (invalidSections.isPresent()) {
+            throw new IllegalArgumentException(NOT_CONTAIN_STATION_IN_LINE);
+        }
+    }
+
+    private void validateOnlyOneSection() {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException(NOT_VALID_REMOVE_ONLY_ONE_SECTION);
+        }
+    }
+
 
     private void validateNotMatchedStaton(Section newSection) {
         // 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
@@ -44,7 +117,7 @@ public class Sections {
 
     private void validateDistance(Section newSection) {
         // 두번째 추가이거나 종점 추가일 경우 길이 체크x
-        if(sections.size() == 1 || newSection.isLastStation(sections)) {
+        if (sections.size() == 1 || newSection.isLastStation(sections)) {
             return;
         }
 
@@ -87,4 +160,6 @@ public class Sections {
         // 중복제거
         return allStations.stream().distinct().collect(Collectors.toList());
     }
+
+
 }
