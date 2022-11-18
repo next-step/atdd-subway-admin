@@ -21,7 +21,6 @@ public class SectionFixture {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/" + lineId + "/sections")
             .then().log().all()
-            .statusCode(HttpStatus.NO_CONTENT.value())
             .extract();
     }
 
