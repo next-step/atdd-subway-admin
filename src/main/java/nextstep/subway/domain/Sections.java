@@ -56,6 +56,15 @@ public class Sections {
 
     }
 
+    public void deleteSection(Station station) {
+        Optional<Section> matchDownSection = findMatchSectionByDownStation(station);
+        Optional<Section> matchUpSection = findMatchSectionByUpStation(station);
+
+        if (!matchDownSection.isPresent() && !matchUpSection.isPresent()) {
+            throw new IllegalArgumentException("등록되지 않은 역입니다.");
+        }
+    }
+
     private void insertSectionIntoBackSide(Station downStation, Integer distance, Line line, Optional<Section> matchUpSection) {
         if (matchUpSection.isPresent()) {
             Section section = matchUpSection.get();

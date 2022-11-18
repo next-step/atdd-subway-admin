@@ -30,7 +30,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     @BeforeEach
     public void setUpData() {
         강남역 = 지하철역_신규_생성_요청("강남역").as(StationResponse.class);
-        정자역 = 지하철역_신규_생성_요청("광교역").as(StationResponse.class);
+        정자역 = 지하철역_신규_생성_요청("정자역").as(StationResponse.class);
         신분당선 = 지하철_노선_신규_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 정자역.getId()).as(LineResponse.class);
     }
 

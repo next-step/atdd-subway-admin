@@ -77,6 +77,9 @@ public class Line extends BaseEntity {
         sections.addSection(section, this);
     }
 
+    public void deleteSection(Station station) {
+        sections.deleteSection(station);
+    }
 
     private static void validColor(String color) {
         if (StringUtils.isBlank(color)) {

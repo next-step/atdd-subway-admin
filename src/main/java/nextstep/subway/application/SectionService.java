@@ -33,6 +33,12 @@ public class SectionService {
                 sectionRequest.getDistance());
     }
 
+    @Transactional
+    public void deleteSection(Long id, Long stationId) {
+        Line line = findLineById(id);
+        line.deleteSection(findStationById(stationId));
+    }
+
     private Line findLineById(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(NoResultException::new);
     }

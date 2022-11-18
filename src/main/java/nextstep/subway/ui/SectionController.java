@@ -34,7 +34,7 @@ public class SectionController {
     @DeleteMapping("/lines/{id}/sections")
     public ResponseEntity deleteStation(@PathVariable Long id, @RequestParam Long stationId) {
         try {
-
+            sectionService.deleteSection(id, stationId);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().build();
         }
