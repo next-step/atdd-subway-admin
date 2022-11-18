@@ -3,8 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Embeddable
 public class Sections {
@@ -17,11 +16,11 @@ public class Sections {
     }
 
     public List<Station> allStation() {
-        List<Station> stations = new ArrayList<>();
+        LinkedHashSet<Station> stations = new LinkedHashSet<>();
         this.values.forEach(v -> {
             stations.add(v.getUpStation());
             stations.add(v.getDownStation());
         });
-        return stations;
+        return Collections.unmodifiableList(new ArrayList<>(stations));
     }
 }
