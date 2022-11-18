@@ -31,6 +31,7 @@ public class BaseTest {
     protected static Station 강남역;
     protected static Station 광교역;
     protected static Station 판교역;
+    protected static Station 정자역;
     protected static Line 신분당선;
 
     @BeforeEach
@@ -49,6 +50,7 @@ public class BaseTest {
         강남역 = stationRepository.save(new Station("강남역"));
         광교역 = stationRepository.save(new Station("광교역"));
         판교역 = stationRepository.save(new Station("판교역"));
+        정자역 = stationRepository.save(new Station("정자역"));
     }
 
     private void 노선_생성() {

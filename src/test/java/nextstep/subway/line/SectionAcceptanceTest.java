@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -79,6 +80,25 @@ public class SectionAcceptanceTest extends BaseTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    /**
+     * Given 정자역 - 광교역, 강남역 - 판교역 구간 등록
+     * When 지하철 노선 조회
+     * Then 노선에 속한 지하철 역이 상행 ~ 하행으로 정렬
+     */
+    @Test
+    void 노선_조회시_구간_정렬_확인() {
+        createLineStation(신분당선.getId(), 정자역.getId(), 광교역.getId(), 2);
+        createLineStation(신분당선.getId(), 강남역.getId(), 판교역.getId(), 2);
+
+        ExtractableResponse<Response> response = getLine(신분당선.getId());
+        assertAll(
+            () -> assertThat(response.jsonPath().getString("stations[0].name")).isEqualTo("강남역"),
+            () -> assertThat(response.jsonPath().getString("stations[1].name")).isEqualTo("판교역"),
+            () -> assertThat(response.jsonPath().getString("stations[2].name")).isEqualTo("정자역"),
+            () -> assertThat(response.jsonPath().getString("stations[3].name")).isEqualTo("광교역")
+        );
+    }
+
     private static ExtractableResponse<Response> createLineStation(Long lineId, Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
@@ -89,6 +109,13 @@ public class SectionAcceptanceTest extends BaseTest {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/"+ lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> getLine(Long lineId) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/" + lineId)
                 .then().log().all()
                 .extract();
     }
