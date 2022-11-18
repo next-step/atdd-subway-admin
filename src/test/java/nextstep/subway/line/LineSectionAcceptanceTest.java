@@ -105,6 +105,20 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     }
 
+    @DisplayName("이미 존재하는 구간 사이에 새로운 구간을 등록 할 수 있다.")
+    @Test
+    void addSectionMiddle() {
+        //when
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), 8L);
+
+        //then
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> findResponse = findById(line.getId());
+        List<StationResponse> stations = convertStationsName(findResponse.jsonPath());
+        assertThat(stations).hasSize(3);
+
+    }
+
 
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> params = new HashMap<>();
