@@ -134,7 +134,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
             .then().log().all();
     }
 
-    private static ValidatableResponse requestApiByGetLine(long id) {
+    public static ValidatableResponse requestApiByGetLine(long id) {
         return RestAssured.given().log().all()
             .when().get("/lines/{id}", id)
             .then().log().all();
