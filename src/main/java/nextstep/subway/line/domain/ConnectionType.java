@@ -1,7 +1,18 @@
 package nextstep.subway.line.domain;
 
+import java.util.function.BiFunction;
+
 public enum ConnectionType {
-    FIRST, MIDDLE, LAST, NONE;
+    FIRST((current, request) -> SectionConnectManager.connectFirstSection(request)),
+    MIDDLE((current, request) -> SectionConnectManager.connectMiddleSection(current, request)),
+    LAST((current, request) -> SectionConnectManager.connectLastSection(request)),
+    NONE((current, request) -> null);
+
+    private BiFunction<Section, Section, Section> expression;
+
+    ConnectionType(BiFunction<Section, Section, Section> expression) {
+        this.expression = expression;
+    }
 
     public static ConnectionType match(Section current, Section request) {
         if(judgeMiddle(current, request)) {
@@ -32,16 +43,7 @@ public enum ConnectionType {
         return current.getDownStation().equals(request.getUpStation());
     }
 
-    public boolean isFirst() {
-        return this == ConnectionType.FIRST;
+    public Section connect(Section current, Section request) {
+        return expression.apply(current, request);
     }
-
-    public boolean isMiddle() {
-        return this == ConnectionType.MIDDLE;
-    }
-
-    public boolean isLast() {
-        return this == ConnectionType.LAST;
-    }
-
 }
