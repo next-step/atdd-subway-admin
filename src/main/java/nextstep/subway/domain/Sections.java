@@ -56,14 +56,14 @@ public class Sections {
     }
 
     public List<StationResponse> getLineStations() {
-        List<Station> allStations = new ArrayList<>();
-        getStationsFromSections(allStations);
+        List<Station> allStations = getStationsFromSections();
         return allStations.stream()
                 .map(StationResponse::from)
                 .collect(Collectors.toList());
     }
 
-    private void getStationsFromSections(List<Station> stations){
+    private List<Station> getStationsFromSections(){
+        List<Station> stations = new ArrayList<>();
         Section foundSection = findFirstSection();
         while(foundSection != null) {
             stations.add(foundSection.getUpStation());
@@ -71,6 +71,7 @@ public class Sections {
         }
         foundSection = findLastSection();
         stations.add(foundSection.getDownStation());
+        return stations;
     }
 
     private Optional<Section> findNextSection(Section foundSection){
