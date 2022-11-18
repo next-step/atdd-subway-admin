@@ -128,6 +128,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("새로운 구간을 저장하려고 하나 기존 구간에 부합하는 upStation ,downStation이 존재 하지 않는다.")
+    @Test
+    void addSectionMiddleNotExsitUpAndDownStation() {
+        //when
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), otherUpStation.getId(), otherDownStation.getId(), 11L);
+
+        //then
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> params = new HashMap<>();
