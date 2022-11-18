@@ -39,11 +39,22 @@ public class Section {
         return Arrays.asList(upStation, downStation);
     }
 
+    public boolean hasRelation(Section newSection) {
+        return this.upStation == newSection.upStation
+            || this.upStation == newSection.downStation
+            || this.downStation == newSection.upStation
+            || this.downStation == newSection.downStation;
+    }
+
     public boolean prevSection(Section newSection) {
         return this.upStation == newSection.upStation;
     }
 
-    public void change(Section newSection) {
+    public boolean afterSection(Section newSection) {
+        return this.downStation == newSection.downStation;
+    }
+
+    public void betweenBefore(Section newSection) {
         if (newSection.distance >= this.distance) {
             throw new IllegalDistanceException();
         }
@@ -52,6 +63,17 @@ public class Section {
         }
         this.distance -= newSection.distance;
         this.upStation = newSection.downStation;
+    }
+
+    public void betweenAfter(Section newSection) {
+        if (newSection.distance >= this.distance) {
+            throw new IllegalDistanceException();
+        }
+        if (hasSameStation(newSection)) {
+            throw new SameStationException();
+        }
+        this.distance -= newSection.distance;
+        this.downStation = newSection.upStation;
     }
 
     private boolean hasSameStation(Section newSection) {

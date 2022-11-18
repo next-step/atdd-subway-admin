@@ -9,6 +9,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import nextstep.subway.exception.NoRelationStationException;
 
 @Embeddable
 public class Sections {
@@ -37,10 +38,25 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
+        Section section1 = sections.stream()
+            .filter(section -> section.hasRelation(newSection))
+            .findAny()
+            .orElse(null);
+
+        if (section1 == null) {
+            throw new NoRelationStationException();
+        }
+
         sections.stream()
             .filter(section -> section.prevSection(newSection))
             .findFirst()
-            .ifPresent(prevSection -> prevSection.change(newSection));
+            .ifPresent(prevSection -> prevSection.betweenBefore(newSection));
+
+        sections.stream()
+            .filter(section -> section.afterSection(newSection))
+            .findFirst()
+            .ifPresent(prevSection -> prevSection.betweenAfter(newSection));
+
         sections.add(newSection);
     }
 

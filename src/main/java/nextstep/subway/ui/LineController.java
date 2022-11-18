@@ -9,6 +9,7 @@ import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.UpdateLineRequest;
 import nextstep.subway.exception.IllegalDistanceException;
+import nextstep.subway.exception.NoRelationStationException;
 import nextstep.subway.exception.SameStationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -80,6 +81,13 @@ public class LineController {
     @ExceptionHandler(SameStationException.class)
     public ResponseEntity<String> sameStationExceptionHandler(
         final SameStationException exception) {
+        return ResponseEntity.badRequest()
+            .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(NoRelationStationException.class)
+    public ResponseEntity<String> noRelationStationExceptionHandler(
+        final NoRelationStationException exception) {
         return ResponseEntity.badRequest()
             .body(exception.getMessage());
     }
