@@ -119,19 +119,16 @@ public class Sections {
         return getOrderedSections(sections, orderedSections);
     }
 
-    public Stations getStations() {
+    public List<Station> getStations() {
         if (sectionList.isEmpty()) {
-            return Stations.EMPTY;
+            return Collections.emptyList();
         }
         sortSections();
 
-        List<Station> orderedStations =
-                Stream.concat(
-                        Stream.of(getFirstUpStation()),
-                        getAllDownStations()
-                ).collect(Collectors.toList());
-
-        return new Stations(orderedStations);
+        return Stream.concat(
+                Stream.of(getFirstUpStation()),
+                getAllDownStations()
+        ).collect(Collectors.toList());
     }
 
     private Station getFirstUpStation() {

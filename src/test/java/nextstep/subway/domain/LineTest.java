@@ -122,9 +122,8 @@ class LineTest {
         노선.removeSection(가양역);
         노선.removeSection(홍대역);
 
-        assertThat(노선.getSections())
-                .extracting(Sections::getStations)
-                .isEqualTo(new Stations(상행종점역, 하행종점역));
+        assertThat(노선.getSections().getStations())
+                .containsExactly(상행종점역, 하행종점역);
     }
 
     @Test
@@ -135,9 +134,8 @@ class LineTest {
         노선.removeSection(하행종점역);
         노선.removeSection(홍대역);
 
-        assertThat(노선.getSections())
-                .extracting(Sections::getStations)
-                .isEqualTo(new Stations(상행종점역, 가양역));
+        assertThat(노선.getSections().getStations())
+                .containsExactly(상행종점역, 가양역);
     }
 
     @Test
@@ -148,9 +146,8 @@ class LineTest {
         노선.removeSection(상행종점역);
         노선.removeSection(가양역);
 
-        assertThat(노선.getSections())
-                .extracting(Sections::getStations)
-                .isEqualTo(new Stations(홍대역, 하행종점역));
+        assertThat(노선.getSections().getStations())
+                .containsExactly(홍대역, 하행종점역);
     }
 
     @Test

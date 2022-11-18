@@ -31,7 +31,7 @@ class SectionsTest {
         노선.addSection(홍대입구, 당산, 4);
 
         assertThat(노선.getStation())
-                .isEqualTo(new Stations(상행종점역, 홍대입구, 당산, 하행종점역));
+                .containsExactly(상행종점역, 홍대입구, 당산, 하행종점역);
     }
 
     @Test
@@ -43,11 +43,11 @@ class SectionsTest {
         노선.addSection(당산, 홍대입구, 4);
 
         assertThat(노선.getSections().getStations())
-                .isEqualTo(new Stations(
+                .containsExactly(
                         상행종점역,
                         당산,
                         홍대입구,
-                        하행종점역));
+                        하행종점역);
     }
 
     @Test
@@ -56,10 +56,10 @@ class SectionsTest {
         노선.addSection(하행종점역, 홍대입구, 4);
 
         assertThat(노선.getStation())
-                .isEqualTo(new Stations(
+                .containsExactly(
                         상행종점역,
                         하행종점역,
-                        홍대입구));
+                        홍대입구);
     }
     @Test
     void 상행종점역_기준_구간_추가() {
@@ -67,10 +67,10 @@ class SectionsTest {
         노선.addSection(홍대입구, 상행종점역, 4);
 
         assertThat(노선.getSections().getStations())
-                .isEqualTo(new Stations(
+                .containsExactly(
                         홍대입구,
                         상행종점역,
-                        하행종점역));
+                        하행종점역);
     }
 
     @Test
@@ -82,11 +82,11 @@ class SectionsTest {
         );
 
         assertThat(sections.getStations())
-                .isEqualTo(new Stations(
+                .containsExactly(
                             new Station("st1"),
                             new Station("st2"),
                             new Station("st3"),
-                            new Station("st4")));
+                            new Station("st4"));
 
     }
 
