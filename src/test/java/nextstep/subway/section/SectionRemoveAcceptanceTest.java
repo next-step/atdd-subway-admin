@@ -13,7 +13,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.base.AcceptanceTest;
-import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,7 +50,7 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> removeSectionResponse = deleteSection(이호선, 서초역);
-        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
         ExtractableResponse<Response> findLineResponse = findLine(이호선);
@@ -72,7 +71,7 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> removeSectionResponse = deleteSection(이호선, 강남역);
-        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
         ExtractableResponse<Response> findLineResponse = findLine(이호선);
@@ -93,7 +92,7 @@ public class SectionRemoveAcceptanceTest extends AcceptanceTest {
 
         // when
         ExtractableResponse<Response> removeSectionResponse = deleteSection(이호선, 교대역);
-        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(removeSectionResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
         ExtractableResponse<Response> findLineResponse = findLine(이호선);
