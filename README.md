@@ -105,7 +105,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
 - 인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링
 
 
-# 🚀 3단계 - 구간 추가 기능
+# 🚀 4단계 - 구간 추가 기능
 ## 기능 목록
 - 종점역이 제거될 경우 다음으로 오던 역이 종점이 됨
 - 가운데 역을 제거할 경우 재배치를 함
