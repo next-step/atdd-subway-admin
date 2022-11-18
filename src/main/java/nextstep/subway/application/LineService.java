@@ -5,11 +5,13 @@ import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.UpdateLineRequest;
 import nextstep.subway.exception.NoLineException;
 import nextstep.subway.exception.NoStationException;
@@ -76,4 +78,11 @@ public class LineService {
             .orElseThrow(NoStationException::new);
     }
 
+    public List<SectionResponse> getSections(final Long id) {
+        Line line = findLine(id);
+        Sections sections = line.getSections();
+        return sections.getSections().stream()
+            .map(SectionResponse::of)
+            .collect(Collectors.toList());
+    }
 }

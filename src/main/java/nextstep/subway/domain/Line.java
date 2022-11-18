@@ -57,4 +57,7 @@ public class Line {
         return sections.stations();
     }
 
+    public Sections getSections() {
+        return sections;
+    }
 }

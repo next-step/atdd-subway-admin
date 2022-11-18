@@ -1,6 +1,5 @@
 package nextstep.subway.dto;
 
-import java.util.stream.Collectors;
 import nextstep.subway.domain.Section;
 
 public class SectionResponse {
@@ -9,6 +8,9 @@ public class SectionResponse {
     private StationResponse upStation;
     private StationResponse downStation;
     private int distance;
+
+    public SectionResponse() {
+    }
 
     public SectionResponse(Long id, StationResponse upStation,
         StationResponse downStation, int distance) {

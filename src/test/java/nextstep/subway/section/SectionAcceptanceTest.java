@@ -53,7 +53,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     THEN 이호선 상행종점은 블루보틀역
      */
     @Test
-    @DisplayName("역 사이에 새로운 역 등록")
+    @DisplayName("새로운 상행역 종점 등록")
     void addStationFirst() {
         //when
         구간_등록(이호선, 블루보틀역, 강남역, 4);
