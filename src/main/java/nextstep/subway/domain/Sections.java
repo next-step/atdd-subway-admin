@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -12,7 +11,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import javax.swing.text.html.Option;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.exception.NotFoundException;
 
@@ -32,37 +30,9 @@ public class Sections {
     public void addLineStation(Section section) {
         validateDuplicated(section);
         validateNotMatchedStation(section);
-        if(isSameUpStation(section)){
-            updateUpStation(section);
-        }
-        if(isSameDownStation(section)){
-            updateDownStation(section);
-        }
+        updateUpStation(section);
+        updateDownStation(section);
         sections.add(section);
-    }
-
-    private void validateNotMatchedStation(Section section){
-        boolean anyMatch = sections.stream()
-                .anyMatch(it ->
-                       it.getUpStation() == section.getUpStation()
-                    || it.getUpStation() == section.getDownStation()
-                    || it.getDownStation() == section.getUpStation()
-                    || it.getDownStation() == section.getDownStation()
-                );
-        if(!anyMatch){
-            throw new IllegalArgumentException();
-        }
-    }
-
-    private void validateDuplicated(Section section){
-        boolean anyMatch = sections.stream()
-                .anyMatch(it ->
-                       it.getUpStation() == section.getUpStation()
-                    && it.getDownStation() == section.getDownStation()
-                );
-        if(anyMatch){
-            throw new IllegalArgumentException();
-        }
     }
 
     private void updateUpStation(Section section){
@@ -83,16 +53,6 @@ public class Sections {
                     it.updateDownStation(section.getUpStation());
                     it.minusDistance(section.getDistance());
                 });
-    }
-
-    private boolean isSameUpStation(Section section){
-        return sections.stream()
-                .anyMatch(it -> it.getUpStation().equals(section.getUpStation()));
-    }
-
-    private boolean isSameDownStation(Section section){
-        return sections.stream()
-                .anyMatch(it -> it.getDownStation().equals(section.getDownStation()));
     }
 
     public List<StationResponse> getLineStations() {
@@ -131,5 +91,29 @@ public class Sections {
                 .filter(section -> sections.stream().map(Section::getUpStation).noneMatch(Predicate.isEqual(section.getDownStation())))
                 .findFirst()
                 .orElseThrow(NotFoundException::new);
+    }
+
+    private void validateDuplicated(Section section){
+        boolean anyMatch = sections.stream()
+                .anyMatch(it ->
+                        it.getUpStation() == section.getUpStation()
+                                && it.getDownStation() == section.getDownStation()
+                );
+        if(anyMatch){
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private void validateNotMatchedStation(Section section){
+        boolean anyMatch = sections.stream()
+                .anyMatch(it ->
+                        it.getUpStation() == section.getUpStation()
+                                || it.getUpStation() == section.getDownStation()
+                                || it.getDownStation() == section.getUpStation()
+                                || it.getDownStation() == section.getDownStation()
+                );
+        if(!anyMatch){
+            throw new IllegalArgumentException();
+        }
     }
 }
