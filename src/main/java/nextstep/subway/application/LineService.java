@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,8 +29,10 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationService.findStationById(lineRequest.getUpStationId());
-        Station downStation = stationService.findStationById(lineRequest.getDownStationId());
+        List<Station> stations = stationService.findStationByIdIn(
+                Arrays.asList(lineRequest.getUpStationId(), lineRequest.getDownStationId()));
+        Station upStation = getStationInStations(stations, lineRequest.getUpStationId());
+        Station downStation = getStationInStations(stations, lineRequest.getDownStationId());
 
         Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         line.initLineStations(Arrays.asList(
@@ -81,8 +84,10 @@ public class LineService {
                 () -> new LineStationNotFoundException(String.format("존재하지 않는 지하철 노선입니다. (id : %s)", lineId))
         );
 
-        Station upStation= stationService.findStationById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+        List<Station> stations = stationService.findStationByIdIn(
+                Arrays.asList(sectionRequest.getUpStationId(), sectionRequest.getDownStationId()));
+        Station upStation = getStationInStations(stations, sectionRequest.getUpStationId());
+        Station downStation = getStationInStations(stations, sectionRequest.getDownStationId());
         LineStation lineStation = new LineStation(upStation, downStation, sectionRequest.getDistance(), line);
 
         line.addLineStation(lineStation);
@@ -97,5 +102,14 @@ public class LineService {
         );
         Station station = stationService.findStationById(stationId);
         line.deleteLineStation(station);
+    }
+
+    private Station getStationInStations(List<Station> stations, Long stationId) {
+        return stations.stream()
+                .filter(station -> Objects.equals(station.getId(), stationId))
+                .findFirst()
+                .orElseThrow(
+                        () -> new LineStationNotFoundException(String.format("존재하지 않는 지하철 노선입니다. (id : %s)", stationId))
+                );
     }
 }

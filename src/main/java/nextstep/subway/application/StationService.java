@@ -45,4 +45,8 @@ public class StationService {
                 () -> new StationNotFoundException(String.format("존재하지 않는 지하철 역입니다. (id : %s)", id))
         );
     }
+
+    public List<Station> findStationByIdIn(List<Long> stationIds) {
+        return stationRepository.findByIdIn(stationIds);
+    }
 }
