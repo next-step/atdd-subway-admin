@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceStep.노선_한개_생성한다;
@@ -52,11 +53,11 @@ public class LineSectionStep {
     }
 
 
-    public static void 구간_추가_등록_결과_확인(int lineId, ExtractableResponse<Response> response, int count, String target) {
-        구간_예상_수_확인(lineId, response, count, target);
+    public static void 구간_추가_등록_결과_확인(int lineId, ExtractableResponse<Response> response, int count, String target, int totalDistance) {
+        구간_예상_수_확인(lineId, count, target);
+        라인_총_길이_확인(response, totalDistance);
         구간_등록_성공_확인(response);
     }
-
     public static void 구간_등록_성공_확인(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -66,7 +67,12 @@ public class LineSectionStep {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    public static void 구간_예상_수_확인(int lineId, ExtractableResponse<Response> response, int count, String target) {
+    private static void 라인_총_길이_확인(ExtractableResponse<Response> response, int totalDistance) {
+        assertThat(response.jsonPath().getInt("totalDistance")).isEqualTo(totalDistance);
+    }
+
+
+    public static void 구간_예상_수_확인(int lineId, int count, String target) {
         List<JSONObject> jsonObjects = 특정_노선을_조회한다(lineId).jsonPath().getList(target);
         assertThat(jsonObjects).hasSize(count);
     }
