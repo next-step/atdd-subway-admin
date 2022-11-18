@@ -6,6 +6,7 @@ import nextstep.subway.dto.LineResponse;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static nextstep.subway.constant.Message.STATION_IS_NOT_NULL;
 
@@ -138,6 +139,10 @@ public class Section extends BaseEntity {
                 .build();
     }
 
+    public Stream<Station> stations() {
+        return Stream.of(upStation, downStation);
+    }
+
     private static void validateStationIsNotNull(Station station) {
         if (Objects.isNull(station)) {
             throw new IllegalArgumentException(STATION_IS_NOT_NULL);
@@ -168,5 +173,4 @@ public class Section extends BaseEntity {
         Section section = (Section) o;
         return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line);
     }
-
 }

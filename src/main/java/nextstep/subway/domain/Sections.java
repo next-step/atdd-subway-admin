@@ -70,7 +70,7 @@ public class Sections {
     }
 
     private void changeSections(Section newSection) {
-        // upStaion change
+        // upStation change
         sections.stream()
                 .filter(s -> s.getUpStation().equals(newSection.getUpStation()))
                 .findAny()
@@ -78,13 +78,9 @@ public class Sections {
     }
 
     public List<Station> getAllStations() {
-        List<Station> allStations = new ArrayList<>();
-        this.getSections().forEach(section -> {
-            allStations.add(section.getUpStation());
-            allStations.add(section.getDownStation());
-        });
-
-        // 중복제거
-        return allStations.stream().distinct().collect(Collectors.toList());
+        return sections.stream()
+                .flatMap(Section::stations)// Stream<Station> return
+                .distinct()
+                .collect(Collectors.toList());
     }
 }
