@@ -10,7 +10,6 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationResponse;
-import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -119,6 +118,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     }
 
+    @DisplayName("이미 존재하는 구간 사이에 새로운 구간을 등록 하려고 하나 기존 구간의 길이보다 크거나 , 같아서 저장 할 수 없다.")
+    @Test
+    void addSectionMiddleFailedDistance() {
+        //when
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), 8L);
+
+        //then
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
 
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> params = new HashMap<>();
@@ -136,5 +145,4 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private List<StationResponse> convertStationsName(JsonPath jsonPath) {
         return jsonPath.getList(STATIONS, StationResponse.class);
     }
-
 }
