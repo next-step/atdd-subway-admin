@@ -49,6 +49,10 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
+    public void update(Section newSection) {
+        this.upStation = newSection.getDownStation();
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -68,5 +72,6 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 
 }

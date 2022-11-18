@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.NotFoundStation;
-import org.omg.CosNaming.NamingContextPackage.NotFound;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -17,7 +16,23 @@ public class Sections {
     public void addSection(Line line, Station upStation, Station downStation, Long distance) {
         Section section = new Section(line, upStation, downStation, distance);
         validateDuplicate(section);
-        values.add(section);
+        addSection(section);
+    }
+
+    private void addSection(Section section) {
+        if (values.isEmpty()) {
+            values.add(section);
+            return;
+        }
+        addMiddle(section);
+    }
+
+    private void addMiddle(Section newSection) {
+        Section existUpstation = this.values.stream()
+                .filter(v -> v.getUpStation().equals(newSection.getUpStation()))
+                .findAny().get();
+        existUpstation.update(newSection);
+        values.add(newSection);
     }
 
     private void validateDuplicate(Section section) {
