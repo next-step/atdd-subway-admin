@@ -6,6 +6,7 @@ import nextstep.subway.line.exception.LineExceptionCode;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @Entity
 public class Line extends BaseEntity {
@@ -57,6 +58,15 @@ public class Line extends BaseEntity {
 
     public void updateSections(Section request, List<Section> matchedSections) {
         sections.updateSections(this, request, matchedSections);
+    }
+
+    public void deleteSectionContainsStation(Optional<Section> sectionOfUpStation,
+            Optional<Section> sectionOfDownStation) {
+        sections.deleteSectionContainsStation(this, sectionOfUpStation, sectionOfDownStation);
+    }
+
+    void deleteSection(Section request) {
+        sections.deleteSection(request);
     }
 
     public Long getId() {
