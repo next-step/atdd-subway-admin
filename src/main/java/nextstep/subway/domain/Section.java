@@ -6,6 +6,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import java.util.Arrays;
+import java.util.List;
 
 @Entity
 public class Section {
@@ -13,6 +15,9 @@ public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    private Long lineId;
+
     @ManyToOne
     private Station upStation;
     @ManyToOne
@@ -27,6 +32,33 @@ public class Section {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+    }
+
+    public void relocate(Section newSection) {
+        relocateUpStation(newSection);
+        relocateDownStation(newSection);
+    }
+
+    private void relocateUpStation(Section newSection) {
+        if (this.upStation.equals(newSection.upStation)) {
+            this.upStation = newSection.getDownStation();
+            modifyDistance(newSection);
+        }
+    }
+
+    private void relocateDownStation(Section newSection) {
+        if (this.downStation.equals(newSection.downStation)) {
+            this.downStation = newSection.getUpStation();
+            modifyDistance(newSection);
+        }
+    }
+
+    private void modifyDistance(Section newSection) {
+        this.distance = this.distance - newSection.getDistance();
+    }
+
+    public List<Station> getStations() {
+        return Arrays.asList(this.upStation, this.downStation);
     }
 
     public Long getId() {
