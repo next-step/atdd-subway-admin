@@ -21,15 +21,12 @@ public class StationService {
 
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
+        return StationResponse.of(stationRepository.save(stationRequest.toStation()));
     }
 
     public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
-
-        return stations.stream()
-                .map(station -> StationResponse.of(station))
+        return stationRepository.findAll().stream()
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 

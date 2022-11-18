@@ -27,14 +27,12 @@ public class LineController {
 
     @GetMapping()
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> responses = lineService.findLines();
-        return ResponseEntity.ok().body(responses);
+        return ResponseEntity.ok().body(lineService.findLines());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> getLine(@PathVariable Long id) {
-        LineResponse lineResponse = lineService.findLine(id);
-        return ResponseEntity.ok().body(lineResponse);
+        return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
     @PutMapping("/{id}")
