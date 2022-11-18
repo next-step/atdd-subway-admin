@@ -83,6 +83,10 @@ public class Section {
         );
     }
 
+    public boolean nonMatch(Stations stations) {
+        return this.getStations().noneMatch(stations);
+    }
+
     public Long getId() {
         return id;
     }
@@ -110,15 +114,11 @@ public class Section {
         if (o == null || getClass() != o.getClass())
             return false;
         Section section = (Section)o;
-        return Objects.equals(getId(), section.getId());
+        return Objects.equals(id, section.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId());
-    }
-
-    public boolean nonMatch(Stations stations) {
-        return this.getStations().noneMatch(stations);
+        return Objects.hash(id);
     }
 }
