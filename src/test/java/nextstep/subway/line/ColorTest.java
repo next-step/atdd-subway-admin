@@ -1,4 +1,4 @@
-package nextstep.subway.common.vo;
+package nextstep.subway.line;
 
 import nextstep.subway.line.domain.Color;
 import org.junit.jupiter.api.DisplayName;
@@ -12,8 +12,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("색상")
 public class ColorTest {
-
-    public static final Color 신분당선_색상 = new Color("red");
 
     @DisplayName("색상 생성")
     @Test
