@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -21,11 +22,18 @@ public class SectionAcceptance {
                 .extract();
     }
 
-    public static List<Map<String, Object>> section_list_was_queried(Long lineId) {
+    public static List<SectionResponse> section_list_was_queried(Long lineId) {
         return RestAssured.given().log().all()
                 .when().get("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
-                .extract().jsonPath().getList(".");
+                .extract().jsonPath().getList(".", SectionResponse.class);
+    }
+
+    public static ExtractableResponse<Response> delete_section(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .then().log().all()
+                .extract();
     }
 }
