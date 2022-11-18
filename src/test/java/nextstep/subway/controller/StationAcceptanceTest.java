@@ -115,7 +115,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         );
     }
 
-    private ExtractableResponse<Response> 지하철_역_생성(final String 지하철역_이름){
+    public static ExtractableResponse<Response> 지하철_역_생성(final String 지하철역_이름){
         Map<String, String> params = new HashMap<>();
         params.put("name", 지하철역_이름);
 
