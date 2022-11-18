@@ -1,6 +1,5 @@
 package nextstep.subway.section;
 
-import static nextstep.subway.line.LineFixture.지하철_노선_생성;
 import static nextstep.subway.line.LineFixture.지하철_노선_생성후_아이디_반환;
 import static nextstep.subway.section.SectionFixture.구간_등록;
 import static nextstep.subway.station.StationFixture.지하철역_생성후_아이디_반환;
@@ -64,6 +63,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extracting(SectionResponse::getUpStation)
             .extracting(StationResponse::getName)
             .contains("강남역", "블루보틀역");
+    }
+
+    /*
+    GIVEN 강남역을 상행선 역삼역을 하행선으로 있는 이호선
+    WHEN 역삼역 뒤에 블루보틀역 등록
+    THEN 이호선 하행종점은 블루보틀역
+     */
+    @Test
+    @DisplayName("새로운 하행역 종점 등록")
+    void addStationLast() {
+        //when
+        구간_등록(이호선, 역삼역, 블루보틀역, 3);
+
+        //then
+        assertThat(SectionFixture.구간_목록_조회(이호선).jsonPath().getList(".", SectionResponse.class))
+            .hasSize(2)
+            .extracting(SectionResponse::getDownStation)
+            .extracting(StationResponse::getName)
+            .contains("역삼역", "블루보틀역");
     }
 
 }
