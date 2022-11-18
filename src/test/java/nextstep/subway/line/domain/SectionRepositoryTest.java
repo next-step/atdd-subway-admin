@@ -9,8 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayName("SectionRepository 테스트")
 @DataJpaTest
@@ -60,5 +63,37 @@ class SectionRepositoryTest {
         List<Section> sections = sectionRepository.findAllByRequestedSection(교대역, 역삼역);
 
         assertThat(sections).hasSize(2);
+    }
+
+    @Test
+    @DisplayName("요청된 역을 상행역으로 포함하고 있는 노선을 검색한다.")
+    void findByUpStationId() {
+        Section expected = new Section(강남역, 역삼역, 10);
+        line.addSection(new Section(교대역, 강남역, 10));
+        line.addSection(expected);
+        lineRepository.save(line);
+
+        Optional<Section> actual = sectionRepository.findByUpStationId(강남역.getId());
+
+        assertAll(
+                () -> assertTrue(actual.isPresent()),
+                () -> assertTrue(expected.equals(actual.get()))
+        );
+    }
+
+    @Test
+    @DisplayName("요청된 역을 하행역으로 포함하고 있는 노선을 검색한다.")
+    void findByDownStationId() {
+        Section expected = new Section(교대역, 강남역, 10);
+        line.addSection(expected);
+        line.addSection(new Section(강남역, 역삼역, 10));
+        lineRepository.save(line);
+
+        Optional<Section> actual = sectionRepository.findByDownStationId(강남역.getId());
+
+        assertAll(
+                () -> assertTrue(actual.isPresent()),
+                () -> assertTrue(expected.equals(actual.get()))
+        );
     }
 }
