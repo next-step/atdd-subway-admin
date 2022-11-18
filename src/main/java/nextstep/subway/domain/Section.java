@@ -43,6 +43,9 @@ public class Section extends BaseEntity {
         if (this.getUpStation().equals(section.getUpStation()) && this.getDownStation().equals(section.getDownStation())) {
             throw new IllegalRequestBody(ErrorStatus.DUPLICATE_SECTION.getMessage());
         }
+        if (this.getUpStation().equals(section.downStation) && this.getDownStation().equals(section.upStation)) {
+            throw new IllegalRequestBody(ErrorStatus.DUPLICATE_SECTION.getMessage());
+        }
     }
 
     public Station getDownStation() {
@@ -52,12 +55,26 @@ public class Section extends BaseEntity {
     public void update(Section newSection) {
         validateDistance(newSection);
         this.upStation = newSection.getDownStation();
+        this.distance -= newSection.distance;
     }
 
     private void validateDistance(Section newSection) {
         if (this.distance <= newSection.distance) {
             throw new IllegalRequestBody(ErrorStatus.DISTANCE_LENGTH.getMessage());
         }
+    }
+
+    public boolean anyMatch(Section section) {
+        if (this.downStation.equals(section.getUpStation())) {
+            return true;
+        }
+        if (this.downStation.equals(section.getDownStation())) {
+            return true;
+        }
+        if (this.upStation.equals(section.getDownStation())) {
+            return true;
+        }
+        return this.upStation.equals(section.getUpStation());
     }
 
     @Override
@@ -80,14 +97,4 @@ public class Section extends BaseEntity {
         return Objects.hash(id);
     }
 
-
-    public boolean anyMatch(Section section) {
-        if (this.upStation.equals(section.getUpStation())) {
-            return true;
-        }
-        if (this.downStation.equals(section.getDownStation())) {
-            return true;
-        }
-        return false;
-    }
 }
