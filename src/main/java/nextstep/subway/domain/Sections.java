@@ -63,6 +63,10 @@ public class Sections {
         if (!matchDownSection.isPresent() && !matchUpSection.isPresent()) {
             throw new IllegalArgumentException("등록되지 않은 역입니다.");
         }
+
+        if (sections.size() == 3) {
+            throw new IllegalArgumentException("구간이 하나인 상태에서는 삭제할 수 없습니다.");
+        }
     }
 
     private void insertSectionIntoBackSide(Station downStation, Integer distance, Line line, Optional<Section> matchUpSection) {
