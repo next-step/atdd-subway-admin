@@ -45,7 +45,7 @@ public class Sections {
         sectionList.addAll(splitSections);
     }
 
-    public void validate(Station upStation, Station downStation) {
+    private void validate(Station upStation, Station downStation) {
         boolean isDownStationExistsOnUpStation = isUpStationExists(downStation);
         boolean isUpStationExistsOnDownStation = isDownStationExists(upStation);
 
