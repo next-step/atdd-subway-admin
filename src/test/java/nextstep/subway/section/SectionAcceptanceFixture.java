@@ -17,4 +17,16 @@ public class SectionAcceptanceFixture {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 노선_구간_제거_요청(Long lineId, Long stationId) {
+
+        String uri = "/lines/" + lineId + "/sections";
+
+        return RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .when()
+                .delete(uri)
+                .then().log().all()
+                .extract();
+    }
 }
