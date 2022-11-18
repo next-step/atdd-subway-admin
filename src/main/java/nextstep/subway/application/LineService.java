@@ -1,15 +1,17 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.*;
-import nextstep.subway.dto.*;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.CannotFindException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
-import static nextstep.subway.constant.Message.*;
+import static nextstep.subway.constant.Message.NOT_FOUND_LINE_ERR;
+import static nextstep.subway.constant.Message.NOT_FOUND_STATION_ERR;
 
 @Service
 @Transactional(readOnly = true)
