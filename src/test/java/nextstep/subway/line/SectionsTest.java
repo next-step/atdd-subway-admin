@@ -21,7 +21,7 @@ class SectionsTest {
 
     @DisplayName("구간 추가")
     @Test
-    void constructor() {
+    void add() {
         Sections sections = new Sections();
         sections.add(논현역_신논현역_구간);
         sections.add(신논현역_강남역_구간);
@@ -30,7 +30,7 @@ class SectionsTest {
     
     @DisplayName("구간역 목록을 조회한다.")
     @Test
-    void name() {
+    void findStations() {
         Sections sections = new Sections();
         sections.add(논현역_신논현역_구간);
         sections.add(신논현역_강남역_구간);
