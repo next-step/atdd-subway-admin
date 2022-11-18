@@ -57,7 +57,7 @@ public class Section extends BaseEntity {
     }
 
     public void update(Section newSection) {
-        distance.validNewDistance(newSection.distance.get());
+        distance.validNewDistance(newSection.distance);
         if (isEqualUpStation(newSection.upStation)) {
             updateUpStation(newSection);
         }

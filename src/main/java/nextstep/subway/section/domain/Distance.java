@@ -25,8 +25,8 @@ public class Distance {
         }
     }
 
-    public void validNewDistance(int newDistance) {
-        if(distance <= newDistance){
+    public void validNewDistance(Distance newDistance) {
+        if(distance <= newDistance.get()){
             throw new IllegalArgumentException(ErrorEnum.VALID_GREATER_OR_EQUAL_LENGTH_BETWEEN_STATION.message());
         }
     }
