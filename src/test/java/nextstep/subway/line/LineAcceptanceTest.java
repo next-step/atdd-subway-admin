@@ -144,7 +144,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_1개_생성(String name, String color, Long upStationId, Long downStationId, Integer distance) {
+    public static ExtractableResponse<Response> 지하철_노선_1개_생성(String name, String color, Long upStationId, Long downStationId, Integer distance) {
         Map<String, Object> param = new HashMap<>();
         param.put("name", name);
         param.put("color", color);
@@ -168,7 +168,7 @@ public class LineAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_정보_조회(Object id) {
+    public static ExtractableResponse<Response> 지하철_노선_정보_조회(Object id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/{id}", id)

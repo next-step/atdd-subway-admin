@@ -118,7 +118,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철역_1개_생성(String name) {
+    public static ExtractableResponse<Response> 지하철역_1개_생성(String name) {
         Map<String, String> param = new HashMap<>();
         param.put("name", name);
         return RestAssured.given().log().all()
