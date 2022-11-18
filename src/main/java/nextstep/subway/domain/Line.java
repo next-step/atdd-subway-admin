@@ -71,11 +71,11 @@ public class Line extends BaseEntity {
 
     public void addSection(Section newSection) {
         Objects.requireNonNull(newSection, NOT_FOUND_SECTION_ERR);
+
+        // line에도 새로운 section 정보 등록 (양방향)
+        newSection.updateLine(this);
         sections.addSection(newSection);
 
-        if (newSection.getLine() != this) {
-            newSection.updateLine(this);
-        }
     }
 
 
