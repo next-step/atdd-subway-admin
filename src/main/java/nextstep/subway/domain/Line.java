@@ -5,13 +5,12 @@ import lombok.Builder;
 import nextstep.subway.domain.raw.Color;
 import nextstep.subway.domain.raw.Name;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
+import java.util.Objects;
 
-import static nextstep.subway.constant.Message.*;
+import static nextstep.subway.constant.Message.NOT_FOUND_SECTION_ERR;
 
 @Entity
 @Builder

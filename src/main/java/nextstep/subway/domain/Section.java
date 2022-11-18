@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.raw.Distance;
-import nextstep.subway.dto.LineResponse;
 
 import javax.persistence.*;
 import java.util.List;
@@ -117,26 +116,8 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-    private void updateUpStation(Section newSection) {
-        this.upStation = newSection.downStation;
-    }
-
-    private void changeDownStation(Section newSection) {
-        this.downStation = newSection.upStation;
-    }
-
-
     private Distance subtractDistance(int distance) {
         return this.distance.subtract(distance);
-    }
-
-    public LineResponse.Section from() {
-        return LineResponse.Section.builder()
-                .id(id)
-                .upStationId(upStation.getId())
-                .downStationId(downStation.getId())
-                .distance(distance.getDistance())
-                .build();
     }
 
     public Stream<Station> stations() {
@@ -148,7 +129,6 @@ public class Section extends BaseEntity {
             throw new IllegalArgumentException(STATION_IS_NOT_NULL);
         }
     }
-
 
     @Override
     public int hashCode() {

@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,9 +19,6 @@ public class LineResponse {
     public String color;
     public List<StationResponse> stations;
     public int totalDistance;
-
-    public List<Section> sections;
-
 
    public static List<LineResponse> of(List<Line> lines) {
        return lines.stream()
@@ -40,17 +36,5 @@ public class LineResponse {
         color = line.getColor();
         stations = line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
         totalDistance = line.getSections().stream().mapToInt(s -> s.getDistance()).sum();
-        sections = line.getSections().stream().map(s -> s.from()).collect(Collectors.toList());
-    }
-
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Data
-    public static class Section {
-        private Long id;
-        private Long upStationId;
-        private Long downStationId;
-        private int distance;
     }
 }
