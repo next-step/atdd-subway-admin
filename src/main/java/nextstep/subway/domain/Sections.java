@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -21,7 +21,7 @@ public class Sections {
     }
 
     public Sections(Section section){
-        this.sections = Collections.singletonList(section);
+        this.sections = Arrays.asList(section);
     }
 
     public void addLineStation(Section section) {
