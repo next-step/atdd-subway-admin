@@ -9,7 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class LineStation {
+public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,10 +28,10 @@ public class LineStation {
 
     private int distance;
 
-    public LineStation() {
+    public Section() {
     }
 
-    public LineStation(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -77,7 +77,7 @@ public class LineStation {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        LineStation that = (LineStation) o;
+        Section that = (Section) o;
         return distance == that.distance && Objects.equals(id, that.id) && Objects.equals(line,
                 that.line) && Objects.equals(upStation, that.upStation) && Objects.equals(downStation,
                 that.downStation);

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public class LineStationAcceptanceTest extends BaseTest {
+public class SectionAcceptanceTest extends BaseTest {
     /**
      * Given
      * When 지하철_노선에_지하철역_등록_요청

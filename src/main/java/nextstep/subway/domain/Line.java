@@ -23,7 +23,7 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private LineStations lineStations;
+    private Sections sections;
 
     protected Line() {
     }
@@ -31,7 +31,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.lineStations = new LineStations(new LineStation(this, upStation, downStation, distance));
+        this.sections = new Sections(new Section(this, upStation, downStation, distance));
     }
 
     public void updateLine(LineRequest request){
@@ -39,8 +39,8 @@ public class Line extends BaseEntity {
         this.color = request.getColor();
     }
 
-    public void addLineStation(LineStation lineStation) {
-        lineStations.addLineStation(lineStation);
+    public void addLineStation(Section section) {
+        sections.addLineStation(section);
     }
 
     public Long getId() {
@@ -56,7 +56,7 @@ public class Line extends BaseEntity {
     }
 
     public List<StationResponse> getLineStations() {
-        return lineStations.getLineStations();
+        return sections.getLineStations();
     }
 
     @Override
@@ -65,7 +65,7 @@ public class Line extends BaseEntity {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", LineStations=" + lineStations +
+                ", LineStations=" + sections +
                 '}';
     }
 }
