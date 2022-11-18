@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ErrorStatus;
+import nextstep.subway.exception.IllegalRequestBody;
 import nextstep.subway.exception.NotFoundStation;
 
 import javax.persistence.CascadeType;
@@ -19,11 +21,19 @@ public class Sections {
         addSection(section);
     }
 
+    private void validateStationExist(Section section) {
+        boolean isExist = this.values.stream().noneMatch(v -> v.anyMatch(section));
+        if (isExist) {
+            throw new IllegalRequestBody(ErrorStatus.SECTION_STATION_ERROR.getMessage());
+        }
+    }
+
     private void addSection(Section section) {
         if (values.isEmpty()) {
             values.add(section);
             return;
         }
+        validateStationExist(section);
         addMiddle(section);
     }
 

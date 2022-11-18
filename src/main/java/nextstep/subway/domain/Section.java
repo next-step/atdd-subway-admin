@@ -81,4 +81,13 @@ public class Section extends BaseEntity {
     }
 
 
+    public boolean anyMatch(Section section) {
+        if (this.upStation.equals(section.getUpStation())) {
+            return true;
+        }
+        if (this.downStation.equals(section.getDownStation())) {
+            return true;
+        }
+        return false;
+    }
 }
