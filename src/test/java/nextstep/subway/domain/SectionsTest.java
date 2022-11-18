@@ -28,7 +28,7 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.addSection(new Section(WANGSIPLI, SANGWANGSIPLI, 10L));
 
-        assertThat(sections.getStations()).contains(WANGSIPLI, SANGWANGSIPLI);
+        assertThat(sections.allStations().getList()).contains(WANGSIPLI, SANGWANGSIPLI);
     }
 
     @DisplayName("구간 추가 실패 상행역 하행역 이미 등록되어 있음")
@@ -70,6 +70,6 @@ class SectionsTest {
         sections.addSection(new Section(SANGWANGSIPLI, SINDANG, 10L));
         sections.addSection(new Section(SINDANG, DDP, 10L));
 
-        assertThat(sections.getStations()).contains(WANGSIPLI, SANGWANGSIPLI, SINDANG, DDP);
+        assertThat(sections.allStations().getList()).contains(WANGSIPLI, SANGWANGSIPLI, SINDANG, DDP);
     }
 }

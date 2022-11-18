@@ -1,9 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -21,34 +19,32 @@ public class Sections {
     protected Sections() {
     }
 
-    public List<Station> getStations() {
-        return Collections.unmodifiableList(
-            sections.stream()
-                .flatMap(section -> section.getStations().stream())
-                .distinct()
-                .collect(Collectors.toList())
-        );
+    public Stations allStations() {
+        return sections.stream()
+            .map(Section::getStations)
+            .reduce(Stations::concatDistinct)
+            .orElseGet(Stations::empty);
     }
 
     public void addSection(Section newSection) {
-        validateAlreadyContainsAll(newSection);
-        validateNotContainsAny(newSection);
+        Stations stations = this.allStations();
+        validateAlreadyContainsAll(stations, newSection);
+        validateNotContainsAny(stations, newSection);
         this.sections.forEach(section -> section.modify(newSection));
         this.sections.add(newSection);
     }
 
-    private void validateNotContainsAny(Section section) {
-        List<Station> stations = this.getStations();
+    private void validateNotContainsAny(Stations stations, Section newSection) {
         if (stations.isEmpty()) {
             return;
         }
-        if (section.getStations().stream().noneMatch(stations::contains)) {
+        if (newSection.nonMatch(stations)) {
             throw new IllegalArgumentException(NOT_CONTAIONS_ANY_ERROR_MESSAGE);
         }
     }
 
-    private void validateAlreadyContainsAll(Section section) {
-        if (getStations().containsAll(section.getStations())) {
+    private void validateAlreadyContainsAll(Stations stations, Section newSection) {
+        if (stations.containsAll(newSection.getStations())) {
             throw new IllegalArgumentException(ALREADY_CONTAIONS_ERROR_MESSAGE);
         }
     }

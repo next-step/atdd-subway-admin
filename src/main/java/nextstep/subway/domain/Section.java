@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Embedded;
@@ -79,8 +77,8 @@ public class Section {
         this.distance = this.distance.sub(section.distance);
     }
 
-    public List<Station> getStations() {
-        return Collections.unmodifiableList(
+    public Stations getStations() {
+        return Stations.of(
             Arrays.asList(this.upStation, this.downStation)
         );
     }
@@ -118,5 +116,9 @@ public class Section {
     @Override
     public int hashCode() {
         return Objects.hash(getId());
+    }
+
+    public boolean nonMatch(Stations stations) {
+        return this.getStations().noneMatch(stations);
     }
 }

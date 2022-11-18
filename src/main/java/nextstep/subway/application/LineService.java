@@ -45,7 +45,7 @@ public class LineService {
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 ID 입니다."));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 ID 입니다."));
-        
+
         Line line = lineRepository.save(new Line(
             lineRequest.getName(),
             lineRequest.getColor(),
