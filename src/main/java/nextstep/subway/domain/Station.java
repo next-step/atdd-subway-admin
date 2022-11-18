@@ -28,9 +28,16 @@ public class Station extends BaseEntity {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Station station = (Station) o;
+        if (this.id == null || station.id == null) {
+            return false;
+        }
         return Objects.equals(id, station.id);
     }
 

@@ -27,7 +27,7 @@ public class Line extends BaseEntity {
     }
 
     public void addStations(Station upStation, Station downStation, Long distance) {
-        this.sections.addStations(this, upStation, downStation, distance);
+        this.sections.addSection(this, upStation, downStation, distance);
     }
 
     public Long getId() {
