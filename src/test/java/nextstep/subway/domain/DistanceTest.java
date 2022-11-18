@@ -32,6 +32,10 @@ class DistanceTest {
     @Test
     void subtract() {
         assertThat(Distance.valueOf(4).subtract(Distance.valueOf(2))).isEqualTo(Distance.valueOf(2));
+    }
+
+    @Test
+    void cannotSubtractParameterLessThan() {
         assertThatThrownBy(() -> Distance.valueOf(4).subtract(Distance.valueOf(4)))
                 .isInstanceOf(CannotAddSectionException.class);
     }
