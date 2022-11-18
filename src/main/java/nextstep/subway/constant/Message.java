@@ -10,5 +10,6 @@ public class Message {
     public final static String NOT_VALID_ANY_STATION = "상행역과 하행역 둘 중 하나라도 포함되어야 구간을 등록할 수 있습니다.";
     public final static String NOT_VALID_UNDER_ZERO_DISTANCE = "거리는 1이상이어야 합니다.";
     public final static String NOT_VALID_EMPTY = "빈 값은 입력할 수 없습니다.";
+    public final static String STATION_IS_NOT_NULL = "역 선택은 필수 입니다.";
 
 }

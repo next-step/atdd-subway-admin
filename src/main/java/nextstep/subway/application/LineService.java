@@ -49,10 +49,6 @@ public class LineService {
                 .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
 
         line.update(updateRequest);
-
-
-        // save 없어도 처리
-//        lineRepository.save(line);
     }
 
     @Transactional
@@ -65,19 +61,23 @@ public class LineService {
                 .orElseThrow(() -> new CannotFindException(NOT_FOUND_STATION_ERR));
     }
 
+    private Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new CannotFindException(NOT_FOUND_LINE_ERR));
+    }
+
     @Transactional
     public LineResponse saveSection(Long lineId, SectionRequest sectionRequest) {
         // 이전에 저장됐던 section이 Line에 같이 조회됨
-        Line line = lineRepository.findById(lineId).orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
+        Line line = findById(lineId);
+        line.addSection(toSection(sectionRequest));
+
+        return LineResponse.from(line);
+    }
+
+    private Section toSection(SectionRequest sectionRequest) {
         Station upStation = findStationById(sectionRequest.getUpStationId());
         Station downStation = findStationById(sectionRequest.getDownStationId());
 
-        // 새로운 section에 위에서 가져온 line도 매핑
-        Section section = new Section(upStation, downStation, line, sectionRequest.getDistance());
-
-        // line에도 새로운 section 정보 등록 (양방향) -> line.save하지 않아도 transacition 종료 후 업데이트
-        line.addSection(section);
-
-        return LineResponse.from(line);
+        return Section.of(upStation, downStation, sectionRequest.getDistance());
     }
 }

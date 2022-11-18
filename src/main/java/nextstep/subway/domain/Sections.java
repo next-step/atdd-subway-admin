@@ -32,14 +32,12 @@ public class Sections {
     }
 
 
-
-
     private void validateNotMatchedStaton(Section newSection) {
         // 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
         boolean anyMatch = sections.stream()
                 .anyMatch(s -> s.isContainAnyStaion(newSection));
 
-        if(!anyMatch) {
+        if (!anyMatch) {
             throw new IllegalArgumentException(NOT_VALID_ANY_STATION);
         }
     }
@@ -55,11 +53,10 @@ public class Sections {
                 .filter(s -> s.getDistance() <= newSection.getDistance())
                 .findFirst();
 
-        if(invalidSections.isPresent()) {
+        if (invalidSections.isPresent()) {
             throw new IllegalArgumentException(NOT_VALID_SECTION_DISTANCE);
         }
     }
-
 
 
     private void validateDuplicated(Section section) {
@@ -73,11 +70,12 @@ public class Sections {
     }
 
     private void changeSections(Section newSection) {
-        sections.forEach(s -> {
-            s.change(newSection);
-        });
+        // upStaion change
+        sections.stream()
+                .filter(s -> s.getUpStation().equals(newSection.getUpStation()))
+                .findAny()
+                .ifPresent(s -> s.changeUpStation(newSection));
     }
-
 
     public List<Station> getAllStations() {
         List<Station> allStations = new ArrayList<>();

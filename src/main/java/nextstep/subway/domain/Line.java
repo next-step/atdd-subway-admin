@@ -61,17 +61,21 @@ public class Line extends BaseEntity {
     }
 
     public void update(LineRequest updateRequest) {
-        this.name = name.from(updateRequest);
-        this.color = color.from(updateRequest);
+        if (!updateRequest.getName().isEmpty() && updateRequest.getName() != "") {
+            this.name = new Name(updateRequest.getName());
+        }
+        if (!updateRequest.getColor().isEmpty() && updateRequest.getColor() != "") {
+            this.color = new Color(updateRequest.getColor());
+        }
     }
 
     public void addSection(Section newSection) {
         Objects.requireNonNull(newSection, NOT_FOUND_SECTION_ERR);
+
+        // line에도 새로운 section 정보 등록 (양방향)
+        newSection.updateLine(this);
         sections.addSection(newSection);
 
-        if (newSection.getLine() != this) {
-            newSection.updateLine(this);
-        }
     }
 
 
