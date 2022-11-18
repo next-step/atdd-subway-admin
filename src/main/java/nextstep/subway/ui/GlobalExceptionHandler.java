@@ -11,12 +11,12 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    protected ResponseEntity handleIllegalArgsException() {
+    protected ResponseEntity<Void> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    protected ResponseEntity handleNoSuchElementException() {
+    protected ResponseEntity<Void> handleNoSuchElementException() {
         return ResponseEntity.notFound().build();
     }
 }
