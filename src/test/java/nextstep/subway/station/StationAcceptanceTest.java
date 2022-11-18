@@ -25,14 +25,14 @@ public class StationAcceptanceTest extends BaseTest {
     @Test
     void 지하철역_생성() {
         // when
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = createStation("의정부역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
         List<String> stationNames = getStations();
-        assertThat(stationNames).containsAnyOf("강남역");
+        assertThat(stationNames).containsAnyOf("의정부역");
     }
 
     /**
@@ -62,16 +62,16 @@ public class StationAcceptanceTest extends BaseTest {
     @Test
     void 지하철역_조회() {
         // given
-        createStation("서울대입구역");
-        createStation("낙성대역");
+        createStation("여의도역");
+        createStation("국회의사당역");
 
         // when
         List<String> stationNames = getStations();
 
         // then
-        assertThat(stationNames.size()).isEqualTo(2);
-        assertThat(stationNames).contains("서울대입구역");
-        assertThat(stationNames).contains("낙성대역");
+        assertThat(stationNames.size()).isEqualTo(10);   // BaseTest에서 생성한 지하철역 포함
+        assertThat(stationNames).contains("여의도역");
+        assertThat(stationNames).contains("국회의사당역");
     }
 
     /**
@@ -83,11 +83,11 @@ public class StationAcceptanceTest extends BaseTest {
     @Test
     void 지하철역_제거() {
         // given & when
-        deleteStation(createStation("서울대입구역").jsonPath().get("id"));
+        deleteStation(createStation("의정부역").jsonPath().get("id"));
 
         // then
         List<String> stationNames = getStations();
-        assertThat(stationNames.contains("서울대입구역")).isFalse();
+        assertThat(stationNames.contains("의정부역")).isFalse();
     }
 
     private static List<String> getStations() {

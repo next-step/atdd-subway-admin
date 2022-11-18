@@ -1,16 +1,14 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.StationResponse;
 
 @Entity
 public class Line extends BaseEntity {
@@ -24,39 +22,25 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
 
-    private Long upStationId;
-
-    private Long downStationId;
-
-    private int distance;
-
-    @OneToMany(
-        mappedBy = "line",
-        fetch = FetchType.LAZY,
-        cascade = CascadeType.REMOVE,
-        orphanRemoval = true
-    )
-    private List<Station> stations = new ArrayList<>();
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
-    }
-
-    public void addStation(Station station){
-        station.setLine(this);
-        stations.add(station);
+        this.sections = new Sections(new Section(this, upStation, downStation, distance));
     }
 
     public void updateLine(LineRequest request){
         this.name = request.getName();
         this.color = request.getColor();
+    }
+
+    public void addLineStation(Section section) {
+        sections.addLineStation(section);
     }
 
     public Long getId() {
@@ -71,7 +55,17 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public List<StationResponse> getLineStations() {
+        return sections.getLineStations();
+    }
+
+    @Override
+    public String toString() {
+        return "Line{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", color='" + color + '\'' +
+                ", LineStations=" + sections +
+                '}';
     }
 }
