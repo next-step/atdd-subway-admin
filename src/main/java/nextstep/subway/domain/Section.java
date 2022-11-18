@@ -10,7 +10,7 @@ import java.util.Objects;
 import static nextstep.subway.constant.Message.STATION_IS_NOT_NULL;
 
 @Entity
-public class Section extends BaseEntity implements Comparable<Section> {
+public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -97,33 +97,6 @@ public class Section extends BaseEntity implements Comparable<Section> {
         return this.downStation.equals(station);
     }
 
-//    public void change(Section newSection) {
-//        if (Objects.isNull(newSection)) {
-//            return;
-//        }
-//        changeStation(newSection);
-//    }
-
-
-//    private void changeStation(Section newSection) {
-//
-//        // 기존 upStation과 새로운 upStation과 일치하면 사이에 들어감
-//        // 따라서 기존 upStation -> 새로운 downStation
-//        if (isUpStation(newSection.upStation)) {
-//            changeUpStation(newSection);
-//            changeDistance(newSection.distance);
-//        }
-//
-//
-//        // 기존 downStation과 새로운 downStation이 일치
-//        //  따라서 기존 downStation -> 새로운 upstation
-//        if (isDownStation(newSection.downStation)) {
-//            changeDownStation(newSection);
-//            changeDistance(newSection.distance);
-//        }
-//    }
-
-
     public void changeUpStation(Section newSection) {
         validateStationIsNotNull(newSection.getUpStation());
         this.upStation = newSection.downStation;
@@ -143,26 +116,12 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.line = line;
     }
 
-    private void updateUpStation(Section newSection) {
-        this.upStation = newSection.downStation;
-    }
-
-    private void changeDownStation(Section newSection) {
-        this.downStation = newSection.upStation;
-    }
-
-
     private Distance subtractDistance(int distance) {
         return this.distance.subtract(distance);
     }
 
     public LineResponse.Section from() {
-        return LineResponse.Section.builder()
-                .id(id)
-                .upStationId(upStation.getId())
-                .downStationId(downStation.getId())
-                .distance(distance.getDistance())
-                .build();
+        return LineResponse.Section.of(id, upStation.getId(), downStation.getId(), distance.getDistance());
     }
 
     private static void validateStationIsNotNull(Station station) {
@@ -170,7 +129,6 @@ public class Section extends BaseEntity implements Comparable<Section> {
             throw new IllegalArgumentException(STATION_IS_NOT_NULL);
         }
     }
-
 
     @Override
     public int hashCode() {
@@ -195,15 +153,4 @@ public class Section extends BaseEntity implements Comparable<Section> {
         Section section = (Section) o;
         return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line);
     }
-
-    @Override
-    public int compareTo(Section s) {
-        //
-        if (this.downStation.getId().equals(s.upStation.getId())) return -1;
-        else if (this.upStation.getId().equals(s.downStation.getId())) return 1;
-        return 0;
-    }
-
-
-
 }

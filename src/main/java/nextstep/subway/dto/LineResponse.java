@@ -22,8 +22,6 @@ public class LineResponse {
 
 
     public static List<LineResponse> of(List<Line> lines) {
-        LineResponse.builder().build();
-
         return lines.stream()
                 .map(line -> LineResponse.from(line))
                 .collect(Collectors.toList());
@@ -41,14 +39,35 @@ public class LineResponse {
         sections = line.getSections().stream().map(s -> s.from()).collect(Collectors.toList());
     }
 
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     @Data
-    public static class Section {
+    public static class Section implements Comparable<Section> {
         private Long id;
         private Long upStationId;
         private Long downStationId;
         private int distance;
+
+        private Section(Long id, Long upStationId, Long downStationId, int distance) {
+            this.id = id;
+            this.upStationId = upStationId;
+            this.downStationId = downStationId;
+            this.distance = distance;
+        }
+
+        public static Section of(Long id, Long upStationId, Long downStationId, int distance) {
+            return new Section(id, upStationId, downStationId, distance);
+        }
+
+        @Override
+        public int compareTo(Section s) {
+            if (this.downStationId.equals(s.getUpStationId())) return -1;
+            else if (this.upStationId.equals(s.getDownStationId())) return 1;
+            return 0;
+        }
+    }
+
+    public void sortSection() {
+        sections = sections.stream()
+                .sorted(Section::compareTo)
+                .collect(Collectors.toList());
     }
 }

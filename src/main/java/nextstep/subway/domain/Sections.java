@@ -75,10 +75,6 @@ public class Sections {
                 .filter(s -> s.getUpStation().equals(newSection.getUpStation()))
                 .findAny()
                 .ifPresent(s -> s.changeUpStation(newSection));
-
-//        sections.forEach(s -> {
-//            s.change(newSection);
-//        });
     }
 
     public List<Station> getAllStations() {

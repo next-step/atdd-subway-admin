@@ -52,7 +52,14 @@ public class LineController {
     @PostMapping("/{lineId}/sections")
     public ResponseEntity<LineResponse> addSection(@PathVariable Long lineId, @RequestBody SectionRequest sectionRequest) {
         LineResponse sectionResponse = lineService.saveSection(lineId, sectionRequest);
+        sectionResponse.sortSection();
         return ResponseEntity.created(URI.create("/line/" + lineId)).body(sectionResponse);
+    }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity deleteSection(@PathVariable Long id) {
+        lineService.deleteLineById(id);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
