@@ -94,6 +94,18 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     }
 
+    @DisplayName("중복된 노선 구간은 저장할 수 없다.")
+    @Test
+    void addSectionFailedDuplicate() {
+        //when
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), downStation.getId(), 8L);
+
+        //then
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+    }
+
+
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> params = new HashMap<>();
         params.put(UP_STATION, upStationId);
