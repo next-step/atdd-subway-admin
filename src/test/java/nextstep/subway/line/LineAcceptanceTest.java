@@ -3,10 +3,10 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.AbstractAcceptanceTest;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,16 +22,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AbstractAcceptanceTest {
 
-    private Station 서초역;
-    private Station 교대역;
-    private Station 강남역;
+    private StationResponse 서초역;
+    private StationResponse 교대역;
+    private StationResponse 강남역;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        서초역 = StationAcceptanceTest.createStation("서초역").extract().as(Station.class);
-        교대역 = StationAcceptanceTest.createStation("교대역").extract().as(Station.class);
-        강남역 = StationAcceptanceTest.createStation("강남역").extract().as(Station.class);
+        서초역 = StationAcceptanceTest.createStation("서초역").extract().as(StationResponse.class);
+        교대역 = StationAcceptanceTest.createStation("교대역").extract().as(StationResponse.class);
+        강남역 = StationAcceptanceTest.createStation("강남역").extract().as(StationResponse.class);
     }
 
     /**
@@ -119,7 +119,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(extractNames(requestApiByFindAllLines())).doesNotContain("신분당선");
     }
 
-    private static ValidatableResponse requestApiByCreateLine(LineRequest request) {
+    public static ValidatableResponse requestApiByCreateLine(LineRequest request) {
         return RestAssured.given().log().all()
             .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
