@@ -37,11 +37,14 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
-        Section prevSection = sections.stream()
+        sections.stream()
             .filter(section -> section.prevSection(newSection))
             .findFirst()
-            .get();
-        prevSection.change(newSection);
+            .ifPresent(prevSection -> prevSection.change(newSection));
         sections.add(newSection);
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }
