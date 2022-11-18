@@ -95,11 +95,12 @@ public class Sections {
         validateIsLastSection();
         Optional<Section> prevSection = findPrevSection(station);
         Optional<Section> nextSection = findNextSection(station);
-        if (isDeleteMiddle(prevSection, nextSection)) {
+        if (prevSection.isPresent() && nextSection.isPresent()) {
             deleteMiddle(prevSection.get(), nextSection.get());
             return;
         }
-        deleteFirstOrLast(nextSection, prevSection);
+        nextSection.ifPresent(sections::remove);
+        prevSection.ifPresent(sections::remove);
     }
 
     private void validateIsLastSection() {
@@ -127,17 +128,8 @@ public class Sections {
                 .findFirst();
     }
 
-    private boolean isDeleteMiddle(Optional<Section> prevSection, Optional<Section> nextSection) {
-        return prevSection.isPresent() && nextSection.isPresent();
-    }
-
     private void deleteMiddle(Section prevSection, Section nextSection) {
         prevSection.merge(nextSection);
         this.sections.remove(nextSection);
-    }
-
-    private void deleteFirstOrLast(Optional<Section> nextSection, Optional<Section> prevSection) {
-        nextSection.ifPresent(sections::remove);
-        prevSection.ifPresent(sections::remove);
     }
 }
