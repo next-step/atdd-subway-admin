@@ -3,13 +3,12 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.springframework.http.MediaType;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import org.springframework.http.MediaType;
 
 public class StationAcceptanceRestAssured {
 

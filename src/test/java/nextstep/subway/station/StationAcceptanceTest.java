@@ -1,18 +1,20 @@
 package nextstep.subway.station;
 
+import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역_목록_조회;
+import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역_삭제;
+import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역_생성;
+import static nextstep.subway.station.StationAcceptanceRestAssured.지하철역들_생성;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.subway.common.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-
-import java.util.List;
-
-import static nextstep.subway.station.StationAcceptanceRestAssured.*;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends BaseAcceptanceTest {

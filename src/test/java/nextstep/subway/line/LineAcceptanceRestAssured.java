@@ -3,10 +3,9 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import org.springframework.http.MediaType;
-
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.http.MediaType;
 
 public class LineAcceptanceRestAssured {
 

@@ -1,7 +1,14 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import java.util.Collections;
 import java.util.Objects;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
 @Table(name = "LINE")
@@ -17,17 +24,10 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
+    @Embedded
+    private Sections sections;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-    private Integer distance;
-
-    protected Line() {
-    }
+    protected Line() {}
 
     private Line(Long id, String name, String color, Station upStation, Station downStation, Integer distance) {
         validateName(name);
@@ -35,9 +35,9 @@ public class Line extends BaseEntity {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+
+        Section section = Section.of(upStation, downStation, distance, this);
+        this.sections = Sections.from(Collections.singletonList(section));
     }
 
     public static Line of(String name, String color, Station upStation, Station downStation, Integer distance) {
@@ -65,6 +65,10 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
     public Long getId() {
         return id;
     }
@@ -77,18 +81,18 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
+    public Sections getSections() {
+        return sections;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Line)) return false;
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Line)) {
+            return false;
+        }
         Line line = (Line) o;
         return Objects.equals(id, line.id);
     }
