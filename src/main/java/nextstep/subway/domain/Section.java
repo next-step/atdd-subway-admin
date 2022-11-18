@@ -2,13 +2,13 @@ package nextstep.subway.domain;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import nextstep.subway.exception.IllegalDistanceException;
-import nextstep.subway.exception.SameStationException;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -40,45 +40,34 @@ public class Section {
     }
 
     public boolean hasRelation(Section newSection) {
-        return this.upStation == newSection.upStation
+        return hasSameUpStation(newSection)
             || this.upStation == newSection.downStation
             || this.downStation == newSection.upStation
-            || this.downStation == newSection.downStation;
+            || hasSameDownStation(newSection);
     }
 
-    public boolean prevSection(Section newSection) {
+    private boolean hasSameUpStation(Section newSection) {
         return this.upStation == newSection.upStation;
     }
 
-    public boolean afterSection(Section newSection) {
+    private boolean hasSameDownStation(Section newSection) {
         return this.downStation == newSection.downStation;
     }
 
-    public void betweenBefore(Section newSection) {
-        if (newSection.distance >= this.distance) {
-            throw new IllegalDistanceException();
-        }
-        if (hasSameStation(newSection)) {
-            throw new SameStationException();
-        }
-        this.distance -= newSection.distance;
-        this.upStation = newSection.downStation;
+    public boolean hasSameUpOrDownStation(Section newSection) {
+        return hasSameUpStation(newSection) || hasSameDownStation(newSection);
     }
 
-    public void betweenAfter(Section newSection) {
+    public void swap(Section newSection) {
         if (newSection.distance >= this.distance) {
             throw new IllegalDistanceException();
         }
-        if (hasSameStation(newSection)) {
-            throw new SameStationException();
-        }
         this.distance -= newSection.distance;
+        if (hasSameUpStation(newSection)) {
+            this.upStation = newSection.downStation;
+            return;
+        }
         this.downStation = newSection.upStation;
-    }
-
-    private boolean hasSameStation(Section newSection) {
-        return this.upStation.equals(newSection.upStation) && this.downStation
-            .equals(newSection.downStation);
     }
 
     public Long getId() {
@@ -97,4 +86,21 @@ public class Section {
         return distance;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(upStation, section.upStation) && Objects
+            .equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(upStation, downStation);
+    }
 }

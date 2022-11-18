@@ -10,6 +10,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.exception.NoRelationStationException;
+import nextstep.subway.exception.SameStationException;
 
 @Embeddable
 public class Sections {
@@ -38,25 +39,19 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
-        Section section1 = sections.stream()
-            .filter(section -> section.hasRelation(newSection))
-            .findAny()
-            .orElse(null);
-
-        if (section1 == null) {
+        if (sections.stream()
+            .noneMatch(section -> section.hasRelation(newSection))) {
             throw new NoRelationStationException();
         }
 
-        sections.stream()
-            .filter(section -> section.prevSection(newSection))
-            .findFirst()
-            .ifPresent(prevSection -> prevSection.betweenBefore(newSection));
+        if (sections.contains(newSection)) {
+            throw new SameStationException();
+        }
 
         sections.stream()
-            .filter(section -> section.afterSection(newSection))
+            .filter(section -> section.hasSameUpOrDownStation(newSection))
             .findFirst()
-            .ifPresent(prevSection -> prevSection.betweenAfter(newSection));
-
+            .ifPresent(section -> section.swap(newSection));
         sections.add(newSection);
     }
 
