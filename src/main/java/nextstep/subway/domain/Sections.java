@@ -34,15 +34,64 @@ public class Sections {
             return;
         }
         validateStationExist(section);
+        add(section);
+
+    }
+
+    private void add(Section section) {
+        if (isAddUpStaTionTerminus(section)) {
+            this.values.add(section);
+            return;
+        }
+        if (isAddDownStationTerminus(section)) {
+            this.values.add(section);
+            return;
+        }
         addMiddle(section);
     }
 
+    private boolean isAddDownStationTerminus(Section section) {
+        return this.values.stream().anyMatch(v -> v.getDownStation().equals(section.getUpStation()));
+    }
+
+    private boolean isAddUpStaTionTerminus(Section section) {
+        return this.values.stream().anyMatch(v -> v.getUpStation().equals(section.getDownStation()));
+    }
+
     private void addMiddle(Section newSection) {
-        Section existUpStation = this.values.stream()
+        if (isAddMiddleFromUpstaion(newSection)) {
+            updateUpStation(newSection);
+            values.add(newSection);
+            return;
+        }
+        if (isAddMiddleFromDownStation(newSection)) {
+            updateDownStation(newSection);
+            values.add(newSection);
+        }
+    }
+
+    private void updateDownStation(Section newSection) {
+        Section existSection = this.values.stream()
+                .filter(v -> v.getDownStation().equals(newSection.getDownStation()))
+                .findAny().get();
+        existSection.updateDownStation(newSection);
+    }
+
+    private boolean isAddMiddleFromDownStation(Section newSection) {
+        return this.values.stream()
+                .anyMatch(v -> v.getDownStation().equals(newSection.getDownStation()));
+    }
+
+    private boolean isAddMiddleFromUpstaion(Section newSection) {
+        return this.values.stream()
+                .anyMatch(v -> v.getUpStation().equals(newSection.getUpStation()));
+    }
+
+    private void updateUpStation(Section newSection) {
+        Section existSection = this.values.stream()
                 .filter(v -> v.getUpStation().equals(newSection.getUpStation()))
                 .findAny().get();
-        existUpStation.update(newSection);
-        values.add(newSection);
+        existSection.updateUpStation(newSection);
     }
 
     private void validateDuplicate(Section section) {

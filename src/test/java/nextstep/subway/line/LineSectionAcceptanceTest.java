@@ -108,14 +108,13 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionMiddle() {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), 11L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), otherDownStation.getId(), downStation.getId(), 3L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> findResponse = findById(line.getId());
         List<StationResponse> stations = convertStationsName(findResponse.jsonPath());
         assertThat(stations).hasSize(3);
-
     }
 
     @DisplayName("이미 존재하는 구간 사이에 새로운 구간을 등록 하려고 하나 기존 구간의 길이보다 크거나 , 같아서 저장 할 수 없다.")
