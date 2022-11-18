@@ -41,7 +41,7 @@ public class LineSectionStep {
         return RestAssured.given()
                 .body(request).log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/" + lineId + "/sections")
+                .when().post("/lines/" + lineId + "/sections")
                 .then()
                 .log().all()
                 .extract();

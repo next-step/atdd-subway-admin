@@ -49,7 +49,7 @@ public class LineAcceptanceStep {
         return RestAssured.given()
                 .body(updateRequest).log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/line/" + id)
+                .when().put("/lines/" + id)
                 .then()
                 .log().all()
                 .extract();
@@ -112,7 +112,7 @@ public class LineAcceptanceStep {
     public static ExtractableResponse<Response> 특정_노선을_조회한다(int id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/line/" + id)
+                .when().get("/lines/" + id)
                 .then().log().all()
                 .extract();
     }
@@ -128,7 +128,7 @@ public class LineAcceptanceStep {
     public static ExtractableResponse<Response> 특정_노선을_제거한다(int id) {
         return RestAssured.given()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/line/" + id)
+                .when().delete("/lines/" + id)
                 .then().log().all()
                 .extract();
     }
