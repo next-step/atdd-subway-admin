@@ -17,19 +17,15 @@ public class Line extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String color;
 
-    @Column(name = "distance", nullable = false)
-    private int distance;
-
     @Embedded
     private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
 
-    public Line(String name, String color, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
     }
 
     public void initLineStations(List<LineStation> lineStations) {
@@ -66,10 +62,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public LineStations getLineStation() {

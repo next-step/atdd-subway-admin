@@ -31,7 +31,7 @@ public class LineService {
         Station upStation = stationService.findStationById(lineRequest.getUpStationId());
         Station downStation = stationService.findStationById(lineRequest.getDownStationId());
 
-        Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance()));
+        Line line = lineRepository.save(new Line(lineRequest.getName(), lineRequest.getColor()));
         line.initLineStations(Arrays.asList(
                 lineStationRepository.save(new LineStation(null, upStation, 0, line)),
                 lineStationRepository.save(new LineStation(upStation, downStation, lineRequest.getDistance(), line)),
@@ -80,7 +80,8 @@ public class LineService {
         Line line = lineRepository.findById(lineId).orElseThrow(
                 () -> new LineStationNotFoundException(String.format("존재하지 않는 지하철 노선입니다. (id : %s)", lineId))
         );
-        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+
+        Station upStation= stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
         LineStation lineStation = new LineStation(upStation, downStation, sectionRequest.getDistance(), line);
 
