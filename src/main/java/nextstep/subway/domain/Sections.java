@@ -16,7 +16,12 @@ public class Sections {
 
     public void addSection(Line line, Station upStation, Station downStation, Long distance) {
         Section section = new Section(line, upStation, downStation, distance);
+        validateDuplicate(section);
         values.add(section);
+    }
+
+    private void validateDuplicate(Section section) {
+        values.forEach(v -> v.validateDuplicate(section));
     }
 
     public List<Station> allStation() {

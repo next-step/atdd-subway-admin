@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.exception.ErrorStatus;
+import nextstep.subway.exception.IllegalRequestBody;
+
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -36,6 +39,12 @@ public class Section extends BaseEntity {
         return upStation;
     }
 
+    public void validateDuplicate(Section section) {
+        if (this.getUpStation().equals(section.getUpStation()) && this.getDownStation().equals(section.getDownStation())) {
+            throw new IllegalRequestBody(ErrorStatus.DUPLICATE_SECTION.getMessage());
+        }
+    }
+
     public Station getDownStation() {
         return downStation;
     }
@@ -59,4 +68,5 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
