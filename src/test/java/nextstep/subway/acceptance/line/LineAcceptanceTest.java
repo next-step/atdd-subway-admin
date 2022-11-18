@@ -56,8 +56,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void findLines() {
 
-        지하철_노선_생성_요청("신분당선", "red", 신논현역_ID, 논현역_ID, 논현역_신논현역_거리);
-        지하철_노선_생성_요청("2호선", "green", 강남역_ID, 역삼역_ID, 논현역_신논현역_거리);
+        지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 신논현역_ID, 논현역_ID, 논현역_신논현역_거리);
+        지하철_노선_생성_요청(이호선_이름, 이호선_색상, 강남역_ID, 역삼역_ID, 논현역_신논현역_거리);
 
         // When
         ExtractableResponse<Response> response = 지하철_노선_목록_조회_요청();
