@@ -1,6 +1,7 @@
 package nextstep.subway.section;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.SectionRequest;
@@ -8,13 +9,13 @@ import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceStep.노선_한개_생성한다;
 import static nextstep.subway.line.LineAcceptanceStep.특정_노선을_조회한다;
 import static nextstep.subway.station.StationAcceptanceTest.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class LineSectionStep {
 
@@ -53,9 +54,10 @@ public class LineSectionStep {
     }
 
 
-    public static void 구간_추가_등록_결과_확인(int lineId, ExtractableResponse<Response> response, int count, String target, int totalDistance) {
-        구간_예상_수_확인(lineId, count, target);
-        라인_총_길이_확인(response, totalDistance);
+    public static void 구간_추가_등록_결과_확인(ExtractableResponse<Response> response, int count, int totalDistance) {
+        // 특정_노선을_조회한다(lineId); 로 로그 확인 가능
+
+        구간_등록_결과_검증(response, totalDistance, count);
         구간_등록_성공_확인(response);
     }
     public static void 구간_등록_성공_확인(ExtractableResponse<Response> response) {
@@ -67,12 +69,18 @@ public class LineSectionStep {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private static void 라인_총_길이_확인(ExtractableResponse<Response> response, int totalDistance) {
-        assertThat(response.jsonPath().getInt("totalDistance")).isEqualTo(totalDistance);
+    private static void 구간_등록_결과_검증(ExtractableResponse<Response> response, int totalDistance, int count) {
+        // List<JSONObject> stations = jsonPath.getList("stations"); 가능
+        JsonPath jsonPath = response.body().jsonPath();
+
+        assertAll(
+                () -> assertThat(jsonPath.getInt("totalDistance")).isEqualTo(totalDistance),
+                () -> assertThat(jsonPath.getList("stations")).hasSize(count)
+        );
     }
 
 
-    public static void 구간_예상_수_확인(int lineId, int count, String target) {
+    public static void 구간_등록_결과_검증(int lineId, int count, String target) {
         List<JSONObject> jsonObjects = 특정_노선을_조회한다(lineId).jsonPath().getList(target);
         assertThat(jsonObjects).hasSize(count);
     }

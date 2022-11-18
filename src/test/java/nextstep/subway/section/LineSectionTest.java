@@ -52,7 +52,7 @@ public class LineSectionTest {
         ExtractableResponse<Response> savedSection = 구간_생성_요청(lineId, 1L, 3L, 4);
 
         //then
-        구간_추가_등록_결과_확인(lineId, savedSection, 2, "sections", 7);
+        구간_추가_등록_결과_확인(savedSection, 3, 7);
     }
 
     /**
@@ -123,7 +123,7 @@ public class LineSectionTest {
         ExtractableResponse<Response> response = 구간_생성_요청(lineId, 3L, 1L, 3);
 
         // then
-        구간_추가_등록_결과_확인(lineId, response, 2, "sections", 10);
+        구간_추가_등록_결과_확인(response, 3, 10);
     }
 
 
@@ -142,6 +142,6 @@ public class LineSectionTest {
         ExtractableResponse<Response> response = 구간_생성_요청(lineId, 2L, 3L, 10);
 
         // then
-        구간_추가_등록_결과_확인(lineId, response, 2, "sections" ,17);
+        구간_추가_등록_결과_확인(response, 3 ,17);
     }
 }
