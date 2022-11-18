@@ -4,8 +4,10 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.apache.http.protocol.HTTP;
 import org.junit.jupiter.api.BeforeEach;
@@ -134,13 +136,12 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = createLine(params);
 
         // when
-        String result = retrieveLineByName(params.get("name"));
+        List<String> line = retrieveLineByName(params.get("name"));
 
         // then
         assertAll(
-                () -> assertThat(result).isNotNull()
-                //() -> assertThat(line.get(0).getName()).isEqualTo(params.get("name")),
-               // () -> assertThat(line.get(0).getColor()).isEqualTo(params.get("color"))
+                () -> assertThat(line).isNotNull(),
+                () -> assertThat(line.get(0)).isEqualTo(params.get("name"))
         );
 
     }
@@ -165,16 +166,17 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response1 = createLine(params);
 
         // when
-        params.put("downStationId", "3");
+        params.put("name", "수인분당선");
 
         ExtractableResponse<Response> response2 = updateLine(response1.header("Location"), params);
 
         // then
-        String result = retrieveLineByName(params.get("name"));
+        List<String> line = retrieveLineByName(params.get("name"));
+
 
         assertAll(
-                () -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value())
-                //() -> assertThat(line.get(0).getDownStationId()).isEqualTo(3)
+                () -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(line.get(0)).isEqualTo("수인분당선")
         );
     }
 
@@ -200,11 +202,11 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response2 = deleteLineByIe(response1.header("Location"));
 
         // then
-        String result = retrieveLineByName(params.get("name"));
+        List<String> line = retrieveLineByName(params.get("name"));
 
         assertAll(
-                () -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value())
-                //() -> assertThat(line).isEmpty()
+                () -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(line).isEmpty()
         );
 
     }
@@ -234,19 +236,16 @@ public class LineAcceptanceTest {
         return lineNames;
     }
 
-    public static String retrieveLineByName(String lineName) {
-        String result =
+    public static List<String> retrieveLineByName(String lineName) {
+        List<String> line =
                 RestAssured.given().log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .queryParam("name", lineName)
                         .when().get(BASE_URL)
                         .then().log().all()
                         .extract()
-                        .jsonPath().getString(".");
-
-        System.out.println("result : " + result);
-
-        return result;
+                        .jsonPath().getList("name", String.class);
+        return line;
     }
 
     private static ExtractableResponse<Response> updateLine(String location, Map<String, String> params) {
