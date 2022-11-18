@@ -8,8 +8,11 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.UpdateLineRequest;
+import nextstep.subway.exception.IllegalDistanceException;
+import nextstep.subway.exception.SameStationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,5 +68,19 @@ public class LineController {
     @GetMapping("/lines/{id}/sections")
     public ResponseEntity<List<SectionResponse>> getSections(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.getSections(id));
+    }
+
+    @ExceptionHandler(IllegalDistanceException.class)
+    public ResponseEntity<String> illegalDistanceExceptionHandler(
+        final IllegalDistanceException exception) {
+        return ResponseEntity.badRequest()
+            .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(SameStationException.class)
+    public ResponseEntity<String> sameStationExceptionHandler(
+        final SameStationException exception) {
+        return ResponseEntity.badRequest()
+            .body(exception.getMessage());
     }
 }

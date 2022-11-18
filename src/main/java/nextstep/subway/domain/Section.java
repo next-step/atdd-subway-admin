@@ -7,6 +7,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import nextstep.subway.exception.IllegalDistanceException;
+import nextstep.subway.exception.SameStationException;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -42,8 +44,19 @@ public class Section {
     }
 
     public void change(Section newSection) {
+        if (newSection.distance >= this.distance) {
+            throw new IllegalDistanceException();
+        }
+        if (hasSameStation(newSection)) {
+            throw new SameStationException();
+        }
         this.distance -= newSection.distance;
         this.upStation = newSection.downStation;
+    }
+
+    private boolean hasSameStation(Section newSection) {
+        return this.upStation.equals(newSection.upStation) && this.downStation
+            .equals(newSection.downStation);
     }
 
     public Long getId() {
@@ -61,4 +74,5 @@ public class Section {
     public int getDistance() {
         return distance;
     }
+
 }
