@@ -1,8 +1,11 @@
 package nextstep.subway.domain;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -24,11 +27,15 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
+    @Embedded
+    private Sections sections;
+
     protected Line(){ }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+        this.sections = new Sections();
     }
 
     public Long getId() {
@@ -48,6 +55,11 @@ public class Line extends BaseEntity {
         this.color = lineRequest.getColor();
     }
 
+    public void addSection(Section section){
+        section.addLine(this);
+        sections.add(section);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -64,5 +76,13 @@ public class Line extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(getId(), getName(), getColor());
+    }
+
+    public List<Station> getOrderedStations() {
+        return sections.getOrderedStations();
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 }
