@@ -1,5 +1,7 @@
 package nextstep.subway.domain.raw;
 
+import nextstep.subway.dto.LineRequest;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 
@@ -22,4 +24,10 @@ public class Color {
         return color;
     }
 
+    public Color from(LineRequest updateRequest) {
+        if (updateRequest.getColor().isEmpty() || updateRequest.getColor() == "") {
+            throw new IllegalArgumentException(NOT_VALID_EMPTY);
+        }
+        return new Color(updateRequest.getColor());
+    }
 }

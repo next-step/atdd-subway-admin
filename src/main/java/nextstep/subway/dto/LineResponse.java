@@ -22,8 +22,6 @@ public class LineResponse {
 
 
    public static List<LineResponse> of(List<Line> lines) {
-       LineResponse.builder().build();
-
        return lines.stream()
                .map(line -> LineResponse.from(line))
                .collect(Collectors.toList());
