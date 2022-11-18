@@ -2,8 +2,8 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -22,7 +22,11 @@ public class LineResponse {
         this.id = line.getId();
         this.name = line.getName();
         this.color = line.getColor();
-        this.stations = Arrays.asList(StationResponse.of(line.getUpStation()), StationResponse.of(line.getDownStation()));
+        this.stations = toStations(line);
+    }
+
+    private List<StationResponse> toStations(Line line) {
+        return line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
     }
 
     public Long getId() {

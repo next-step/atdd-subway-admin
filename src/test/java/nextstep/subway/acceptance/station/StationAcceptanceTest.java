@@ -1,23 +1,19 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.RestAssuredSetUp;
+import nextstep.subway.acceptance.RestAssuredSetUp;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 
-import static nextstep.subway.station.StationAcceptaneCommon.*;
+import static nextstep.subway.acceptance.station.StationAcceptaneCommon.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
-@Sql(scripts = "classpath:truncateTables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest extends RestAssuredSetUp {
     /**
      * When 지하철역을 생성하면

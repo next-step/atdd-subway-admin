@@ -1,28 +1,24 @@
-package nextstep.subway.line;
+package nextstep.subway.acceptance.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.RestAssuredSetUp;
+import nextstep.subway.acceptance.RestAssuredSetUp;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.jdbc.Sql;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.line.LineAcceptanceCommon.*;
-import static nextstep.subway.station.StationAcceptaneCommon.지하철_역_등록;
+import static nextstep.subway.acceptance.line.LineAcceptanceCommon.*;
+import static nextstep.subway.acceptance.station.StationAcceptaneCommon.지하철_역_등록;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 기능")
-@Sql(scripts = "classpath:truncateTables.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest extends RestAssuredSetUp {
     /**
      * When 지하철노선을 생성하면
@@ -38,9 +34,9 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
         지하철_노선_등록(LineRequest.builder()
                 .name("2호선")
                 .color("green")
-                .distance(10l)
                 .upStationId(gangnamStationId)
                 .downStationId(nonhyunStationId)
+                .distance(10)
                 .build());
         //then
         List<LineResponse> lines = 지하철_노선_전체조회().jsonPath().getList(".", LineResponse.class).stream().collect(Collectors.toList());
@@ -69,12 +65,14 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(gangnamStationId)
                 .downStationId(nonhyunStationId)
+                .distance(10)
                 .build());
         지하철_노선_등록(LineRequest.builder()
                 .name("1호선")
                 .color("blue")
                 .upStationId(kildongStationId)
                 .downStationId(sinlimStationId)
+                .distance(10)
                 .build());
 
         //when
@@ -106,6 +104,7 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(upStationId)
                 .downStationId(downStationId)
+                .distance(10)
                 .build()).jsonPath().getLong("id");
 
         //then
@@ -137,6 +136,7 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(upStationId)
                 .downStationId(downStationId)
+                .distance(10)
                 .build()).jsonPath().getLong("id");
 
         // when
@@ -164,12 +164,14 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(gangnamStationId)
                 .downStationId(nonhyunStationId)
+                .distance(10)
                 .build());
         long lineId = 지하철_노선_등록(LineRequest.builder()
                 .name("1호선")
                 .color("blue")
                 .upStationId(kildongStationId)
                 .downStationId(sinlimStationId)
+                .distance(10)
                 .build()).jsonPath().getLong("id");
 
         //when
@@ -195,6 +197,7 @@ public class LineAcceptanceTest extends RestAssuredSetUp {
                 .color("green")
                 .upStationId(upStationId)
                 .downStationId(downStationId)
+                .distance(10)
                 .build()).jsonPath().getLong("id");
 
         //when

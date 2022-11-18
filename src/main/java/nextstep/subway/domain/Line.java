@@ -3,9 +3,10 @@ package nextstep.subway.domain;
 import nextstep.subway.exception.LineException;
 
 import javax.persistence.*;
+import java.util.List;
 
+import static nextstep.subway.exception.LineExceptionMessage.EMPTY_LINE_COLOR;
 import static nextstep.subway.exception.LineExceptionMessage.EMPTY_LINE_NAME;
-import static nextstep.subway.exception.LineExceptionMessage.EMPTY_STATION;
 
 @Entity
 public class Line extends BaseEntity {
@@ -16,31 +17,29 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @Column
-    private long distance;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
+    @Embedded
+    private Sections sections = new Sections();
 
-    public Line() {
+    protected Line() {
     }
 
-    public Line(String name, String color, long distance, Station upStation, Station downStation) {
-        validateLine(name, upStation, downStation);
+    public Line(String name, String color) {
+        validateLine(name);
+        validateColor(color);
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
     }
 
-    private void validateLine(String name, Station upStation, Station downStation) {
-        if (name == null || name.isEmpty()) throw new LineException(EMPTY_LINE_NAME.getMessage());
-        if (upStation == null || downStation == null) throw new LineException(EMPTY_STATION.getMessage());
+    private void validateLine(String name) {
+        if (name == null || name.isEmpty()) {
+            throw new LineException(EMPTY_LINE_NAME.getMessage());
+        }
+    }
+
+    private void validateColor(String color) {
+        if (color == null || color.isEmpty()) {
+            throw new LineException(EMPTY_LINE_COLOR.getMessage());
+        }
     }
 
     public Long getId() {
@@ -55,20 +54,16 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public long getDistance() {
-        return distance;
-    }
-
     public void modifyLine(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 }
