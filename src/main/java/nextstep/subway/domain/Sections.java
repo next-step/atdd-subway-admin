@@ -28,10 +28,10 @@ public class Sections {
     }
 
     private void addMiddle(Section newSection) {
-        Section existUpstation = this.values.stream()
+        Section existUpStation = this.values.stream()
                 .filter(v -> v.getUpStation().equals(newSection.getUpStation()))
                 .findAny().get();
-        existUpstation.update(newSection);
+        existUpStation.update(newSection);
         values.add(newSection);
     }
 

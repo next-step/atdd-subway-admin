@@ -50,7 +50,14 @@ public class Section extends BaseEntity {
     }
 
     public void update(Section newSection) {
+        validateDistance(newSection);
         this.upStation = newSection.getDownStation();
+    }
+
+    private void validateDistance(Section newSection) {
+        if (this.distance <= newSection.distance) {
+            throw new IllegalRequestBody(ErrorStatus.DISTANCE_LENGTH.getMessage());
+        }
     }
 
     @Override

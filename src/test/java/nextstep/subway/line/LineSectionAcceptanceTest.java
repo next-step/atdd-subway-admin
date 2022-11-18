@@ -108,7 +108,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionMiddle() {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), 8L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), 11L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -122,7 +122,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionMiddleFailedDistance() {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), 8L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), 11L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
