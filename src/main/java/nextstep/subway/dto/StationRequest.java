@@ -1,5 +1,6 @@
 package nextstep.subway.dto;
 
+import nextstep.subway.domain.Name;
 import nextstep.subway.domain.Station;
 
 public class StationRequest {
@@ -10,6 +11,6 @@ public class StationRequest {
     }
 
     public Station toStation() {
-        return new Station(name);
+        return new Station(new Name(name));
     }
 }

@@ -8,21 +8,24 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true, nullable = false)
-    private String name;
-    @Column(unique = true, nullable = false)
-    private String color;
+    @Embedded
+    private Name name;
+    @Embedded
+    private Color color;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_to_up_station"))
     private Station upStation;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_to_down_station"))
     private Station downStation;
-    @Column(nullable = false)
-    private int distance;
+
+    @Embedded
+    private Distance distance;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(Name name, Color color, Station upStation, Station downStation, Distance distance) {
         this.name = name;
         this.color = color;
         this.upStation = upStation;
@@ -34,11 +37,11 @@ public class Line extends BaseEntity {
         return id;
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 
-    public String getColor() {
+    public Color getColor() {
         return color;
     }
 
@@ -50,12 +53,12 @@ public class Line extends BaseEntity {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
-    public void update(String name, String color){
-        this.name = name;
-        this.color = color;
+    public void update(String name, String color) {
+        this.name = new Name(name);
+        this.color = new Color(color);
     }
 }

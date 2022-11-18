@@ -7,13 +7,14 @@ public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true, nullable = false)
-    private String name;
+    @Embedded
+    @AttributeOverride(name = "name", column = @Column(name = "name", unique = true, nullable = false))
+    private Name name;
 
     public Station() {
     }
 
-    public Station(String name) {
+    public Station(Name name) {
         this.name = name;
     }
 
@@ -21,7 +22,7 @@ public class Station extends BaseEntity {
         return id;
     }
 
-    public String getName() {
+    public Name getName() {
         return name;
     }
 }

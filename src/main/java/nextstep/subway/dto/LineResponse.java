@@ -1,6 +1,8 @@
 package nextstep.subway.dto;
 
+import nextstep.subway.domain.Color;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Name;
 import nextstep.subway.domain.Station;
 
 import java.util.ArrayList;
@@ -8,11 +10,11 @@ import java.util.List;
 
 public class LineResponse {
     private final Long id;
-    private final String name;
-    private final String color;
-    private List<Station> stations = new ArrayList<>();
+    private final Name name;
+    private final Color color;
+    private final List<Station> stations;
 
-    public LineResponse(Long id, String name, String color, List<Station> stations) {
+    public LineResponse(Long id, Name name, Color color, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -31,10 +33,10 @@ public class LineResponse {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public String getColor() {
-        return color;
+        return color.getColor();
     }
 }
