@@ -52,6 +52,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /*
+   GIVEN 강남역을 상행선 역삼역을 하행선으로 있는 이호선
+   WHEN 강남역 역삼역 사이 블루보틀역 등록
+   THEN 이호선 강남역 역삼역 사이 블루보틀역 추가
+    */
+    @Test
+    @DisplayName("역 사이에 새로운 역 등록")
+    void addStationBetween2() {
+        //when
+        구간_등록(이호선, 블루보틀역, 역삼역, 4);
+
+        //then
+        assertThat(SectionFixture.구간_목록_조회(이호선).jsonPath().getList(".", SectionResponse.class))
+            .hasSize(2)
+            .extracting(SectionResponse::getDownStation)
+            .extracting(StationResponse::getName)
+            .contains("역삼역", "블루보틀역");
+    }
+
+    /*
     GIVEN 강남역을 상행선 역삼역을 하행선으로 있는 이호선
     WHEN 강남역 앞에 블루보틀역 등록
     THEN 이호선 상행종점은 블루보틀역
@@ -103,7 +122,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("동일한 상행선과 하행선을 가진 구간 추가시 에러 발생")
     void sameSectionException() {
         //when
-        ExtractableResponse<Response> response = 구간_등록(이호선, 강남역, 역삼역, 7);
+        ExtractableResponse<Response> response = 구간_등록(이호선, 강남역, 역삼역, 3);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
