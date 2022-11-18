@@ -158,5 +158,4 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(지하철_노선_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
-
 }
