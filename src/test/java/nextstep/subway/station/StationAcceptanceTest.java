@@ -3,6 +3,8 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.DatabaseCleaner;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,8 +14,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,9 +26,6 @@ public class StationAcceptanceTest {
     @LocalServerPort
     int port;
 
-    @PersistenceContext
-    EntityManager entityManager;
-
     @Autowired
     private DatabaseCleaner databaseCleaner;
 
@@ -37,6 +34,10 @@ public class StationAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+    }
+
+    @AfterEach
+    public void cleanUp() {
         databaseCleaner.execute();
     }
 
@@ -48,12 +49,12 @@ public class StationAcceptanceTest {
     @Test
     @DisplayName("지하철역을 생성한다.")
     void createStationTest() {
-        // when
+        // given
         String stationName = "강남역";
-        int responseCode = createStation(stationName).statusCode();
 
-        // then
-        assertThat(responseCode).isEqualTo(HttpStatus.CREATED.value());
+        // when
+        assertThat(createStationAndGetResponseCode(stationName))
+                .isEqualTo(HttpStatus.CREATED.value());
 
         // then
         assertThat(getStationNames()).containsAnyOf(stationName);
@@ -72,10 +73,9 @@ public class StationAcceptanceTest {
         createStation(stationName);
 
         // when
-        int responseCode = createStation(stationName).statusCode();
-
-        // then
-        assertThat(responseCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(createStationAndGetResponseCode(stationName))
+                // then
+                .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -138,12 +138,12 @@ public class StationAcceptanceTest {
     /**
      * 주어진 이름으로 지하철역을 생성한다.
      */
-    ExtractableResponse<Response> createStation(String stationName) {
-        final Map<String, String> params1 = new HashMap<>();
-        params1.put("name", stationName);
+    static ExtractableResponse<Response> createStation(String stationName) {
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
 
         return RestAssured.given().log().all()
-                .body(params1)
+                .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all().extract();
@@ -152,14 +152,20 @@ public class StationAcceptanceTest {
     /**
      * 주어진 이름으로 지하철역을 생성 후 id를 조회한다.
      */
-    String createStationAndGetId(String stationName) {
+    public static String createStationAndGetId(String stationName) {
         return createStation(stationName).jsonPath().get("id").toString();
+    }
+    /**
+     * 주어진 이름으로 지하철역을 생성 후 상태코드를 조회한다.
+     */
+    static int createStationAndGetResponseCode(String stationName) {
+        return createStation(stationName).statusCode();
     }
 
     /**
      * 지하철역 목록을 조회한다.
      */
-    List<String> getStationNames() {
+    public static List<String> getStationNames() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
