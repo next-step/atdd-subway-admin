@@ -208,9 +208,9 @@ public class Sections {
         removeSections(upStationSection, downStationSection);
     }
 
-    private void removeSections(Section ...sections) {
-        Arrays.stream(sections)
-                .forEach(section -> sectionList.remove(section));
+    private void removeSections(Section upStationSection, Section downStationSection) {
+        sectionList.remove(upStationSection);
+        sectionList.remove(downStationSection);
     }
 
     private Section findUpStationSections(Station upStation) {
