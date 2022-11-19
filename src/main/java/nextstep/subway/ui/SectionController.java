@@ -22,11 +22,6 @@ public class SectionController {
         sectionService.createSection(lineId, request);
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).build();
     }
-    @GetMapping("/lines/{lineId}/sections")
-    public ResponseEntity<SectionListResponse> createLine(@PathVariable("lineId") Long lineId) {
-        SectionListResponse response = sectionService.querySections(lineId);
-        return ResponseEntity.ok().body(response);
-    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity IllegalArgumentException() {return ResponseEntity.badRequest().build();}

@@ -50,7 +50,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    private Line findLineOrThrowException(Long lineId) {
+    public Line findLineOrThrowException(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
     }
 
