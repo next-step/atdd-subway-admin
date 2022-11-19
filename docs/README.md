@@ -46,8 +46,8 @@
 * [x] 노선저장 Section 에 위임
 * [x] Line 을 통해 Section 로딩
 * [x] 사용되지 않는 주석 제거
-* [ ] cascade 를 사용하여 저장 및 삭제로직을 도메인 내부로 이동
-* [ ] In 절로 가져온 객체를 스트림으로 찾는것 보단 각 id로 두번 조회
+* [x] cascade 를 사용하여 저장 및 삭제로직을 도메인 내부로 이동
+* [x] In 절로 가져온 객체를 스트림으로 찾는것 보단 각 id로 두번 조회
 * [x] 검증로직 도메인으로 이동
-* [ ] api 명세에 맞춰서 RequestMapping 수정
+* [x] api 명세에 맞춰서 RequestMapping 수정
 * [x] Station 관련 된 로직은 StationService 에 의존하도록 수정

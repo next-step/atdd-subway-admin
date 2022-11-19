@@ -12,10 +12,6 @@ public class Sections {
     @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
 
-    public void addAll(List<Section> sections) {
-        this.sections.addAll(sections);
-    }
-
     public List<Section> getSections() {
         return sections;
     }

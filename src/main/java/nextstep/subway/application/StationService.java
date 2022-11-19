@@ -1,7 +1,6 @@
 package nextstep.subway.application;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Station;
@@ -31,11 +30,7 @@ public class StationService {
         return StationResponse.of(station);
     }
 
-    public List<Station> findStationsByIdIn(Set<Long> stationIds) {
-        return stationRepository.findByIdIn(stationIds);
-    }
-
-    public Station findStationById(Long id) {
+    public Station findEntityById(Long id) {
         return stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 

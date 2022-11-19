@@ -28,7 +28,7 @@ public class SectionService {
         this.sectionRepository = sectionRepository;
     }
 
-    public List<SectionResponse> findSectionsByLineId(Long lineId) {
+    public List<SectionResponse> findResponsesByLineId(Long lineId) {
         List<Section> sections = sectionRepository.findByLineId(lineId)
                 .orElseThrow(EntityNotFoundException::new);
 
@@ -40,8 +40,8 @@ public class SectionService {
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineService.findEntityWithSectionsById(lineId);
-        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
-        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+        Station upStation = stationService.findEntityById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findEntityById(sectionRequest.getDownStationId());
         int distance = sectionRequest.getDistance();
 
         line.validateAlreadyAndNotExistsStations(upStation, downStation);

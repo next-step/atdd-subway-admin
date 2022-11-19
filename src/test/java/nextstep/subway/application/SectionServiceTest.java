@@ -42,7 +42,7 @@ class SectionServiceTest {
         flushAndClear();
         sectionService.addSection(lineId, getSectionRequest());
         flushAndClear();
-        List<SectionResponse> sections = sectionService.findSectionsByLineId(lineId);
+        List<SectionResponse> sections = sectionService.findResponsesByLineId(lineId);
         List<Integer> distances = sections.stream().map(SectionResponse::getDistance)
                 .collect(Collectors.toList());
         assertThat(distances).contains(6, 4);
@@ -51,7 +51,7 @@ class SectionServiceTest {
     @Test
     void findSectionsByLineId() {
         Long lineId = lineService.saveLine(getLineRequest());
-        List<SectionResponse> sections = sectionService.findSectionsByLineId(lineId);
+        List<SectionResponse> sections = sectionService.findResponsesByLineId(lineId);
         assertThat(sections).hasSize(1);
     }
 

@@ -14,8 +14,7 @@ import org.springframework.http.MediaType;
 public abstract class SectionTestFixtures {
 
     private static final String PATH_LINE = "/lines";
-    private static final String PATH_LINE_STATION = "/section";
-    private static final String PATH_LINE_ID = PATH_LINE_STATION + "/{lineId}";
+    private static final String PATH_LINE_ID_SECTION = PATH_LINE + "/{lineId}/section";
 
     public static void 등록이_불가하다(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -23,52 +22,52 @@ public abstract class SectionTestFixtures {
 
     public static void 기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨(String information, String pathVariable,
                                                      String... containValues) {
-        List<String> informationList = 목록조회(information, PATH_LINE_ID, pathVariable);
+        List<String> informationList = 목록조회(information, PATH_LINE_ID_SECTION, pathVariable);
         assertThat(informationList).contains(containValues);
     }
 
 
     public static void 기존_구간과_상행_종점으로_등록한_구간이_함께_조회됨(String information, String pathVariable,
                                                      String... containValues) {
-        List<String> informationList = 목록조회(information, PATH_LINE_ID, pathVariable);
+        List<String> informationList = 목록조회(information, PATH_LINE_ID_SECTION, pathVariable);
         assertThat(informationList).contains(containValues);
     }
 
     public static void 새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정(String information, String pathVariable,
                                                          String... containValues) {
-        List<String> informationList = 목록조회(information, PATH_LINE_ID, pathVariable);
+        List<String> informationList = 목록조회(information, PATH_LINE_ID_SECTION, pathVariable);
         assertThat(informationList).contains(containValues);
     }
 
     public static ExtractableResponse<Response> 새로운_역_하행_종점으로_등록(String upStationId, String downStationId,
                                                                  String distance, String pathVariable) {
-        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID_SECTION, pathVariable);
     }
 
     public static ExtractableResponse<Response> 새로운_역_상행_종점으로_등록(String upStationId, String downStationId,
                                                                  String distance, String pathVariable) {
-        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID_SECTION, pathVariable);
     }
 
     public static ExtractableResponse<Response> 기존노선과_동일하게_상행_하행역을_등록(String upStationId, String downStationId,
                                                                       String distance, String pathVariable) {
-        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID_SECTION, pathVariable);
     }
 
     public static ExtractableResponse<Response> 기존노선의_상행_하행_역과_모두_일치하지_않게_등록(String upStationId, String downStationId,
                                                                              String distance, String pathVariable) {
-        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID_SECTION, pathVariable);
     }
 
     public static ExtractableResponse<Response> 기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록(String upStationId,
                                                                                 String downStationId, String distance,
                                                                                 String pathVariable) {
-        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID_SECTION, pathVariable);
     }
 
     public static ExtractableResponse<Response> 역_사이_새로운역_등록(String upStationId, String downStationId, String distance,
                                                              String pathVariable) {
-        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID, pathVariable);
+        return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID_SECTION, pathVariable);
     }
 
     public static String 지하철_노선_등록되어_있음(String name, String color, String upStationId, String downStationId,

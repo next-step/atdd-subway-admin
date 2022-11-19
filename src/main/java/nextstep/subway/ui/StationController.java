@@ -28,12 +28,9 @@ public class StationController {
         this.stationService = stationService;
     }
 
-    @PostMapping
-    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
-        Long id = stationService.saveStation(stationRequest);
-        StationResponse stationResponse = new StationResponse();
-        stationResponse.setId(id);
-        return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<StationResponse>> showStations() {
+        return ResponseEntity.ok().body(stationService.findAllStations());
     }
 
     @GetMapping("/{id}")
@@ -41,9 +38,12 @@ public class StationController {
         return ResponseEntity.ok().body(stationService.findResponseById(id));
     }
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(stationService.findAllStations());
+    @PostMapping
+    public ResponseEntity<StationResponse> createStation(@RequestBody StationRequest stationRequest) {
+        Long id = stationService.saveStation(stationRequest);
+        StationResponse stationResponse = new StationResponse();
+        stationResponse.setId(id);
+        return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);
     }
 
     @DeleteMapping("/{id}")

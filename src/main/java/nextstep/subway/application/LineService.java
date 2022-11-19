@@ -1,12 +1,10 @@
 package nextstep.subway.application;
 
-import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
 import nextstep.subway.domain.repository.LineRepository;
 import nextstep.subway.domain.repository.SectionRepository;
 import nextstep.subway.dto.LineRequest;
@@ -78,9 +76,7 @@ public class LineService {
     }
 
     private void setUpDownStation(LineRequest lineRequest) {
-        List<Station> stations = stationService
-                .findStationsByIdIn(Sets.newHashSet(lineRequest.getUpStationId(), lineRequest.getDownStationId()));
-        lineRequest.isUpStationThenSet(stations);
-        lineRequest.isDownStationThenSet(stations);
+        lineRequest.setUpStation(stationService.findEntityById(lineRequest.getUpStationId()));
+        lineRequest.setDownStation(stationService.findEntityById(lineRequest.getDownStationId()));
     }
 }
