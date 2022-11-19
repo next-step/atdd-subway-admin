@@ -1,8 +1,9 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.line.LineAcceptanceTestFixture.*;
-import static nextstep.subway.station.StationAcceptanceTest.*;
+import static nextstep.subway.line.LineNameTestFixture.*;
 import static nextstep.subway.station.StationAcceptanceTestFixture.*;
+import static nextstep.subway.station.StationNameTestFixture.*;
 import static nextstep.subway.utils.JsonPathUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,9 +22,6 @@ import nextstep.subway.utils.JsonPathUtils;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    public static final String LINE_2 = "2호선";
-    public static final String LINE_BUNDANG = "분당선";
-
     private Integer GANGNAM_ID;
     private Integer WANGSIPLI_ID;
     private Integer JUKJUN_ID;

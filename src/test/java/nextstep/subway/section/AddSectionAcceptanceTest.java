@@ -1,15 +1,14 @@
 package nextstep.subway.section;
 
-import static nextstep.subway.line.LineAcceptanceTest.*;
 import static nextstep.subway.line.LineAcceptanceTestFixture.*;
+import static nextstep.subway.line.LineNameTestFixture.*;
 import static nextstep.subway.section.SectionAcceptanceTestFixture.*;
-import static nextstep.subway.station.StationAcceptanceTest.*;
 import static nextstep.subway.station.StationAcceptanceTestFixture.*;
+import static nextstep.subway.station.StationNameTestFixture.*;
 import static nextstep.subway.utils.JsonPathUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 
 @DisplayName("지하철역 구간 관련 기능")
-public class SectionAcceptanceTest extends AcceptanceTest {
+public class AddSectionAcceptanceTest extends AcceptanceTest {
     private Integer WANGSIPLI_ID;
     private Integer JUKJUN_ID;
 
@@ -40,7 +39,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection() {
         // given
         왕십리_죽전_분당선_등록();
-        String SEOHYUN = "서현역";
         Integer SEOHYUN_ID = ID_추출(지하철역_생성(SEOHYUN));
 
         // when
@@ -119,7 +117,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     void addSection_distance_over(String distance) {
         // given
         왕십리_죽전_분당선_등록();
-        Integer SEOHYUN_ID = ID_추출(지하철역_생성("서현역"));
+        Integer SEOHYUN_ID = ID_추출(지하철역_생성(SEOHYUN));
 
         // when
         Map<String, String> params = 구간_등록_요청_파라미터(WANGSIPLI_ID, SEOHYUN_ID, distance);
@@ -167,14 +165,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-    }
-
-    private Map<String, String> 구간_등록_요청_파라미터(Integer upStationId, Integer downStationId, String distance) {
-        Map<String, String> params = new HashMap<>();
-        params.put("upStationId", upStationId.toString());
-        params.put("downStationId", downStationId.toString());
-        params.put("distance", distance);
-        return params;
     }
 
     private Integer ID_추출(ExtractableResponse<Response> response) {
