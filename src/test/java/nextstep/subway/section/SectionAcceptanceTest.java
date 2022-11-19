@@ -1,49 +1,25 @@
-package nextstep.subway.linestation;
+package nextstep.subway.section;
 
-import static nextstep.subway.linestation.LineStationTestFixtures.기존_구간과_상행_종점으로_등록한_구간이_함께_조회됨;
-import static nextstep.subway.linestation.LineStationTestFixtures.기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨;
-import static nextstep.subway.linestation.LineStationTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
-import static nextstep.subway.linestation.LineStationTestFixtures.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
-import static nextstep.subway.linestation.LineStationTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
-import static nextstep.subway.linestation.LineStationTestFixtures.등록이_불가하다;
-import static nextstep.subway.linestation.LineStationTestFixtures.새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정;
-import static nextstep.subway.linestation.LineStationTestFixtures.새로운_역_상행_종점으로_등록;
-import static nextstep.subway.linestation.LineStationTestFixtures.새로운_역_하행_종점으로_등록;
-import static nextstep.subway.linestation.LineStationTestFixtures.역_사이_새로운역_등록;
-import static nextstep.subway.linestation.LineStationTestFixtures.지하철_노선_등록되어_있음;
+import static nextstep.subway.section.SectionTestFixtures.기존_구간과_상행_종점으로_등록한_구간이_함께_조회됨;
+import static nextstep.subway.section.SectionTestFixtures.기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨;
+import static nextstep.subway.section.SectionTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
+import static nextstep.subway.section.SectionTestFixtures.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
+import static nextstep.subway.section.SectionTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
+import static nextstep.subway.section.SectionTestFixtures.등록이_불가하다;
+import static nextstep.subway.section.SectionTestFixtures.새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정;
+import static nextstep.subway.section.SectionTestFixtures.새로운_역_상행_종점으로_등록;
+import static nextstep.subway.section.SectionTestFixtures.새로운_역_하행_종점으로_등록;
+import static nextstep.subway.section.SectionTestFixtures.역_사이_새로운역_등록;
+import static nextstep.subway.section.SectionTestFixtures.지하철_노선_등록되어_있음;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.fixtures.TestFixtures;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("구간 추가 관련 기능")
-class LineStationAcceptanceTest extends TestFixtures {
-
-    @Autowired
-    StationRepository stationRepository;
-    String stationId1 = "";
-    String stationId2 = "";
-    String stationId3 = "";
-    String stationId4 = "";
-
-    @BeforeEach
-    void beforeEach() {
-        setUp();
-        Station station1 = stationRepository.save(new Station("경기 광주역"));
-        Station station2 = stationRepository.save(new Station("중앙역"));
-        Station station3 = stationRepository.save(new Station("모란역"));
-        Station station4 = stationRepository.save(new Station("미금역"));
-        stationId1 = String.valueOf(station1.getId());
-        stationId2 = String.valueOf(station2.getId());
-        stationId3 = String.valueOf(station3.getId());
-        stationId4 = String.valueOf(station4.getId());
-    }
+class SectionAcceptanceTest extends TestFixtures {
 
     /**
      * Given 노선이 등록되어 있다.

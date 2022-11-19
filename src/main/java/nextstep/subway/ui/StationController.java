@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/stations")
 public class StationController {
+
     private StationService stationService;
 
     public StationController(StationService stationService) {
@@ -37,7 +38,7 @@ public class StationController {
 
     @GetMapping("/{id}")
     public ResponseEntity<StationResponse> showStationById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(stationService.findById(id));
+        return ResponseEntity.ok().body(stationService.findResponseById(id));
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

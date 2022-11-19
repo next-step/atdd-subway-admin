@@ -10,18 +10,12 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.fixtures.TestFixtures;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철역 관련 기능")
 class StationAcceptanceTest extends TestFixtures {
-
-    @BeforeEach
-    void beforeEach() {
-        setUp();
-    }
 
     /**
      * When 지하철역을 생성하면
@@ -91,7 +85,7 @@ class StationAcceptanceTest extends TestFixtures {
     @Test
     void deleteStation() {
         //given
-        String id = 지하철역_생성_값_리턴("경기 광주역", "id");
+        String id = 지하철역_생성_값_리턴("판교역", "id");
 
         //when
         ExtractableResponse<Response> response = 지하철역_삭제("/{id}", id);

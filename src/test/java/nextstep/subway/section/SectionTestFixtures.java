@@ -1,4 +1,4 @@
-package nextstep.subway.linestation;
+package nextstep.subway.section;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -11,10 +11,10 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public abstract class LineStationTestFixtures {
+public abstract class SectionTestFixtures {
 
     private static final String PATH_LINE = "/lines";
-    private static final String PATH_LINE_STATION = "/line-station";
+    private static final String PATH_LINE_STATION = "/section";
     private static final String PATH_LINE_ID = PATH_LINE_STATION + "/{lineId}";
 
     public static void 등록이_불가하다(ExtractableResponse<Response> response) {

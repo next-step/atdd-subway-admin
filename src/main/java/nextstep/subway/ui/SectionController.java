@@ -2,9 +2,9 @@ package nextstep.subway.ui;
 
 import java.util.List;
 import javax.persistence.PersistenceException;
-import nextstep.subway.application.LineStationService;
-import nextstep.subway.dto.LineStationResponse;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,25 +15,25 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/line-station")
-public class LineStationController {
+@RequestMapping("/section")
+public class SectionController {
 
-    private final LineStationService lineStationService;
+    private final SectionService sectionService;
 
-    public LineStationController(LineStationService lineStationService) {
-        this.lineStationService = lineStationService;
+    public SectionController(SectionService sectionService) {
+        this.sectionService = sectionService;
     }
 
     @PostMapping("/{lineId}")
     public ResponseEntity addSection(@PathVariable("lineId") Long lineId,
                                      @RequestBody SectionRequest sectionRequest) {
-        lineStationService.addSection(lineId, sectionRequest);
+        sectionService.addSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{lineId}")
-    public ResponseEntity<List<LineStationResponse>> showLineStations(@PathVariable("lineId") Long lineId) {
-        return ResponseEntity.ok().body(lineStationService.findLineStationsByLineId(lineId));
+    public ResponseEntity<List<SectionResponse>> showSections(@PathVariable("lineId") Long lineId) {
+        return ResponseEntity.ok().body(sectionService.findSectionsByLineId(lineId));
     }
 
     @ExceptionHandler({PersistenceException.class, IllegalArgumentException.class})

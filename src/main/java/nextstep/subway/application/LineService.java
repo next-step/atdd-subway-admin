@@ -1,15 +1,14 @@
 package nextstep.subway.application;
 
-import java.util.Arrays;
+import com.google.common.collect.Sets;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.LineStation;
-import nextstep.subway.domain.LineStationRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.repository.LineRepository;
+import nextstep.subway.domain.repository.SectionRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -20,27 +19,31 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
-    private final LineStationRepository lineStationRepository;
+    private final StationService stationService;
+    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository,
-                       LineStationRepository lineStationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService,
+                       SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
-        this.lineStationRepository = lineStationRepository;
+        this.stationService = stationService;
+        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
     public Long saveLine(LineRequest lineRequest) {
         setUpDownStation(lineRequest);
         Line persistLine = lineRepository.save(lineRequest.toLine());
-        lineStationRepository.save(new LineStation(persistLine, lineRequest.getDistance(), lineRequest.getUpStation(),
+        sectionRepository.save(new Section(persistLine, lineRequest.getDistance(), lineRequest.getUpStation(),
                 lineRequest.getDownStation()));
         return persistLine.getId();
     }
 
     public List<LineResponse> findAllLines() {
-        return lineRepository.findAll().stream().map(this::getLineResponse).collect(Collectors.toList());
+        List<Line> lines = lineRepository.findAll();
+
+        return lines.stream()
+                .map(this::getLineResponse)
+                .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
@@ -61,8 +64,8 @@ public class LineService {
 
     @Transactional
     public void deleteLineById(Long lineId) {
-        lineStationRepository.findByLineId(lineId).ifPresent(lineStations -> lineStations.forEach(
-                lineStationRepository::delete));
+        sectionRepository.findByLineId(lineId).ifPresent(sections -> sections.forEach(
+                sectionRepository::delete));
         lineRepository.deleteById(lineId);
     }
 
@@ -71,8 +74,8 @@ public class LineService {
     }
 
     private void setUpDownStation(LineRequest lineRequest) {
-        List<Station> stations = stationRepository
-                .findByIdIn(Arrays.asList(lineRequest.getUpStationId(), lineRequest.getDownStationId()));
+        List<Station> stations = stationService
+                .findStationsByIdIn(Sets.newHashSet(lineRequest.getUpStationId(), lineRequest.getDownStationId()));
         lineRequest.isUpStationThenSet(stations);
         lineRequest.isDownStationThenSet(stations);
     }

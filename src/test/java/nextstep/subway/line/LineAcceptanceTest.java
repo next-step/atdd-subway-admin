@@ -11,34 +11,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.fixtures.TestFixtures;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends TestFixtures {
-
-    @Autowired
-    StationRepository stationRepository;
-    String stationId1 = "";
-    String stationId2 = "";
-    String stationId3 = "";
-
-    @BeforeEach
-    void beforeEach() {
-        setUp();
-        Station station1 = stationRepository.save(new Station("경기 광주역"));
-        Station station2 = stationRepository.save(new Station("중앙역"));
-        Station station3 = stationRepository.save(new Station("모란역"));
-        stationId1 = String.valueOf(station1.getId());
-        stationId2 = String.valueOf(station2.getId());
-        stationId3 = String.valueOf(station3.getId());
-    }
 
     /**
      * When 지하철 노선을 생성하면

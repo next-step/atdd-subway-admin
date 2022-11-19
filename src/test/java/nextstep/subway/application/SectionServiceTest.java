@@ -6,10 +6,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.repository.StationRepository;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineStationResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,14 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
 @Transactional
-class LineStationServiceTest {
+class SectionServiceTest {
 
 
     @Autowired
     LineService lineService;
 
     @Autowired
-    LineStationService lineStationService;
+    SectionService sectionService;
 
     @Autowired
     StationRepository stationRepository;
@@ -39,19 +39,19 @@ class LineStationServiceTest {
     @Test
     void addSection() {
         Long lineId = lineService.saveLine(getLineRequest());
-        lineStationService.addSection(lineId, getSectionRequest());
+        sectionService.addSection(lineId, getSectionRequest());
         flushAndClear();
-        List<LineStationResponse> lineStations = lineStationService.findLineStationsByLineId(lineId);
-        List<Integer> distances = lineStations.stream().map(LineStationResponse::getDistance)
+        List<SectionResponse> sections = sectionService.findSectionsByLineId(lineId);
+        List<Integer> distances = sections.stream().map(SectionResponse::getDistance)
                 .collect(Collectors.toList());
         assertThat(distances).contains(6, 4);
     }
 
     @Test
-    void findLineStationsByLineId() {
+    void findSectionsByLineId() {
         Long lineId = lineService.saveLine(getLineRequest());
-        List<LineStationResponse> lineStation = lineStationService.findLineStationsByLineId(lineId);
-        assertThat(lineStation).hasSize(1);
+        List<SectionResponse> sections = sectionService.findSectionsByLineId(lineId);
+        assertThat(sections).hasSize(1);
     }
 
     private LineRequest getLineRequest() {

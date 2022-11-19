@@ -12,8 +12,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "line_station")
-public class LineStation {
+@Table(name = "section")
+public class Section {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,10 +33,10 @@ public class LineStation {
     @JoinColumn(name = "downStationId")
     private Station downStation;
 
-    protected LineStation() {
+    protected Section() {
     }
 
-    public LineStation(Line line, int distance, Station upStation, Station downStation) {
+    public Section(Line line, int distance, Station upStation, Station downStation) {
         this.line = line;
         this.distance = distance;
         this.upStation = upStation;
@@ -59,6 +59,14 @@ public class LineStation {
         return distance;
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
     public boolean isEqualsUpStation(Station upStation) {
         return this.upStation.equals(upStation);
     }
@@ -72,10 +80,10 @@ public class LineStation {
         if (this == o) {
             return true;
         }
-        if (!(o instanceof LineStation)) {
+        if (!(o instanceof Section)) {
             return false;
         }
-        LineStation that = (LineStation) o;
+        Section that = (Section) o;
         return Objects.equals(getId(), that.getId());
     }
 
@@ -84,16 +92,16 @@ public class LineStation {
         return Objects.hash(getId());
     }
 
-    public LineStation createNewLineStation(int distance, Station upStation, Station downStation) {
-        return new LineStation(line, distance, upStation, downStation);
+    public Section createNewSection(int distance, Station upStation, Station downStation) {
+        return new Section(line, distance, upStation, downStation);
     }
 
-    public LineStation createNewDownLineStation(int distance, Station downStation) {
-        return new LineStation(line, Math.abs(this.distance - distance), this.downStation, downStation);
+    public Section createNewDownSection(int distance, Station downStation) {
+        return new Section(line, Math.abs(this.distance - distance), this.downStation, downStation);
     }
 
-    public LineStation createNewUpLineStation(int distance, Station upStation) {
-        return new LineStation(line, Math.abs(this.distance - distance), this.upStation, upStation);
+    public Section createNewUpSection(int distance, Station upStation) {
+        return new Section(line, Math.abs(this.distance - distance), this.upStation, upStation);
     }
 
     public void validateLength(int distance) {

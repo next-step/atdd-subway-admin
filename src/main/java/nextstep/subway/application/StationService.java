@@ -1,10 +1,11 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.repository.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -25,9 +26,17 @@ public class StationService {
         return persistStation.getId();
     }
 
-    public StationResponse findById(Long id) {
+    public StationResponse findResponseById(Long id) {
         Station station = stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         return StationResponse.of(station);
+    }
+
+    public List<Station> findStationsByIdIn(Set<Long> stationIds) {
+        return stationRepository.findByIdIn(stationIds);
+    }
+
+    public Station findStationById(Long id) {
+        return stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
     }
 
     public List<StationResponse> findAllStations() {
