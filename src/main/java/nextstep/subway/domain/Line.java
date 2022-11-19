@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -61,8 +62,8 @@ public class Line extends BaseEntity {
         return distance;
     }
 
-    public List<Station> getStations() {
-        return Arrays.asList(downStation, upStation);
+    public Stations getStations() {
+        return new Stations(Arrays.asList(upStation,downStation));
     }
 
 }
