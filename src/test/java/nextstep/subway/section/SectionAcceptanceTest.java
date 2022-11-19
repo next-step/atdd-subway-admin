@@ -58,7 +58,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertAll(
                 () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(jsonPath.getList("stations")).hasSize(3),
-                () -> assertThat(jsonPath.getList("stations.name")).containsExactly("잠실역", "가락시장역", "석촌역")
+                () -> assertThat(jsonPath.getList("stations.name")).containsExactly("잠실역", "석촌역", "가락시장역")
         );
     }
 
@@ -85,7 +85,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         assertAll(
                 () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(jsonPath.getList("stations")).hasSize(3),
-                () -> assertThat(jsonPath.getList("stations.name")).containsExactly("잠실역", "가락시장역", "강변역")
+                () -> assertThat(jsonPath.getList("stations.name")).containsExactly("강변역", "잠실역", "가락시장역")
         );
     }
 

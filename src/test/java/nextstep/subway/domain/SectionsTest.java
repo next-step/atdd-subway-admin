@@ -48,7 +48,7 @@ public class SectionsTest {
         sections.add(addSection);
 
         // when
-        sections.removeByUpSectionAndDownSection(section, addSection);
+        sections.remove(section, addSection);
 
         // then
         assertThat(sections.size()).isEqualTo(1);
@@ -65,7 +65,7 @@ public class SectionsTest {
         sections.add(addSection);
 
         // when
-        sections.removeByUpSectionAndDownSection(null, addSection);
+        sections.remove(null, addSection);
 
         // then
         assertThat(sections.size()).isEqualTo(1);

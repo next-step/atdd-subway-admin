@@ -114,6 +114,14 @@ public class Section extends BaseEntity {
         return Arrays.asList(upStation, downStation);
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
     public Integer getDistance() {
         return distance;
     }

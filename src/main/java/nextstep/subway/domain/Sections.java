@@ -3,9 +3,9 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -59,7 +59,7 @@ public class Sections {
         sections.stream().forEach(section -> section.update(source));
     }
 
-    public void removeByUpSectionAndDownSection(Section upSection, Section downSection) {
+    public void remove(Section upSection, Section downSection) {
         validateRemoveExistSections(upSection, downSection);
         validateRemoveLastSection();
 
@@ -89,6 +89,47 @@ public class Sections {
         }
     }
 
+    public void order() {
+        Section firstSection = findFirstSection().orElse(null);
+        if (Objects.isNull(firstSection)) {
+            return;
+        }
+        addLast(firstSection);
+
+        Section currentLastSection = firstSection;
+        while (true) {
+            Section nextSection = findNextSection(currentLastSection.getDownStation()).orElse(null);
+            if (Objects.isNull(nextSection)) {
+                break;
+            }
+            addLast(nextSection);
+            currentLastSection = nextSection;
+        }
+    }
+
+    private Optional<Section> findFirstSection() {
+        return sections.stream()
+                .filter(section -> !matchByDownStation(section.getUpStation()))
+                .findAny();
+    }
+
+    private boolean matchByDownStation(Station station) {
+        return sections.stream()
+                .map(section -> section.getDownStation())
+                .anyMatch(downStation -> station.equalsId(downStation));
+    }
+
+    private Optional<Section> findNextSection(Station downStation) {
+        return sections.stream()
+                .filter(section -> downStation.equalsId(section.getUpStation()))
+                .findAny();
+    }
+
+    private void addLast(Section section) {
+        sections.remove(section);
+        sections.add(section);
+    }
+
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
@@ -98,7 +139,6 @@ public class Sections {
                 .map(Section::getStations)
                 .flatMap(Collection::stream)
                 .distinct()
-                .sorted(Comparator.comparing(Station::getId))
                 .collect(Collectors.toList());
     }
 }

@@ -70,7 +70,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeSection(Section upSection, Section downSection) {
-        sections.removeByUpSectionAndDownSection(upSection, downSection);
+        sections.remove(upSection, downSection);
     }
 
     public Long getId() {

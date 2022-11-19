@@ -17,6 +17,8 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
+
+        sections.order();
         this.stations = sections.getStations()
                 .stream()
                 .map(StationResponse::from)
