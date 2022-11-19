@@ -1,7 +1,7 @@
-package nextstep.subway.ui;
+package nextstep.subway.section.ui;
 
-import nextstep.subway.application.SectionService;
-import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.section.application.SectionService;
+import nextstep.subway.section.dto.SectionRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
