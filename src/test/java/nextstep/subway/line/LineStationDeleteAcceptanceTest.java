@@ -10,9 +10,11 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.line.utils.DatabaseCleanUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -30,11 +32,15 @@ public class LineStationDeleteAcceptanceTest {
     StationResponse 건대입구역;
     LineResponse _2호선;
 
+    @Autowired
+    DatabaseCleanUtil databaseCleanUtil;
+
     @BeforeEach
     void beforeEach(){
         if(RestAssured.port == RestAssured.UNDEFINED_PORT){
            RestAssured.port = port;
         }
+        databaseCleanUtil.cleanUp();
 
         강남역 = 지하철역_1개_생성("강남역").as(StationResponse.class);
         잠실역 = 지하철역_1개_생성("잠실역").as(StationResponse.class);
@@ -61,7 +67,7 @@ public class LineStationDeleteAcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_정보_조회(_2호선.getId());
-        assertThat(response.jsonPath().getList(".stations.name")).containsExactly(
+        assertThat(response.jsonPath().getList("stations.name")).containsExactly(
                 "강남역", "건대입구역"
         );
     }
@@ -83,7 +89,7 @@ public class LineStationDeleteAcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_정보_조회(_2호선.getId());
-        assertThat(response.jsonPath().getList(".stations.name")).containsExactly(
+        assertThat(response.jsonPath().getList("stations.name")).containsExactly(
                 "잠실역", "건대입구역"
         );
     }
@@ -105,7 +111,7 @@ public class LineStationDeleteAcceptanceTest {
 
         // then
         ExtractableResponse<Response> response = 지하철_노선_정보_조회(_2호선.getId());
-        assertThat(response.jsonPath().getList(".stations.name")).containsExactly(
+        assertThat(response.jsonPath().getList("stations.name")).containsExactly(
                 "강남역", "잠실역"
         );
     }
