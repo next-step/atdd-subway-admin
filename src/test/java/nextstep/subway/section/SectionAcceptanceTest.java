@@ -11,6 +11,8 @@ import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -27,6 +29,8 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     private StationResponse 교대역;
     private StationResponse 강남역;
     private StationResponse 선릉역;
+    private StationResponse 삼성역;
+
     private LineResponse 신분당선;
 
     @BeforeEach
@@ -35,6 +39,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         교대역 = StationAcceptanceTest.createStation("교대역").extract().as(StationResponse.class);
         선릉역 = StationAcceptanceTest.createStation("선릉역").extract().as(StationResponse.class);
         강남역 = StationAcceptanceTest.createStation("강남역").extract().as(StationResponse.class);
+        삼성역 = StationAcceptanceTest.createStation("삼성역").extract().as(StationResponse.class);
 
         신분당선 = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 교대역.getId(), 선릉역.getId(), 10)).extract().as(LineResponse.class);
     }
@@ -50,6 +55,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         ValidatableResponse addSectionResponse = requestApiByAddSection(신분당선.getId(), new SectionRequest(교대역.getId(), 강남역.getId(), 5));
 
         assertStatusCode(addSectionResponse, HttpStatus.CREATED);
+
         ValidatableResponse getLineResponse = requestApiByGetLine(신분당선.getId());
         assertThat(extractStationNames(getLineResponse)).contains("교대역", "강남역", "선릉역");
     }
@@ -65,6 +71,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         ValidatableResponse addSectionResponse = requestApiByAddSection(신분당선.getId(), new SectionRequest(강남역.getId(), 교대역.getId(), 3));
 
         assertStatusCode(addSectionResponse, HttpStatus.CREATED);
+
         ValidatableResponse getLineResponse = requestApiByGetLine(신분당선.getId());
         assertThat(extractStationNames(getLineResponse)).contains("교대역", "강남역", "선릉역");
     }
@@ -80,8 +87,23 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         ValidatableResponse addSectionResponse = requestApiByAddSection(신분당선.getId(), new SectionRequest(선릉역.getId(), 강남역.getId(), 3));
 
         assertStatusCode(addSectionResponse, HttpStatus.CREATED);
+
         ValidatableResponse getLineResponse = requestApiByGetLine(신분당선.getId());
         assertThat(extractStationNames(getLineResponse)).contains("교대역", "강남역", "선릉역");
+    }
+
+    /**
+     * Given 지하철 역과 노선이 등록되어있고
+     * When 지하철 노선에 기존 역 사이 길이보다 크거나 같은 구간을 등록하면
+     * Then 등록을 할 수 없다
+     */
+    @DisplayName("기존 역 사이 길이보다 크거나 같을 경우")
+    @ParameterizedTest
+    @ValueSource(strings = {"20", "10"})
+    void addSection_distance_over(int distance) {
+        ValidatableResponse addSectionResponse = requestApiByAddSection(신분당선.getId(), new SectionRequest(교대역.getId(), 강남역.getId(), distance));
+
+        assertStatusCode(addSectionResponse, HttpStatus.BAD_REQUEST);
     }
 
     public static ValidatableResponse requestApiByAddSection(Long lineId, SectionRequest request) {
@@ -90,6 +112,32 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/{id}/sections", lineId)
             .then().log().all();
+    }
+
+    /**
+     * Given 지하철 역과 노선이 등록되어있고
+     * When 지하철 노선에 이미 등록되어있는 지하철 구간을 등록하면
+     * Then 등록을 할 수 없다
+     */
+    @DisplayName("상행역 하행역 이미 모두 등록되어있는 경우")
+    @Test
+    void addSection_alreadyExists() {
+        ValidatableResponse addSectionResponse = requestApiByAddSection(신분당선.getId(), new SectionRequest(교대역.getId(), 선릉역.getId(), 5));
+
+        assertStatusCode(addSectionResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * Given 지하철 역과 노선이 등록되어있고
+     * When 지하철 노선에 포함되어 있지 않은 지하철 역을 구간으로 등록하면
+     * Then 등록을 할 수 없다
+     */
+    @DisplayName("상행역 하행역 둘 중 하나도 포함되어있지 않은 경우")
+    @Test
+    void addSection_notContains() {
+        ValidatableResponse addSectionResponse = requestApiByAddSection(신분당선.getId(), new SectionRequest(강남역.getId(), 삼성역.getId(), 5));
+
+        assertStatusCode(addSectionResponse, HttpStatus.BAD_REQUEST);
     }
 
     public static List<String> extractStationNames(ValidatableResponse response) {
