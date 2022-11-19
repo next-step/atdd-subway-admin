@@ -69,3 +69,6 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [x] given - ( sation name { "강남역" } )
   - [x] when - ( method : delete )
   - [x] then - ( statusCode : HttpStatus.NO_CONTENT(204) )
+#### Step1 리뷰 사항 반영
+- [ ] Step2 1차 리뷰 사항 반영
+    - [ ] 테스트 가독성 향상 - 지하철역 생성, 조회 별도의 메소드로 처리
