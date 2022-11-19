@@ -1,16 +1,15 @@
-package nextstep.subway.ui;
+package nextstep.subway.line;
 
 import java.net.URI;
 import java.util.List;
-import nextstep.subway.application.LineService;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.SectionRequest;
-import nextstep.subway.dto.SectionResponse;
-import nextstep.subway.dto.UpdateLineRequest;
-import nextstep.subway.exception.IllegalDistanceException;
-import nextstep.subway.exception.NoRelationStationException;
-import nextstep.subway.exception.SameStationException;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
+import nextstep.subway.line.dto.UpdateLineRequest;
+import nextstep.subway.line.exception.IllegalDistanceException;
+import nextstep.subway.line.exception.NoRelationStationException;
+import nextstep.subway.line.exception.SameStationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;

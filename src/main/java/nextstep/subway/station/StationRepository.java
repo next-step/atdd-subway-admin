@@ -1,10 +1,10 @@
-package nextstep.subway.domain;
-
-import org.springframework.data.jpa.repository.JpaRepository;
+package nextstep.subway.station;
 
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StationRepository extends JpaRepository<Station, Long> {
+
     @Override
     List<Station> findAll();
 }
