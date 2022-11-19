@@ -17,6 +17,7 @@ public class Sections {
     private static final String DUPLICATE_UP_DOWN_STATIONS = "상행역과 하행역이 이미 모두 노선에 등록되어 있습니다.";
     private static final String NOT_INCLUDE_UP_DOWN_STATIONS = "상행역과 하행역 모두 노선에 포함되어 있지 않습니다.";
     private static final int ONE_SECTION = 1;
+    private static final int ZERO = 0;
     private static final String CAN_NOT_DELETE_LAST_SECTION = "노선의 마지막 구간은 삭제할 수 없습니다.";
     private static final String CAN_NOT_DELETE_NOT_INCLUDED_STATION = "노선에 포함되지 않은 지하철 역은 삭제할 수 없습니다.";
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
@@ -51,14 +52,15 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    private List<Section> orderedSection() {
+    private void orderStations() {
         List<Section> orderedSections = new LinkedList<>();
         Optional<Section> section = findFirstSection();
         while (section.isPresent()) {
             section.ifPresent(orderedSections::add);
             section = findNextSection(section.get());
         }
-        return orderedSections;
+        this.sections.clear();
+        this.sections.addAll(orderedSections);
     }
 
     private Optional<Section> findFirstSection() {
@@ -103,10 +105,16 @@ public class Sections {
     public void delete(Station station) {
         validateNotIncludeStation(station);
         validateIsLastSection();
-        List<Section> orderedSections = orderedSection();
+        orderStations();
+        if (isDeleteFirst(station)) {
+            deleteFirst();
+            return;
+        }
+        if (isDeleteLast(station)) {
+            deleteLast();
+            return;
+        }
         deleteMiddle(station);
-        deleteFirst(orderedSections, station);
-        deleteLast(orderedSections, station);
     }
 
     private void validateIsLastSection() {
@@ -120,6 +128,30 @@ public class Sections {
         if (isNotInclude) {
             throw new IllegalArgumentException(CAN_NOT_DELETE_NOT_INCLUDED_STATION);
         }
+    }
+
+    private Section getFirstSection() {
+        return this.sections.get(ZERO);
+    }
+
+    private Section getLastSection() {
+        return this.sections.get(sections.size() - ONE_SECTION);
+    }
+
+    private boolean isDeleteFirst(Station station) {
+        return getFirstSection().isUpStation(station);
+    }
+
+    private void deleteFirst() {
+        sections.remove(getFirstSection());
+    }
+
+    private boolean isDeleteLast(Station station) {
+        return getLastSection().isDownStation(station);
+    }
+
+    private void deleteLast() {
+        this.sections.remove(getLastSection());
     }
 
     private void deleteMiddle(Station station) {
@@ -141,23 +173,5 @@ public class Sections {
         return this.sections.stream()
                 .filter(section -> section.isUpStation(station))
                 .findFirst();
-    }
-
-    private void deleteFirst(List<Section> orderedSections, Station station) {
-        orderedSections.stream()
-                .findFirst()
-                .ifPresent(section -> deleteFirstOrLastSection(section, station));
-    }
-
-    private void deleteLast(List<Section> orderedSections, Station station) {
-        orderedSections.stream()
-                .reduce((first, second) -> second)
-                .ifPresent(section -> deleteFirstOrLastSection(section, station));
-    }
-
-    private void deleteFirstOrLastSection(Section section, Station station) {
-        if (section.isUpStation(station) || section.isDownStation(station)) {
-            this.sections.remove(section);
-        }
     }
 }
