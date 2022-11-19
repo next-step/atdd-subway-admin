@@ -59,7 +59,7 @@ public class LineStationAcceptanceTest {
 
         // when
         StationResponse 사당역 = 지하철역_1개_생성("사당역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(사당역.getId(), 강남역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 사당역.getId(), 강남역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -82,7 +82,7 @@ public class LineStationAcceptanceTest {
 
         // when
         StationResponse 건대입구역 = 지하철역_1개_생성("건대입구역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(잠실역.getId(), 건대입구역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 잠실역.getId(), 건대입구역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -105,7 +105,7 @@ public class LineStationAcceptanceTest {
 
         // when
         StationResponse 역삼역 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 역삼역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 강남역.getId(), 역삼역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -128,7 +128,7 @@ public class LineStationAcceptanceTest {
 
         // when
         StationResponse 역삼역 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 역삼역.getId(), 20);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 강남역.getId(), 역삼역.getId(), 20);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -146,7 +146,7 @@ public class LineStationAcceptanceTest {
 
         // when
         StationResponse 역삼역 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 역삼역.getId(), 25);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 강남역.getId(), 역삼역.getId(), 25);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -163,7 +163,7 @@ public class LineStationAcceptanceTest {
         // given - beforeEach
 
         // when
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 잠실역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 강남역.getId(), 잠실역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -182,13 +182,13 @@ public class LineStationAcceptanceTest {
         // when
         StationResponse 시청역 = 지하철역_1개_생성("시청역").as(StationResponse.class);
         StationResponse 왕십리역 = 지하철역_1개_생성("왕십리역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(시청역.getId(), 왕십리역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 시청역.getId(), 왕십리역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private ExtractableResponse<Response> 노선_구간_1개_추가(Long upStationId, Long downStationId, Integer distance) {
+    public static ExtractableResponse<Response> 노선_구간_1개_추가(Long lineId, Long upStationId, Long downStationId, Integer distance) {
         Map<String, Object> param = new HashMap<>();
         param.put("upStationId", upStationId);
         param.put("downStationId", downStationId);
@@ -197,7 +197,7 @@ public class LineStationAcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(param)
-                .when().post("/lines/{id}/sections", _2호선.getId())
+                .when().post("/lines/{id}/sections", lineId)
                 .then().log().all()
                 .extract();
     }
