@@ -132,21 +132,8 @@ public class Line extends BaseEntity {
         return Section.of(this, getUpStation(), getDownStation(), getDistance());
     }
 
-    public boolean startFrom(Long upStationId) {
-        return this.getUpStation().hasSameId(upStationId);
-    }
-
-    public boolean endAt(Long downStationId) {
-        return this.getDownStation().hasSameId(downStationId);
-    }
-
     public void addSection(Section newSection) {
         this.sections.add(newSection);
-    }
-
-    public void extendUpStation(Station newStation, Long distance) {
-        this.upStation = newStation;
-        this.distance += distance;
     }
 
     public boolean extendFromUpStation(Station upStation, Station downStation, Long distance) {

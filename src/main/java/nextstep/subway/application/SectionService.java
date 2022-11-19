@@ -11,8 +11,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class SectionService {
-    public static final String MESSAGE_NEW_SECTION_IS_SAME_WITH_LINE = "노선 끝과 동일한 상/하행역을 가진 구간은 등록할 수 없습니다";
-    public static final String MESSAGE_CAN_NOT_ADD_SECTION = "구간을 등록하지 못했습니다";
+    private static final String MESSAGE_NEW_SECTION_IS_SAME_WITH_LINE = "노선 끝과 동일한 상/하행역을 가진 구간은 등록할 수 없습니다";
+    private static final String MESSAGE_CAN_NOT_ADD_SECTION = "구간을 등록하지 못했습니다";
     private final LineService lineService;
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;

@@ -49,8 +49,4 @@ public class StationResponse {
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
-
-    public boolean hasId(Long stationId) {
-        return this.getId().equals(stationId);
-    }
 }
