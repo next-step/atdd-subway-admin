@@ -30,6 +30,14 @@ class StationsTest {
             .isNotEqualTo(Stations.of(Arrays.asList(WANGSIPLI, DDP)));
     }
 
+    @Test
+    void noneMatch() {
+        assertThat(Stations.of(Arrays.asList(WANGSIPLI, SANGWANGSIPLI))
+            .noneMatch(Stations.of(Arrays.asList(SINDANG, DDP)))).isTrue();
+        assertThat(Stations.of(Arrays.asList(WANGSIPLI, SANGWANGSIPLI))
+            .noneMatch(Stations.of(Arrays.asList(SANGWANGSIPLI, DDP)))).isFalse();
+    }
+
     @DisplayName("중복제거 concat")
     @Test
     void concatDistinct() {

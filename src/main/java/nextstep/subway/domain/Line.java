@@ -72,14 +72,14 @@ public class Line extends BaseEntity {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (!(o instanceof Line))
             return false;
         Line line = (Line)o;
-        return Objects.equals(id, line.id);
+        return Objects.equals(getId(), line.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getId());
     }
 }

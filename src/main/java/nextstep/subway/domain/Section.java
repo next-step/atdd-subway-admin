@@ -87,7 +87,7 @@ public class Section {
         );
     }
 
-    public boolean nonMatch(Stations stations) {
+    public boolean notContainsAny(Stations stations) {
         return this.getStations().noneMatch(stations);
     }
 
@@ -127,14 +127,14 @@ public class Section {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (!(o instanceof Section))
             return false;
         Section section = (Section)o;
-        return Objects.equals(id, section.id);
+        return Objects.equals(getId(), section.getId());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Objects.hash(getId());
     }
 }

@@ -21,7 +21,7 @@ public class SectionsValidator {
         if (stations.isEmpty()) {
             return;
         }
-        if (newSection.nonMatch(stations)) {
+        if (newSection.notContainsAny(stations)) {
             throw new IllegalArgumentException(NOT_CONTAIONS_ANY_ERROR_MESSAGE);
         }
     }

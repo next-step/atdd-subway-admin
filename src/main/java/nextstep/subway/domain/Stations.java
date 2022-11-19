@@ -58,7 +58,7 @@ public class Stations {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (!(o instanceof Stations))
             return false;
         Stations stations1 = (Stations)o;
         return Objects.equals(stations, stations1.stations);

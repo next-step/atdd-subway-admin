@@ -41,7 +41,7 @@ public class Distance {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (!(o instanceof Distance))
             return false;
         Distance distance1 = (Distance)o;
         return distance == distance1.distance;
