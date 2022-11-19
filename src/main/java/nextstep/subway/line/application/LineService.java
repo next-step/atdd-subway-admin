@@ -5,12 +5,13 @@ import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
-import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.station.domain.Stations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,9 +29,10 @@ public class LineService {
     @Transactional
     public LineResponse saveStation(LineRequest lineRequest) {
         Line line = lineRequest.toLine();
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new);
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new);
-        line.addSection(upStation, downStation, lineRequest.getDistance());
+        Long upStationId = lineRequest.getUpStationId();
+        Long downStationId = lineRequest.getDownStationId();
+        Stations stations = new Stations(stationRepository.findAllById(Arrays.asList(upStationId, downStationId)));
+        line.addSection(stations.get(upStationId), stations.get(downStationId), lineRequest.getDistance());
         Line saveLine = lineRepository.save(line);
         return LineResponse.of(saveLine);
     }

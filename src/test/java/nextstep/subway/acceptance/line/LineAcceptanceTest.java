@@ -41,10 +41,26 @@ class LineAcceptanceTest extends AcceptanceTest {
     void createStation() {
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 신논현역_ID, 논현역_ID, 논현역_신논현역_거리);
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역_ID, 신논현역_ID, 논현역_신논현역_거리);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+    }
+
+    /**
+     * When 지하철 역이 생성되어 있지 않다.
+     * When 지하철 노선을 생성하면
+     * Then NOT_FOUND 에러 코드를 응답받는다.
+     */
+    @DisplayName("존재하지 않는 지하철역으로 지하철 노선을 생성한다.")
+    @Test
+    void notExistStation() {
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 4L, 5L, 논현역_신논현역_거리);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
 
     /**
@@ -80,7 +96,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     void findLine() {
 
         // Given
-        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 신논현역_ID, 논현역_ID, 논현역_신논현역_거리);
+        ExtractableResponse<Response> createResponse = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역_ID, 신논현역_ID, 논현역_신논현역_거리);
 
         // when
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(createResponse.header("location"));
