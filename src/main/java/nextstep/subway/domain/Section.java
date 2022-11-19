@@ -53,7 +53,7 @@ public class Section {
             this.distance.sub(section.distance);
             downStation = section.upStation;
         }
-        if(section.isLastUpStation(section.downStation)) {
+        if(isLastUpStation(section.downStation)) {
             line.updateLastUpStation(section.upStation);
         }
     }
