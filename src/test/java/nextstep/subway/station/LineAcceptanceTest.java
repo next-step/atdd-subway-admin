@@ -7,7 +7,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import java.util.Map;
 import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -154,14 +153,13 @@ public class LineAcceptanceTest {
         );
     }
 
-    private Map<String, Object> 지하철_노선을_수정한다(long lineId, LineRequest line) {
-        return RestAssured.given().log().all()
+    private void 지하철_노선을_수정한다(long lineId, LineRequest line) {
+        RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(line)
             .when().put("/lines/{id}", lineId)
             .then().log().all()
-            .extract()
-            .jsonPath().getMap("");
+            .statusCode(HttpStatus.OK.value());
     }
 
     private void 지하철_노선을_삭제한다(long lineId) {
