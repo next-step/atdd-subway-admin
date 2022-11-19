@@ -5,7 +5,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.constants.ServiceUrl;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.SectionListResponse;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.util.DatabaseCleaner;
 import nextstep.subway.util.RequestUtil;
@@ -121,6 +120,28 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 하행선에서_시작하는_외부_구간_추가(lineResponse.getId(), 하행역, "신규역", 10L);
 
         노선이_연장된다(lineResponse,response,"상행역","신규역");
+    }
+
+    /**
+     * Given 노선이 등록되어 있고
+     * When  신규 구간의 상행선,하행선이 노선과 동일하면
+     * Then  구간 생성이 실패함
+     */
+    @Test
+    void 상행역_하행역이_노선과_동일() {
+        LineResponse lineResponse = LineAcceptanceTest.지하철_노선을_생성한다("노선", "색상", 10L, Arrays.asList(상행역.getId(), 하행역.getId())).as(LineResponse.class);
+
+        ExtractableResponse<Response> response = 상행역_하행역이_노선과_동일한_구간을_생성함(lineResponse.getId(), 상행역.getId(),하행역.getId(),5L);
+
+        구간_생성을_실패한다(response);
+    }
+
+    private ExtractableResponse<Response> 상행역_하행역이_노선과_동일한_구간을_생성함(Long lineId, Long 상행역_식별자, Long 하행역_식별자, long 구간거리) {
+        HashMap<Object, Object> params = new HashMap<>();
+        params.put("downStationId",하행역_식별자);
+        params.put("upStationId",상행역_식별자);
+        params.put("distance",구간거리);
+        return RequestUtil.postRequest(String.format(ServiceUrl.URL_SECTIONS,lineId),params);
     }
 
     private ExtractableResponse<Response> 하행선에서_시작하는_외부_구간_추가(Long lineId, StationResponse 하행역, String 신규역, long distance) {
