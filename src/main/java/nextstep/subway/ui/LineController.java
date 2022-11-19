@@ -59,7 +59,20 @@ public class LineController {
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineResponse> createSection(@PathVariable Long id,
                                                       @RequestBody SectionRequest sectionRequest) {
+        validateSectionRequest(sectionRequest);
         LineResponse lineResponse = lineService.addSection(id, sectionRequest);
         return ResponseEntity.ok().body(lineResponse);
+    }
+
+    private void validateSectionRequest(SectionRequest request) {
+        if (request.getUpStationId() == null) {
+            throw new IllegalArgumentException("노선 구간의 상행역이 정상적으로 입력되지 않았습니다.");
+        }
+        if (request.getDownStationId() == null) {
+            throw new IllegalArgumentException("노선 구간의 하행역이 정상적으로 입력되지 않았습니다.");
+        }
+        if (request.getUpStationId().equals(request.getDownStationId())) {
+            throw new IllegalArgumentException("노선 구간의 상행역과 하앵역이 동일할 수 없습니다.");
+        }
     }
 }

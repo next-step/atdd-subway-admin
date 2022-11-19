@@ -87,12 +87,12 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_throw_exception_if_distance_is_long_or_equals_rather_than_other_section() {
         // when
-        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, new SectionRequest(수원역_번호, 두정역_번호, 1001L));
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(수원역_번호, 두정역_번호, 1001L));
 
 
         // then
         // 지하철_노선에_등록된_지하철역을_확인할_수_있다
-        assertThat(구간_생성_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        구간_생성_결과에서_에러가_발생해야_한다(구간_생성_결과);
     }
 
     /**
@@ -139,7 +139,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
 
         // then
-        assertThat(구간_생성_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        구간_생성_결과에서_에러가_발생해야_한다(구간_생성_결과);
     }
 
     /**
@@ -154,15 +154,64 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
 
         // then
+        구간_생성_결과에서_에러가_발생해야_한다(구간_생성_결과);
+    }
+
+    /**
+     * When 노선에 새로운 구간을 추가할 때, 상행역이 null일 경우
+     * Then INTERNAL_SERVER_ERROR 를 반환해야 한다
+     **/
+    @DisplayName("노선에 새로운 구간을 추가할 때, 지하철 역이 null일 경우 에러를 반환한다")
+    @Test
+    void addSection_throw_exception_if_section_contains_null_upStation() {
+        // when
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(null, 부천역_번호));
+
+
+        // then
+        구간_생성_결과에서_에러가_발생해야_한다(구간_생성_결과);
+    }
+
+    /**
+     * When 노선에 새로운 구간을 추가할 때, 하행역이 null일 경우
+     * Then INTERNAL_SERVER_ERROR 를 반환해야 한다
+     **/
+    @DisplayName("노선에 새로운 구간을 추가할 때, 지하철 역이 null일 경우 에러를 반환한다")
+    @Test
+    void addSection_throw_exception_if_section_contains_null_downStation() {
+        // when
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, null));
+
+
+        // then
+        구간_생성_결과에서_에러가_발생해야_한다(구간_생성_결과);
+    }
+
+    /**
+     * When 노선에 새로운 구간을 추가할 때, 상행역과 하행역이 같을 경우
+     * Then INTERNAL_SERVER_ERROR 를 반환해야 한다
+     **/
+    @DisplayName("노선에 새로운 구간을 추가할 때, 지하철 역이 null일 경우 에러를 반환한다")
+    @Test
+    void addSection_throw_exception_if_section_duplicated_upStation_and_downStation() {
+        // when
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 서울역_번호));
+
+
+        // then
+        구간_생성_결과에서_에러가_발생해야_한다(구간_생성_결과);
+    }
+
+    private void 구간_생성_결과에서_에러가_발생해야_한다(ExtractableResponse<Response> 구간_생성_결과) {
         assertThat(구간_생성_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private SectionRequest 구간_요청_정보(Long 서울역_번호, Long 두정역_번호) {
-        return new SectionRequest(서울역_번호, 두정역_번호, 1L);
+    private SectionRequest 구간_요청_정보(Long 상행역_번호, Long 하행역_번호) {
+        return new SectionRequest(상행역_번호, 하행역_번호, 1L);
     }
 
-    private SectionRequest 구간_요청_정보(Long 서울역_번호, Long 두정역_번호, Long 길이) {
-        return new SectionRequest(서울역_번호, 두정역_번호, 길이);
+    private SectionRequest 구간_요청_정보(Long 상행역_번호, Long 두정역_번호, Long 길이) {
+        return new SectionRequest(상행역_번호, 두정역_번호, 길이);
     }
 
     private List<Long> 구간_생성_결과에서_지하철역_번호들을_조회한다(ExtractableResponse<Response> 구간_생성_결과) {
