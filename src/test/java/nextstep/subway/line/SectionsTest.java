@@ -11,13 +11,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간들")
 class SectionsTest {
-    public static final Sections 구간들;
-
-    static {
-        Sections sections = new Sections();
-        sections.add(SectionTest.신논현역_강남역_구간);
-        구간들 = sections;
-    }
 
     @DisplayName("구간 추가")
     @Test
@@ -27,7 +20,7 @@ class SectionsTest {
         sections.add(신논현역_강남역_구간);
         assertThat(sections.size()).isEqualTo(2);
     }
-    
+
     @DisplayName("구간역 목록을 조회한다.")
     @Test
     void findStations() {
