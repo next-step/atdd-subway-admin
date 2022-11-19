@@ -24,16 +24,23 @@ public class Sections {
 
     public List<Station> getStations() {
         List<Station> stations = new ArrayList<>();
-        Station firstUpStation = findFirstUpStation();
-        stations.add(firstUpStation);
-        Station firstDownStation = findDownStationByUpStation(firstUpStation);
-        stations.add(firstDownStation);
-        Station upStation = firstDownStation;
+        addFirstSectionStations(stations);
+        addStations(stations);
+        return stations;
+    }
+
+    private void addStations(List<Station> stations) {
+        Station upStation = findDownStationByUpStation(findFirstUpStation());
         while (!isLastDownStation(upStation)) {
             addStation(stations, upStation);
             upStation = findDownStationByUpStation(upStation);
         }
-        return stations;
+    }
+
+    private void addFirstSectionStations(List<Station> stations) {
+        Station firstUpStation = findFirstUpStation();
+        stations.add(firstUpStation);
+        stations.add(findDownStationByUpStation(firstUpStation));
     }
 
     private Station findFirstUpStation() {
@@ -53,29 +60,30 @@ public class Sections {
     }
 
     private boolean isLastDownStation(Station upStation) {
-        return this.sections
-                .stream()
-                .noneMatch(section -> upStation.equals(section.getUpStation()));
+        return this.sections.stream()
+                .noneMatch(section -> section.isUpStation(upStation));
     }
 
     private static Station findDownStationByUpStation(Station upStation, Station downStation, Section section) {
-        if (upStation.equals(section.getUpStation())) {
-            downStation = section.getDownStation();
+        Station station = downStation;
+        if (section.isUpStation(upStation)) {
+            station = section.getDownStation();
         }
-        return downStation;
+        return station;
     }
 
     private void addStation(List<Station> stations, Station upStation) {
         this.sections.stream()
-                .filter(section -> upStation.equals(section.getUpStation()))
+                .filter(section -> section.isUpStation(upStation))
                 .map(Section::getDownStation)
                 .forEach(stations::add);
     }
 
     private static Station findUpStation(Station firstUpStation, Section section) {
-        if (firstUpStation.equals(section.getDownStation())) {
-            firstUpStation = section.getUpStation();
+        Station upStation = firstUpStation;
+        if (section.isDownStation(firstUpStation)) {
+            upStation = section.getUpStation();
         }
-        return firstUpStation;
+        return upStation;
     }
 }

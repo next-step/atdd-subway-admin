@@ -50,4 +50,12 @@ public class Section {
     public Station getDownStation() {
         return downStation;
     }
+
+    public boolean isDownStation(Station firstUpStation) {
+        return this.downStation.equals(firstUpStation);
+    }
+
+    public boolean isUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
 }
