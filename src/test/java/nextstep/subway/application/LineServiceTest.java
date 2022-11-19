@@ -16,6 +16,7 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -90,6 +91,7 @@ class LineServiceTest {
         assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(() -> lineService.findResponseById(lineId));
     }
 
+    @DisplayName("기존 노선에 새로운 구간을 추가한다.")
     @Test
     void addSection() {
         Long lineId = lineService.saveLine(lineRequest);
