@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.CreateLineDto;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -57,7 +58,7 @@ class LineServiceTest {
                 () -> {
                     List<String> stationNames = response.getStations()
                             .stream()
-                            .map(LineResponse.StationResponse::getName)
+                            .map(StationResponse::getName)
                             .collect(Collectors.toList());
                     assertThat(stationNames).containsExactly(강남역.getName(), 판교역.getName());
                 }

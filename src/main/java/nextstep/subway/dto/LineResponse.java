@@ -2,6 +2,7 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -54,26 +55,8 @@ public class LineResponse {
     private static StationResponse createStationResponse(Map<String, Object> station) {
         long id = (long) station.get("id");
         String name = (String) station.get("name");
-        return new StationResponse(id, name);
-    }
-
-    public static class StationResponse {
-
-        private Long id;
-
-        private String name;
-
-        private StationResponse(Long id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
+        LocalDateTime createdDate = (LocalDateTime) station.get("createdDate");
+        LocalDateTime modifiedDate = (LocalDateTime) station.get("modifiedDate");
+        return new StationResponse(id, name, createdDate, modifiedDate);
     }
 }

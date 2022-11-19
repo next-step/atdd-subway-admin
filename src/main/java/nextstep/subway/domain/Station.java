@@ -36,6 +36,8 @@ public class Station extends BaseEntity {
         Map<String, Object> map = new HashMap<>();
         map.put("id", id);
         map.put("name", name);
+        map.put("createdDate", getCreatedDate());
+        map.put("modifiedDate", getModifiedDate());
         return map;
     }
 }

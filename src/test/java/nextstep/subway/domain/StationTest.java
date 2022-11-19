@@ -17,7 +17,7 @@ class StationTest {
         Station station = new Station("강남역");
         Map<String, Object> map = station.toMapForOpen();
         assertAll(
-                () -> assertThat(map.size()).isEqualTo(2),
+                () -> assertThat(map.size()).isEqualTo(4),
                 () -> assertThat(map.containsKey("id")).isTrue(),
                 () -> assertThat(map.containsKey("name")).isTrue()
         );
