@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
+    public static final int MIN_SECTION_COUNT = 2;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
@@ -26,6 +27,10 @@ public class Sections {
     }
 
     public void addSection(Station preStation, Station station, Integer distance) {
+        if(isNotExistsFirstStation()){
+            addFirstStation(preStation);
+        }
+
         Map<Station, Section> toMap = getSectionsToMap();
         validateStation(preStation, station, toMap);
 
@@ -38,6 +43,45 @@ public class Sections {
         }
 
         add(preStation, station, distance);
+    }
+
+    private void addFirstStation(Station preStation) {
+        add(null, preStation, 0);
+    }
+
+    private boolean isNotExistsFirstStation() {
+        return sections.size() < MIN_SECTION_COUNT;
+    }
+
+    public void deleteSectionByStation(Station station) {
+        Section findSection = findSectionByStation(station);
+
+        sections.stream()
+                .filter(section -> station.equals(section.getPreStation()))
+                .findFirst()
+                .ifPresent(section -> section.linkPreSectionByDelete(findSection));
+
+        sections.remove(findSection);
+    }
+
+    private Section findSectionByStation(Station station) {
+        Map<Station, Section> toMap = getSectionsToMap();
+        validateNotIncludeSection(station, toMap);
+        validateLastSection();
+        return toMap.get(station);
+
+    }
+
+    private void validateNotIncludeSection(Station station, Map<Station, Section> toMap) {
+        if (!toMap.containsKey(station)) {
+            throw new IllegalArgumentException("구간 내에 존재하지 않는 역입니다.");
+        }
+    }
+
+    private void validateLastSection() {
+        if (sections.size() == MIN_SECTION_COUNT) {
+            throw new IllegalArgumentException("마지막 구간이므로 삭제할 수 없습니다.");
+        }
     }
 
     private void updateSectionForStation(Station preStation, Station station, Integer distance) {
@@ -80,13 +124,13 @@ public class Sections {
 
     public List<Section> getOrderStations() {
         Map<Station, Section> map = getSectionsToMapByPreStation();
-        Section section1 = findFirstSection().orElse(null);
+        Section firstSection = findFirstSection().orElse(null);
 
         List<Section> orders = new ArrayList<>();
-        while (section1 != null) {
-            Section tmp = section1;
+        while (firstSection != null) {
+            Section tmp = firstSection;
             orders.add(tmp);
-            section1 = map.get(tmp.getStation());
+            firstSection = map.get(tmp.getStation());
         }
 
         return orders;
