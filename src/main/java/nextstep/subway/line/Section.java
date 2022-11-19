@@ -59,16 +59,24 @@ public class Section {
         return hasSameUpStation(newSection) || hasSameDownStation(newSection);
     }
 
-    public void swap(Section newSection) {
-        if (newSection.distance >= this.distance) {
-            throw new IllegalDistanceException();
-        }
+    public void insertBetween(Section newSection) {
+        validateDistance(newSection);
+        swapStation(newSection);
         this.distance -= newSection.distance;
+    }
+
+    private void swapStation(Section newSection) {
         if (hasSameUpStation(newSection)) {
             this.upStation = newSection.downStation;
             return;
         }
         this.downStation = newSection.upStation;
+    }
+
+    private void validateDistance(Section newSection) {
+        if (newSection.distance >= this.distance) {
+            throw new IllegalDistanceException();
+        }
     }
 
     public Long getId() {

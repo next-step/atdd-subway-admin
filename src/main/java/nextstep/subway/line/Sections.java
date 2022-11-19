@@ -9,9 +9,9 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
-import nextstep.subway.station.Station;
 import nextstep.subway.line.exception.NoRelationStationException;
 import nextstep.subway.line.exception.SameStationException;
+import nextstep.subway.station.Station;
 
 @Embeddable
 public class Sections {
@@ -52,7 +52,7 @@ public class Sections {
         sections.stream()
             .filter(section -> section.hasSameUpOrDownStation(newSection))
             .findFirst()
-            .ifPresent(section -> section.swap(newSection));
+            .ifPresent(section -> section.insertBetween(newSection));
         sections.add(newSection);
     }
 
