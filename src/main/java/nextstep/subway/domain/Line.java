@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -62,6 +60,14 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
+    }
+
+    public Station getLastUpStation() {
+        return lastUpStation;
+    }
+
+    public void updateLastUpStation(Station station) {
+        lastUpStation = station;
     }
 
     public List<Station> getStations() {
