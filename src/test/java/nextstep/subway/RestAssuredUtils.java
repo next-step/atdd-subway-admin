@@ -45,11 +45,15 @@ public class RestAssuredUtils {
 		return get(requestPath + "/" + id);
 	}
 
-	public static ExtractableResponse<Response> delete(String requestPath, Long id) {
+	public static ExtractableResponse<Response> delete(String requestPath) {
 		return RestAssured.given().log().all()
-			.when().delete(requestPath + "/" + id)
-			.then().log().all().statusCode(HttpStatus.NO_CONTENT.value())
-			.extract();
+				.when().delete(requestPath)
+				.then().log().all()
+				.extract();
+	}
+
+	public static ExtractableResponse<Response> delete(String requestPath, Long id) {
+		return delete(requestPath + "/" + id);
 	}
 
 	private static ExtractableResponse<Response> get(String requestPath) {

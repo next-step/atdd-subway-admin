@@ -64,4 +64,10 @@ public class LineService {
 	private Station getStation(Long stationId) {
 		return stationService.getStation(stationId);
 	}
+
+    public void removeSection(Long id, Long stationId) {
+		Line line = getLine(id);
+		Station station = getStation(stationId);
+		line.removeSection(station);
+	}
 }

@@ -1,6 +1,6 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.exception.CannotAddSectionException;
+import nextstep.subway.exception.BadRequestException;
 
 public class ErrorResponse {
 
@@ -9,7 +9,7 @@ public class ErrorResponse {
     private ErrorResponse() {
     }
 
-    public ErrorResponse(CannotAddSectionException exception) {
+    public ErrorResponse(BadRequestException exception) {
         this.message = exception.getMessage();
     }
 

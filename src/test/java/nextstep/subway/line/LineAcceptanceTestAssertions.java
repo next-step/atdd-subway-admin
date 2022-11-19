@@ -2,6 +2,8 @@ package nextstep.subway.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import org.apache.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
@@ -26,5 +28,12 @@ public class LineAcceptanceTestAssertions {
 
     public static void 지하철_노선_삭제됨(List<String> 지하철_노선_목록, String 지하철_노선) {
         assertThat(지하철_노선_목록).doesNotContain(지하철_노선);
+    }
+
+    public static void 역_목록_일치함(ExtractableResponse<Response> 노선_조회_응답, List<String> 역_목록) {
+        LineResponse 본문 = 노선_조회_응답.body().as(LineResponse.class);
+        assertThat(본문.getStations())
+                .extracting(StationResponse::getName)
+                .containsExactlyElementsOf(역_목록);
     }
 }
