@@ -1,8 +1,5 @@
-package nextstep.subway.ui;
+package nextstep.subway.station;
 
-import nextstep.subway.application.StationService;
-import nextstep.subway.dto.StationRequest;
-import nextstep.subway.dto.StationResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +9,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-public class StationController {
+class StationController {
     private StationService stationService;
 
     public StationController(StationService stationService) {

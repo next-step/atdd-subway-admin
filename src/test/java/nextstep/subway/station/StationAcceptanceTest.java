@@ -1,33 +1,17 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
-import org.junit.jupiter.api.BeforeEach;
+import nextstep.subway.common.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-    }
+@DisplayName("지하철역 인수 테스트")
+class StationAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철역을 생성하면
@@ -38,13 +22,13 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        ValidatableResponse response = requestRegister("강남역");
+        ValidatableResponse response = StationTestFixture.create("강남역");
 
         // then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = requestFetch().extract()
+        List<String> stationNames = StationTestFixture.fetch().extract()
                 .jsonPath()
                 .getList("name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
@@ -59,10 +43,10 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        requestRegister("강남역");
+        StationTestFixture.create("강남역");
 
         // when
-        ValidatableResponse response = requestRegister("강남역");
+        ValidatableResponse response = StationTestFixture.create("강남역");
 
         // then
         assertThat(response.extract().statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -77,11 +61,11 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        requestRegister("강남역");
-        requestRegister("양재역");
+        StationTestFixture.create("강남역");
+        StationTestFixture.create("양재역");
 
         // when
-        List<String> stationNames = requestFetch()
+        List<String> stationNames = StationTestFixture.fetch()
                 .extract()
                 .jsonPath()
                 .getList("name", String.class);
@@ -99,44 +83,20 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        long stationId = requestRegister("강남역").extract()
+        long stationId = StationTestFixture.create("강남역").extract()
                 .jsonPath()
                 .getLong("id");
 
         // when
-        int statusCode = requestDelete(stationId).extract()
+        int statusCode = StationTestFixture.delete(stationId).extract()
                 .response()
                 .statusCode();
         assertThat(statusCode).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         // then
-        List<String> stationNames = requestFetch().extract()
+        List<String> stationNames = StationTestFixture.fetch().extract()
                 .jsonPath()
                 .getList("name", String.class);
         assertThat(stationNames).isEmpty();
-    }
-
-    private ValidatableResponse requestRegister(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
-    }
-
-    private ValidatableResponse requestDelete(long id) {
-        return RestAssured.given().log().all()
-                .pathParam("id", id)
-                .when().delete("/stations/{id}")
-                .then().log().all();
-    }
-
-    private ValidatableResponse requestFetch() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all();
     }
 }
