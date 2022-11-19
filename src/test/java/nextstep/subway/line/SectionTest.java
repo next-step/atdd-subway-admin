@@ -7,7 +7,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.LineFixture.신분당선;
-import static nextstep.subway.station.domain.StationTest.*;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
 @DisplayName("구간")

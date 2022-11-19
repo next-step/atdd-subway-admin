@@ -1,14 +1,12 @@
 package nextstep.subway.line;
 
 import nextstep.subway.line.domain.Sections;
-import nextstep.subway.station.domain.StationFixtrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.SectionFixture.논현역_신논현역_구간;
 import static nextstep.subway.line.SectionFixture.신논현역_강남역_구간;
 import static nextstep.subway.station.domain.StationFixtrue.*;
-import static nextstep.subway.station.domain.StationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간들")
