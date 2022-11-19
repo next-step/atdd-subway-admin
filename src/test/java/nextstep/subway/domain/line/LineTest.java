@@ -19,7 +19,7 @@ public class LineTest {
 
     @Nested
     @DisplayName("생성자는")
-    class Describe_constructor {
+    class DescribeConstructor {
 
         @DisplayName("이름이 null이면 예외를 반환")
         @Test
@@ -57,7 +57,7 @@ public class LineTest {
 
     @Nested
     @DisplayName("addSection 메소드는")
-    class Describe_addSection {
+    class DescribeAddSection {
 
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
@@ -86,7 +86,7 @@ public class LineTest {
 
     @Nested
     @DisplayName("getStations 메소드는")
-    class Describe_getStations {
+    class DescribeGetStations {
 
         private Line line = new Line("2호선", "green");
         private Station gangnamStation = new Station("강남역");
@@ -111,7 +111,7 @@ public class LineTest {
 
     @Nested
     @DisplayName("deleteSection 메소드는")
-    class Describe_deleteSection {
+    class DescribeDeleteSection {
 
         private Line line = new Line("2호선", "green");
         private Station gangnamStation = new Station("강남역");
