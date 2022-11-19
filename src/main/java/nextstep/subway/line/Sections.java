@@ -40,6 +40,15 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
+        validateNewSection(newSection);
+        sections.stream()
+            .filter(section -> section.hasSameUpOrDownStation(newSection))
+            .findFirst()
+            .ifPresent(section -> section.insertBetween(newSection));
+        sections.add(newSection);
+    }
+
+    private void validateNewSection(Section newSection) {
         if (sections.stream()
             .noneMatch(section -> section.hasRelation(newSection))) {
             throw new NoRelationStationException();
@@ -48,12 +57,6 @@ public class Sections {
         if (sections.contains(newSection)) {
             throw new SameStationException();
         }
-
-        sections.stream()
-            .filter(section -> section.hasSameUpOrDownStation(newSection))
-            .findFirst()
-            .ifPresent(section -> section.insertBetween(newSection));
-        sections.add(newSection);
     }
 
     public List<Section> getSections() {
