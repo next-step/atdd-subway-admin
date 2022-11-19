@@ -29,8 +29,7 @@ public class Line extends BaseEntity {
 
     public Line(String name, String color, Station preStation, Station station, Integer distance) {
         this(name, color);
-        sections.add(null, preStation, 0);
-        sections.add(preStation, station, distance);
+        sections.addSection(preStation, station, distance);
     }
 
     public Line(String name, String color) {
@@ -70,5 +69,9 @@ public class Line extends BaseEntity {
 
     public Sections getSections() {
         return sections;
+    }
+
+    public void deleteSectionByStation(Station station) {
+        sections.deleteSectionByStation(station);
     }
 }
