@@ -51,3 +51,8 @@
 * [x] 검증로직 도메인으로 이동
 * [x] api 명세에 맞춰서 RequestMapping 수정
 * [x] Station 관련 된 로직은 StationService 에 의존하도록 수정
+### 3단계 - 리뷰2
+* [ ] cascade 를 활용할 수 있는 모든 부분에 적용
+* [ ] SectionService 의 기능을 모두 도메인으로 이동
+* [ ] LineResponse 에서 역목록만 정렬 된 순서로 응답하도록 수정
+* [ ] 도메인 단위테스트 추가
