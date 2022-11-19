@@ -88,8 +88,10 @@ class SectionTest {
         Section downSection = new Section(SANGWANGSIPLI, SINDANG, 10L);
 
         Section combine = upSection.merge(downSection);
-        assertThat(combine.getUpStation()).isEqualTo(WANGSIPLI);
-        assertThat(combine.getDownStation()).isEqualTo(SINDANG);
-        assertThat(combine.getDistance()).isEqualTo(Distance.of(20L));
+        assertAll(
+            () -> assertThat(combine.getUpStation()).isEqualTo(WANGSIPLI),
+            () -> assertThat(combine.getDownStation()).isEqualTo(SINDANG),
+            () -> assertThat(combine.getDistance()).isEqualTo(Distance.of(20L))
+        );
     }
 }

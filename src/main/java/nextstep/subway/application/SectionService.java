@@ -36,13 +36,12 @@ public class SectionService {
     }
 
     @Transactional
-    public void removeSection(Long id, Long stationId) {
+    public void removeSectionByStationId(Long id, Long stationId) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철노선 ID 입니다."));
         Station station = stationRepository.findById(stationId)
             .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 ID 입니다."));
 
-        line.removeStation(station);
-
+        line.removeSectionByStation(station);
     }
 }

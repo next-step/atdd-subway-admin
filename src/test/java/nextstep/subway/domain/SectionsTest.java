@@ -81,11 +81,13 @@ class SectionsTest {
         sections.addSection(new Section(1L, WANGSIPLI, SANGWANGSIPLI, 10L));
         sections.addSection(new Section(2L, SANGWANGSIPLI, SINDANG, 10L));
 
-        sections.removeByStation(WANGSIPLI);
+        sections.removeSectionByStation(WANGSIPLI);
 
-        assertThat(sections.getList()).hasSize(1);
-        assertThat(sections.allStations().getList()).contains(SANGWANGSIPLI, SINDANG);
-        assertThat(sections.allStations().getList()).doesNotContain(WANGSIPLI);
+        assertAll(
+            () -> assertThat(sections.getList()).hasSize(1),
+            () -> assertThat(sections.allStations().getList()).contains(SANGWANGSIPLI, SINDANG),
+            () -> assertThat(sections.allStations().getList()).doesNotContain(WANGSIPLI)
+        );
     }
 
     @DisplayName("구간 삭제 - 하행 종점")
@@ -95,11 +97,13 @@ class SectionsTest {
         sections.addSection(new Section(1L, WANGSIPLI, SANGWANGSIPLI, 10L));
         sections.addSection(new Section(2L, SANGWANGSIPLI, SINDANG, 10L));
 
-        sections.removeByStation(SINDANG);
+        sections.removeSectionByStation(SINDANG);
 
-        assertThat(sections.getList()).hasSize(1);
-        assertThat(sections.allStations().getList()).contains(WANGSIPLI, SANGWANGSIPLI);
-        assertThat(sections.allStations().getList()).doesNotContain(SINDANG);
+        assertAll(
+            () -> assertThat(sections.getList()).hasSize(1),
+            () -> assertThat(sections.allStations().getList()).contains(WANGSIPLI, SANGWANGSIPLI),
+            () -> assertThat(sections.allStations().getList()).doesNotContain(SINDANG)
+        );
     }
 
     @DisplayName("구간 삭제 - 가운데 역")
@@ -109,11 +113,12 @@ class SectionsTest {
         sections.addSection(new Section(1L, WANGSIPLI, SANGWANGSIPLI, 10L));
         sections.addSection(new Section(2L, SANGWANGSIPLI, SINDANG, 10L));
 
-        sections.removeByStation(SANGWANGSIPLI);
-
-        assertThat(sections.getList()).hasSize(1);
-        assertThat(sections.allStations().getList()).contains(WANGSIPLI, SINDANG);
-        assertThat(sections.allStations().getList()).doesNotContain(SANGWANGSIPLI);
+        sections.removeSectionByStation(SANGWANGSIPLI);
+        assertAll(
+            () -> assertThat(sections.getList()).hasSize(1),
+            () -> assertThat(sections.allStations().getList()).contains(WANGSIPLI, SINDANG),
+            () -> assertThat(sections.allStations().getList()).doesNotContain(SANGWANGSIPLI)
+        );
     }
 
     @DisplayName("구간 삭제 실패 - 노선에 등록되어있지 않은 역을 제거")
@@ -123,7 +128,7 @@ class SectionsTest {
         sections.addSection(new Section(1L, WANGSIPLI, SANGWANGSIPLI, 10L));
         sections.addSection(new Section(2L, SANGWANGSIPLI, SINDANG, 10L));
 
-        assertThatThrownBy(() -> sections.removeByStation(DDP))
+        assertThatThrownBy(() -> sections.removeSectionByStation(DDP))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -134,9 +139,9 @@ class SectionsTest {
         sections.addSection(new Section(1L, WANGSIPLI, SANGWANGSIPLI, 10L));
 
         assertAll(
-            () -> assertThatThrownBy(() -> sections.removeByStation(WANGSIPLI))
+            () -> assertThatThrownBy(() -> sections.removeSectionByStation(WANGSIPLI))
                 .isInstanceOf(IllegalArgumentException.class),
-            () -> assertThatThrownBy(() -> sections.removeByStation(SANGWANGSIPLI))
+            () -> assertThatThrownBy(() -> sections.removeSectionByStation(SANGWANGSIPLI))
                 .isInstanceOf(IllegalArgumentException.class)
         );
     }
