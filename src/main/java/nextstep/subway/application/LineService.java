@@ -37,9 +37,15 @@ public class LineService {
         return LineReponse.of(line);
     }
 
+    @Transactional
     public LineReponse updateLine(Long id, LineRequest lineRequest) {
         Line line = lineRepository.getById(id);
         line.updateLine(lineRequest);
         return LineReponse.of(lineRepository.save(line));
+    }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        lineRepository.deleteById(id);
     }
 }

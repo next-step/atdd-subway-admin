@@ -187,4 +187,30 @@ public class LineAcceptanceTest {
         // Then
         assertThat(name).isEqualTo("6호선");
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @Test
+    @DisplayName("지하철 노선 삭제 테스트")
+    public void delete_line_test() {
+        // Given
+        LineRequest firstLineRequest = new LineRequest("신분당선", "red"
+                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
+                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+
+        // When
+        ExtractableResponse<Response> createLine = reqeust_register_line(firstLineRequest);
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .pathParam("id", createLine.jsonPath().get("id"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/line/{id}")
+                .then().log().all()
+                .extract();
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
 }
