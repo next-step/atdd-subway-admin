@@ -1,6 +1,7 @@
 package nextstep.subway.domain.line;
 
 import nextstep.subway.domain.BaseEntity;
+import nextstep.subway.dto.request.LineRequest;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -34,6 +35,14 @@ public class Line extends BaseEntity {
         this.startTime = startTime;
         this.endTime = endTime;
         this.intervalTime = intervalTime;
+    }
+
+    public void updateLine(LineRequest lineRequest) {
+        this.name = lineRequest.getName();
+        this.color = lineRequest.getName();
+        this.startTime = LocalTime.parse(lineRequest.getStartTime());
+        this.endTime = LocalTime.parse(lineRequest.getEndTime());
+        this.intervalTime = lineRequest.getName();
     }
 
     public Long getId() {
