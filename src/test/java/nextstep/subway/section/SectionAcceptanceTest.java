@@ -170,4 +170,41 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
         // then
         assertThat(지하철구간_추가_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+
+    /**
+     * Given 3개의 지하철역을 생성하고
+     * Given 1개의 지하철 노선을 생성하고
+     * Given 2개의 지하철 구간을 생성하고
+     * When 종점을 가진 구간을 제거할 경우
+     * Then 지하철 노선을 조회 시 역이 제외된 것을 확인할 수 있다
+     * */
+    @Test
+    @DisplayName("노선의 종점 구간을 제거하는 경우")
+    void 구간삭제_종점() {
+    }
+
+    /**
+     * Given 3개의 지하철역을 생성하고
+     * Given 1개의 지하철 노선을 생성하고
+     * Given 2개의 지하철 구간을 생성하고
+     * When 중간역을 가진 구간을 제거할 경우
+     * Then 지하철 노선을 조회 시 역이 제외된 것을 확인할 수 있다
+     * */
+    @Test
+    @DisplayName("노선의 종점 구간을 제거하는 경우")
+    void 구간삭제_중간() {
+    }
+
+    /**
+     * Given 2개의 지하철역을 생성하고
+     * Given 1개의 지하철 노선을 생성하고
+     * Given 1개의 지하철 구간을 생성하고
+     * When 마지막 구간을 제거하려 할 때
+     * Then 구간을 제거할 수 없다
+     * */
+    @Test
+    @DisplayName("노선의 마지막 구간을 제거하는 경우, 삭제할 수 없다")
+    void 구간삭제_마지막_구간() {
+    }
 }
