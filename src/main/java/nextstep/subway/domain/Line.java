@@ -4,6 +4,7 @@ import nextstep.subway.exception.LineException;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 import static nextstep.subway.exception.LineExceptionMessage.EMPTY_LINE_COLOR;
 import static nextstep.subway.exception.LineExceptionMessage.EMPTY_LINE_NAME;
@@ -31,13 +32,13 @@ public class Line extends BaseEntity {
     }
 
     private void validateLine(String name) {
-        if (name == null || name.isEmpty()) {
+        if (Objects.isNull(name) || name.isEmpty()) {
             throw new LineException(EMPTY_LINE_NAME.getMessage());
         }
     }
 
     private void validateColor(String color) {
-        if (color == null || color.isEmpty()) {
+        if (Objects.isNull(color) || color.isEmpty()) {
             throw new LineException(EMPTY_LINE_COLOR.getMessage());
         }
     }
@@ -67,7 +68,7 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
-    public void deleteSection(Line line,Station deleteStation) {
-        sections.deleteSection(line,deleteStation);
+    public void deleteSection(Line line, Station deleteStation) {
+        sections.deleteSection(line, deleteStation);
     }
 }

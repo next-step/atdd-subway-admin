@@ -9,6 +9,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.SectionsExceptionMessage.*;
@@ -38,7 +39,7 @@ public class Sections {
     }
 
     private void validationSection(Section newSection) {
-        if (newSection == null) {
+        if (Objects.isNull(newSection)) {
             throw new NullPointerException(EMPTY_SECTION.getMessage());
         }
         if (isContainsAllStation(newSection)) {
