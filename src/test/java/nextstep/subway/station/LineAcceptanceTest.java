@@ -6,9 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,8 +26,8 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
-    Map<String, Object> _1호선 = createLine(1L, "1호선", "blue");
-    Map<String, Object> _2호선 = createLine(1L, "2호선", "green");
+    LineRequest _1호선 = new LineRequest("1호선", "blue");
+    LineRequest _2호선 = new LineRequest("2호선", "green");
 
     @BeforeEach
     public synchronized void setUp() {
@@ -93,8 +93,7 @@ public class LineAcceptanceTest {
         long lineId = 지하철_노선을_생성한다(_1호선);
 
         // when
-        Map<String, Object> modifiedLine = createLine(Long.valueOf(_1호선.get("id").toString()),
-            "1호선2", "_1호선.get(\"color\").toString()");
+        LineRequest modifiedLine = new LineRequest("1호선2", "black");
         지하철_노선을_수정한다(lineId, modifiedLine);
 
         // then
@@ -119,7 +118,7 @@ public class LineAcceptanceTest {
         지하철_노선_정보가_없다(lineId);
     }
 
-    private long 지하철_노선을_생성한다(Map<String, Object> line) {
+    private long 지하철_노선을_생성한다(LineRequest line) {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(line)
@@ -139,7 +138,7 @@ public class LineAcceptanceTest {
         assertThat(lineIds).containsAnyOf(lineId);
     }
 
-    private void 지하철_노선_정보가_있다(Long lineId, Map<String, Object> line) {
+    private void 지하철_노선_정보가_있다(Long lineId, LineRequest line) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
             .when().get("/lines/{id}", lineId)
             .then().log().all()
@@ -149,13 +148,13 @@ public class LineAcceptanceTest {
             () -> assertThat(response.jsonPath().getLong("id"))
                 .isEqualTo(lineId),
             () -> assertThat(response.jsonPath().getString("name"))
-                .isEqualTo(line.get("name").toString()),
+                .isEqualTo(line.getName()),
             () -> assertThat(response.jsonPath().getString("color"))
-                .isEqualTo(line.get("color").toString())
+                .isEqualTo(line.getColor())
         );
     }
 
-    private Map<String, Object> 지하철_노선을_수정한다(long lineId, Map<String, Object> line) {
+    private Map<String, Object> 지하철_노선을_수정한다(long lineId, LineRequest line) {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .body(line)
@@ -179,15 +178,5 @@ public class LineAcceptanceTest {
             .extract()
             .jsonPath().get("id");
         assertThat(id).isNull();
-    }
-
-    Map<String, Object> createLine(Long id, String name, String color) {
-        return new HashMap<String, Object>() {
-            {
-                put("id", id);
-                put("name", name);
-                put("color", color);
-            }
-        };
     }
 }

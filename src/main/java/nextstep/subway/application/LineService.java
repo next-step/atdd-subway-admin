@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -24,7 +25,6 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -33,7 +33,6 @@ public class LineService {
             .collect(Collectors.toList());
     }
 
-    @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
         return lineRepository.findById(id).map(LineResponse::of)
             .orElse(LineResponse.EMPTY);
@@ -41,11 +40,13 @@ public class LineService {
 
     @Transactional
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        if (!lineRepository.existsById(id)) {
+        Optional<Line> lineOptional = lineRepository.findById(id);
+        if (!lineOptional.isPresent()) {
             return LineResponse.EMPTY;
         }
-        Line line = new Line(id, lineRequest.getName(), lineRequest.getColor());
-        lineRepository.save(line);
+        Line line = lineOptional.get();
+        line.setName(lineRequest.getName());
+        line.setColor(lineRequest.getColor());
         return LineResponse.of(line);
     }
 
