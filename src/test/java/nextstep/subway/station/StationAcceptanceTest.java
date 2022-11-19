@@ -108,12 +108,10 @@ public class StationAcceptanceTest {
         // given
         Map<String, String> params = new HashMap<>();
         List<String> nameParams = Arrays.asList("지하철역이름", "새로운지하철역이름", "또다른지하철역이름");
-        for (String nameParam : nameParams) {
-            params.put("name", nameParam);
-            createTestStation(params);
-        }
 
         // when
+        setUpStationBeforeGetStation(nameParams, params);
+
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
                         .body(params)
@@ -125,6 +123,13 @@ public class StationAcceptanceTest {
 
         // then
         assertThat(response.jsonPath().getList("name", String.class)).isEqualTo(nameParams);
+    }
+
+    private void setUpStationBeforeGetStation(List<String> nameParams, Map params) {
+        for (String nameParam : nameParams) {
+            params.put("name", nameParam);
+            createTestStation(params);
+        }
     }
 
     private void createTestStation(Map<String, String> params) {
