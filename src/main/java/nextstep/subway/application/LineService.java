@@ -46,12 +46,16 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) {
+    public Line findEntityWithSectionsById(Long lineId) {
+        return lineRepository.findWithSectionsById(lineId).orElseThrow(EntityNotFoundException::new);
+    }
+
+    public LineResponse findResponseById(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
         return getLineResponse(line);
     }
 
-    public LineResponse findByName(String name) {
+    public LineResponse findResponseByName(String name) {
         Line line = lineRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
         return getLineResponse(line);
     }

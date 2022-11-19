@@ -66,7 +66,16 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Section> getSections() {
+    public Sections getSections() {
+        return sections;
+    }
+
+    public List<Section> getSectionList() {
         return sections.getSections();
+    }
+
+    public void validateAlreadyAndNotExistsStations(Station upStation, Station downStation) {
+        sections.validateAlreadyExistsStation(upStation, downStation);
+        sections.validateNotExistsStation(upStation, downStation);
     }
 }

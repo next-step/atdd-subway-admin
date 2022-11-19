@@ -107,7 +107,7 @@ public class Section {
 
     public void validateLength(int distance) {
         if (this.distance <= distance) {
-            throw new IllegalArgumentException("기존역 사이에 같은 길이의 역을 등록할 수 없습니다.");
+            throw new IllegalArgumentException("기존역 사이에 크거나 같은 길이의 역을 등록할 수 없습니다.");
         }
     }
 

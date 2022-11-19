@@ -17,9 +17,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 class SectionRepositoryTest {
 
     @Autowired
-    LineRepository lineRepository;
-
-    @Autowired
     SectionRepository sectionRepository;
 
     @Autowired
@@ -59,8 +56,7 @@ class SectionRepositoryTest {
     private Section getSection() {
         station1 = stationRepository.save(new Station("경기 광주역"));
         station2 = stationRepository.save(new Station("중앙역"));
-        Line line = lineRepository.save(new Line("신분당선", "bg-red-600"));
-        return new Section(line, 10, station1, station2);
+        return new Section(new Line("신분당선", "bg-red-600"), 10, station1, station2);
     }
 
     private void flushAndClear() {

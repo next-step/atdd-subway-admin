@@ -39,6 +39,7 @@ class SectionServiceTest {
     @Test
     void addSection() {
         Long lineId = lineService.saveLine(getLineRequest());
+        flushAndClear();
         sectionService.addSection(lineId, getSectionRequest());
         flushAndClear();
         List<SectionResponse> sections = sectionService.findSectionsByLineId(lineId);

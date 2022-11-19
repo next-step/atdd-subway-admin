@@ -3,6 +3,7 @@ package nextstep.subway.application;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
@@ -17,10 +18,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class SectionService {
 
     private final StationService stationService;
+    private final LineService lineService;
     private final SectionRepository sectionRepository;
 
-    public SectionService(StationService stationService, SectionRepository sectionRepository) {
+    public SectionService(StationService stationService, LineService lineService,
+                          SectionRepository sectionRepository) {
         this.stationService = stationService;
+        this.lineService = lineService;
         this.sectionRepository = sectionRepository;
     }
 
@@ -35,25 +39,14 @@ public class SectionService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Sections sections = createSections(lineId);
+        Line line = lineService.findEntityWithSectionsById(lineId);
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
         int distance = sectionRequest.getDistance();
 
-        validateStations(sections, upStation, downStation);
-        isFindSameUpStationThenCreateNewSection(sections, upStation, downStation, distance);
-        isFindSameDownStationThenCreateNewSection(sections, upStation, downStation, distance);
-    }
-
-    private Sections createSections(Long lineId) {
-        Sections sections = new Sections();
-        sections.addAll(sectionRepository.findByLineId(lineId).orElseThrow(EntityNotFoundException::new));
-        return sections;
-    }
-
-    private void validateStations(Sections sections, Station upStation, Station downStation) {
-        sections.validateAlreadyExistsStation(upStation, downStation);
-        sections.validateNotExistsStation(upStation, downStation);
+        line.validateAlreadyAndNotExistsStations(upStation, downStation);
+        isFindSameUpStationThenCreateNewSection(line.getSections(), upStation, downStation, distance);
+        isFindSameDownStationThenCreateNewSection(line.getSections(), upStation, downStation, distance);
     }
 
     private void isFindSameUpStationThenCreateNewSection(Sections sections, Station upStation,

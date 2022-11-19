@@ -40,7 +40,7 @@ class LineServiceTest {
     void saveLine() {
         LineRequest expected = getLineRequest();
         Long id = service.saveLine(expected);
-        LineResponse actual = service.findById(id);
+        LineResponse actual = service.findResponseById(id);
         assertThat(actual.getName()).isEqualTo(expected.getName());
     }
 
@@ -54,13 +54,13 @@ class LineServiceTest {
     @Test
     void findByName() {
         service.saveLine(getLineRequest());
-        assertThatNoException().isThrownBy(() -> service.findByName("신분당선"));
+        assertThatNoException().isThrownBy(() -> service.findResponseByName("신분당선"));
     }
 
     @Test
     void findById() {
         Long id = service.saveLine(getLineRequest());
-        assertThatNoException().isThrownBy(() -> service.findById(id));
+        assertThatNoException().isThrownBy(() -> service.findResponseById(id));
     }
 
     @Test
@@ -68,7 +68,7 @@ class LineServiceTest {
         Long id = service.saveLine(getLineRequest());
         LineRequest request = new LineRequest("신분당선2", "bg-green-600", 10, station1.getId(), station2.getId());
         service.updateLine("신분당선", request);
-        LineResponse findLine = service.findById(id);
+        LineResponse findLine = service.findResponseById(id);
         assertThat(findLine.getName()).isEqualTo("신분당선2");
         assertThat(findLine.getColor()).isEqualTo("bg-green-600");
     }
@@ -77,7 +77,7 @@ class LineServiceTest {
     void deleteLineById() {
         Long lineId = service.saveLine(getLineRequest());
         service.deleteLineById(lineId);
-        assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(() -> service.findByName("신분당선"));
+        assertThatExceptionOfType(EntityNotFoundException.class).isThrownBy(() -> service.findResponseByName("신분당선"));
     }
 
     private LineRequest getLineRequest() {
