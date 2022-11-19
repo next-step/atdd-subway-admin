@@ -1,7 +1,7 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineStation;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -35,12 +35,12 @@ public class SectionService {
         checkValidationParameter(sectionRequest);
 
         Line line = getLine(lineId);
-        LineStation lineStation = lineStationRepository.save(
-                        new LineStation(getStation(sectionRequest.getUpStationId()),
+        Section section = lineStationRepository.save(
+                        new Section(getStation(sectionRequest.getUpStationId()),
                         getStation(sectionRequest.getDownStationId()),
                         sectionRequest.getDistance()));
 
-        line.getLineStations().infixSection(lineStation);
+        line.getLineStations().infixSection(section);
 
         return LineResponse.of(line);
     }
