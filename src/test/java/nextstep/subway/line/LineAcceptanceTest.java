@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleaner;
-import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -22,9 +21,11 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철호선 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -125,6 +126,25 @@ public class LineAcceptanceTest {
                 .isTrue();
     }
 
+    @Test
+    @DisplayName("지하철호선 정보를 삭제한다.")
+    void deleteLineTest() {
+        //given
+        String lineName = "신분당선";
+        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
+        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        String lineId = createLineAndGetId(
+                new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
+
+        //when
+        deleteLine(lineId);
+
+        //then
+        assertThat(retrieveAllLines().size()).isEqualTo(0);
+        assertThat(retrieveAllLineNames().stream().anyMatch(lineName::equals))
+                .isFalse();
+    }
+
     /**
      * 지하철호선 생성
      */
@@ -194,6 +214,9 @@ public class LineAcceptanceTest {
         return retrieveLine(lineId).getName();
     }
 
+    /**
+     * 지하철호선 정보 수정
+     */
     void updateLine(String lineId, LineUpdateRequest lineUpdateRequest) {
         final Map param = new HashMap();
         param.put("name", lineUpdateRequest.getName());
@@ -203,6 +226,16 @@ public class LineAcceptanceTest {
                 .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines/" + lineId)
+                .then().log().all().extract();
+    }
+
+    /**
+     * 지하철호선 정보 삭제
+     */
+    private void deleteLine(String lineId) {
+        RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + lineId)
                 .then().log().all().extract();
     }
 

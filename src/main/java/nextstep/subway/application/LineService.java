@@ -55,4 +55,9 @@ public class LineService {
         lineRepository.save(new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor(),
                 line.getUpStation(), line.getDownStation(), line.getDistance()));
     }
+
+    @Transactional
+    public void deleteLineById(Long id) {
+        lineRepository.deleteById(id);
+    }
 }
