@@ -136,21 +136,39 @@ public class SectionAcceptanceTest {
         구간_생성을_실패한다(response);
     }
 
+    /**
+     * Given 노선이 등록되어 있고
+     * When  신규 구간의 상행선,하행선이 노선과 동일하면
+     * Then  구간 생성이 실패함
+     */
+    @Test
+    void 상행역_하행역이_노선과_정반대_경우() {
+        LineResponse lineResponse = LineAcceptanceTest.지하철_노선을_생성한다("노선", "색상", 10L, Arrays.asList(상행역.getId(), 하행역.getId())).as(LineResponse.class);
+
+        ExtractableResponse<Response> response = 상행역_하행역이_정반대인_구간을_생성함(lineResponse.getId(), 하행역.getId(),상행역.getId(),5L);
+
+        구간_생성을_실패한다(response);
+    }
+
+    private ExtractableResponse<Response> 상행역_하행역이_정반대인_구간을_생성함(Long lineId, Long 하행역_식별자, Long 상행역_식별자 , long 구간거리) {
+        return 구간생성을_요청한다(lineId, 하행역_식별자, 상행역_식별자, 구간거리);
+    }
+
     private ExtractableResponse<Response> 상행역_하행역이_노선과_동일한_구간을_생성함(Long lineId, Long 상행역_식별자, Long 하행역_식별자, long 구간거리) {
+        return 구간생성을_요청한다(lineId, 상행역_식별자, 하행역_식별자, 구간거리);
+    }
+
+    private static ExtractableResponse<Response> 구간생성을_요청한다(Long lineId, Long 상행역_식별자, Long 하행역_식별자, long 구간거리) {
         HashMap<Object, Object> params = new HashMap<>();
-        params.put("downStationId",하행역_식별자);
-        params.put("upStationId",상행역_식별자);
-        params.put("distance",구간거리);
-        return RequestUtil.postRequest(String.format(ServiceUrl.URL_SECTIONS,lineId),params);
+        params.put("downStationId", 하행역_식별자);
+        params.put("upStationId", 상행역_식별자);
+        params.put("distance", 구간거리);
+        return RequestUtil.postRequest(String.format(ServiceUrl.URL_SECTIONS, lineId), params);
     }
 
     private ExtractableResponse<Response> 하행선에서_시작하는_외부_구간_추가(Long lineId, StationResponse 하행역, String 신규역, long distance) {
         StationResponse response = 지하철역을_생성한다(신규역).as(StationResponse.class);
-        HashMap<Object, Object> params = new HashMap<>();
-        params.put("downStationId",response.getId());
-        params.put("upStationId",하행역.getId());
-        params.put("distance",distance);
-        return RequestUtil.postRequest(String.format(ServiceUrl.URL_SECTIONS,lineId),params);
+        return 구간생성을_요청한다(lineId, 하행역.getId(), response.getId(), distance);
     }
 
     private void 노선이_연장된다(LineResponse lineResponse,ExtractableResponse<Response> response, String 상행역, String 하행역) {
@@ -161,11 +179,7 @@ public class SectionAcceptanceTest {
 
     private ExtractableResponse<Response> 상행선에서_끝나는_외부_구간_추가(Long lineId, StationResponse 상행역, String 신규역, long distance) {
         StationResponse response = 지하철역을_생성한다(신규역).as(StationResponse.class);
-        HashMap<Object, Object> params = new HashMap<>();
-        params.put("downStationId",상행역.getId());
-        params.put("upStationId",response.getId());
-        params.put("distance",distance);
-        return RequestUtil.postRequest(String.format(ServiceUrl.URL_SECTIONS,lineId),params);
+        return 구간생성을_요청한다(lineId, response.getId(), 상행역.getId(), distance);
     }
 
     private void 구간_생성을_실패한다(ExtractableResponse<Response> response) {
@@ -174,11 +188,7 @@ public class SectionAcceptanceTest {
 
     private ExtractableResponse<Response> 하행역에서_끝나는_구간을_추가한다(Long lineId, StationResponse 하행역, String 신규역, long distance) {
         StationResponse response = 지하철역을_생성한다(신규역).as(StationResponse.class);
-        HashMap<Object, Object> params = new HashMap<>();
-        params.put("downStationId",하행역.getId());
-        params.put("upStationId",response.getId());
-        params.put("distance",distance);
-        return RequestUtil.postRequest(String.format(ServiceUrl.URL_SECTIONS,lineId),params);
+        return 구간생성을_요청한다(lineId, response.getId(), 하행역.getId(), distance);
     }
 
     private void 추가된_구간을_확인할_수_있다(ExtractableResponse<Response> response) {
@@ -187,10 +197,6 @@ public class SectionAcceptanceTest {
 
     private ExtractableResponse<Response> 상행역에서_시작하는_구간을_추가한다(Long lineId, StationResponse 상행역, String 신규역, long distance) {
         StationResponse response = 지하철역을_생성한다(신규역).as(StationResponse.class);
-        HashMap<Object, Object> params = new HashMap<>();
-        params.put("downStationId",response.getId());
-        params.put("upStationId",상행역.getId());
-        params.put("distance",distance);
-        return RequestUtil.postRequest(String.format(ServiceUrl.URL_SECTIONS,lineId),params);
+        return 구간생성을_요청한다(lineId, 상행역.getId(), response.getId(), distance);
     }
 }
