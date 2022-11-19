@@ -21,9 +21,7 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<Section> sections = new ArrayList<>();
 
-    protected Sections() {
-
-    }
+    protected Sections() {}
 
     public void addSection(Section newSection) {
         validationSection(newSection);

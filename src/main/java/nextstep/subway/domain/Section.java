@@ -27,9 +27,7 @@ public class Section extends BaseEntity {
     private Station downStation;
     private long distance;
 
-    protected Section() {
-
-    }
+    protected Section() {}
 
     public Section(Line line, Station upStation, Station downStation, long distance) {
         validateDistance(distance);
