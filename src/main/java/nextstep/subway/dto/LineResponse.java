@@ -10,11 +10,11 @@ import java.util.List;
 
 public class LineResponse {
     private final Long id;
-    private final Name name;
-    private final Color color;
+    private final String name;
+    private final String color;
     private final List<Station> stations;
 
-    public LineResponse(Long id, Name name, Color color, List<Station> stations) {
+    public LineResponse(Long id, String name, String color, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -25,7 +25,7 @@ public class LineResponse {
         List<Station> stations = new ArrayList<>();
         stations.add(line.getUpStation());
         stations.add(line.getDownStation());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+        return new LineResponse(line.getId(), line.getName().getName(), line.getColor().getColor(), stations);
     }
 
     public Long getId() {
@@ -33,10 +33,10 @@ public class LineResponse {
     }
 
     public String getName() {
-        return name.getName();
+        return name;
     }
 
     public String getColor() {
-        return color.getColor();
+        return color;
     }
 }
