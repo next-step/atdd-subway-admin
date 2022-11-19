@@ -16,17 +16,12 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @DisplayName("지하철역 테스트")
 @DataJpaTest
-public class StationRepositoryTest {
+public class StationTest {
 
     final String 지하철역_이름 = "지하철역";
 
     @Autowired
     private StationRepository stationRepository;
-
-    @BeforeEach
-    public void setUp() {
-
-    }
 
     @Test
     void 지하철역_등록() {
