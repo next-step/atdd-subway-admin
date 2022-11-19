@@ -23,7 +23,7 @@ public class Distance {
     }
 
     private void validCheckDistance(int distance) {
-        if (distance < SIZE_ZERO) {
+        if (distance <= SIZE_ZERO) {
             throw new NotValidDataException(ValidExceptionType.NOT_VALID_DISTANCE.getMessage());
         }
     }

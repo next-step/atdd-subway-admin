@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.common.exception.NotFoundDataException;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -46,23 +48,23 @@ public class LineStations {
     }
 
     private void checkAlreadyExistStation(Station upStation, Station downStation) {
-        if (isSameUpStation(upStation) && isSameDownStation(downStation)) {
-            throw new IllegalArgumentException(ALREADY_LINE_STATION.getMessage());
+        if (isContainUpStation(upStation) && isContainDownStation(downStation)) {
+            throw new NotFoundDataException(ALREADY_LINE_STATION.getMessage());
         }
     }
 
-    private boolean isSameUpStation(Station upStation) {
+    private boolean isContainUpStation(Station upStation) {
         return getStations().contains(upStation);
     }
 
-    private boolean isSameDownStation(Station downStation) {
+    private boolean isContainDownStation(Station downStation) {
         return this.getStations().contains(downStation);
     }
 
 
     private void checkExistBothStation(LineStation station) {
         if (isExistStations(station)) {
-            throw new IllegalArgumentException(NOT_FOUND_LINE_STATION_BOTH.getMessage());
+            throw new NotFoundDataException(NOT_FOUND_LINE_STATION_BOTH.getMessage());
         }
     }
 
