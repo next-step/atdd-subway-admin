@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -24,6 +26,10 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "up_station_id")
+    private Station lastUpStation;
+
     @Embedded
     private Sections sections = new Sections();
 
@@ -33,12 +39,17 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station lastUpStation, Station lastDownStation, Long distance) {
         this.name = name;
         this.color = color;
+        this.lastUpStation = lastUpStation;
         this.sections.addSection(new Section(this, distance, lastUpStation, lastDownStation));
     }
 
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 
     public Long getId() {
@@ -54,6 +65,6 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.getStations();
+        return sections.getOrderedStationsStartsWith(lastUpStation);
     }
 }

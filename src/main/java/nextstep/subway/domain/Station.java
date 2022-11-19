@@ -24,4 +24,13 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (!(obj instanceof Station)) {
+            return false;
+        }
+        return id != null
+                && id.equals(((Station) obj).getId());
+    }
 }
