@@ -26,9 +26,22 @@ public class LineBridges {
     }
 
     private void validateDuplicate(LineBridge lineBridge) {
-             lineBridges.stream()
-              .filter(element -> element.isSame(lineBridge))
-              .findFirst().orElseThrow(() -> new IllegalArgumentException("상행역과 하행역이 이미 노선에 등록되어 있으면 구간을 추가할 수 없습니다."));
+        if(isFirstLineBridge()){
+            return;
+        }
+        if(countSameLineBridge(lineBridge) > 0) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 등록되어 있으면 구간을 추가할 수 없습니다.");
+        }
+    }
+
+    private boolean isFirstLineBridge() {
+        return lineBridges.size() == 0;
+    }
+
+    private long countSameLineBridge(LineBridge lineBridge) {
+        return lineBridges.stream()
+                .filter(element -> element.isSame(lineBridge))
+                .count();
     }
 
     private void validateNotingMatch(LineBridge lineBridge) {
