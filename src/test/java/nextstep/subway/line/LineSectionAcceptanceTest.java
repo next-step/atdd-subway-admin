@@ -110,6 +110,22 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(지하철역_번호_목록).containsExactlyInAnyOrder(수원역_번호, 서울역_번호, 두정역_번호);
     }
 
+    /**
+     * When 지하철 노선에 새로운 하행선 구간을 등록하면
+     * Then 지하철 노선의 하행선 역이 변경 된다.
+     **/
+    @DisplayName("노선에 마지막 하행선을 새롭게 등록할 수 있어야 한다")
+    @Test
+    void addSection_newLastDownStation() {
+        // when
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, new SectionRequest(두정역_번호, 수원역_번호, 30L));
+
+
+        // then
+        List<Long> 지하철역_번호_목록 = 구간_생성_결과에서_지하철역_번호들을_조회한다(구간_생성_결과);
+        assertThat(지하철역_번호_목록).containsExactlyInAnyOrder(서울역_번호, 두정역_번호, 수원역_번호);
+    }
+
     private List<Long> 구간_생성_결과에서_지하철역_번호들을_조회한다(ExtractableResponse<Response> 구간_생성_결과) {
         return 구간_생성_결과.jsonPath().getList("stations", StationResponse.class)
                 .stream()
