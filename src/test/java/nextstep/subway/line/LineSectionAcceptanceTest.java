@@ -85,13 +85,12 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_throw_exception_if_distance_is_long_or_equals_rather_than_other_section() {
         // when
-        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(인천역_번호, 서울역_번호, Long.MAX_VALUE));
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, new SectionRequest(수원역_번호, 두정역_번호, 1001L));
 
 
         // then
         // 지하철_노선에_등록된_지하철역을_확인할_수_있다
-        List<Long> 지하철역_번호_목록 = 구간_생성_결과에서_지하철역_번호들을_조회한다(구간_생성_결과);
-        assertThat(지하철역_번호_목록).containsExactlyInAnyOrder(인천역_번호, 서울역_번호, 두정역_번호);
+        assertThat(구간_생성_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
