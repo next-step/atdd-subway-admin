@@ -33,6 +33,7 @@ public class Sections {
 
     public List<Station> stations() {
         return sections.stream()
+            .sorted()
             .map(Section::stations)
             .flatMap(Collection::stream)
             .distinct()

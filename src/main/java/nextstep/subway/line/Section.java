@@ -14,7 +14,7 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 @Entity
-public class Section {
+public class Section implements Comparable<Section> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -93,6 +93,11 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public int compareTo(Section other) {
+        return this.downStation == other.upStation ? -1 : 1;
     }
 
     @Override
