@@ -64,4 +64,28 @@ class LineTest {
 
         assertThat(line).isEqualTo(new Line("테스트 라인", "색상", 100L));
     }
+
+    @Test
+    @DisplayName("입력받은 역 들이 노선과 끝과 동일한지 확인히야 판단")
+    void hasSameEndStations() {
+        Station upStation = new Station(1L,"테스트 상행역");
+        Station downStation = new Station(2L,"테스트 하행역");
+        line.setStations(upStation,downStation);
+
+        boolean hasSame = line.hasSameEndStations(upStation, downStation);
+
+        assertTrue(hasSame);
+    }
+
+    @Test
+    @DisplayName("입력받은 역 들이 노선의 상행/하행역과 반대로 입력되었다면 동일한 것으로 판단")
+    void hasSameEndStations2() {
+        Station upStation = new Station(1L,"테스트 상행역");
+        Station downStation = new Station(2L,"테스트 하행역");
+        line.setStations(upStation,downStation);
+
+        boolean hasSame = line.hasSameEndStations(downStation, upStation);
+
+        assertTrue(hasSame);
+    }
 }

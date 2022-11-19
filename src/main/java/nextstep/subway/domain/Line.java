@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -166,5 +167,15 @@ public class Line extends BaseEntity {
         this.distance += distance;
         this.sections.add(Section.of(this, upStation, downStation, distance));
         return true;
+    }
+
+    public boolean hasSameEndStations(Station upStation, Station downStation) {
+        if(this.upStation.equals(upStation) && this.downStation.equals(downStation)){
+            return true;
+        }
+        if(this.upStation.equals(downStation) && this.downStation.equals(upStation)){
+            return true;
+        }
+        return false;
     }
 }

@@ -26,20 +26,31 @@ public class SectionService {
         Station upStation = stationRepository.findById(request.getUpStationId()).orElseThrow(EntityNotFoundException::new);
         Station downStation = stationRepository.findById(request.getDownStationId()).orElseThrow(EntityNotFoundException::new);
         Line line = getLine(lineId);
-
-        boolean added = addSection(line, request, upStation, downStation);
-        if(!added){
-            throw new IllegalArgumentException();
-        }
+        checkRequestSectionIsLineEndStations(upStation, downStation, line);
+        addRequestSection(upStation, downStation,request.getDistance(), line);
         lineRepository.save(line);
     }
 
-    private boolean addSection(Line line, SectionRequest request, Station upStation, Station downStation) {
+    private void addRequestSection(Station upStation, Station downStation,Long distance, Line line) {
+        boolean added = addSection(line, upStation, downStation, distance);
+        if(!added){
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private void checkRequestSectionIsLineEndStations(Station upStation, Station downStation, Line line) {
+        boolean hasSame = line.hasSameEndStations(upStation, downStation);
+        if(hasSame){
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private boolean addSection(Line line, Station upStation, Station downStation, Long distance) {
         Sections sections = line.toSections();
-        return sections.insertInsideFromUpStation(upStation, downStation, request.getDistance()) ||
-                sections.insertInsideFromDownStation(downStation, upStation, request.getDistance()) ||
-                sections.extendFromUpStation(upStation, downStation, request.getDistance()) ||
-                sections.extendFromDownStation(upStation, downStation, request.getDistance());
+        return sections.insertInsideFromUpStation(upStation, downStation, distance) ||
+                sections.insertInsideFromDownStation(downStation, upStation, distance) ||
+                sections.extendFromUpStation(upStation, downStation, distance) ||
+                sections.extendFromDownStation(upStation, downStation, distance);
     }
 
     private Line getLine(Long lineId) {
