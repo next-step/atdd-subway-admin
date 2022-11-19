@@ -1,7 +1,7 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineStations;
+import nextstep.subway.domain.Sections;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +16,11 @@ public class LineResponse {
 
     private LineResponse() {}
 
-    public LineResponse(Long id, String name, String color, LineStations lineStations) {
+    public LineResponse(Long id, String name, String color, Sections sections) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = lineStations.getSortList().stream()
+        this.stations = sections.getSortList().stream()
                 .map(lineStation -> StationResponse.of(lineStation.getStation()))
                 .collect(Collectors.toList());
     }

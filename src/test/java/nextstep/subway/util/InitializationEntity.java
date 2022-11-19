@@ -1,8 +1,8 @@
 package nextstep.subway.util;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineStation;
-import nextstep.subway.domain.LineStations;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.LineStationRepository;
@@ -18,8 +18,8 @@ public class InitializationEntity {
     public static Station station_3;
     public static Station station_4;
 
-    public static LineStation lineStation_1;
-    public static LineStation lineStation_2;
+    public static Section section_1;
+    public static Section section_2;
 
     public static Line line_1;
 
@@ -40,15 +40,15 @@ public class InitializationEntity {
     }
 
     public void initLineStation() {
-        lineStation_1 = lineStationRepository.save(new LineStation(upStation));
-        lineStation_2 = lineStationRepository.save(new LineStation(upStation, downStation, 10));
+        section_1 = lineStationRepository.save(new Section(upStation));
+        section_2 = lineStationRepository.save(new Section(upStation, downStation, 10));
     }
 
     public void initLine() {
-        LineStations lineStations = new LineStations();
-        lineStations.add(lineStation_1);
-        lineStations.add(lineStation_2);
-        line_1 = lineRepository.save(new Line("1호선", "", lineStations));
+        Sections sections = new Sections();
+        sections.add(section_1);
+        sections.add(section_2);
+        line_1 = lineRepository.save(new Line("1호선", "", sections));
     }
 
 }

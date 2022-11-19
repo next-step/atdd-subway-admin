@@ -52,7 +52,8 @@ public class SectionAcceptanceTest {
      * When 상행역을 기준으로 상행역과 하행역 사이의 새로운 역을 등록하면
      * Then 정상적으로 등록되고
      * Then 지하철 노선 조회시 3개의 지하철 역을 가지게 되고
-     * Then 상행역 하행역 모두 변경이 없다.
+     * Then 각 구간의 길이가 변경되며
+     * Then 상행종점역 하행종점역 모두 변경이 없다.
      */
     @DisplayName("상행역을 기준으로 역 사이에 새로운 역을 등록한다.")
     @Test
@@ -71,7 +72,8 @@ public class SectionAcceptanceTest {
      * When 하행역을 기준으로 상행역과 하행역 사이의 새로운 역을 등록하면
      * Then 정상적으로 등록되고
      * Then 지하철 노선 조회시 3개의 지하철 역을 가지게 되고
-     * Then 상행역 하행역 모두 변경이 없다.
+     * Then 각 구간의 길이가 변경되며
+     * Then 상행종점역 하행종점역 모두 변경이 없다.
      */
     @DisplayName("하행역을 기준으로 역 사이에 새로운 역을 등록한다.")
     @Test
@@ -89,7 +91,7 @@ public class SectionAcceptanceTest {
      * When 상행역으로 새로운 역을 등록하면
      * Then 정상적으로 등록되고
      * Then 지하철 노선 조회시 3개의 지하철 역을 보유하고 있고
-     * Then 상행역이 새로운 역으로 변경되어 있다.
+     * Then 상행종점역이 새로운 역으로 변경되어 있다.
      */
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
@@ -107,7 +109,7 @@ public class SectionAcceptanceTest {
      * When 하행역으로 새로운 역을 등록하면
      * Then 정상적으로 등록되고
      * Then 지하철 노선 조회시 3개의 지하철 역을 보유하고 있고
-     * Then 하행역이 새로운 역으로 변경되어 있다.
+     * Then 하행종점역이 새로운 역으로 변경되어 있다.
      */
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test

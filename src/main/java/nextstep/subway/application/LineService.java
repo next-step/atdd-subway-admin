@@ -1,7 +1,7 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineStations;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -38,11 +38,11 @@ public class LineService {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
 
-        LineStations lineStations = new LineStations();
-        lineStations.add(lineStationRepository.save(upStation.toLineUpStation()));
-        lineStations.add(lineStationRepository.save(downStation.toLineStation(upStation, lineRequest.getDistance())));
+        Sections sections = new Sections();
+        sections.add(lineStationRepository.save(upStation.toLineUpStation()));
+        sections.add(lineStationRepository.save(downStation.toLineStation(upStation, lineRequest.getDistance())));
 
-        return LineResponse.of(lineRepository.save(lineRequest.toLine(lineStations)));
+        return LineResponse.of(lineRepository.save(lineRequest.toLine(sections)));
     }
 
     @Transactional(readOnly = true)
@@ -66,8 +66,7 @@ public class LineService {
 
     @Transactional
     public void deleteById(Long id) {
-        getLine(id);
-        lineRepository.deleteById(id);
+        lineRepository.delete(getLine(id));
     }
 
     public Line getLine(Long id) {

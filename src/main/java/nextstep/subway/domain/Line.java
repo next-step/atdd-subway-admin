@@ -15,14 +15,14 @@ public class Line {
     private String color;
 
     @Embedded
-    private LineStations lineStations = new LineStations();
+    private Sections sections = new Sections();
 
     protected Line() {}
 
-    public Line(String name, String color, LineStations lineStations) {
+    public Line(String name, String color, Sections sections) {
         this.name = name;
         this.color = color;
-        this.lineStations = lineStations;
+        this.sections = sections;
     }
 
     public Line updateInfo(LineRequest lineRequest) {
@@ -43,8 +43,8 @@ public class Line {
         return color;
     }
 
-    public LineStations getLineStations() {
-        return lineStations;
+    public Sections getLineStations() {
+        return sections;
     }
 
 }

@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 
 @Entity
-public class LineStation {
+public class Section {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,13 +19,13 @@ public class LineStation {
 
     private int distance;
 
-    protected LineStation() {}
+    protected Section() {}
 
-    public LineStation(Station station) {
+    public Section(Station station) {
         this.station = station;
     }
 
-    public LineStation(Station preStation, Station station, int distance) {
+    public Section(Station preStation, Station station, int distance) {
         this.preStation = preStation;
         this.station = station;
         this.distance = distance;
@@ -39,11 +39,11 @@ public class LineStation {
         this.preStation = station;
     }
 
-    public boolean isGatherThanDistance(LineStation infixLineStation) {
+    public boolean isLessThanDistance(Section infixSection) {
         if (this.distance == 0) {
             return false;
         }
-        return infixLineStation.distance >= this.distance;
+        return infixSection.distance >= this.distance;
     }
 
     public boolean isEqualsId(Long id) {
