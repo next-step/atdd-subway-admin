@@ -1,11 +1,8 @@
 package nextstep.subway.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-
 import javax.persistence.*;
 
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Station extends BaseEntity {
 
     @Id
@@ -14,6 +11,10 @@ public class Station extends BaseEntity {
 
     @Column(unique = true)
     private String name;
+
+    @ManyToOne
+    @JoinColumn(name = "line_id")
+    private Line line;
 
     public Station() {
     }

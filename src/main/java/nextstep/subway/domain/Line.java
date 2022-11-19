@@ -1,9 +1,11 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.StationResponse;
+
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -26,6 +28,9 @@ public class Line extends BaseEntity {
 
     private int distance;
 
+    @OneToMany(mappedBy = "line")
+    private List<Station> stations = new ArrayList<>();
+
     protected Line() {
 
     }
@@ -36,6 +41,8 @@ public class Line extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        stations.add(upStation);
+        stations.add(downStation);
     }
 
     public Long getId() {
@@ -63,7 +70,10 @@ public class Line extends BaseEntity {
     }
 
     public Stations getStations() {
-        return new Stations(Arrays.asList(upStation,downStation));
+        return new Stations(this.stations);
     }
 
+    public List<StationResponse> getStationResponses() {
+        return stations.stream().map(StationResponse::of).collect(Collectors.toList());
+    }
 }
