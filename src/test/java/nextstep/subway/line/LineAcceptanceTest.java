@@ -52,9 +52,9 @@ public class LineAcceptanceTest {
 
         // When
         reqeust_register_line(lineRequest);
+        List<String> lineNames = reqeust_get_line_names();
 
         // Then
-        List<String> lineNames = reqeust_get_line_names();
         assertThat(lineNames).containsAnyOf("신분당선");
     }
 
@@ -102,5 +102,30 @@ public class LineAcceptanceTest {
                 .when().post("/lines")
                 .then().log().all()
                 .extract();
+    }
+
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @Test
+    @DisplayName("지하철 노선도 목록 조회 테스트")
+    public void get_lines_test() {
+        // Given
+        LineRequest firstLineRequest = new LineRequest("신분당선", "red"
+                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
+                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+        LineRequest secondLineRequest = new LineRequest("6호선", "orange"
+                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
+                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+
+        // When
+        reqeust_register_line(firstLineRequest);
+        reqeust_register_line(secondLineRequest);
+        List<String> lineNames = reqeust_get_line_names();
+
+        // Then
+        assertThat(lineNames).contains("신분당선", "6호선");
     }
 }
