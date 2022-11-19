@@ -32,10 +32,10 @@ public class LineService {
     @Transactional
     public Long saveLine(LineRequest lineRequest) {
         setUpDownStation(lineRequest);
-        Line persistLine = lineRepository.save(lineRequest.toLine());
-        sectionRepository.save(new Section(persistLine, lineRequest.getDistance(), lineRequest.getUpStation(),
-                lineRequest.getDownStation()));
-        return persistLine.getId();
+        Section section = sectionRepository
+                .save(new Section(lineRequest.toLine(), lineRequest.getDistance(), lineRequest.getUpStation(),
+                        lineRequest.getDownStation()));
+        return section.getLineId();
     }
 
     public List<LineResponse> findAllLines() {

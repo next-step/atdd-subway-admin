@@ -43,7 +43,7 @@
 ### 3단계 - 리뷰
 * [x] stream 사용시 줄개행을 사용하여 동작구분
 * [x] LineStation -> Section 으로 네이밍 변경
-* [ ] 구간저장 Section 에 위임
+* [x] 노선저장 Section 에 위임
 * [ ] Line 을 통해 Section 로딩
 * [x] 사용되지 않는 주석 제거
 * [ ] cascade 를 사용하여 저장 및 삭제로직을 도메인 내부로 이동
