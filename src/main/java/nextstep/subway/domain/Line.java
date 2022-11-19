@@ -57,7 +57,7 @@ public class Line extends BaseEntity {
     }
 
     private boolean isBlankString(String text) {
-        return text == null || text.trim().isEmpty();
+        return Objects.isNull(text) || text.trim().isEmpty();
     }
 
     public void update(String name, String color) {

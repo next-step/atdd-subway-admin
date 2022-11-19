@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
@@ -50,8 +51,8 @@ public class Sections {
         }
     }
 
-    private void updateSections(Section section) {
-        sections.stream().forEach(s -> s.update(section));
+    private void updateSections(Section source) {
+        sections.stream().forEach(section -> section.update(source));
     }
 
     public List<Station> getStations() {
@@ -59,6 +60,7 @@ public class Sections {
                 .map(Section::getStations)
                 .flatMap(Collection::stream)
                 .distinct()
+                .sorted(Comparator.comparing(Station::getId))
                 .collect(Collectors.toList());
     }
 
