@@ -12,12 +12,18 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.fixtures.TestFixtures;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철노선 관련 기능")
 class LineAcceptanceTest extends TestFixtures {
+
+    @BeforeEach
+    void beforeEach() {
+        setStations();
+    }
 
     /**
      * When 지하철 노선을 생성하면
@@ -66,12 +72,12 @@ class LineAcceptanceTest extends TestFixtures {
      */
     @DisplayName("지하철 노선을 조회한다.")
     @Test
-    void getLineByName() {
+    void getLineById() {
         //given
-        노선_생성("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "10");
+        String lineId = 노선_생성_값_리턴("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "10", "id");
 
         //when
-        String lineName = 노선_조회("/{name}", "신분당선", "name");
+        String lineName = 노선_조회("/{lineId}", lineId, "name");
 
         //then
         assertThat(lineName).isEqualTo("신분당선");

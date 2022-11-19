@@ -15,11 +15,17 @@ import static nextstep.subway.section.SectionTestFixtures.지하철_노선_등�
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.fixtures.TestFixtures;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 @DisplayName("구간 추가 관련 기능")
 class SectionAcceptanceTest extends TestFixtures {
+
+    @BeforeEach
+    void beforeEach() {
+        setStations();
+    }
 
     /**
      * Given 노선이 등록되어 있다.

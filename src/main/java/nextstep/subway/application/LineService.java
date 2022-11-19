@@ -4,9 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.repository.LineRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +36,15 @@ public class LineService {
                 .getId();
     }
 
+    public List<SectionResponse> findSectionResponsesByLineId(Long lineId) {
+        Line line = lineRepository.findWithSectionsById(lineId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        return line.getSectionList().stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
+    }
+
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
@@ -41,16 +53,24 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public Line findEntityWithSectionsById(Long lineId) {
-        return lineRepository.findWithSectionsById(lineId)
-                .orElseThrow(EntityNotFoundException::new);
-    }
-
     public LineResponse findResponseById(Long lineId) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(EntityNotFoundException::new);
 
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findWithSectionsById(lineId)
+                .orElseThrow(EntityNotFoundException::new);
+        Station upStation = stationService.findEntityById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findEntityById(sectionRequest.getDownStationId());
+        int distance = sectionRequest.getDistance();
+
+        line.validateAlreadyAndNotExistsStations(upStation, downStation);
+        line.isFindSameUpStationThenCreateNewSection(upStation, downStation, distance);
+        line.isFindSameDownStationThenCreateNewSection(upStation, downStation, distance);
     }
 
     @Transactional

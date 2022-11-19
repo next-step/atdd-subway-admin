@@ -24,7 +24,9 @@ class StationRepositoryTest {
     @Test
     void save() {
         Station expected = new Station("경기 광주역");
+
         Station actual = repository.save(expected);
+
         assertThat(actual.getId()).isEqualTo(expected.getId());
         assertThat(actual == expected).isTrue();
     }
@@ -32,8 +34,10 @@ class StationRepositoryTest {
     @Test
     void delete() {
         Station station = repository.save(new Station("경기 광주역"));
+
         repository.deleteById(station.getId());
         flushAndClear();
+
         assertThatExceptionOfType(NoSuchElementException.class)
                 .isThrownBy(() -> repository.findById(station.getId()).get());
     }
@@ -43,7 +47,9 @@ class StationRepositoryTest {
         Station station1 = repository.save(new Station("경기 광주역"));
         Station station2 = repository.save(new Station("중앙역"));
         flushAndClear();
+
         List<Station> findStations = repository.findByIdIn(Arrays.asList(station1.getId(), station2.getId()));
+
         assertThat(findStations).hasSize(2);
     }
 

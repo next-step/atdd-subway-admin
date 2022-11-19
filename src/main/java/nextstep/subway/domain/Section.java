@@ -98,7 +98,7 @@ public class Section {
     }
 
     public Section createNewDownSection(int distance, Station downStation) {
-        return new Section(line, Math.abs(this.distance - distance), this.downStation, downStation);
+        return new Section(line, Math.abs(this.distance - distance), downStation, this.downStation);
     }
 
     public Section createNewUpSection(int distance, Station upStation) {

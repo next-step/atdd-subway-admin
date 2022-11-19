@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 @Entity
 public class Line extends BaseEntity {
@@ -23,6 +24,9 @@ public class Line extends BaseEntity {
 
     @Embedded
     private Sections sections = new Sections();
+
+    @Transient
+    private boolean isFindSameStation = false;
 
     protected Line() {
     }
@@ -74,8 +78,68 @@ public class Line extends BaseEntity {
         return sections.getSections();
     }
 
+    public void addSection(int distance, Station upStation, Station downStation) {
+        sections.addSection(new Section(this, distance, upStation, downStation));
+    }
+
     public void validateAlreadyAndNotExistsStations(Station upStation, Station downStation) {
         sections.validateAlreadyExistsStation(upStation, downStation);
         sections.validateNotExistsStation(upStation, downStation);
+    }
+
+    public void isFindSameUpStationThenCreateNewSection(Station upStation, Station downStation, int distance) {
+        addBetweenByUpStation(upStation, downStation, distance);
+        prependUpStation(upStation, downStation, distance);
+    }
+
+    public void isFindSameDownStationThenCreateNewSection(Station upStation, Station downStation, int distance) {
+        addBetweenByDownStation(upStation, downStation, distance);
+        appendDownStation(upStation, downStation, distance);
+    }
+
+    private void prependUpStation(Station upStation, Station downStation, int distance) {
+        if (isFindSameStation) {
+            return;
+        }
+        sections.findSameUpStation(downStation).ifPresent(section -> {
+            sections.addSection(section.createNewSection(distance, upStation, downStation));
+            isFindSameStation = true;
+        });
+    }
+
+    private void addBetweenByUpStation(Station upStation, Station downStation, int distance) {
+        if (isFindSameStation) {
+            return;
+        }
+        sections.findSameUpStation(upStation).ifPresent(section -> {
+            section.validateLength(distance);
+            sections.addSection(section.createNewSection(distance, upStation, downStation));
+            sections.addSection(section.createNewDownSection(distance, downStation));
+            sections.removeSection(section);
+            isFindSameStation = true;
+        });
+    }
+
+    private void appendDownStation(Station upStation, Station downStation, int distance) {
+        if (isFindSameStation) {
+            return;
+        }
+        sections.findSameDownStation(upStation).ifPresent(section -> {
+            sections.addSection(section.createNewSection(distance, upStation, downStation));
+            isFindSameStation = true;
+        });
+    }
+
+    private void addBetweenByDownStation(Station upStation, Station downStation, int distance) {
+        if (isFindSameStation) {
+            return;
+        }
+        sections.findSameDownStation(downStation).ifPresent(section -> {
+            section.validateLength(distance);
+            sections.addSection(section.createNewSection(distance, upStation, downStation));
+            sections.addSection(section.createNewUpSection(distance, upStation));
+            sections.removeSection(section);
+            isFindSameStation = true;
+        });
     }
 }

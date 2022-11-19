@@ -26,12 +26,15 @@ public class StationService {
     }
 
     public StationResponse findResponseById(Long id) {
-        Station station = stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Station station = stationRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
+
         return StationResponse.of(station);
     }
 
     public Station findEntityById(Long id) {
-        return stationRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        return stationRepository.findById(id)
+                .orElseThrow(EntityNotFoundException::new);
     }
 
     public List<StationResponse> findAllStations() {

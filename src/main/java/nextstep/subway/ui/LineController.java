@@ -4,7 +4,6 @@ import java.net.URI;
 import java.util.List;
 import javax.persistence.PersistenceException;
 import nextstep.subway.application.LineService;
-import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -24,13 +23,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/lines")
 public class LineController {
+
     private final LineService lineService;
 
-    private final SectionService sectionService;
-
-    public LineController(LineService lineService, SectionService sectionService) {
+    public LineController(LineService lineService) {
         this.lineService = lineService;
-        this.sectionService = sectionService;
     }
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,12 +37,12 @@ public class LineController {
 
     @GetMapping("/{lineId}/section")
     public ResponseEntity<List<SectionResponse>> showSections(@PathVariable("lineId") Long lineId) {
-        return ResponseEntity.ok().body(sectionService.findResponsesByLineId(lineId));
+        return ResponseEntity.ok().body(lineService.findSectionResponsesByLineId(lineId));
     }
 
-    @GetMapping(value = "/{name}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> showLineByName(@PathVariable("name") String name) {
-        return ResponseEntity.ok().body(lineService.findResponseByName(name));
+    @GetMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> showLineById(@PathVariable("lineId") Long lineId) {
+        return ResponseEntity.ok().body(lineService.findResponseById(lineId));
     }
 
     @PostMapping
@@ -59,7 +56,7 @@ public class LineController {
     @PostMapping("/{lineId}/section")
     public ResponseEntity addSection(@PathVariable("lineId") Long lineId,
                                      @RequestBody SectionRequest sectionRequest) {
-        sectionService.addSection(lineId, sectionRequest);
+        lineService.addSection(lineId, sectionRequest);
         return ResponseEntity.ok().build();
     }
 

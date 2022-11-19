@@ -29,6 +29,9 @@ public abstract class TestFixtures {
             RestAssured.port = port;
         }
         databaseCleanup.execute();
+    }
+
+    protected void setStations() {
         Station station1 = stationRepository.save(new Station("경기 광주역"));
         Station station2 = stationRepository.save(new Station("중앙역"));
         Station station3 = stationRepository.save(new Station("모란역"));
