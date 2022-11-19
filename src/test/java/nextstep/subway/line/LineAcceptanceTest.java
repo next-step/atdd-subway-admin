@@ -7,6 +7,7 @@ import nextstep.subway.DatabaseCleaner;
 import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -89,7 +90,7 @@ public class LineAcceptanceTest {
 
     @Test
     @DisplayName("하나의 지하철호선을 생성 후 조회해 본다.")
-    void oneLineRetrieveTest() {
+    void retrieveOneLineTest() {
         //given
         String lineName = "신분당선";
         Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
@@ -103,6 +104,26 @@ public class LineAcceptanceTest {
                 .isTrue();
     }
 
+    @Test
+    @DisplayName("지하철호선 정보를 수정한다.")
+    void updateLineTest() {
+        //given
+        String lineName = "신분당선";
+        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
+        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        String lineId = createLineAndGetId(
+                new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
+
+        //when
+        String newLineName = "다른분당선";
+        String newColor = "bg-red-600";
+        updateLine(lineId, new LineUpdateRequest(newLineName, newColor));
+
+        //then
+        LineResponse updatedLine = retrieveLine(lineId);
+        assertThat(newLineName.equals(updatedLine.getName()) && newColor.equals(updatedLine.getColor()))
+                .isTrue();
+    }
 
     /**
      * 지하철호선 생성
@@ -158,7 +179,7 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선id로 정 조회
      */
-    private LineResponse retrieveLine(String lineId) {
+    LineResponse retrieveLine(String lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + lineId)
@@ -169,9 +190,20 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선 Id로 지하철호선 이름 조회
      */
-    private String retrieveLineName(String lineId) {
-        System.out.println("======================");
+    String retrieveLineName(String lineId) {
         return retrieveLine(lineId).getName();
+    }
+
+    void updateLine(String lineId, LineUpdateRequest lineUpdateRequest) {
+        final Map param = new HashMap();
+        param.put("name", lineUpdateRequest.getName());
+        param.put("color", lineUpdateRequest.getColor());
+
+        RestAssured.given().log().all()
+                .body(param)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/" + lineId)
+                .then().log().all().extract();
     }
 
 }
