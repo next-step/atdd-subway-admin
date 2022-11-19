@@ -33,8 +33,8 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
-    @Column(nullable = false)
-    private Long distance;
+    @Embedded
+    private Distance distance;
 
     @Embedded
     private Sections sections = new Sections();
@@ -45,7 +45,7 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Long distance) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
+        this.distance = Distance.of(distance);
     }
 
     public void setStations(Station upStation, Station downStation) {
@@ -96,7 +96,7 @@ public class Line extends BaseEntity {
     }
 
     public Long getDistance() {
-        return this.distance;
+        return this.distance.get();
     }
 
     public void modifyLine(String name, String color) {
@@ -113,12 +113,12 @@ public class Line extends BaseEntity {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(upStation, line.upStation) && Objects.equals(downStation, line.downStation) && Objects.equals(distance, line.distance);
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(upStation, line.upStation) && Objects.equals(downStation, line.downStation) && Objects.equals(distance, line.distance) && Objects.equals(sections, line.sections);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, upStation, downStation, distance);
+        return Objects.hash(id, name, color, upStation, downStation, distance, sections);
     }
 
     public void addSection(Section newSection) {
@@ -130,7 +130,7 @@ public class Line extends BaseEntity {
             return false;
         }
         this.upStation = upStation;
-        this.distance += distance;
+        this.distance = this.distance.plus(distance) ;
         this.sections.add(Section.of(this, upStation, downStation, distance));
         return true;
     }
@@ -140,7 +140,7 @@ public class Line extends BaseEntity {
             return false;
         }
         this.downStation = downStation;
-        this.distance += distance;
+        this.distance = this.distance.plus(distance);
         this.sections.add(Section.of(this, upStation, downStation, distance));
         return true;
     }
@@ -156,13 +156,13 @@ public class Line extends BaseEntity {
     }
 
     public boolean extend(Station upStation, Station downStation, Long distance) {
-        checkRequestSectionIsLineEndStations(upStation, downStation, this);
+        checkRequestSectionIsLineEndStations(upStation, downStation);
         return extendFromUpStation(upStation, downStation, distance) ||
                 extendFromDownStation(upStation, downStation, distance);
     }
 
-    private void checkRequestSectionIsLineEndStations(Station upStation, Station downStation, Line line) {
-        boolean hasSame = line.hasSameEndStations(upStation, downStation);
+    private void checkRequestSectionIsLineEndStations(Station upStation, Station downStation) {
+        boolean hasSame = hasSameEndStations(upStation, downStation);
         if (hasSame) {
             throw new IllegalArgumentException(MESSAGE_NEW_SECTION_IS_SAME_WITH_LINE);
         }
