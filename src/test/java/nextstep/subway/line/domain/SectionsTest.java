@@ -1,6 +1,7 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.exception.CannotConnectSectionException;
+import nextstep.subway.exception.CannotDeleteSectionException;
 import nextstep.subway.exception.UpdateExistingSectionException;
 import nextstep.subway.line.exception.SectionExceptionCode;
 import nextstep.subway.station.domain.Station;
@@ -13,11 +14,11 @@ import org.junit.jupiter.params.provider.ValueSource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("구간 목록 클래스 테스트")
 class SectionsTest {
@@ -134,5 +135,67 @@ class SectionsTest {
                             && section.getDownStation().equals(역삼역) && section.getDistance() == 15);
                 })
         );
+    }
+
+    @Test
+    void 역_사이의_구간을_삭제한다() {
+        Section upSection = new Section(강남역, 역삼역, 10);
+        Section downSection = new Section(교대역, 강남역, 10);
+        line.addSection(upSection);
+        line.addSection(downSection);
+
+        line.deleteSectionContainsStation(Optional.of(upSection), Optional.of(downSection));
+
+        assertAll(
+                () -> assertThat(line.getSections()).hasSize(1),
+                () -> assertThat(line.getSections().get(0)).satisfies(section -> {
+                    assertEquals("교대역", section.getUpStation().getName());
+                    assertEquals("역삼역", section.getDownStation().getName());
+                    assertEquals(20, section.getDistance());
+                })
+        );
+    }
+
+    @Test
+    void 상행_종점역_구간을_삭제한다() {
+        Section upSection = new Section(교대역, 강남역, 10);
+        Section downSection = new Section(강남역, 역삼역, 10);
+        line.addSection(upSection);
+        line.addSection(downSection);
+
+        line.deleteSectionContainsStation(Optional.of(upSection), Optional.empty());
+
+        assertThat(line.getSections()).hasSize(1);
+    }
+
+    @Test
+    void 하행_종점역_구간을_삭제한다() {
+        Section upSection = new Section(교대역, 강남역, 10);
+        Section downSection = new Section(강남역, 역삼역, 10);
+        line.addSection(upSection);
+        line.addSection(downSection);
+
+        line.deleteSectionContainsStation(Optional.empty(), Optional.of(downSection));
+
+        assertThat(line.getSections()).hasSize(1);
+    }
+
+    @Test
+    void 현재_노선에_존재하지_않는_역의_구간은_삭제할_수_없다() {
+        assertThatThrownBy(() -> {
+            line.deleteSectionContainsStation(Optional.empty(), Optional.empty());
+        }).isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage(SectionExceptionCode.CANNOT_DELETE_SECTION.getMessage());
+    }
+
+    @Test
+    void 노선에_구간이_하나일때_마지막_구간은_삭제할_수_없다() {
+        Section section = new Section(교대역, 강남역, 10);
+        line.addSection(section);
+
+        assertThatThrownBy(() -> {
+            line.deleteSectionContainsStation(Optional.of(section), Optional.empty());
+        }).isInstanceOf(CannotDeleteSectionException.class)
+                .hasMessage(SectionExceptionCode.CANNOT_DELETE_LAST_ONE_SECTION.getMessage());
     }
 }

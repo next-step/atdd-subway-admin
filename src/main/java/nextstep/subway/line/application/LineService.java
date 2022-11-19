@@ -92,4 +92,13 @@ public class LineService {
                 .map(SectionResponse::of)
                 .collect(toList());
     }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Optional<Section> sectionOfUpStation = sectionRepository.findByUpStationId(stationId);
+        Optional<Section> sectionOfDownStation = sectionRepository.findByDownStationId(stationId);
+        Line line = findById(lineId);
+
+        line.deleteSectionContainsStation(sectionOfUpStation, sectionOfDownStation);
+    }
 }

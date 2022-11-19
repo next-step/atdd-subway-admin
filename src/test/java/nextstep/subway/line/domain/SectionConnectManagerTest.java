@@ -12,7 +12,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("요청한 구간을 연결하는 클래스 테스트")
-class SectionConnectorTest {
+class SectionConnectManagerTest {
 
     private Station 교대역;
     private Station 강남역;
@@ -31,7 +31,7 @@ class SectionConnectorTest {
     void 역과_역_사이에_새로운_구간을_추가한다() {
         line.addSection(new Section(교대역, 역삼역, 10));
 
-        SectionConnector.connectAll(line, new Section(교대역, 강남역, 7));
+        SectionConnectManager.connectAll(line, new Section(교대역, 강남역, 7));
 
         assertThat(line.getSections()).hasSize(2);
     }
@@ -40,7 +40,7 @@ class SectionConnectorTest {
     void 맨_처음_구간을_추가한다() {
         line.addSection(new Section(강남역, 역삼역, 10));
 
-        SectionConnector.connectAll(line, new Section(교대역, 강남역, 10));
+        SectionConnectManager.connectAll(line, new Section(교대역, 강남역, 10));
 
         assertThat(line.getSections()).hasSize(2);
     }
@@ -49,7 +49,7 @@ class SectionConnectorTest {
     void 맨_마지막_구간을_추가한다() {
         line.addSection(new Section(교대역, 강남역, 10));
 
-        SectionConnector.connectAll(line, new Section(강남역, 역삼역, 10));
+        SectionConnectManager.connectAll(line, new Section(강남역, 역삼역, 10));
 
         assertThat(line.getSections()).hasSize(2);
     }
@@ -60,7 +60,7 @@ class SectionConnectorTest {
         line.addSection(new Section(교대역, 역삼역, 10));
 
         assertThatThrownBy(() -> {
-            SectionConnector.connectAll(line, new Section(교대역, 강남역, addDistance));
+            SectionConnectManager.connectAll(line, new Section(교대역, 강남역, addDistance));
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(SectionExceptionCode.INVALID_DISTANCE.getMessage());
     }

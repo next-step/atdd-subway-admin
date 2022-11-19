@@ -81,4 +81,49 @@ class SectionAcceptanceFailureTest extends AcceptanceTest {
         // then
         assertEquals(HttpStatus.BAD_REQUEST.value(), response.statusCode());
     }
+
+    /**
+     * Given 지하철 노선과 지하철 구간을 생성하고
+     * When 구간에 포함되어 있지 않은 역을 삭제하면
+     * Then 구간을 삭제할 수 없다
+     */
+    @DisplayName("지하철 구간에 포함되어 있지 않은 역을 삭제한다.")
+    @Test
+    void deleteWhenSectionNotContainLine() {
+        // given
+        Long station1 = StationAcceptance.getStationId(StationAcceptance.create_station("교대역"));
+        Long station2 = StationAcceptance.getStationId(StationAcceptance.create_station("강남역"));
+        Long station3 = StationAcceptance.getStationId(StationAcceptance.create_station("역삼역"));
+        Long lineId = LineAcceptance.getLineId(
+                LineAcceptance.create_line("2호선", "bg-green-600", station1, station2, 10));
+
+        // when
+        ExtractableResponse<Response> response =
+                SectionAcceptance.delete_section(lineId, station3);
+
+        // then
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.statusCode());
+    }
+
+    /**
+     * Given 지하철 노선과 구간을 생성하고
+     * When 구간이 하나인 노선에서 마지막 구간을 삭제하면
+     * Then 구간을 삭제할 수 없다
+     */
+    @DisplayName("지하철 구간이 하나인 노선에서 마지막 구간을 삭제한다.")
+    @Test
+    void deleteWhenLastOneSection() {
+        // given
+        Long station1 = StationAcceptance.getStationId(StationAcceptance.create_station("교대역"));
+        Long station2 = StationAcceptance.getStationId(StationAcceptance.create_station("강남역"));
+        Long lineId = LineAcceptance.getLineId(
+                LineAcceptance.create_line("2호선", "bg-green-600", station1, station2, 10));
+
+        // when
+        ExtractableResponse<Response> response =
+                SectionAcceptance.delete_section(lineId, station1);
+
+        // then
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.statusCode());
+    }
 }

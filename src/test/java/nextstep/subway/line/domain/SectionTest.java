@@ -70,8 +70,17 @@ class SectionTest {
     void 구간_수정시_수정하려는_거리값이_현재_구간의_거리값보다_크거나_같으면_수정할_수_없음(int current, int request) {
         assertThatThrownBy(() -> {
             Section section = new Section(upStation, downStation, current);
-            section.update(new Section(upStation, new Station("판교역"), request));
+            section.divideSection(new Section(upStation, new Station("판교역"), request));
         }).isInstanceOf(IllegalArgumentException.class)
                 .hasMessage(SectionExceptionCode.INVALID_DISTANCE.getMessage());
+    }
+
+    @ParameterizedTest
+    @CsvSource(value = { "10:20", "10:10", "20:50" }, delimiter = ':')
+    void 구간_삭제시_거리_연장(int current, int request) {
+        Section section = new Section(upStation, downStation, current);
+        section.extendSection(new Section(downStation, upStation, request));
+
+        assertEquals((current + request), section.getDistance());
     }
 }

@@ -152,4 +152,25 @@ class LineServiceTest {
 
         assertThat(lineService.findAllByLine(1L)).hasSize(1);
     }
+
+    @Test
+    void 지하철_구간_삭제() {
+        Station 교대역 = new Station("교대역");
+        Station 강남역 = new Station("강남역");
+        Station 역삼역 = new Station("역삼역");
+
+        Line line = new Line("2호선", "bg-green-600");
+        Section upSection = new Section(강남역, 역삼역, 10);
+        Section downSection = new Section(교대역, 강남역, 10);
+        line.addSection(downSection);
+        line.addSection(upSection);
+
+        when(sectionRepository.findByUpStationId(2L)).thenReturn(Optional.of(upSection));
+        when(sectionRepository.findByDownStationId(2L)).thenReturn(Optional.of(downSection));
+        when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+
+        lineService.deleteSection(1L, 2L);
+
+        assertThat(line.getSections()).hasSize(1);
+    }
 }
