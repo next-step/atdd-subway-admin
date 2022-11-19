@@ -1,11 +1,13 @@
 package nextstep.subway.line;
 
 import nextstep.subway.line.domain.Sections;
+import nextstep.subway.station.domain.StationFixtrue;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.line.SectionTest.논현역_신논현역_구간;
-import static nextstep.subway.line.SectionTest.신논현역_강남역_구간;
+import static nextstep.subway.line.SectionFixture.논현역_신논현역_구간;
+import static nextstep.subway.line.SectionFixture.신논현역_강남역_구간;
+import static nextstep.subway.station.domain.StationFixtrue.*;
 import static nextstep.subway.station.domain.StationTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -16,8 +18,8 @@ class SectionsTest {
     @Test
     void add() {
         Sections sections = new Sections();
-        sections.add(논현역_신논현역_구간);
-        sections.add(신논현역_강남역_구간);
+        sections.add(논현역_신논현역_구간());
+        sections.add(신논현역_강남역_구간());
         assertThat(sections.size()).isEqualTo(2);
     }
 
@@ -25,8 +27,8 @@ class SectionsTest {
     @Test
     void findStations() {
         Sections sections = new Sections();
-        sections.add(논현역_신논현역_구간);
-        sections.add(신논현역_강남역_구간);
-        assertThat(sections.getStations()).containsExactly(논현역, 신논현역, 강남역);
+        sections.add(논현역_신논현역_구간());
+        sections.add(신논현역_강남역_구간());
+        assertThat(sections.getStations()).containsExactly(논현역(), 신논현역(), 강남역());
     }
 }
