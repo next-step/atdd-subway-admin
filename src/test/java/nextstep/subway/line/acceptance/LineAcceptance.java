@@ -3,14 +3,7 @@ package nextstep.subway.line.acceptance;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.Isolationer;
-import nextstep.subway.dto.LineDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
+import nextstep.subway.line.dto.LineDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -65,28 +58,47 @@ public class LineAcceptance {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철노선_수정_요청_성공(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
+    public static ExtractableResponse<Response> 지하철_노선을_수정한다(LineDto.UpdateRequest line, int lineId) {
+        return RestAssured.given()
+                .body(line).log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when().patch("/lines/1")
+                .when().put("/lines/"+lineId)
+                .then().log().all()
+                .extract();
+
+    }
+
+    public static ExtractableResponse<Response> 해당_노선을_제거한다(int stationId) {
+        return RestAssured.given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + stationId)
                 .then().log().all()
                 .extract();
     }
 
-    public static ExtractableResponse<Response> 지하철노선_삭제_요청_성공(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
+    public static void 생성한_노선을_찾을_수_있다(List<String> actual, String expect) {
+        assertThat(actual).containsAnyOf(expect);
+    }
 
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .body(params)
-                .when().delete("/lines/1")
-                .then().log().all()
-                .extract();
+    public static void 생성한_2개의_노선을_찾을_수_있다(List<String> actual) {
+        assertThat(actual).hasSize(2);
+    }
+
+    public static void 생성한_지하철_노선의_정보를_응답받을_수_있다(ExtractableResponse<Response> response, LineDto.CreateRequest expect) {
+        assertAll(
+                () -> assertThat(response.jsonPath().get("id").toString()).isEqualTo("1"),
+                () -> assertThat(response.jsonPath().get("name").toString()).isEqualTo(expect.getName()),
+                ()-> assertThat(response.jsonPath().get("color").toString()).isEqualTo(expect.getColor())
+        );
+    }
+
+    public static void 지하철_노선의_정보가_수정된다(ExtractableResponse<Response> response){
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 지하철_노선의_정보가_삭제된다(int lineId){
+        ExtractableResponse<Response> response = 해당_노선을_제거한다(lineId);
+        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
     }
 
 }
