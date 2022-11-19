@@ -3,7 +3,7 @@ package nextstep.subway.line;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.domain.Station;
+import nextstep.subway.dto.StationResponse;
 import nextstep.subway.fixture.LineTestFixture;
 import nextstep.subway.fixture.StationTestFixture;
 import org.junit.jupiter.api.DisplayName;
@@ -23,8 +23,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // When
-        Station 강남역 = StationTestFixture.create("강남역").extract().as(Station.class);
-        Station 양재역 = StationTestFixture.create("양재역").extract().as(Station.class);
+        StationResponse 강남역 = StationTestFixture.create("강남역").extract().as(StationResponse.class);
+        StationResponse 양재역 = StationTestFixture.create("양재역").extract().as(StationResponse.class);
         long lineId = LineTestFixture.create("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
         // Then
@@ -42,12 +42,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLines() {
         // Given
-        Station 강남역 = StationTestFixture.create("강남역").extract().as(Station.class);
-        Station 양재역 = StationTestFixture.create("양재역").extract().as(Station.class);
+        StationResponse 강남역 = StationTestFixture.create("강남역").extract().as(StationResponse.class);
+        StationResponse 양재역 = StationTestFixture.create("양재역").extract().as(StationResponse.class);
         LineTestFixture.create("신분당선", "bg-red-600", 강남역, 양재역, 10).extract();
 
-        Station 야탑역 = StationTestFixture.create("야탑역").extract().as(Station.class);
-        Station 모란역 = StationTestFixture.create("모란역").extract().as(Station.class);
+        StationResponse 야탑역 = StationTestFixture.create("야탑역").extract().as(StationResponse.class);
+        StationResponse 모란역 = StationTestFixture.create("모란역").extract().as(StationResponse.class);
         LineTestFixture.create("분당선", "bg-yellow-600", 야탑역, 모란역, 10).extract();
 
         // When
@@ -66,8 +66,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // Given
-        Station 강남역 = StationTestFixture.create("강남역").extract().as(Station.class);
-        Station 양재역 = StationTestFixture.create("양재역").extract().as(Station.class);
+        StationResponse 강남역 = StationTestFixture.create("강남역").extract().as(StationResponse.class);
+        StationResponse 양재역 = StationTestFixture.create("양재역").extract().as(StationResponse.class);
         String lineName = "신분당선";
         long lineId = LineTestFixture.create(lineName, "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
@@ -89,8 +89,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // Given
-        Station 강남역 = StationTestFixture.create("강남역").extract().as(Station.class);
-        Station 양재역 = StationTestFixture.create("양재역").extract().as(Station.class);
+        StationResponse 강남역 = StationTestFixture.create("강남역").extract().as(StationResponse.class);
+        StationResponse 양재역 = StationTestFixture.create("양재역").extract().as(StationResponse.class);
         long lineId = LineTestFixture.create("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
         // When
@@ -109,8 +109,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // Given
-        Station 강남역 = StationTestFixture.create("강남역").extract().as(Station.class);
-        Station 양재역 = StationTestFixture.create("양재역").extract().as(Station.class);
+        StationResponse 강남역 = StationTestFixture.create("강남역").extract().as(StationResponse.class);
+        StationResponse 양재역 = StationTestFixture.create("양재역").extract().as(StationResponse.class);
         long lineId = LineTestFixture.create("신분당선", "bg-red-600", 강남역, 양재역, 10).extract().jsonPath().getLong("id");
 
         // When

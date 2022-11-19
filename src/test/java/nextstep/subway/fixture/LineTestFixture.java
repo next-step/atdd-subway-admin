@@ -2,7 +2,7 @@ package nextstep.subway.fixture;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
-import nextstep.subway.domain.Station;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class LineTestFixture {
 
-    public static ValidatableResponse create(String name, String color, Station upStation, Station downStation, int distance) {
+    public static ValidatableResponse create(String name, String color, StationResponse upStation, StationResponse downStation, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
