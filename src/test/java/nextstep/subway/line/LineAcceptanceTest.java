@@ -1,10 +1,14 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.dto.request.LineRequest;
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -23,11 +27,15 @@ public class LineAcceptanceTest {
     @LocalServerPort
     private int port;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        databaseCleanup.execute();
     }
 
     /**
@@ -37,15 +45,38 @@ public class LineAcceptanceTest {
     @Test
     @DisplayName("지하철 노선도 생성 테스트")
     public void crete_line_test() {
-        // When
+        // Given
         LineRequest lineRequest = new LineRequest("신분당선", "red"
-                                                    , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
-                                                    , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
+                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+
+        // When
         reqeust_register_line(lineRequest);
 
         // Then
         List<String> lineNames = reqeust_get_line_names();
         assertThat(lineNames).containsAnyOf("신분당선");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 기존에 존재하는 지하철 노선으로 지하철 노선을 생성하면
+     * Then 지하철 노선 생성이 안된다
+     */
+    @Test
+    @DisplayName("지하철 노선도 생성 실패 테스트")
+    public void crete_line_with_duplicate_name_test() {
+        // Given
+        LineRequest lineRequest = new LineRequest("신분당선", "red"
+                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
+                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+
+        // When
+        reqeust_register_line(lineRequest);
+        ExtractableResponse<Response> response = reqeust_register_line(lineRequest);
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private List<String> reqeust_get_line_names() {
@@ -57,7 +88,7 @@ public class LineAcceptanceTest {
                 .extract().jsonPath().getList("name");
     }
 
-    private void reqeust_register_line(LineRequest lineRequest) {
+    private ExtractableResponse<Response> reqeust_register_line(LineRequest lineRequest) {
         Map<String, String> params = new HashMap<>();
         params.put("name", lineRequest.getName());
         params.put("color", lineRequest.getColor());
@@ -65,12 +96,11 @@ public class LineAcceptanceTest {
         params.put("endTime", lineRequest.getEndTime());
         params.put("intervalTime", lineRequest.getIntervalTime());
 
-        RestAssured.given().log().all()
+        return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
                 .extract();
     }
 }

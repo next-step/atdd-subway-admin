@@ -1,9 +1,9 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.domain.line.Line;
 import nextstep.subway.dto.request.LineRequest;
 import nextstep.subway.dto.response.LineReponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,5 +28,10 @@ public class LineController {
     public ResponseEntity getLines() {
         List<LineReponse> lines = lineService.getLines();
         return ResponseEntity.ok(lines);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity handleIllegalArgsException() {
+        return ResponseEntity.badRequest().build();
     }
 }
