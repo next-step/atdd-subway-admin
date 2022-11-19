@@ -1,8 +1,7 @@
 package nextstep.subway.station;
 
 import io.restassured.response.ValidatableResponse;
-import nextstep.subway.AcceptanceTest;
-import nextstep.subway.fixture.StationTestFixture;
+import nextstep.subway.common.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -12,7 +11,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 인수 테스트")
-public class StationAcceptanceTest extends AcceptanceTest {
+class StationAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철역을 생성하면

@@ -2,10 +2,9 @@ package nextstep.subway.line;
 
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ValidatableResponse;
-import nextstep.subway.AcceptanceTest;
-import nextstep.subway.dto.StationResponse;
-import nextstep.subway.fixture.LineTestFixture;
-import nextstep.subway.fixture.StationTestFixture;
+import nextstep.subway.common.AcceptanceTest;
+import nextstep.subway.station.StationResponse;
+import nextstep.subway.station.StationTestFixture;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -13,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 인수 테스트")
-public class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends AcceptanceTest {
 
     /*
      * When 지하철 노선을 생성하면
