@@ -36,24 +36,28 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Long id, Line line, Station upStation, Station downStation, long distance) {
+    public Section(Long id, Line line, Station upStation, Station downStation, Distance distance) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = Distance.of(distance);
+        this.distance = distance;
     }
 
     public Section(Long id, Station upStation, Station downStation, long distance) {
-        this(id, null, upStation, downStation, distance);
+        this(id, null, upStation, downStation, Distance.of(distance));
     }
 
     public Section(Line line, Station upStation, Station downStation, long distance) {
+        this(null, line, upStation, downStation, Distance.of(distance));
+    }
+
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this(null, line, upStation, downStation, distance);
     }
 
     public Section(Station upStation, Station downStation, long distance) {
-        this(null, null, upStation, downStation, distance);
+        this(null, null, upStation, downStation, Distance.of(distance));
     }
 
     public void modify(Section section) {
@@ -85,6 +89,18 @@ public class Section {
 
     public boolean nonMatch(Stations stations) {
         return this.getStations().noneMatch(stations);
+    }
+
+    public boolean hasUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public Section merge(Section other) {
+        return new Section(this.line, this.upStation, other.downStation, this.distance.sum(other.distance));
     }
 
     public Long getId() {

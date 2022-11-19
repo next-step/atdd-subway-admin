@@ -30,6 +30,10 @@ public class Stations {
         return this.stations.contains(station);
     }
 
+    public boolean notContains(Station station) {
+        return !this.stations.contains(station);
+    }
+
     public boolean containsAll(Stations stations) {
         return this.stations.containsAll(stations.stations);
     }

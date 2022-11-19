@@ -28,6 +28,11 @@ public class Distance {
         return new Distance(distance);
     }
 
+
+    public Distance sum(Distance distance) {
+        return new Distance(this.distance + distance.distance);
+    }
+
     public Distance sub(Distance distance) {
         return new Distance(this.distance - distance.distance);
     }

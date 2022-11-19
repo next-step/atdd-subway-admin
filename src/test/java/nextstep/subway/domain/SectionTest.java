@@ -80,4 +80,16 @@ class SectionTest {
         assertThatThrownBy(() -> section.modify(newSection))
             .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("구간 병합")
+    @Test
+    void merge() {
+        Section upSection = new Section(WANGSIPLI, SANGWANGSIPLI, 10L);
+        Section downSection = new Section(SANGWANGSIPLI, SINDANG, 10L);
+
+        Section combine = upSection.merge(downSection);
+        assertThat(combine.getUpStation()).isEqualTo(WANGSIPLI);
+        assertThat(combine.getDownStation()).isEqualTo(SINDANG);
+        assertThat(combine.getDistance()).isEqualTo(Distance.of(20L));
+    }
 }

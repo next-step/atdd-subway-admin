@@ -29,7 +29,7 @@ public class SectionAcceptanceTestFixture {
 
     public static ExtractableResponse<Response> 지하철_구간_삭제(Integer id, Map<String, String> params) {
         return RestAssured.given().log().all()
-            .body(params)
+            .params(params)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().delete("/lines/" + id + "/sections")
             .then().log().all()
