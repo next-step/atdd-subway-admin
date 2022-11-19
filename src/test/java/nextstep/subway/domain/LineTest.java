@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class LineTest {
@@ -23,19 +24,22 @@ class LineTest {
     }
 
     @Test
-    void 노선에_할당된_역을_조회할_수_있다() {
+    @DisplayName("노선에 할당된 역을 조회할 수 있다.")
+    void findAssignedStations_success() {
         assertThat(역2개_2호선.findAssignedStations()).containsExactly(서초역, 강남역);
     }
 
     @Test
-    void 구간을_추가하고_노선에_할당된_역을_조회시_추가한_역이_조회된다() {
+    @DisplayName("구간을 추가하고 노선 조회 시 추가한 역 조회를 성공한다.")
+    void addSections_success() {
         Section newSection = Section.from(서초역, 교대역, Distance.from(5));
         역2개_2호선.addSection(newSection);
         assertThat(역2개_2호선.findAssignedStations()).containsExactly(서초역, 교대역, 강남역);
     }
 
     @Test
-    void 구간을_제거하고_노선에_할당된_역을_조회시_제거한_역이_조회되지_않는다() {
+    @DisplayName("구간을 제거하고 노선 조회 시 제거한 역이 조회되지 않는다.")
+    void deleteSections_success() {
         역3개_2호선.deleteSection(교대역);
         assertThat(역3개_2호선.findAssignedStations()).containsExactly(서초역, 강남역);
     }
