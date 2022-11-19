@@ -2,13 +2,15 @@ package nextstep.subway.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import nextstep.subway.domain.raw.Color;
+import nextstep.subway.domain.raw.Name;
 import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+
+import static nextstep.subway.constant.Message.NOT_FOUND_SECTION_ERR;
 
 @Entity
 @Builder
@@ -17,24 +19,24 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
 
-    @Column(nullable = false)
-    private String color;
+    @Embedded
+    private Name name;
 
-    @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Color color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_last_station_id", foreignKey = @ForeignKey(name = "fk_line_up_last_station_to_station"))
-    private Station upLastStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_last_station_id", foreignKey = @ForeignKey(name = "fk_line_down_last_station_to_station"))
-    private Station downLastStation;
+    @Embedded
+    private Sections sections;
 
     public Line() {
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = new Name(name);
+        this.color = new Color(color);
+        // Line과 매핑하기 위해 this를 넘겨줌
+        this.sections = new Sections(new Section(upStation, downStation, this, distance));
     }
 
     public Long getId() {
@@ -42,53 +44,52 @@ public class Line extends BaseEntity {
     }
 
     public String getName() {
-        return name;
+        return name.getName();
     }
 
     public String getColor() {
-        return color;
+        return color.getColor();
     }
 
-    public int getDistance() { return distance; }
-
     public List<Station> getStations() {
-        return new ArrayList(Arrays.asList(upLastStation, downLastStation));
+        return sections.getAllStations();
+    }
+
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
     public void update(LineRequest updateRequest) {
-        if(!updateRequest.getName().isEmpty() && updateRequest.getName() != "") {
-            this.name = updateRequest.getName();
+        if (!updateRequest.getName().isEmpty() && updateRequest.getName() != "") {
+            this.name = new Name(updateRequest.getName());
         }
-        if(!updateRequest.getColor().isEmpty() && updateRequest.getColor() != ""){
-            this.color = updateRequest.getColor();
-        }
-        if(updateRequest.getDistance() > 0) {
-            this.distance = updateRequest.getDistance();
+        if (!updateRequest.getColor().isEmpty() && updateRequest.getColor() != "") {
+            this.color = new Color(updateRequest.getColor());
         }
     }
 
+    public void addSection(Section newSection) {
+        Objects.requireNonNull(newSection, NOT_FOUND_SECTION_ERR);
 
-    public void changeUpStation(Station station) {
-        this.upLastStation = station;
+        // line에도 새로운 section 정보 등록 (양방향)
+        newSection.updateLine(this);
+        sections.addSection(newSection);
+
     }
 
-    public void changeDownStation(Station station) {
-        this.downLastStation = station;
-    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Line line = (Line) o;
-        return distance == line.distance && Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(upLastStation, line.upLastStation) && Objects.equals(downLastStation, line.downLastStation);
+        return Objects.equals(id, line.id) && Objects.equals(name, line.name) && Objects.equals(color, line.color) && Objects.equals(sections, line.sections);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, distance, upLastStation, downLastStation);
+        return Objects.hash(id, name, color, sections);
     }
-
 
     @Override
     public String toString() {
@@ -96,12 +97,7 @@ public class Line extends BaseEntity {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", color='" + color + '\'' +
-                ", distance=" + distance +
-                ", upLastStation=" + upLastStation +
-                ", downLastStation=" + downLastStation +
+                ", sections=" + sections +
                 '}';
     }
-
-
-
 }

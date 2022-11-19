@@ -5,9 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,17 +18,23 @@ public class LineResponse {
     public String name;
     public String color;
     public List<StationResponse> stations;
-    public int distance;
+    public int totalDistance;
 
-    public static LineResponse of(Line persistLine) {
-        return new LineResponse().builder()
-                .id(persistLine.getId())
-                .name(persistLine.getName())
-                .color(persistLine.getColor())
-                .stations(persistLine.getStations().stream()
-                        .map(StationResponse::of)
-                        .collect(Collectors.toList()))
-                .distance(persistLine.getDistance())
-                .build();
+   public static List<LineResponse> of(List<Line> lines) {
+       return lines.stream()
+               .map(line -> LineResponse.from(line))
+               .collect(Collectors.toList());
+   }
+
+    public static LineResponse from(Line persistLine) {
+        return new LineResponse(persistLine);
+    }
+
+    private LineResponse (Line line) {
+        id = line.getId();
+        name = line.getName();
+        color = line.getColor();
+        stations = line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
+        totalDistance = line.getSections().stream().mapToInt(s -> s.getDistance()).sum();
     }
 }

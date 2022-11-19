@@ -1,20 +1,17 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.CannotFindException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static nextstep.subway.constant.Message.NOT_FOUND_LINE_ERR;
-import static nextstep.subway.constant.Message.NOT_FOUND_UP_STATION_ERR;
+import static nextstep.subway.constant.Message.NOT_FOUND_STATION_ERR;
 
 @Service
 @Transactional(readOnly = true)
@@ -33,21 +30,18 @@ public class LineService {
         Station downStation = findStationById(Long.valueOf(lineRequest.getDownLastStationId()));
 
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
-
-        return lines.stream()
-                .map(line -> LineResponse.of(line))
-                .collect(Collectors.toList());
+        return LineResponse.of(lines);
     }
 
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     // @Transactional 이 있어야 update문 탐
@@ -56,18 +50,7 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
 
-        if(updateRequest.getUpLastStationId() > 0) {
-            line.changeUpStation(findStationById(Long.valueOf(updateRequest.getUpLastStationId())));
-        }
-
-        if(updateRequest.getDownLastStationId() > 0) {
-            line.changeDownStation(findStationById(Long.valueOf(updateRequest.getDownLastStationId())));
-        }
-
         line.update(updateRequest);
-
-        // save 없어도 처리
-//        lineRepository.save(line);
     }
 
     @Transactional
@@ -77,6 +60,26 @@ public class LineService {
 
     private Station findStationById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new CannotFindException(NOT_FOUND_UP_STATION_ERR));
+                .orElseThrow(() -> new CannotFindException(NOT_FOUND_STATION_ERR));
+    }
+
+    private Line findById(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new CannotFindException(NOT_FOUND_LINE_ERR));
+    }
+
+    @Transactional
+    public LineResponse saveSection(Long lineId, SectionRequest sectionRequest) {
+        // 이전에 저장됐던 section이 Line에 같이 조회됨
+        Line line = findById(lineId);
+        line.addSection(toSection(sectionRequest));
+
+        return LineResponse.from(line);
+    }
+
+    private Section toSection(SectionRequest sectionRequest) {
+        Station upStation = findStationById(sectionRequest.getUpStationId());
+        Station downStation = findStationById(sectionRequest.getDownStationId());
+
+        return Section.of(upStation, downStation, sectionRequest.getDistance());
     }
 }
