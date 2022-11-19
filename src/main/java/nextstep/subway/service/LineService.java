@@ -1,9 +1,6 @@
 package nextstep.subway.service;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -73,6 +70,13 @@ public class LineService {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
         line.addSection(new Section(upStation, downStation, request.getDistance()));
+    }
+
+    @Transactional
+    public void deleteSection(Long id, Long stationId) {
+        Line line = findById(id);
+        Station station = stationService.findById(stationId);
+        line.deleteSection(station);
     }
 
     private Line findById(Long id) {

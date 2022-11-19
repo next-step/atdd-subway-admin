@@ -3,7 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.*;
 import java.util.stream.Stream;
 
-import static nextstep.subway.exception.ErrorMessage.*;
+import static nextstep.subway.exception.ErrorMessage.SAME_SUBWAY_SECTION_ERROR;
 
 @Entity
 public class Section {
@@ -20,7 +20,8 @@ public class Section {
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_line"))
@@ -31,18 +32,15 @@ public class Section {
     }
 
     public Section(Station upStation, Station downStation, int distance) {
-        validateSection(upStation, downStation, distance);
+        validateSection(upStation, downStation);
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
-    private static void validateSection(Station upStation, Station downStation, int distance) {
+    private static void validateSection(Station upStation, Station downStation) {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException(SAME_SUBWAY_SECTION_ERROR.getMessage());
-        }
-        if (distance <= 0) {
-            throw new IllegalArgumentException(DISTANCE_CANNOT_BE_ZERO.getMessage());
         }
     }
 
@@ -55,20 +53,26 @@ public class Section {
     }
 
     public void connectUpStationToDownStation(Section section) {
-        updateDistance(section.getDistance());
+        distance.minus(section.getDistance());
         this.upStation = section.downStation;
     }
 
     public void connectDownStationToUpStation(Section section) {
-        updateDistance(section.getDistance());
+        distance.minus(section.getDistance());
         this.downStation = section.upStation;
     }
 
-    private void updateDistance(int distance) {
-        if (this.distance <= distance) {
-            throw new IllegalArgumentException(DISTANCE_BETWEEN_STATION_OVER.getMessage());
-        }
-        this.distance -= distance;
+    public boolean hasUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean hasDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public void disconnectDownSection(Section downSection) {
+        this.downStation = downSection.downStation;
+        this.distance.plus(downSection.distance);
     }
 
     public Long getId() {
@@ -83,8 +87,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
-
 }

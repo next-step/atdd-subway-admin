@@ -43,6 +43,8 @@ public class StationService {
 
     public Station findById(Long id) {
         return stationRepository.findById(id)
-                .orElseThrow(() -> new DataIntegrityViolationException(STATION_ID_NOT_FOUND.getMessage()));
+                .orElseThrow(() -> new DataIntegrityViolationException(
+                        String.format(STATION_ID_NOT_FOUND.getMessage(), id))
+                );
     }
 }

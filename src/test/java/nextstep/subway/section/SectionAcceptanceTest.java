@@ -4,7 +4,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.SectionRequest;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,9 +13,11 @@ import java.util.List;
 import static nextstep.subway.AcceptanceFixture.*;
 import static nextstep.subway.line.LineAcceptanceFixture.지하철_노선_생성_요청;
 import static nextstep.subway.line.LineAcceptanceFixture.지하철_노선_조회_요청;
+import static nextstep.subway.section.SectionAcceptanceFixture.노선_구간_제거_요청;
 import static nextstep.subway.section.SectionAcceptanceFixture.지하철_구간_생성_요청;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철역_생성_요청;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 등록 인수 테스트")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -122,7 +123,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         );
 
         // then
-        Assertions.assertAll(
+        assertAll(
                 () -> 요청_성공(신림_잠실_구간_응답),
                 () -> 요청_성공(신림_왕십리_구간_응답)
         );
@@ -205,5 +206,75 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         요청_실패(지하철_구간_생성_요청);
+    }
+
+    @DisplayName("2개의 구간이 있는 노선에서 종점 상행역 제거")
+    @Test
+    void delete_first_station_of_line() {
+
+        // given
+        ExtractableResponse<Response> 사당역 = 지하철역_생성_요청("사당역");
+        SectionRequest 신림_사당_구간_요청 = new SectionRequest(식별_아이디_조회(신림역), 식별_아이디_조회(사당역), 5);
+        지하철_구간_생성_요청(식별_아이디_조회(신림_강남_노선), 신림_사당_구간_요청);
+
+        // when
+        ExtractableResponse<Response> 신림역_제거_응답 = 노선_구간_제거_요청(
+                식별_아이디_조회(신림_강남_노선), 식별_아이디_조회(신림역)
+        );
+        ExtractableResponse<Response> 사당_강남_노선_응답 = 지하철_노선_조회_요청(식별_아이디_조회(신림_강남_노선));
+        List<String> 지하철_노선_구간 = 제이슨_경로_얻기(사당_강남_노선_응답).getList("stations.name");
+
+        // then
+        assertAll(
+                () -> 삭제_요청_성공(신림역_제거_응답),
+                () -> assertThat(지하철_노선_구간).containsExactly("사당역", "강남역")
+        );
+    }
+
+    @DisplayName("2개의 구간이 있는 노선에서 종점 하행역 제거")
+    @Test
+    void delete_last_station_of_line() {
+
+        // given
+        ExtractableResponse<Response> 사당역 = 지하철역_생성_요청("사당역");
+        SectionRequest 신림_사당_구간_요청 = new SectionRequest(식별_아이디_조회(신림역), 식별_아이디_조회(사당역), 5);
+        지하철_구간_생성_요청(식별_아이디_조회(신림_강남_노선), 신림_사당_구간_요청);
+
+        // when
+        ExtractableResponse<Response> 강남역_제거_응답 = 노선_구간_제거_요청(
+                식별_아이디_조회(신림_강남_노선), 식별_아이디_조회(강남역)
+        );
+        ExtractableResponse<Response> 사당_강남_노선_응답 = 지하철_노선_조회_요청(식별_아이디_조회(신림_강남_노선));
+        List<String> 지하철_노선_구간 = 제이슨_경로_얻기(사당_강남_노선_응답).getList("stations.name");
+
+        // then
+        assertAll(
+                () -> 삭제_요청_성공(강남역_제거_응답),
+                () -> assertThat(지하철_노선_구간).containsExactly("신림역", "사당역")
+        );
+    }
+
+
+    @DisplayName("2개의 구간이 있는 노선에서 가운데 역을 제거")
+    @Test
+    void delete_middle_station_of_line() {
+
+        // given
+        ExtractableResponse<Response> 사당역 = 지하철역_생성_요청("사당역");
+        SectionRequest 신림_사당_구간_요청 = new SectionRequest(식별_아이디_조회(신림역), 식별_아이디_조회(사당역), 5);
+        지하철_구간_생성_요청(식별_아이디_조회(신림_강남_노선), 신림_사당_구간_요청);
+
+        // when
+        ExtractableResponse<Response> 사당역_제거_응답 = 노선_구간_제거_요청(
+                식별_아이디_조회(신림_강남_노선), 식별_아이디_조회(사당역)
+        );
+        ExtractableResponse<Response> 신림_강남_노선_응답 = 지하철_노선_조회_요청(식별_아이디_조회(신림_강남_노선));
+        List<String> 지하철_노선_구간 = 제이슨_경로_얻기(신림_강남_노선_응답).getList("stations.name");
+
+        // then
+        assertAll(
+                () -> 삭제_요청_성공(사당역_제거_응답),
+                () -> assertThat(지하철_노선_구간).containsExactly("신림역", "강남역")
+        );
     }
 }

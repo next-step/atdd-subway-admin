@@ -106,4 +106,48 @@ public class Sections {
         return sections.stream()
                 .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
     }
+
+    public void deleteSection(Station station) {
+        validDeleteStation(station);
+        Section upSection = findUpStationSection(station).orElse(null);
+        Section downSection = findDownStationSection(station).orElse(null);
+
+        if (upSection == null) {
+            deleteSection(downSection);
+            return;
+        }
+        if (downSection == null) {
+            deleteSection(upSection);
+            return;
+        }
+        upSection.disconnectDownSection(downSection);
+        deleteSection(downSection);
+    }
+
+    private void deleteSection(Section upSection) {
+        sections.remove(upSection);
+    }
+
+    private void validDeleteStation(Station station) {
+        if (sections.size() <= 1) {
+            throw new IllegalArgumentException(ONE_SECTION_NOT_DELETE.getMessage());
+        }
+
+        if (!distinctStations().contains(station)) {
+            throw new IllegalArgumentException(STATION_NOT_CONTAINS_NOT_DELETE.getMessage());
+        }
+    }
+
+    private Optional<Section> findUpStationSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasDownStation(station))
+                .findFirst();
+    }
+
+    private Optional<Section> findDownStationSection(Station station) {
+        return sections.stream()
+                .filter(section -> section.hasUpStation(station))
+                .findFirst();
+    }
+
 }
