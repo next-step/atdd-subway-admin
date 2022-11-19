@@ -3,6 +3,7 @@ package nextstep.subway.section;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
@@ -20,17 +21,19 @@ public abstract class SectionTestFixtures {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    public static void 기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨(String information, String pathVariable,
-                                                     String... containValues) {
-        List<String> informationList = 목록조회(information, PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(informationList).contains(containValues);
+    public static void 기존_구간과_하행_종점으로_등록한_중앙역_구간이_함께_조회됨(String pathVariable,
+                                                         String... containValues) {
+        JsonPath 목록조회 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
+        assertThat(목록조회.getList("distance", String.class)).contains(containValues);
+        assertThat(목록조회.getList("downStation.name", String.class)).contains("중앙역");
     }
 
 
-    public static void 기존_구간과_상행_종점으로_등록한_구간이_함께_조회됨(String information, String pathVariable,
-                                                     String... containValues) {
-        List<String> informationList = 목록조회(information, PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(informationList).contains(containValues);
+    public static void 기존_구간과_상행_종점으로_등록한_모란역_구간이_함께_조회됨(String pathVariable,
+                                                         String... containValues) {
+        JsonPath 목록조회 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
+        assertThat(목록조회.getList("distance", String.class)).contains(containValues);
+        assertThat(목록조회.getList("upStation.name", String.class)).contains("모란역");
     }
 
     public static void 새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정(String information, String pathVariable,
@@ -73,6 +76,13 @@ public abstract class SectionTestFixtures {
     public static String 지하철_노선_등록되어_있음(String name, String color, String upStationId, String downStationId,
                                         String distance, String returnValue) {
         return 생성_값_리턴(노선(name, color, upStationId, downStationId, distance), PATH_LINE, returnValue);
+    }
+
+    private static JsonPath 목록조회(String path, String pathVariable) {
+        return RestAssured.given().log().all()
+                .when().get(path, pathVariable)
+                .then().log().all()
+                .extract().jsonPath();
     }
 
     private static List<String> 목록조회(String information, String path, String pathVariable) {

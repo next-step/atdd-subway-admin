@@ -12,10 +12,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class TestFixtures {
 
-    protected String stationId1 = "";
-    protected String stationId2 = "";
-    protected String stationId3 = "";
-    protected String stationId4 = "";
+    protected String 경기광주역ID = "";
+    protected String 중앙역ID = "";
+    protected String 모란역ID = "";
+    protected String 미금역ID = "";
     @LocalServerPort
     int port;
     @Autowired
@@ -33,9 +33,9 @@ public abstract class TestFixtures {
         Station station2 = stationRepository.save(new Station("중앙역"));
         Station station3 = stationRepository.save(new Station("모란역"));
         Station station4 = stationRepository.save(new Station("미금역"));
-        stationId1 = String.valueOf(station1.getId());
-        stationId2 = String.valueOf(station2.getId());
-        stationId3 = String.valueOf(station3.getId());
-        stationId4 = String.valueOf(station4.getId());
+        경기광주역ID = String.valueOf(station1.getId());
+        중앙역ID = String.valueOf(station2.getId());
+        모란역ID = String.valueOf(station3.getId());
+        미금역ID = String.valueOf(station4.getId());
     }
 }

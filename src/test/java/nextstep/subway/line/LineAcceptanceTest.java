@@ -28,7 +28,7 @@ class LineAcceptanceTest extends TestFixtures {
     @Test
     void createLine() {
         // when
-        노선_생성("신분당선", "bg-red-600", stationId1, stationId2, "10");
+        노선_생성("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "10");
         //then
         List<String> lineNames = 노선_목록조회("name");
 
@@ -47,8 +47,8 @@ class LineAcceptanceTest extends TestFixtures {
     @Test
     void getLines() {
         //given
-        노선_생성("신분당선", "bg-red-600", stationId1, stationId2, "10");
-        노선_생성("분당선", "bg-green-600", stationId1, stationId3, "10");
+        노선_생성("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "10");
+        노선_생성("분당선", "bg-green-600", 경기광주역ID, 모란역ID, "10");
 
         //when
         List<String> lineNames = 노선_목록조회("name");
@@ -68,7 +68,7 @@ class LineAcceptanceTest extends TestFixtures {
     @Test
     void getLineByName() {
         //given
-        노선_생성("신분당선", "bg-red-600", stationId1, stationId2, "10");
+        노선_생성("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "10");
 
         //when
         String lineName = 노선_조회("/{name}", "신분당선", "name");
@@ -88,11 +88,11 @@ class LineAcceptanceTest extends TestFixtures {
     @Test
     void modifyLine() {
         //given
-        노선_생성("신분당선", "bg-red-600", stationId1, stationId2, "10");
+        노선_생성("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "10");
 
         //when
         ExtractableResponse<Response> response =
-                노선_수정("신분당선2", "bg-green-600", stationId1, stationId2, "10", "/{name}", "신분당선");
+                노선_수정("신분당선2", "bg-green-600", 경기광주역ID, 중앙역ID, "10", "/{name}", "신분당선");
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -109,7 +109,7 @@ class LineAcceptanceTest extends TestFixtures {
     @Test
     void deleteLine() {
         //given
-        String id = 노선_생성_값_리턴("신분당선", "bg-red-600", stationId1, stationId2, "10", "id");
+        String id = 노선_생성_값_리턴("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "10", "id");
 
         //when
         ExtractableResponse<Response> response = 노선_삭제("/{id}", id);

@@ -1,7 +1,7 @@
 package nextstep.subway.section;
 
-import static nextstep.subway.section.SectionTestFixtures.기존_구간과_상행_종점으로_등록한_구간이_함께_조회됨;
-import static nextstep.subway.section.SectionTestFixtures.기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨;
+import static nextstep.subway.section.SectionTestFixtures.기존_구간과_상행_종점으로_등록한_모란역_구간이_함께_조회됨;
+import static nextstep.subway.section.SectionTestFixtures.기존_구간과_하행_종점으로_등록한_중앙역_구간이_함께_조회됨;
 import static nextstep.subway.section.SectionTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
 import static nextstep.subway.section.SectionTestFixtures.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
 import static nextstep.subway.section.SectionTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
@@ -32,10 +32,10 @@ class SectionAcceptanceTest extends TestFixtures {
     @Test
     void addBetween() {
         //given
-        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId2, "7", "id");
+        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "7", "id");
 
         //when
-        역_사이_새로운역_등록(stationId1, stationId3, "4", lineId);
+        역_사이_새로운역_등록(경기광주역ID, 모란역ID, "4", lineId);
 
         //then
         새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정("distance", lineId, "4", "3");
@@ -52,13 +52,13 @@ class SectionAcceptanceTest extends TestFixtures {
     @Test
     void prependUpStation() {
         //given
-        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId2, "7", "id");
+        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "7", "id");
 
         //when
-        새로운_역_상행_종점으로_등록(stationId3, stationId1, "4", lineId);
+        새로운_역_상행_종점으로_등록(모란역ID, 경기광주역ID, "4", lineId);
 
         //then
-        기존_구간과_상행_종점으로_등록한_구간이_함께_조회됨("distance", lineId, "7", "4");
+        기존_구간과_상행_종점으로_등록한_모란역_구간이_함께_조회됨(lineId, "7", "4");
     }
 
     /**
@@ -72,13 +72,13 @@ class SectionAcceptanceTest extends TestFixtures {
     @Test
     void appendDownStation() {
         //given
-        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId2, "7", "id");
+        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 경기광주역ID, 모란역ID, "7", "id");
 
         //when
-        새로운_역_하행_종점으로_등록(stationId2, stationId3, "4", lineId);
+        새로운_역_하행_종점으로_등록(모란역ID, 중앙역ID, "4", lineId);
 
         //then
-        기존_구간과_하행_종점으로_등록한_구간이_함께_조회됨("distance", lineId, "7", "4");
+        기존_구간과_하행_종점으로_등록한_중앙역_구간이_함께_조회됨(lineId, "7", "4");
     }
 
     /**
@@ -92,10 +92,10 @@ class SectionAcceptanceTest extends TestFixtures {
     @Test
     void validateLength() {
         //given
-        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId2, "7", "id");
+        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "7", "id");
 
         //when
-        ExtractableResponse<Response> response = 기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록(stationId1, stationId3, "8", lineId);
+        ExtractableResponse<Response> response = 기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록(경기광주역ID, 모란역ID, "8", lineId);
 
         //then
         등록이_불가하다(response);
@@ -112,10 +112,10 @@ class SectionAcceptanceTest extends TestFixtures {
     @Test
     void validateAlreadyExistsStation() {
         //given
-        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId2, "7", "id");
+        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "7", "id");
 
         //when
-        ExtractableResponse<Response> response = 기존노선과_동일하게_상행_하행역을_등록(stationId1, stationId2, "4", lineId);
+        ExtractableResponse<Response> response = 기존노선과_동일하게_상행_하행역을_등록(경기광주역ID, 중앙역ID, "4", lineId);
 
         //then
         등록이_불가하다(response);
@@ -132,10 +132,10 @@ class SectionAcceptanceTest extends TestFixtures {
     @Test
     void validateNotExistsStation() {
         //given
-        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId2, "7", "id");
+        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "7", "id");
 
         //when
-        ExtractableResponse<Response> response = 기존노선의_상행_하행_역과_모두_일치하지_않게_등록(stationId3, stationId4, "4", lineId);
+        ExtractableResponse<Response> response = 기존노선의_상행_하행_역과_모두_일치하지_않게_등록(모란역ID, 미금역ID, "4", lineId);
 
         //then
         등록이_불가하다(response);
