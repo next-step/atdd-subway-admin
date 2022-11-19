@@ -1,26 +1,24 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.line.LineAcceptanceFixture.구간_생성_결과에서_지하철역_번호들을_조회한다;
+import static nextstep.subway.line.LineAcceptanceFixture.구간_요청_정보;
 import static nextstep.subway.line.LineAcceptanceFixture.노선_결과에서_노선_아이디를_조회한다;
 import static nextstep.subway.line.LineAcceptanceFixture.노선_요청;
+import static nextstep.subway.line.LineAcceptanceFixture.노선에_구간을_생성한다;
 import static nextstep.subway.line.LineAcceptanceFixture.노선을_생성한다;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철_생성_결과에서_지하철역_번호를_조회한다;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import java.util.stream.Collectors;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.SectionRequest;
-import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 @DisplayName("노선 구역 관련 기능")
 public class LineSectionAcceptanceTest extends AcceptanceTest {
@@ -58,7 +56,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_등록된_지하철역을_확인할_수_있다
         List<Long> 지하철역_번호_목록 = 구간_생성_결과에서_지하철역_번호들을_조회한다(구간_생성_결과);
-        assertThat(지하철역_번호_목록).containsExactlyInAnyOrder(서울역_번호, 수원역_번호, 두정역_번호);
+        지하철역_목록이_상행선부터_차례로_노출되어야_한다(지하철역_번호_목록, 서울역_번호, 수원역_번호, 두정역_번호);
     }
 
     /**
@@ -76,7 +74,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         // then
         // 지하철_노선에_등록된_지하철역을_확인할_수_있다
         List<Long> 지하철역_번호_목록 = 구간_생성_결과에서_지하철역_번호들을_조회한다(구간_생성_결과);
-        assertThat(지하철역_번호_목록).containsExactlyInAnyOrder(서울역_번호, 수원역_번호, 두정역_번호);
+        지하철역_목록이_상행선부터_차례로_노출되어야_한다(지하철역_번호_목록, 서울역_번호, 수원역_번호, 두정역_번호);
     }
 
     /**
@@ -108,7 +106,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         List<Long> 지하철역_번호_목록 = 구간_생성_결과에서_지하철역_번호들을_조회한다(구간_생성_결과);
-        assertThat(지하철역_번호_목록).containsExactlyInAnyOrder(수원역_번호, 서울역_번호, 두정역_번호);
+        지하철역_목록이_상행선부터_차례로_노출되어야_한다(지하철역_번호_목록, 수원역_번호, 서울역_번호, 두정역_번호);
     }
 
     /**
@@ -124,7 +122,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         // then
         List<Long> 지하철역_번호_목록 = 구간_생성_결과에서_지하철역_번호들을_조회한다(구간_생성_결과);
-        assertThat(지하철역_번호_목록).containsExactlyInAnyOrder(서울역_번호, 두정역_번호, 수원역_번호);
+        지하철역_목록이_상행선부터_차례로_노출되어야_한다(지하철역_번호_목록, 서울역_번호, 두정역_번호, 수원역_번호);
     }
 
     /**
@@ -206,29 +204,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(구간_생성_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private SectionRequest 구간_요청_정보(Long 상행역_번호, Long 하행역_번호) {
-        return new SectionRequest(상행역_번호, 하행역_번호, 1L);
-    }
-
-    private SectionRequest 구간_요청_정보(Long 상행역_번호, Long 두정역_번호, Long 길이) {
-        return new SectionRequest(상행역_번호, 두정역_번호, 길이);
-    }
-
-    private List<Long> 구간_생성_결과에서_지하철역_번호들을_조회한다(ExtractableResponse<Response> 구간_생성_결과) {
-        return 구간_생성_결과.jsonPath().getList("stations", StationResponse.class)
-                .stream()
-                .map(StationResponse::getId)
-                .collect(Collectors.toList());
-    }
-
-
-    public static ExtractableResponse<Response> 노선에_구간을_생성한다(Long 노선_아이디, SectionRequest 구간_요청_정보) {
-        return RestAssured.given().log().all()
-                .body(구간_요청_정보)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .pathParam("id", 노선_아이디)
-                .when().post("lines/{id}/sections")
-                .then().log().all()
-                .extract();
+    private void 지하철역_목록이_상행선부터_차례로_노출되어야_한다(List<Long> 지하철역_번호_목록, Long 서울역_번호, Long 두정역_번호, Long 수원역_번호) {
+        assertThat(지하철역_번호_목록).containsExactlyInAnyOrder(서울역_번호, 두정역_번호, 수원역_번호);
     }
 }
