@@ -150,6 +150,26 @@ public class SectionAcceptanceTest {
         구간_생성을_실패한다(response);
     }
 
+    /**
+     * Given 노선이 등록되어 있고
+     * When  신규 구간의 상행선,하행선이 노선의 상행선 혹은 하행선을 포함하지 않으면
+     * Then  구간 생성이 실패함
+     */
+    @Test
+    void 상행역_하행역을_둘중_하나도_포함하지_않으면_생성_불가() {
+        LineResponse lineResponse = LineAcceptanceTest.지하철_노선을_생성한다("노선", "색상", 10L, Arrays.asList(상행역.getId(), 하행역.getId())).as(LineResponse.class);
+
+        ExtractableResponse<Response> response =  상행역_하행역을_포함하지_않는_구간_생성을_요청함(lineResponse.getId(),"신규역1","신규역2",5L);
+
+        구간_생성을_실패한다(response);
+    }
+
+    private ExtractableResponse<Response> 상행역_하행역을_포함하지_않는_구간_생성을_요청함(Long lineId, String 신규역1, String 신규역2, long 구간거리) {
+        StationResponse newStation1 = 지하철역을_생성한다(신규역1).as(StationResponse.class);
+        StationResponse newStation2 = 지하철역을_생성한다(신규역2).as(StationResponse.class);
+        return 구간생성을_요청한다(lineId, newStation1.getId(), newStation2.getId(), 구간거리);
+    }
+
     private ExtractableResponse<Response> 상행역_하행역이_정반대인_구간을_생성함(Long lineId, Long 하행역_식별자, Long 상행역_식별자 , long 구간거리) {
         return 구간생성을_요청한다(lineId, 하행역_식별자, 상행역_식별자, 구간거리);
     }
