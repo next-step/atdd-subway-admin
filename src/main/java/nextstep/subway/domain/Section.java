@@ -45,21 +45,9 @@ public class Section {
     }
 
     public void rebase(Section section) {
-        if(this.upStation.equals(section.upStation)) {
-            this.distance.sub(section.distance);
-            upStation = section.downStation;
-        }
-        if(this.downStation.equals(section.downStation)) {
-            this.distance.sub(section.distance);
-            downStation = section.upStation;
-        }
-        if(isLastUpStation(section.downStation)) {
-            line.updateLastUpStation(section.upStation);
-        }
-    }
-
-    private boolean isLastUpStation(Station station) {
-        return line.getLastUpStation().equals(station);
+        rebaseIfUpStationEquals(section);
+        rebaseIfDownStationEquals(section);
+        rebaseLastUpstation(section);
     }
 
     public Station getUpStation() {
@@ -72,5 +60,29 @@ public class Section {
 
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    private void rebaseIfUpStationEquals(Section section) {
+        if(this.upStation.equals(section.upStation)) {
+            this.distance.sub(section.distance);
+            upStation = section.downStation;
+        }
+    }
+
+    private void rebaseIfDownStationEquals(Section section) {
+        if(this.downStation.equals(section.downStation)) {
+            this.distance.sub(section.distance);
+            downStation = section.upStation;
+        }
+    }
+
+    private void rebaseLastUpstation(Section section) {
+        if(isLastUpStation(section.downStation)) {
+            line.updateLastUpStation(section.upStation);
+        }
+    }
+
+    private boolean isLastUpStation(Station station) {
+        return line.getLastUpStation().equals(station);
     }
 }
