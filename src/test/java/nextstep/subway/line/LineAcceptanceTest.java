@@ -22,6 +22,7 @@ import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+@DisplayName("지하철 노선 테스트")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     @LocalServerPort
@@ -127,5 +128,32 @@ public class LineAcceptanceTest {
 
         // Then
         assertThat(lineNames).contains("신분당선", "6호선");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @Test
+    @DisplayName("지하철 노선 조회 테스트")
+    public void get_line_test() {
+        // Given
+        LineRequest firstLineRequest = new LineRequest("신분당선", "red"
+                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
+                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+
+        // When
+        ExtractableResponse<Response> createLine = reqeust_register_line(firstLineRequest);
+        String name = RestAssured.given().log().all()
+                .pathParam("id", createLine.jsonPath().get("id"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/line/{id}")
+                .then().log().all()
+                .statusCode(HttpStatus.OK.value())
+                .extract().jsonPath().get("name");
+
+        // Then
+        assertThat(name).isEqualTo("신분당선");
     }
 }
