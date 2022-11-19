@@ -22,12 +22,21 @@ class DistanceTest {
     }
 
     @Test
+    void 길이를_더할_수_있다() {
+        Distance distance = Distance.from(7);
+        Distance anotherDistance = Distance.from(3);
+        Distance expected = Distance.from(10);
+
+        assertThat(distance.plus(anotherDistance)).isEqualTo(expected);
+    }
+
+    @Test
     void 길이를_뺄_수_있다() {
         Distance distance = Distance.from(7);
         Distance anotherDistance = Distance.from(3);
-        Distance actual = Distance.from(4);
+        Distance expected = Distance.from(4);
 
-        assertThat(distance.subtract(anotherDistance)).isEqualTo(actual);
+        assertThat(distance.subtract(anotherDistance)).isEqualTo(expected);
     }
 
     @Test

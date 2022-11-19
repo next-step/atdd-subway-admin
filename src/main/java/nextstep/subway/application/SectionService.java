@@ -31,4 +31,11 @@ public class SectionService {
         Section newSection = Section.from(upStation, downStation, Distance.from(sectionRequest.getDistance()));
         line.addSection(newSection);
     }
+
+    @Transactional
+    public void deleteSection(Long id, Long stationId) {
+        Station station = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
+        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        line.deleteSection(station);
+    }
 }

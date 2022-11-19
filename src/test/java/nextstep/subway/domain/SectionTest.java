@@ -20,6 +20,16 @@ class SectionTest {
     }
 
     @Test
+    void 구간_병합() {
+        Section existSection = Section.from(Station.from("서초역"), Station.from("교대역"), Distance.from(10));
+        Section newSection = Section.from(Station.from("교대역"), Station.from("강남역"), Distance.from(5));
+
+        existSection.merge(newSection);
+
+        assertThat(existSection).isEqualTo(Section.from(Station.from("서초역"), Station.from("강남역"), Distance.from(15)));
+    }
+
+    @Test
     void 구간_재조정시_거리가_0이하인_경우_예외() {
         Section existSection = Section.from(Station.from("서초역"), Station.from("강남역"), Distance.from(10));
         Section newSection = Section.from(Station.from("서초역"), Station.from("교대역"), Distance.from(10));

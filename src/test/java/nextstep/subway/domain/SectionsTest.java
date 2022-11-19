@@ -24,21 +24,48 @@ class SectionsTest {
         Station 교대역 = Station.from("교대역");
         Section newSection = Section.from(서초역, 교대역, Distance.from(5));
         sections.add(newSection);
-        assertThat(sections.assignedStations()).contains(서초역, 교대역, 강남역);
+        assertThat(sections.assignedOrderedStation()).containsExactly(서초역, 교대역, 강남역);
     }
 
     @Test
     void 새로운_역을_상행_종점으로_등록() {
         Station 방배역 = Station.from("방배역");
         sections.add(Section.from(방배역, 서초역, Distance.from(5)));
-        assertThat(sections.assignedStations()).contains(방배역, 서초역, 강남역);
+        assertThat(sections.assignedOrderedStation()).containsExactly(방배역, 서초역, 강남역);
     }
 
     @Test
     void 새로운_역을_하행_종점으로_등록() {
         Station 역삼역 = Station.from("역삼역");
         sections.add(Section.from(강남역, 역삼역, Distance.from(5)));
-        assertThat(sections.assignedStations()).contains(서초역, 강남역, 역삼역);
+        assertThat(sections.assignedOrderedStation()).containsExactly(서초역, 강남역, 역삼역);
+    }
+
+    @Test
+    void 가운데_역을_제거() {
+        Station 교대역 = Station.from("교대역");
+        sections.add(Section.from(서초역, 교대역, Distance.from(5)));
+        assertThat(sections.assignedOrderedStation()).containsExactly(서초역, 교대역, 강남역);
+        sections.delete(교대역);
+        assertThat(sections.assignedOrderedStation()).containsExactly(서초역, 강남역);
+    }
+
+    @Test
+    void 상행_종점을_제거() {
+        Station 교대역 = Station.from("교대역");
+        sections.add(Section.from(서초역, 교대역, Distance.from(5)));
+        assertThat(sections.assignedOrderedStation()).containsExactly(서초역, 교대역, 강남역);
+        sections.delete(서초역);
+        assertThat(sections.assignedOrderedStation()).containsExactly(교대역, 강남역);
+    }
+
+    @Test
+    void 하행_종점을_제거() {
+        Station 교대역 = Station.from("교대역");
+        sections.add(Section.from(서초역, 교대역, Distance.from(5)));
+        assertThat(sections.assignedOrderedStation()).containsExactly(서초역, 교대역, 강남역);
+        sections.delete(강남역);
+        assertThat(sections.assignedOrderedStation()).containsExactly(서초역, 교대역);
     }
 
     @ParameterizedTest
@@ -65,5 +92,19 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.add(newSection))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("상행역과 하행역 모두 노선에 포함되어 있지 않습니다.");
+    }
+
+    @Test
+    void 노선의_마지막_구간은_삭제할_수_없다() {
+        assertThatThrownBy(() -> sections.delete(강남역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선의 마지막 구간은 삭제할 수 없습니다.");
+    }
+
+    @Test
+    void 노선에_포함되지_않은_역은_삭제할_수_없다() {
+        assertThatThrownBy(() -> sections.delete(Station.from("새로운역")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선에 포함되지 않은 지하철 역은 삭제할 수 없습니다.");
     }
 }

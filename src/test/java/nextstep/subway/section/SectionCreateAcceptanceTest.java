@@ -21,7 +21,7 @@ import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class SectionAcceptanceTest extends AcceptanceTest {
+public class SectionCreateAcceptanceTest extends AcceptanceTest {
     private Long 서초역;
     private Long 강남역;
 
