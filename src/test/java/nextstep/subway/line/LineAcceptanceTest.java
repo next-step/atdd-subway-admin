@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleaner;
 import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +61,7 @@ public class LineAcceptanceTest {
                 .isEqualTo(HttpStatus.CREATED.value());
 
         //then
-        assertThat(retrieveLineNames().stream().anyMatch(lineName::equals))
+        assertThat(retrieveAllLineNames().stream().anyMatch(lineName::equals))
                 .isTrue();
     }
 
@@ -77,7 +78,7 @@ public class LineAcceptanceTest {
         createLine(new LineRequest(lineName2, "bg-red-600", stationId, anotherStationId, 10));
 
         //when
-        List<String> lineNames = retrieveLineNames();
+        List<String> lineNames = retrieveAllLineNames();
 
         //then
         assertThat(lineNames.size()).isEqualTo(2);
@@ -85,6 +86,23 @@ public class LineAcceptanceTest {
                 .allMatch(lineName -> lineName1.equals(lineName) || lineName2.equals(lineName)))
                 .isTrue();
     }
+
+    @Test
+    @DisplayName("하나의 지하철호선을 생성 후 조회해 본다.")
+    void oneLineRetrieveTest() {
+        //given
+        String lineName = "신분당선";
+        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
+        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        String lineId = createLineAndGetId(
+                new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
+
+        //when
+        //then
+        assertThat(lineName.equals(retrieveLineName(lineId)))
+                .isTrue();
+    }
+
 
     /**
      * 지하철호선 생성
@@ -105,29 +123,55 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * 지하철역 생성 후 http상태코드 리턴
+     * 지하철호선 생성 후 http상태코드 조회
      */
     int createLineAndGetResponseCode(LineRequest lineRequest) {
         return createLine(lineRequest).statusCode();
     }
 
     /**
-     * 지하철호선 목록조회
+     * 지하철호선 생성 후 id 조회
      */
-    List<Line> retrieveLines() {
+    String createLineAndGetId(LineRequest lineRequest) {
+        return createLine(lineRequest).jsonPath().get("id").toString();
+    }
+
+    /**
+     * 지하철전체호선 목록조회
+     */
+    List<LineResponse> retrieveAllLines() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines")
                 .then().log().all().extract().jsonPath()
-                .getList("",Line.class);
+                .getList("",LineResponse.class);
     }
 
     /**
-     * 지하철호선 이름 목록조회
+     * 지하철전체호선 이름 목록조회
      */
-    List<String> retrieveLineNames() {
-        return retrieveLines().stream().map(Line::getName).collect(Collectors.toList());
+    List<String> retrieveAllLineNames() {
+        return retrieveAllLines().stream().map(LineResponse::getName).collect(Collectors.toList());
     }
 
+
+    /**
+     * 지하철호선id로 정 조회
+     */
+    private LineResponse retrieveLine(String lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/" + lineId)
+                .then().log().all().extract().jsonPath()
+                .getObject("", LineResponse.class);
+    }
+
+    /**
+     * 지하철호선 Id로 지하철호선 이름 조회
+     */
+    private String retrieveLineName(String lineId) {
+        System.out.println("======================");
+        return retrieveLine(lineId).getName();
+    }
 
 }

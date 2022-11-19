@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,14 +30,21 @@ public class LineService {
         return LineResponse.of(persistLine);
     }
 
-    public List<LineResponse> findAllStations() {
-        return lineRepository.findAll().stream().map(LineResponse::of).collect(Collectors.toList());
+    public List<LineResponse> findAllLines() {
+        return lineRepository.findAll().stream().map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 
-    public Line lineRequestToLine(LineRequest lineRequest) {
+    public LineResponse findLineById(Long id) {
+        return lineRepository.findById(id).map(LineResponse::of)
+                .orElseThrow(() -> new NoSuchElementException("주어진 id로 생성된 지하철호선이 없습니다."));
+    }
+
+    private Line lineRequestToLine(LineRequest lineRequest) {
         return new Line(lineRequest.getName(), lineRequest.getColor(),
                 stationRepository.getById(lineRequest.getUpStationId()),
                 stationRepository.getById(lineRequest.getDownStationId()),
                 lineRequest.getDistance());
     }
+
 }

@@ -37,7 +37,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStationResponses() {
+    public List<StationResponse> getStations() {
         return stations;
     }
 }
