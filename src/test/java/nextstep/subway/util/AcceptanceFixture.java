@@ -12,16 +12,16 @@ public class AcceptanceFixture {
         return response.jsonPath().getLong("id");
     }
 
+    public static List<Long> 목록_아이디_조회(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("id");
+    }
+
     public static List<String> 목록_이름_조회(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("name");
     }
 
     public static String 이름_조회(ExtractableResponse<Response> response) {
         return response.jsonPath().getString("name");
-    }
-
-    public static Map 목록_조회(ExtractableResponse<Response> response) {
-        return response.jsonPath().get(".");
     }
 
     public static boolean 결과에_존재한다(ExtractableResponse<Response> response, String...조회대상) {
