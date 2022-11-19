@@ -50,7 +50,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     void addSection_withLastUpStation() {
         // when
         // 지하철_노선_구간_등록_요청
-        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, new SectionRequest(서울역_번호, 수원역_번호, 30L));
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 수원역_번호));
 
 
         // then
@@ -68,7 +68,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     void addSection_withLastDownStation() {
         // when
         // 지하철_노선_구간_등록_요청
-        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, new SectionRequest(수원역_번호, 두정역_번호, 30L));
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(수원역_번호, 두정역_번호));
 
 
         // then
@@ -85,7 +85,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_throw_exception_if_distance_is_long_or_equals_rather_than_other_section() {
         // when
-        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, new SectionRequest(인천역_번호, 서울역_번호, 50L));
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(인천역_번호, 서울역_번호, Long.MAX_VALUE));
 
 
         // then
@@ -102,7 +102,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_newLastUpStation() {
         // when
-        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, new SectionRequest(수원역_번호, 서울역_번호, 30L));
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(수원역_번호, 서울역_번호));
 
 
         // then
@@ -118,12 +118,35 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_newLastDownStation() {
         // when
-        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, new SectionRequest(두정역_번호, 수원역_번호, 30L));
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(두정역_번호, 수원역_번호));
 
 
         // then
         List<Long> 지하철역_번호_목록 = 구간_생성_결과에서_지하철역_번호들을_조회한다(구간_생성_결과);
         assertThat(지하철역_번호_목록).containsExactlyInAnyOrder(서울역_번호, 두정역_번호, 수원역_번호);
+    }
+
+    /**
+     * When 지하철 노선에 새로운 구간을 등록 할 때, 두 역 모두 기존 노선에 포함되어 있다면
+     * Then INTERNAL_SERVER_ERROR 를 반환해야 한다
+     **/
+    @DisplayName("노선에 새로운 구간을 등록할 때, 두 역 모두 기존 노선에 포함되어 있다면 에러를 반환한다")
+    @Test
+    void addSection_throw_exception_if_section_has_duplicated_stations() {
+        // when
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 두정역_번호));
+
+
+        // then
+        assertThat(구간_생성_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private SectionRequest 구간_요청_정보(Long 서울역_번호, Long 두정역_번호) {
+        return new SectionRequest(서울역_번호, 두정역_번호, 1L);
+    }
+
+    private SectionRequest 구간_요청_정보(Long 서울역_번호, Long 두정역_번호, Long 길이) {
+        return new SectionRequest(서울역_번호, 두정역_번호, 길이);
     }
 
     private List<Long> 구간_생성_결과에서_지하철역_번호들을_조회한다(ExtractableResponse<Response> 구간_생성_결과) {
