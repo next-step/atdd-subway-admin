@@ -67,7 +67,7 @@ public class LineService {
     public void deleteLine(Long lineId) {
         lineRepository.deleteById(lineId);
     }
-    
+
     public void addLineStation(Long lineId, SectionRequest sectionRequest) {
         Line line = findByLineId(lineId);
         Station upStation = stationService.findStation(sectionRequest.getUpStationId());

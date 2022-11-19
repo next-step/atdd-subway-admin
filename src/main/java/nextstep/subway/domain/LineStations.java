@@ -8,6 +8,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.common.type.AlreadyExceptionType.ALREADY_LINE_STATION;
+import static nextstep.subway.common.type.LineStationExceptionType.NOT_FOUND_LINE_STATION_BOTH;
+
 @Embeddable
 public class LineStations {
 
@@ -44,7 +47,7 @@ public class LineStations {
 
     private void checkAlreadyExistStation(Station upStation, Station downStation) {
         if (isSameUpStation(upStation) && isSameDownStation(downStation)) {
-            throw new IllegalArgumentException("이미 존재해요");
+            throw new IllegalArgumentException(ALREADY_LINE_STATION.getMessage());
         }
     }
 
@@ -59,7 +62,7 @@ public class LineStations {
 
     private void checkExistBothStation(LineStation station) {
         if (isExistStations(station)) {
-            throw new IllegalArgumentException("상행성 하행선 모두 존재하지 않습니다.");
+            throw new IllegalArgumentException(NOT_FOUND_LINE_STATION_BOTH.getMessage());
         }
     }
 

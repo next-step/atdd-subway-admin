@@ -19,7 +19,8 @@ public class LineStation extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
 
     protected LineStation() {
@@ -29,7 +30,7 @@ public class LineStation extends BaseEntity {
         this.id = null;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public static LineStation of(Station upStation, Station downStation, int distance) {
@@ -38,12 +39,6 @@ public class LineStation extends BaseEntity {
 
     public List<Station> getRelationStation() {
         return Arrays.asList(upStation, downStation);
-    }
-
-    private void checkAlreadyExistStation(Station upStation, Station downStation) {
-        if (isSameUpStation(upStation) && isSameDownStation(downStation)) {
-            throw new IllegalArgumentException("이미 존재해요");
-        }
     }
 
     private boolean isSameUpStation(Station upStation) {
@@ -65,12 +60,12 @@ public class LineStation extends BaseEntity {
     }
 
     private void updateDownStation(LineStation newStation) {
-        this.downStation = newStation.downStation;
-        this.distance = distance - newStation.distance;
+        this.downStation = newStation.upStation;
+        this.distance = distance.minus(newStation.distance);
     }
 
     private void updateUpStation(LineStation newStation) {
-        this.upStation = newStation.upStation;
-        this.distance = distance - newStation.distance;
+        this.upStation = newStation.downStation;
+        this.distance = distance.minus(newStation.distance);
     }
 }
