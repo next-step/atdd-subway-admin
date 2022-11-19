@@ -11,19 +11,25 @@ import nextstep.subway.dto.LineRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.jdbc.Sql.ExecutionPhase;
+import util.DatabaseCleaner;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@DirtiesContext(classMode = ClassMode.AFTER_EACH_TEST_METHOD)
+@Import(DatabaseCleaner.class)
 public class LineAcceptanceTest {
     @LocalServerPort
     int port;
+
+    @Autowired
+    private DatabaseCleaner databaseCleaner;
 
     LineRequest _1호선 = new LineRequest("1호선", "blue");
     LineRequest _2호선 = new LineRequest("2호선", "green");
@@ -31,6 +37,7 @@ public class LineAcceptanceTest {
     @BeforeEach
     public synchronized void setUp() {
         RestAssured.port = port;
+        databaseCleaner.clear();
     }
 
     /**
@@ -169,12 +176,9 @@ public class LineAcceptanceTest {
     }
 
     private void 지하철_노선_정보가_없다(long lineId) {
-        Long id = RestAssured.given().log().all()
+        RestAssured.given().log().all()
             .when().get("/lines/{id}", lineId)
             .then().log().all()
-            .statusCode(HttpStatus.OK.value())
-            .extract()
-            .jsonPath().get("id");
-        assertThat(id).isNull();
+            .statusCode(HttpStatus.BAD_REQUEST.value());
     }
 }

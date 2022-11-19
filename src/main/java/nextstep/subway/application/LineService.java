@@ -1,12 +1,12 @@
 package nextstep.subway.application;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.LineNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,18 +35,13 @@ public class LineService {
 
     public LineResponse findById(Long id) {
         return lineRepository.findById(id).map(LineResponse::of)
-            .orElse(LineResponse.EMPTY);
+            .orElseThrow(LineNotFoundException::new);
     }
 
     @Transactional
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Optional<Line> lineOptional = lineRepository.findById(id);
-        if (!lineOptional.isPresent()) {
-            return LineResponse.EMPTY;
-        }
-        Line line = lineOptional.get();
-        line.setName(lineRequest.getName());
-        line.setColor(lineRequest.getColor());
+        Line line = lineRepository.findById(id).orElseThrow(LineNotFoundException::new);
+        line.updateLine(lineRequest.getName(), lineRequest.getColor());
         return LineResponse.of(line);
     }
 
