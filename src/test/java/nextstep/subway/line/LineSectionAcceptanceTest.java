@@ -30,6 +30,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private Long 수원역_번호;
     private Long 인천역_번호;
     private Long 두정역_번호;
+    private Long 부천역_번호;
 
     @BeforeEach
     void init() {
@@ -39,6 +40,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         노선_아이디 = 노선_결과에서_노선_아이디를_조회한다(노선을_생성한다(노선_요청));
         수원역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(지하철_역을_생성한다("수원역"));
         인천역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(지하철_역을_생성한다("인천역"));
+        부천역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(지하철_역을_생성한다("부천역"));
     }
 
     /**
@@ -134,6 +136,21 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     void addSection_throw_exception_if_section_has_duplicated_stations() {
         // when
         ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 두정역_번호));
+
+
+        // then
+        assertThat(구간_생성_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
+     * When 지하철 노선에 새로운 구간을 등록 할 때, 두 역 모두 기존 노선에 포함되어 있지 않을 경우
+     * Then INTERNAL_SERVER_ERROR 를 반환해야 한다
+     **/
+    @DisplayName("노선에 새로운 구간을 등록할 때, 두 역 모두 기존 노선에 포함되어 있지 않다면 에러를 반환한다")
+    @Test
+    void addSection_throw_exception_if_section_cant_find_any_matches_stations() {
+        // when
+        ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(인천역_번호, 부천역_번호));
 
 
         // then
