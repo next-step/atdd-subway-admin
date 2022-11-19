@@ -2,24 +2,19 @@ package nextstep.subway.domain;
 
 import org.springframework.util.CollectionUtils;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Embeddable
 public class Sections {
-    private List<Section> sections;
-    private Line line;
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    private List<Section> sections = new ArrayList<>();
 
-    private Sections(Line line) {
-        this.sections = line.getSections();
-        this.line = line;
-    }
-
-    public static Sections of(Line line) {
-        if (CollectionUtils.isEmpty(line.getSections())) {
-            Section section = line.toSection();
-            line.addSection(section);
-        }
-        return new Sections(line);
+    protected Sections(){
     }
 
     public boolean insertInsideFromUpStation(Station upStation, Station newStation, long distance) {
@@ -51,16 +46,12 @@ public class Sections {
         return true;
     }
 
-    public boolean hasSection(Section of) {
-        Optional<Section> any = this.sections.stream().filter(section -> section.equals(of)).findAny();
-        return any.isPresent();
+    public boolean insert(Station upStation, Station downStation, Long distance) {
+        return insertInsideFromUpStation(upStation, downStation, distance) ||
+                insertInsideFromDownStation(downStation, upStation, distance);
     }
 
-    public boolean extendFromUpStation(Station upStation, Station downStation, Long distance) {
-        return line.extendFromUpStation(upStation, downStation, distance);
-    }
-
-    public boolean extendFromDownStation(Station upStation, Station downStation, Long distance) {
-        return line.extendFromDownStation(upStation, downStation, distance);
+    public void add(Section newSection) {
+        this.sections.add(newSection);
     }
 }

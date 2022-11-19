@@ -10,6 +10,7 @@ import java.util.Objects;
 
 @Entity
 public class Line extends BaseEntity {
+    private static final String MESSAGE_NEW_SECTION_IS_SAME_WITH_LINE = "노선 끝과 동일한 상/하행역을 가진 구간은 등록할 수 없습니다";
     public static final String MESSAGE_STATION_SHOULD_NOT_EMPTY = "지하철역은 비어있을 수 없습니다";
     public static final String MESSAGE_STATION_SHOULD_HAS_ID = "지하철역은 식별자가 있어야 합니다.";
     public static final String MESSAGE_STATION_SHOULD_BE_DIFFERENT = "상/하행역은 같을 수 없습니다";
@@ -35,8 +36,8 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private Long distance;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
@@ -120,18 +121,6 @@ public class Line extends BaseEntity {
         return Objects.hash(id, name, color, upStation, downStation, distance);
     }
 
-    public List<Section> getSections() {
-        return this.sections;
-    }
-
-    public Sections toSections() {
-        return Sections.of(this);
-    }
-
-    public Section toSection() {
-        return Section.of(this, getUpStation(), getDownStation(), getDistance());
-    }
-
     public void addSection(Section newSection) {
         this.sections.add(newSection);
     }
@@ -164,5 +153,22 @@ public class Line extends BaseEntity {
             return true;
         }
         return false;
+    }
+
+    public boolean extend(Station upStation, Station downStation, Long distance) {
+        checkRequestSectionIsLineEndStations(upStation, downStation, this);
+        return extendFromUpStation(upStation, downStation, distance) ||
+                extendFromDownStation(upStation, downStation, distance);
+    }
+
+    private void checkRequestSectionIsLineEndStations(Station upStation, Station downStation, Line line) {
+        boolean hasSame = line.hasSameEndStations(upStation, downStation);
+        if (hasSame) {
+            throw new IllegalArgumentException(MESSAGE_NEW_SECTION_IS_SAME_WITH_LINE);
+        }
+    }
+
+    public boolean insert(Station upStation, Station downStation, Long distance) {
+        return this.sections.insert(upStation,downStation,distance);
     }
 }
