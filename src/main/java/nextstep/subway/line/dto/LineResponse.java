@@ -1,7 +1,7 @@
-package nextstep.subway.dto;
+package nextstep.subway.line.dto;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Station;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.station.domain.Station;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ public class LineResponse {
     private String color;
     private List<Station> stations;
 
-    public static LineResponse of(Line line) {
+    public static LineResponse from(Line line) {
        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations());
     }
 

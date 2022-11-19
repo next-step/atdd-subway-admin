@@ -3,9 +3,10 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.AbstractAcceptanceTest;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
+import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,12 +22,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("노선 관련 기능")
 public class LineAcceptanceTest extends AbstractAcceptanceTest {
 
+    private StationResponse 서초역;
+    private StationResponse 교대역;
+    private StationResponse 강남역;
+
     @BeforeEach
     public void setUp() {
         super.setUp();
-        StationAcceptanceTest.createStation("지하철역");
-        StationAcceptanceTest.createStation("새로운지하철역");
-        StationAcceptanceTest.createStation("또다른지하철역");
+        서초역 = StationAcceptanceTest.createStation("서초역").extract().as(StationResponse.class);
+        교대역 = StationAcceptanceTest.createStation("교대역").extract().as(StationResponse.class);
+        강남역 = StationAcceptanceTest.createStation("강남역").extract().as(StationResponse.class);
     }
 
     /**
@@ -36,7 +41,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @DisplayName("노선을 생성한다.")
     @Test
     void requestApiByCreateLine() {
-        LineRequest request = new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10);
+        LineRequest request = new LineRequest("신분당선", "bg-red-600", 서초역.getId(), 교대역.getId(), 10);
 
         ValidatableResponse response = requestApiByCreateLine(request);
 
@@ -51,8 +56,8 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @DisplayName("노선 목록을 조회한다.")
     @Test
     void findAllLines () {
-        requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10));
-        requestApiByCreateLine(new LineRequest("분당선", "bg-red-600", 1L, 3L, 10));
+        requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 서초역.getId(), 교대역.getId(), 10));
+        requestApiByCreateLine(new LineRequest("분당선", "bg-red-600", 서초역.getId(), 강남역.getId(), 10));
 
         ValidatableResponse response = requestApiByFindAllLines();
 
@@ -67,7 +72,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @DisplayName("노선을 조회한다.")
     @Test
     void getLine () {
-        Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+        Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 서초역.getId(), 교대역.getId(), 10))
             .extract()
             .as(LineResponse.class)
             .getId();
@@ -85,7 +90,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @DisplayName("노선 정보를 수정한다.")
     @Test
     void updateLine () {
-        Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+        Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 서초역.getId(), 교대역.getId(), 10))
             .extract()
             .as(LineResponse.class)
             .getId();
@@ -103,7 +108,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
     @DisplayName("노선 정보를 삭제한다.")
     @Test
     void deleteLine () {
-        Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 1L, 2L, 10))
+        Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 서초역.getId(), 교대역.getId(), 10))
             .extract()
             .as(LineResponse.class)
             .getId();
@@ -114,7 +119,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(extractNames(requestApiByFindAllLines())).doesNotContain("신분당선");
     }
 
-    private static ValidatableResponse requestApiByCreateLine(LineRequest request) {
+    public static ValidatableResponse requestApiByCreateLine(LineRequest request) {
         return RestAssured.given().log().all()
             .body(request)
             .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -129,7 +134,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
             .then().log().all();
     }
 
-    private static ValidatableResponse requestApiByGetLine(long id) {
+    public static ValidatableResponse requestApiByGetLine(long id) {
         return RestAssured.given().log().all()
             .when().get("/lines/{id}", id)
             .then().log().all();

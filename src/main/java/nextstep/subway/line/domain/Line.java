@@ -1,13 +1,16 @@
-package nextstep.subway.domain;
+package nextstep.subway.line.domain;
+
+import nextstep.subway.common.domain.BaseEntity;
+import nextstep.subway.section.domain.Section;
+import nextstep.subway.section.domain.Sections;
+import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -20,16 +23,16 @@ public class Line extends BaseEntity {
     private String name;
     @Column(nullable = false)
     private String color;
-    @ManyToOne
-    private Station upStation;
-    @ManyToOne
-    private Station downStation;
-    @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
+    public void addSection(Section section) {
+        sections.add(section);
+
+    }
     public Long getId() {
         return id;
     }
@@ -42,20 +45,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public List<Station> getStations() {
-        return new ArrayList(Arrays.asList(upStation, downStation));
-    }
-
-    public int getDistance() {
-        return distance;
+        return sections.getStations();
     }
 
     public void updateNameAndColor(String name, String color) {
@@ -103,8 +94,6 @@ public class Line extends BaseEntity {
     private Line(Builder builder) {
         this.name = builder.name;
         this.color = builder.color;
-        this.upStation = builder.upStation;
-        this.downStation = builder.downStation;
-        this.distance = builder.distance;
+        this.addSection(new Section(builder.upStation, builder.downStation, builder.distance));
     }
 }

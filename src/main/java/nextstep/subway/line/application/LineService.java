@@ -1,16 +1,15 @@
-package nextstep.subway.application;
+package nextstep.subway.line.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.domain.StationRepository;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.LineUpdateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,29 +28,29 @@ public class LineService {
     @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-            .orElseThrow(EntityNotFoundException::new);
+            .orElseThrow(() -> new IllegalArgumentException(String.format("역을 찾을 수 없습니다 id = %d", lineRequest.getUpStationId())));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-            .orElseThrow(EntityNotFoundException::new);
+            .orElseThrow(() -> new IllegalArgumentException(String.format("역을 찾을 수 없습니다 id = %d", lineRequest.getDownStationId())));
         Line saveLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(saveLine);
+        return LineResponse.from(saveLine);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-            .map(line -> LineResponse.of(line))
+            .map(line -> LineResponse.from(line))
             .collect(Collectors.toList());
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        return LineResponse.of(line);
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(String.format("노선을 찾을 수 없습니다 id = %d", id)));
+        return LineResponse.from(line);
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        Line line = lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(String.format("노선을 찾을 수 없습니다 id = %d", id)));
         line.updateNameAndColor(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
