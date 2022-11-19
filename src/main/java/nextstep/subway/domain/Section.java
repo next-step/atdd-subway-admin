@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "SECTION")
 public class Section extends BaseEntity {
 
-    private static int MIN_DISTANCE = 1;
+    private static final int MIN_DISTANCE = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,6 +49,10 @@ public class Section extends BaseEntity {
 
     public static Section of(Station upStation, Station downStation, Integer distance) {
         return new Section(null, upStation, downStation, distance, null);
+    }
+
+    public static Section of(Long id, Station upStation, Station downStation, Integer distance) {
+        return new Section(id, upStation, downStation, distance, null);
     }
 
     public static Section of(Station upStation, Station downStation, Integer distance, Line line) {
@@ -99,6 +103,11 @@ public class Section extends BaseEntity {
         if (this.distance <= distance) {
             throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우는 길이가 기존 구간길이보다 작아야 합니다.");
         }
+    }
+
+    public void extend(Section downSection) {
+        this.distance = distance + downSection.distance;
+        this.downStation = downSection.downStation;
     }
 
     public List<Station> getStations() {

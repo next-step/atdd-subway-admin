@@ -2,8 +2,10 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -12,6 +14,8 @@ import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
+
+    private static final int MIN_REMOVEABLE_SECTION_SIZE = 2;
 
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -55,6 +59,40 @@ public class Sections {
         sections.stream().forEach(section -> section.update(source));
     }
 
+    public void removeByUpSectionAndDownSection(Section upSection, Section downSection) {
+        validateRemoveExistSections(upSection, downSection);
+        validateRemoveLastSection();
+
+        if (Objects.nonNull(upSection) && Objects.isNull(downSection)) {
+            sections.remove(upSection);
+        }
+
+        if (Objects.isNull(upSection) && Objects.nonNull(downSection)) {
+            sections.remove(downSection);
+        }
+
+        if (Objects.nonNull(upSection) && Objects.nonNull(downSection)) {
+            upSection.extend(downSection);
+            sections.remove(downSection);
+        }
+    }
+
+    private void validateRemoveExistSections(Section upSection, Section downSection) {
+        if (Objects.isNull(upSection) && Objects.isNull(downSection)) {
+            throw new IllegalArgumentException("구간이 존재하지 않습니다.");
+        }
+    }
+
+    private void validateRemoveLastSection() {
+        if (sections.size() < MIN_REMOVEABLE_SECTION_SIZE) {
+            throw new IllegalArgumentException("더이상 구간을 삭제할 수 없습니다.");
+        }
+    }
+
+    public List<Section> getSections() {
+        return Collections.unmodifiableList(sections);
+    }
+
     public List<Station> getStations() {
         return sections.stream()
                 .map(Section::getStations)
@@ -63,5 +101,4 @@ public class Sections {
                 .sorted(Comparator.comparing(Station::getId))
                 .collect(Collectors.toList());
     }
-
 }
