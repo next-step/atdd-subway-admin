@@ -22,7 +22,25 @@ public class Sections {
     }
 
     public void add(Section newSection) {
+        validateAlreadyContainsAll(newSection);
+        validateNotContainsAny(newSection);
         this.sections.forEach(section -> section.relocate(newSection));
         sections.add(newSection);
+    }
+
+    private void validateNotContainsAny(Section section) {
+        List<Station> stations = this.getStations();
+        if (stations.isEmpty()) {
+            return;
+        }
+        if (section.getStations().stream().noneMatch(stations::contains)) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+        }
+    }
+
+    private void validateAlreadyContainsAll(Section section) {
+        if (getStations().containsAll(section.getStations())) {
+            throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있습니다.");
+        }
     }
 }

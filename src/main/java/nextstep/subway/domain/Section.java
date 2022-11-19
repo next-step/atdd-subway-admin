@@ -15,9 +15,7 @@ public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private Long lineId;
-
     @ManyToOne
     private Station upStation;
     @ManyToOne
@@ -54,7 +52,14 @@ public class Section {
     }
 
     private void modifyDistance(Section newSection) {
+        validateDistanceOver(newSection.getDistance());
         this.distance = this.distance - newSection.getDistance();
+    }
+
+    private void validateDistanceOver(int distance) {
+        if (distance >= this.distance) {
+            throw new IllegalArgumentException("기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없습니다.");
+        }
     }
 
     public List<Station> getStations() {
