@@ -26,8 +26,10 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NotFoundException::new);
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NotFoundException::new);
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
+                .orElseThrow(NotFoundException::new);
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
+                .orElseThrow(NotFoundException::new);
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.from(persistLine);
     }
@@ -57,11 +59,12 @@ public class LineService {
 
     @Transactional
     public void addLineStation(Long lineId, LineStationRequest lineStationRequest) {
-        Station upStation = stationRepository.findById(lineStationRequest.getUpStationId()).orElseThrow(NotFoundException::new);
-        Station downStation = stationRepository.findById(lineStationRequest.getDownStationId()).orElseThrow(NotFoundException::new);
+        Station upStation = stationRepository.findById(lineStationRequest.getUpStationId())
+                .orElseThrow(NotFoundException::new);
+        Station downStation = stationRepository.findById(lineStationRequest.getDownStationId())
+                .orElseThrow(NotFoundException::new);
         Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
         line.addLineStation(
-                lineStationRequest.toLineStation(
-                        line, upStation, downStation, lineStationRequest.getDistance()));
+                lineStationRequest.toLineStation(line, upStation, downStation, lineStationRequest.getDistance()));
     }
 }
