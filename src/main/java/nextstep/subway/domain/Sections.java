@@ -4,7 +4,7 @@ import static nextstep.subway.constant.Constant.ADD_SECTION_FAIL_CAUSE_DUPLICATE
 import static nextstep.subway.constant.Constant.ADD_SECTION_FAIL_CAUSE_NOT_MATCH;
 import static nextstep.subway.constant.Constant.DELETE_FAIL_CAUSE_ONLY_ONE;
 import static nextstep.subway.constant.Constant.NOT_FOUND_SECTION;
-import static nextstep.subway.constant.Constant.ONE;
+import static nextstep.subway.constant.Constant.MINIMUM_SIZE_OF_SECTIONS;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -153,7 +153,7 @@ public class Sections {
     }
 
     private void validateSectionsSize(){
-        if(sections.size() <= ONE){
+        if(sections.size() <= MINIMUM_SIZE_OF_SECTIONS){
             throw new DeleteFailException(DELETE_FAIL_CAUSE_ONLY_ONE);
         }
     }

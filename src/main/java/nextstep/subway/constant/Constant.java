@@ -8,5 +8,8 @@ public class Constant {
     public static String ADD_SECTION_FAIL_CAUSE_DISTANCE = "기존 역 사이의 길이 보다 크거나 같을 수 없습니다.";
     public static String ADD_SECTION_FAIL_CAUSE_DUPLICATE = "상행역과 하행역이 모두 노선에 등록되어 있습니다.";
     public static String ADD_SECTION_FAIL_CAUSE_NOT_MATCH = "노선에 존재하는 역이 아닙니다.";
-    public static int ONE = 1;
+    public static int MINIMUM_SIZE_OF_SECTIONS = 1;
+
+    private Constant() {
+    }
 }
