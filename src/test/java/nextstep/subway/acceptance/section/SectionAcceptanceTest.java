@@ -4,15 +4,20 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptance.RestAssuredSetUp;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
+import java.util.stream.Collectors;
+
 import static nextstep.subway.acceptance.line.LineAcceptanceCommon.지하철_노선_등록;
+import static nextstep.subway.acceptance.line.LineAcceptanceCommon.지하철_노선_조회;
 import static nextstep.subway.acceptance.section.SectionAcceptanceCommon.지하철_구간_등록;
 import static nextstep.subway.acceptance.section.SectionAcceptanceCommon.지하철_구간_삭제;
 import static nextstep.subway.acceptance.station.StationAcceptaneCommon.지하철_역_등록;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 기능")
 public class SectionAcceptanceTest extends RestAssuredSetUp {
@@ -206,10 +211,15 @@ public class SectionAcceptanceTest extends RestAssuredSetUp {
         지하철_구간_등록(lineId, new SectionRequest(jamSilStationId, bangbaeStationId, 4));
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_삭제(lineId, jamSilStationId);
+        지하철_구간_삭제(lineId, jamSilStationId);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response = 지하철_노선_조회(lineId);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath()
+                        .getList("stations", StationResponse.class).stream().map(StationResponse::getName)
+                        .collect(Collectors.toList())).containsAnyOf("방배역", "홍대입구역"));
     }
 
     @DisplayName("중간역이 제거될 경우 재배치를 함")
@@ -225,9 +235,14 @@ public class SectionAcceptanceTest extends RestAssuredSetUp {
         지하철_구간_등록(lineId, new SectionRequest(hongDaeStationId, bangbaeStationId, 5));
 
         //when
-        ExtractableResponse<Response> response = 지하철_구간_삭제(lineId, hongDaeStationId);
+        지하철_구간_삭제(lineId, hongDaeStationId);
 
         //then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> response = 지하철_노선_조회(lineId);
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(response.jsonPath()
+                        .getList("stations", StationResponse.class).stream().map(StationResponse::getName)
+                        .collect(Collectors.toList())).containsAnyOf("방배역", "잠실역"));
     }
 }
