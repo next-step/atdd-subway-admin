@@ -70,4 +70,13 @@ class SectionsTest {
         sections.add(논현역_신논현역_구간());
         assertThat(sections.getStations()).containsExactly(논현역(), 신논현역(), 강남역());
     }
+
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    @Test
+    void addDownStation() {
+        Sections sections = new Sections();
+        sections.add(논현역_신논현역_구간());
+        sections.add(신논현역_강남역_구간());
+        assertThat(sections.getStations()).containsExactly(논현역(), 신논현역(), 강남역());
+    }
 }
