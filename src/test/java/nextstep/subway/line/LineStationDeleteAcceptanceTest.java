@@ -136,7 +136,7 @@ public class LineStationDeleteAcceptanceTest {
     /**
      * given 노선에 구간을 1개(a -> b) 추가하고
      * when 존재하지 않는 역(c)을 제거하면
-     * then 예외를 발생시킨다.
+     * then 구간 내에 존재하지 않는 역이므로, 역이 제거되지 않는다.
      */
     @Test
     @DisplayName("노선 구간에 존재하지 않는 역을 제거하려하면 예외가 발생한다.")
