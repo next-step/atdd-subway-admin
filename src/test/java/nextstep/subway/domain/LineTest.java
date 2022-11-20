@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -18,6 +19,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("노선을 생성한다.")
     void 노선_생성() {
         assertAll(
                 () -> assertThat(line).isNotNull(),
@@ -27,6 +29,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("노선의 구간을 초기화한다.")
     void 노선_초기화() {
         LineStation 상행_종점 = new LineStation(null, new Station("상행종점역"), 10, line);
         LineStation 하행_종점 = new LineStation(new Station("하행종점역"), null, 10, line);
@@ -36,6 +39,7 @@ class LineTest {
     }
 
     @Test
+    @DisplayName("노선의 이름과 색상을 수정한다.")
     void 노선_정보_수정() {
         line.update("3호선", "orange");
         assertAll(
