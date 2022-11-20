@@ -49,12 +49,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_withLastUpStation() {
         // when
-        // 지하철_노선_구간_등록_요청
         ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 수원역_번호));
 
 
         // then
-        // 지하철_노선에_등록된_지하철역을_확인할_수_있다
         List<Long> 지하철역_번호_목록 = 구간_생성_결과에서_지하철역_번호들을_조회한다(구간_생성_결과);
         지하철역_목록이_상행선부터_차례로_노출되어야_한다(지하철역_번호_목록, 서울역_번호, 수원역_번호, 두정역_번호);
     }
@@ -67,12 +65,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection_withLastDownStation() {
         // when
-        // 지하철_노선_구간_등록_요청
         ExtractableResponse<Response> 구간_생성_결과 = 노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(수원역_번호, 두정역_번호));
 
 
         // then
-        // 지하철_노선에_등록된_지하철역을_확인할_수_있다
         List<Long> 지하철역_번호_목록 = 구간_생성_결과에서_지하철역_번호들을_조회한다(구간_생성_결과);
         지하철역_목록이_상행선부터_차례로_노출되어야_한다(지하철역_번호_목록, 서울역_번호, 수원역_번호, 두정역_번호);
     }
@@ -89,7 +85,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
 
         // then
-        // 지하철_노선에_등록된_지하철역을_확인할_수_있다
         구간_생성_결과에서_에러가_발생해야_한다(구간_생성_결과);
     }
 
