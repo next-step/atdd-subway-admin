@@ -12,4 +12,24 @@ public class LineRequest {
     public Line toLine() {
         return new Line(name, color);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public long getUpStationId() {
+        return upStationId;
+    }
+
+    public long getDownStatsionId() {
+        return downStatsionId;
+    }
+
+    public long getDistance() {
+        return distance;
+    }
 }

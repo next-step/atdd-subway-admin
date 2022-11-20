@@ -1,10 +1,8 @@
 package nextstep.subway.domain;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@Entity
 public class Line extends BaseEntity{
 
     @Id
@@ -16,11 +14,22 @@ public class Line extends BaseEntity{
     private String color;
 
     protected Line() {
-
     }
 
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Long getId() {
+        return this.id;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public String getColor() {
+        return this.color;
     }
 }
