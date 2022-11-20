@@ -47,7 +47,6 @@ public class Section {
     public void rebase(Section section) {
         rebaseIfUpStationEquals(section);
         rebaseIfDownStationEquals(section);
-        rebaseLastUpstation(section);
     }
 
     public Station getUpStation() {
@@ -74,15 +73,5 @@ public class Section {
             this.distance.sub(section.distance);
             downStation = section.upStation;
         }
-    }
-
-    private void rebaseLastUpstation(Section section) {
-        if(isLastUpStation(section.downStation)) {
-            line.updateLastUpStation(section.upStation);
-        }
-    }
-
-    private boolean isLastUpStation(Station station) {
-        return line.getLastUpStation().equals(station);
     }
 }

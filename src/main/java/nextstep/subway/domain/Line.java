@@ -4,12 +4,9 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 
 @Entity
 public class Line extends BaseEntity {
@@ -24,10 +21,6 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id")
-    private Station lastUpStation;
-
     @Embedded
     private Sections sections = new Sections();
 
@@ -37,7 +30,6 @@ public class Line extends BaseEntity {
     public Line(String name, String color, Station lastUpStation, Station lastDownStation, Long distance) {
         this.name = name;
         this.color = color;
-        this.lastUpStation = lastUpStation;
         this.sections.addSection(new Section(this, distance, lastUpStation, lastDownStation));
     }
 
@@ -62,15 +54,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getLastUpStation() {
-        return lastUpStation;
-    }
-
-    public void updateLastUpStation(Station station) {
-        lastUpStation = station;
-    }
-
     public List<Station> getStations() {
-        return sections.getOrderedStationsStartsWith(lastUpStation);
+        return sections.getOrderedStations();
     }
 }
