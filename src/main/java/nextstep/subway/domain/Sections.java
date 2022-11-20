@@ -89,7 +89,7 @@ public class Sections {
 
     private void validateSections(List<Section> findSections, List<Section> sections) {
         validateEmptySection(findSections);
-        validateSingleSection(findSections, sections);
+        validateSingleSection(sections);
         validateMultiSection(findSections);
     }
 
@@ -113,8 +113,8 @@ public class Sections {
         }
     }
 
-    private void validateSingleSection(List<Section> sections, List<Section> findSections) {
-        if (isSingleSection(sections) && isSingleSection(findSections)) {
+    private void validateSingleSection(List<Section> sections) {
+        if (isSingleSection(sections)) {
             throw new SectionsException(SINGLE_SECTION.getMessage());
         }
     }
@@ -134,7 +134,7 @@ public class Sections {
     private Station getUpStation(List<Section> sections, Station station) {
         return sections.stream()
                 .filter(section -> section.isSameDownStation(station))
-                .map(section -> section.getUpStation())
+                .map(Section::getUpStation)
                 .findFirst()
                 .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
     }
@@ -142,7 +142,7 @@ public class Sections {
     private Station getDownStation(List<Section> sections, Station station) {
         return sections.stream()
                 .filter(section -> section.isSameUpStation(station))
-                .map(section -> section.getDownStation())
+                .map(Section::getDownStation)
                 .findFirst()
                 .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
     }
