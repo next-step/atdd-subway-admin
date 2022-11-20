@@ -55,7 +55,7 @@ public class LineStation extends BaseEntity {
             return false;
         }
 
-        return newLineStation.downStation.getId().equals(this.downStation.getId());
+        return newLineStation.downStation == this.downStation;
     }
 
     public boolean canAddLastLineStation(LineStation newLineStation) {
@@ -67,15 +67,15 @@ public class LineStation extends BaseEntity {
             return false;
         }
 
-        return newLineStation.upStation.getId().equals(this.upStation.getId());
+        return newLineStation.upStation == this.upStation;
     }
 
     public boolean canAddInterLineStation(LineStation lineStation) {
         if (!isInterLineStation()) {
             return false;
         }
-        return this.upStation.getId().equals(lineStation.upStation.getId())
-                || this.downStation.getId().equals(lineStation.downStation.getId());
+        return this.upStation == lineStation.upStation
+                || this.downStation == lineStation.downStation;
     }
 
     private boolean isNotFirstLineStation() {
@@ -92,8 +92,8 @@ public class LineStation extends BaseEntity {
 
     public boolean isSameLineStation(LineStation newLineStation) {
         return isInterLineStation()
-                && this.upStation.getId().equals(newLineStation.getUpStation().getId())
-                && this.downStation.getId().equals(newLineStation.getDownStation().getId());
+                && this.upStation == newLineStation.getUpStation()
+                && this.downStation == newLineStation.getDownStation();
     }
 
     private boolean isNotValidNewLineStation(LineStation newLineStation) {

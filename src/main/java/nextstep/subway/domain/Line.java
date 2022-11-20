@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.exception.BadRequestForLineStationException;
 
 import javax.persistence.*;
 import java.util.List;
@@ -16,39 +16,39 @@ public class Line extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String color;
 
-    @Column(name = "distance", nullable = false)
-    private int distance;
-
     @Embedded
     private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
 
-    public Line(String name, String color, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
     }
 
     public void initLineStations(List<LineStation> lineStations) {
         this.lineStations = new LineStations(lineStations);
     }
 
-    public void update(LineUpdateRequest lineUpdateRequest) {
-        if (lineUpdateRequest.getName() != null) {
-            this.name = lineUpdateRequest.getName();
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
         }
-        if (lineUpdateRequest.getColor() != null) {
-            this.color = lineUpdateRequest.getColor();
+        if (color != null) {
+            this.color = color;
         }
     }
 
     public void addLineStation(LineStation lineStation) {
         if (lineStations.contains(lineStation)) {
-            throw new IllegalArgumentException("이미 등록된 구간입니다.");
+            throw new BadRequestForLineStationException("이미 등록된 구간입니다.");
         }
         lineStations.add(lineStation);
+    }
+
+    public void deleteLineStation(Station station) {
+        lineStations.delete(station);
     }
 
     public Long getId() {
@@ -61,10 +61,6 @@ public class Line extends BaseEntity {
 
     public String getColor() {
         return color;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public LineStations getLineStation() {
