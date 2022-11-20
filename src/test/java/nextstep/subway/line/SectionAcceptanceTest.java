@@ -165,4 +165,61 @@ class SectionAcceptanceTest extends AcceptanceTest {
                 () -> 지하철노선_저장된_지하철역_목록_순서_검증(조회된_신분당선, 신사역, 논현역, 신논현역, 강남역, 판교역)
         );
     }
+
+    /**
+     * Given 노선 내 3개 이상의 역을 등록하고
+     * When 노선 내 상행 종점인 역을 제거하면
+     * Then 노선 내에 제거된 역이 존재하지 않고,
+     * Then 노선의 상행 종점역이 바뀐다.
+     */
+    @Test
+    @DisplayName("노선 내 상행 종점인 역을 제거하면 해당 역이 제거되고 상행 종점이 바뀐다.")
+    void deleteStationByUpStation() {
+
+    }
+
+    /**
+     * Given 노선 내 3개 이상의 역을 등록하고
+     * When 노선 내 하행 종점인 역을 제거하면
+     * Then 노선 내에 제거된 역이 존재하지 않고,
+     * Then 노선의 하행 종점역이 바뀐다.
+     */
+    @Test
+    @DisplayName("노선 내 하행 종점인 역을 제거하면 해당 역이 제거되고 하행 종점이 바뀐다.")
+    void deleteStationByDownStation() {
+
+    }
+
+    /**
+     * Given 노선 내 3개 이상의 역을 등록하고
+     * When 노선 내 상행/하행 종점이 아닌 역을 제거하면
+     * Then 노선 내에 제거된 역이 존재하지 않는다.
+     */
+    @Test
+    @DisplayName("노선 내 상행/하행 종점이 아닌 역을 제거하면 노선에서 해당역이 제거된다.")
+    void deleteStationInSectionByIntermediate() {
+
+    }
+
+    /**
+     * Given 노선 내 단 한 구간만 등록하고
+     * When 노선의 역을 제거하면
+     * Then 역이 제거되지 않는다.
+     */
+    @Test
+    @DisplayName("노선 내 구간이 하나만 존재할 경우 역을 제거할 수 없다.")
+    void deleteStationInOneSection() {
+
+    }
+
+    /**
+     * Given 노선 내 역을 2개 이상 등록하고
+     * When 노선 내 존재하지 않는 역을 제거하면
+     * Then 역이 제거되지 않는다.
+     */
+    @Test
+    @DisplayName("노선 내 존재하지 않는 역은 제거할 수 없다.")
+    void deleteStationNotInSection() {
+
+    }
 }
