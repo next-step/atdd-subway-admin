@@ -68,7 +68,7 @@ class LineRepositoryTest {
         Line saveLine = lineRepository.save(line);
         flushAndClear();
 
-        Line findLine = lineRepository.findWithSectionsById(saveLine.getId()).get();
+        Line findLine = lineRepository.findWithSectionsByIdOrderBySortNoAsc(saveLine.getId()).get();
 
         assertThat(findLine.getSectionList()).hasSize(1);
     }

@@ -8,6 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.EntityNotFoundException;
 import javax.persistence.OneToMany;
 
 @Embeddable
@@ -22,14 +23,12 @@ public class Sections {
         return sections;
     }
 
-    public List<Integer> getSortedDistances() {
-        ascendingSectionsBySortNo();
+    public List<Integer> getDistances() {
         return sections.stream().map(Section::getDistance).collect(Collectors.toList());
     }
 
-    public Set<String> getSortedStationNames() {
+    public Set<String> getStationNames() {
         Set<String> stationNames = new LinkedHashSet<>();
-        ascendingSectionsBySortNo();
         sections.forEach(section -> {
             stationNames.add(section.getUpStation().getName());
             stationNames.add(section.getDownStation().getName());
@@ -55,20 +54,44 @@ public class Sections {
         appendDownStation(upStation, downStation, distance);
     }
 
-    public void deleteSectionByStation(Station station) {
-        ascendingSectionsBySortNo();
-        ifLastSectionAndDownStationThenRemove(station);
+    public void deleteSectionByStation(Line line, Station station) {
+        removeLastStation(line, station);
     }
 
-    private void ifLastSectionAndDownStationThenRemove(Station station) {
-        Section lastSection = sections.get(sections.size() - 1);
-        if (lastSection.isEqualsDownStation(station)) {
-            removeSection(lastSection);
+    private void removeBetweenStation(Line line, Station station) {
+        if (isNotFirstStationAndNotLastStationOfSections(station)) {
+            Section findSameDownStation = findSameDownStation(station)
+                    .orElseThrow(EntityNotFoundException::new);
+            Section findSameUpStation = findSameUpStation(station)
+                    .orElseThrow(EntityNotFoundException::new);
+            sections.add(deleteBetweenStationAndCreateNewSection(line, findSameDownStation, findSameUpStation));
         }
     }
 
-    private void ascendingSectionsBySortNo() {
-        sections.sort((o1, o2) -> o1.getSortNo() < o2.getSortNo() ? -1 : 0);
+    private Section deleteBetweenStationAndCreateNewSection(Line line, Section findSameDownStation,
+                                                            Section findSameUpStation) {
+        isGreaterThanThenMinusSortNo(findSameDownStation.getSortNo());
+        removeSection(findSameDownStation);
+        removeSection(findSameUpStation);
+
+        return new Section(line, findSameDownStation.getDistance() + findSameUpStation.getDistance(),
+                findSameDownStation.getSortNo(), findSameDownStation.getUpStation(),
+                findSameUpStation.getDownStation());
+    }
+
+    private boolean isNotFirstStationAndNotLastStationOfSections(Station station) {
+        return !sections.get(sections.size() - 1).isEqualsDownStation(station) && !sections.get(0)
+                .isEqualsUpStation(station);
+    }
+
+    private void removeLastStation(Line line, Station station) {
+        Section lastSection = sections.get(sections.size() - 1);
+        if (lastSection.isEqualsDownStation(station)) {
+            removeSection(lastSection);
+            isGreaterThanThenMinusSortNo(lastSection.getSortNo());
+            return;
+        }
+        removeBetweenStation(line, station);
     }
 
     private Optional<Section> findSameUpStation(Station station) {
@@ -93,6 +116,10 @@ public class Sections {
 
     private void isGreaterThanThenPlusSortNo(int sortNo) {
         sections.forEach(section -> section.isGreaterThanThenPlusSortNo(sortNo));
+    }
+
+    private void isGreaterThanThenMinusSortNo(int sortNo) {
+        sections.forEach(section -> section.isGreaterThanThenMinusSortNo(sortNo));
     }
 
     private void isLessThanThenPlusSortNo(int sortNo) {

@@ -143,6 +143,12 @@ public class Section {
         }
     }
 
+    public void isGreaterThanThenMinusSortNo(int sortNo) {
+        if (this.sortNo > sortNo) {
+            this.sortNo--;
+        }
+    }
+
     public void isLessThanThenPlusSortNo(int sortNo) {
         if (this.sortNo < sortNo) {
             this.sortNo--;

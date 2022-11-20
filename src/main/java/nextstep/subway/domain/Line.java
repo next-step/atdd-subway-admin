@@ -75,12 +75,12 @@ public class Line extends BaseEntity {
         return sections.getSections();
     }
 
-    public List<Integer> getSortedDistances() {
-        return sections.getSortedDistances();
+    public List<Integer> getDistances() {
+        return sections.getDistances();
     }
 
-    public Set<String> getSortedStationNames() {
-        return sections.getSortedStationNames();
+    public Set<String> getStationNames() {
+        return sections.getStationNames();
     }
 
     public void addDefaultSection(int distance, Station upStation, Station downStation) {
@@ -92,6 +92,6 @@ public class Line extends BaseEntity {
     }
 
     public void deleteSectionByStation(Station station) {
-        sections.deleteSectionByStation(station);
+        sections.deleteSectionByStation(this, station);
     }
 }

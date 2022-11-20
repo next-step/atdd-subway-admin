@@ -25,12 +25,6 @@ public abstract class DeleteSectionTestFixtures {
         return lineId;
     }
 
-    public static void 경기광주역_모란역_구간만_조회된다(String pathVariable) {
-        JsonPath 목록조회결과 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(목록조회결과.getList("distances", String.class)).containsOnly("4");
-        assertThat(목록조회결과.getList("sortNos", String.class)).containsExactly("경기 광주역", "모란역");
-    }
-
     public static ExtractableResponse<Response> 역_사이_새로운역_등록(String upStationId, String downStationId, String distance,
                                                              String pathVariable) {
         return 생성(구간(upStationId, downStationId, distance), PATH_LINE_ID_SECTION, pathVariable);
@@ -39,6 +33,23 @@ public abstract class DeleteSectionTestFixtures {
     public static String 지하철_노선_등록되어_있음(String name, String color, String upStationId, String downStationId,
                                         String distance, String returnValue) {
         return 생성_값_리턴(노선(name, color, upStationId, downStationId, distance), PATH_LINE, returnValue);
+    }
+
+    public static void 경기광주역_모란역_구간만_조회된다(String pathVariable) {
+        JsonPath 목록조회결과 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
+        assertThat(목록조회결과.getList("distances", String.class)).containsOnly("4");
+        assertThat(목록조회결과.getList("sortNos", String.class)).containsExactly("경기 광주역", "모란역");
+    }
+
+    public static void 경기광주역_중앙역_구간으로_합쳐지며_길이도_합쳐진다(String pathVariable) {
+        JsonPath 목록조회결과 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
+        assertThat(목록조회결과.getList("distances", String.class)).containsOnly("7");
+        assertThat(목록조회결과.getList("sortNos", String.class)).containsExactly("경기 광주역", "중앙역");
+    }
+
+    public static void 모란역을_제거한다(String lineId) {
+        ExtractableResponse<Response> response = 삭제(PATH_LINE_ID_SECTION + "?stationId=" + 모란역ID, lineId);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     public static void 중앙역을_제거한다(String lineId) {
