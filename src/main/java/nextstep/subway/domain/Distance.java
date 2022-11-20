@@ -22,6 +22,10 @@ public class Distance {
         this.distance = distance;
     }
 
+    public static Distance from(Integer distance) {
+        return new Distance(distance);
+    }
+
     private void validDistance(Integer distance) {
         if (Objects.isNull(distance)) {
             throw new IllegalArgumentException(ERROR_MESSAGE_NOT_NULL_DISTANCE);
@@ -40,11 +44,24 @@ public class Distance {
         }
     }
 
-    public static Distance from(Integer distance) {
-        return new Distance(distance);
-    }
-
     public Integer getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Distance distance1 = (Distance) o;
+        return Objects.equals(distance, distance1.distance);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(distance);
     }
 }

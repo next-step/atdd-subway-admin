@@ -27,4 +27,11 @@ public class SectionService {
         line.addSection(Section.of(upStation, downStation, Distance.from(sectionRequest.getDistance())));
         return LineResponse.of(line);
     }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineService.findById(lineId);
+        Station station = stationService.findById(stationId);
+        line.removeSection(station);
+    }
 }
