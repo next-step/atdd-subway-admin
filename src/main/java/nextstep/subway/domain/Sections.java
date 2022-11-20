@@ -82,8 +82,7 @@ public class Sections {
         List<Section> findSections = sections.stream().filter(section -> section.hasStation(deleteStation))
                 .collect(Collectors.toList());
         validateSections(findSections, sections);
-        if (isSingleSection(findSections)) {
-            sections.remove(findSections.get(0));
+        if (removeEdgeSection(findSections)) {
             return;
         }
         arrageSection(line, findSections, deleteStation);
@@ -147,5 +146,12 @@ public class Sections {
                 .map(Section::getDownStation)
                 .findFirst()
                 .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+    }
+
+    private boolean removeEdgeSection(List<Section> findSections){
+        if (isSingleSection(findSections)) {
+            return sections.remove(findSections.get(0));
+        }
+        return false;
     }
 }
