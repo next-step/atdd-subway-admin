@@ -50,6 +50,11 @@ public class Section {
         return Arrays.asList(upStation, downStation);
     }
 
+    public boolean hasLeastOneStations(List<Station> stations) {
+        return getStations().stream()
+                .anyMatch(stations::contains);
+    }
+
     public void modify(Section section) {
         modifyUpStation(section);
         modifyDownStation(section);

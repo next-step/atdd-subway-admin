@@ -5,6 +5,7 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -44,14 +45,14 @@ public class Sections {
         if (stations.isEmpty()) {
             return;
         }
-        boolean hasNoneStation = section.getStations().stream().noneMatch(stations::contains);
-        if (hasNoneStation) {
+        if (!section.hasLeastOneStations(stations)) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않아 추가할 수 없습니다.");
         }
     }
 
     private void validateAlreadyContainsAll(Section section) {
-        if (getStations().containsAll(section.getStations())) {
+        boolean isAlreadyContainsAll = new HashSet<>(getStations()).containsAll(section.getStations());
+        if (isAlreadyContainsAll) {
             throw new IllegalArgumentException("상행역과 하행역이 이미 노선에 모두 등록되어 있어 추가할 수 없습니다.");
         }
     }
