@@ -51,4 +51,14 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(SECTION_CONTAINS_EXCEPTION_MESSAGE);
     }
+
+    @DisplayName("새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 등록을 할 수 없다.")
+    @Test
+    void distance() {
+        Sections sections = new Sections();
+        sections.add(논현역_강남역_구간());
+        assertThatThrownBy(() -> sections.add(신논현역_강남역_구간()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
+    }
 }

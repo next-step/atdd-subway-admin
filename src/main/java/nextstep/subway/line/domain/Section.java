@@ -58,4 +58,8 @@ public class Section {
     public boolean isUpStation(Station upStation) {
         return this.upStation.equals(upStation);
     }
+
+    public Distance getDistance() {
+        return this.distance;
+    }
 }

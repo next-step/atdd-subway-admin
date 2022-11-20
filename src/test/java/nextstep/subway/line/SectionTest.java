@@ -15,6 +15,7 @@ class SectionTest {
 
     public static final int 신논현역_강남역_거리 = 5;
     public static final int 논현역_신논현역_거리 = 4;
+    public static final int 논현역_강남역_거리 = 4;
 
     @DisplayName("구간 생성")
     @Test

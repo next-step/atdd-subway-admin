@@ -13,6 +13,7 @@ public class Sections {
 
     public static final String SECTION_DUPLICATE_EXCEPTION_MESSAGE = "상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.";
     public static final String SECTION_CONTAINS_EXCEPTION_MESSAGE = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.";
+    public static final String DISTANCE_MINIMUM_EXCEPTION_MESSAGE = "새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 등록을 할 수 없다.";
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -20,14 +21,60 @@ public class Sections {
         if (size() >= 1) {
             validateSection(section);
             validateContainsSection(section);
+            if (isSameUpStation(section.getUpStation())) {
+                if (section.getDistance().equals(isSameUpStationDistance(section.getUpStation()))) {
+                    throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
+                }
+            }
+            if (isSameDownStation(section.getDownStation())) {
+                if (section.getDistance().equals(isSameDownStationDistance(section.getDownStation())) || section.getDistance().compareTo(isSameDownStationDistance(section.getDownStation())) < 0) {
+                    throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
+                }
+            }
         }
         this.sections.add(section);
     }
 
     private void validateContainsSection(Section section) {
-        if (!getStations().contains(section.getUpStation()) && !getStations().contains(section.getDownStation())) {
+        if (!isContainUpStation(section) && !isContainDownStation(section)) {
             throw new IllegalArgumentException(SECTION_CONTAINS_EXCEPTION_MESSAGE);
         }
+    }
+
+    private boolean isContainDownStation(Section section) {
+        return getStations().contains(section.getDownStation());
+    }
+
+    private boolean isContainUpStation(Section section) {
+        return getStations().contains(section.getUpStation());
+    }
+
+    private boolean isSameUpStation(Station upStation) {
+        return this.sections.stream()
+                .anyMatch(section -> section.isUpStation(upStation));
+    }
+
+    private Distance isSameUpStationDistance(Station upStation) {
+        for (Section section : this.sections) {
+            if (section.isUpStation(upStation)) {
+                return section.getDistance();
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+
+    private Distance isSameDownStationDistance(Station downStation) {
+        for (Section section : this.sections) {
+            if (section.isDownStation(downStation)) {
+                return section.getDistance();
+            }
+        }
+        throw new IllegalArgumentException();
+    }
+
+    private boolean isSameDownStation(Station downStation) {
+        return this.sections.stream()
+                .anyMatch(section -> section.isDownStation(downStation));
     }
 
     private void validateSection(Section section) {
