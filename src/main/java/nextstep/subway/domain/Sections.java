@@ -2,12 +2,14 @@ package nextstep.subway.domain;
 
 import nextstep.subway.exception.ErrorStatus;
 import nextstep.subway.exception.IllegalRequestBody;
+import nextstep.subway.exception.NotFoundSection;
 import nextstep.subway.exception.NotFoundStation;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -121,4 +123,30 @@ public class Sections {
         return stations;
     }
 
+
+    public List<Section> allSection() {
+        Station upStationTerminus = findUpStationTerminus();
+        return createSections(upStationTerminus);
+    }
+
+    private List<Section> createSections(Station upStationTerminus) {
+        Section firstSection = values.stream().filter(v -> v.getUpStation().equals(upStationTerminus))
+                .findFirst().orElseThrow(() -> new NotFoundSection(upStationTerminus.getId()));
+
+        Map<Station, Section> allSection = values.stream().collect(Collectors.toMap(Section::getUpStation, Function.identity()));
+
+        LinkedList<Section> sections = createSectionRecursive(firstSection, allSection);
+        sections.addFirst(firstSection);
+        return sections;
+    }
+
+    private LinkedList<Section> createSectionRecursive(Section firstSection, Map<Station, Section> allSection) {
+        LinkedList<Section> sections = new LinkedList<>();
+        Section section = allSection.get(firstSection.getDownStation());
+        while (section != null) {
+            sections.add(section);
+            section = allSection.get(section.getDownStation());
+        }
+        return sections;
+    }
 }

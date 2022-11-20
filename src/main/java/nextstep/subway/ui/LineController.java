@@ -1,10 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineSaveRequest;
-import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.SectionSaveRequest;
+import nextstep.subway.dto.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,5 +48,11 @@ public class LineController {
     public ResponseEntity<LineResponse> createSection(@PathVariable Long lineId, @RequestBody SectionSaveRequest sectionRequest) {
         LineResponse lineResponse = lineService.createSection(lineId, sectionRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
+    }
+
+    @GetMapping("/lines/{lineId}/sections")
+    public ResponseEntity<SectionsResponse> createSection(@PathVariable Long lineId) {
+        SectionsResponse sectionsResponse = lineService.findSectionByLine(lineId);
+        return ResponseEntity.ok(sectionsResponse);
     }
 }

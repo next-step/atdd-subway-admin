@@ -57,6 +57,7 @@ public class Section extends BaseEntity {
         this.upStation = newSection.getDownStation();
         this.distance -= newSection.distance;
     }
+
     public void updateDownStation(Section newSection) {
         validateDistance(newSection);
         this.downStation = newSection.getUpStation();
@@ -82,12 +83,16 @@ public class Section extends BaseEntity {
         return this.upStation.equals(section.getUpStation());
     }
 
+    public Long getDistance() {
+        return distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if (o == null || !(o instanceof Section)) {
             return false;
         }
         Section section = (Section) o;

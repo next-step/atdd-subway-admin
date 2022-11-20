@@ -9,7 +9,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.SectionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 구간 관련 기능")
 public class LineSectionAcceptanceTest extends AcceptanceTest {
-    private static final String STATIONS = "stations";
+    private static final String SECTIONS = "sections";
     private static final String SECTION_MAIN_PATH = LineConstant.LINE_MAIN_PATH + "/%d" + "/sections";
     @Autowired
     private LineRepository lineRepository;
@@ -56,9 +56,9 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findResponse = null;
-        List<StationResponse> stations = convertStationsName(findResponse.jsonPath());
-        assertThat(stations).hasSize(3);
+        ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findResponse.jsonPath());
+        assertThat(isSameSectionCount(sections.size(), 2)).isTrue();
 
     }
 
@@ -70,10 +70,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findResponse = null;
-        List<StationResponse> stations = convertStationsName(findResponse.jsonPath());
-        assertThat(stations).hasSize(3);
-        assertThat(stations.get(0).getId()).isEqualTo(otherUpStation.getId());
+        ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findResponse.jsonPath());
+        assertThat(isSameSectionCount(sections.size(), 2)).isTrue();
+        assertThat(sections.get(0).getUpStationId()).isEqualTo(otherUpStation.getId());
 
     }
 
@@ -85,10 +85,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findResponse = null;
-        List<StationResponse> stations = convertStationsName(findResponse.jsonPath());
-        assertThat(stations).hasSize(3);
-        assertThat(stations.get(stations.size() - 1).getId()).isEqualTo(otherUpStation.getId());
+        ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findResponse.jsonPath());
+        assertThat(isSameSectionCount(sections.size(), 2)).isTrue();
+        assertThat(sections.get(sections.size() - 1).getDownStationId()).isEqualTo(otherUpStation.getId());
 
     }
 
@@ -111,13 +111,14 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findResponse = null;
-        List<StationResponse> stations = convertStationsName(findResponse.jsonPath());
-        assertThat(stations).hasSize(3);
+        ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findResponse.jsonPath());
+        assertThat(isSameSectionCount(sections.size(), 2)).isTrue();
+        assertThat(isSameDistance(sections.get(0), 7L)).isTrue();
+        assertThat(isSameDistance(sections.get(1), 3L)).isTrue();
     }
 
     @DisplayName("이미 존재하는 구간 사이에 새로운 구간을 등록 하려고 하나 기존 구간의 길이보다 크거나 , 같아서 저장 할 수 없다.")
-    @Test
     void addSectionMiddleFailedDistance() {
         //when
         ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), 11L);
@@ -150,7 +151,26 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private List<StationResponse> convertStationsName(JsonPath jsonPath) {
-        return jsonPath.getList(STATIONS, StationResponse.class);
+    private List<SectionResponse> convertSection(JsonPath jsonPath) {
+        return jsonPath.getList(SECTIONS, SectionResponse.class);
+    }
+
+    private Long convertLineId(JsonPath jsonPath) {
+        return jsonPath.getLong(LineConstant.LINE_ID);
+    }
+
+    private ExtractableResponse<Response> findSectionByLine(Long lineId) {
+        return RestAssured.given().log().all()
+                .when().get(String.format(SECTION_MAIN_PATH, lineId))
+                .then().log().all()
+                .extract();
+    }
+
+    private boolean isSameDistance(SectionResponse sectionResponse, Long expect) {
+        return sectionResponse.getDistance().equals(expect);
+    }
+
+    private boolean isSameSectionCount(int sectionCount, int expect) {
+        return sectionCount == expect;
     }
 }
