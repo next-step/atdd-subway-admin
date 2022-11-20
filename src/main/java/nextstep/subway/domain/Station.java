@@ -9,6 +9,9 @@ public class Station extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "LINE_ID")
+    private Line line;
 
     public Station() {
     }
