@@ -40,20 +40,7 @@ public class Section extends BaseEntity {
         this.distance = new Distance(distance);
     }
 
-    @Override
-    public String toString() {
-        return "Section{" +
-            "id=" + id +
-            ", line=" + line +
-            ", upStation=" + upStation +
-            ", downStation=" + downStation +
-            ", distance=" + distance +
-            '}';
-    }
-
     public void validSection(Section section) {
-        System.out.println(this.upStation.toString());
-        System.out.println(this.downStation.toString());
         validNotInStations(section);
         validSameStation(section);
         isInDistance(section);
@@ -85,12 +72,12 @@ public class Section extends BaseEntity {
     }
 
     private boolean isInStations(Section compareSection) {
-        if (compareSection.upStation != this.upStation) {
-            return compareSection.downStation.equals(this.upStation);
+        if (compareSection.upStation != this.upStation && compareSection.downStation == this.upStation) {
+            return true;
         }
 
-        if (compareSection.downStation != this.downStation) {
-            return compareSection.upStation.equals(downStation);
+        if (compareSection.downStation != this.downStation && compareSection.upStation == this.downStation) {
+            return true;
         }
 
         return isSameUpStation(compareSection.upStation) || isSameUpStation(compareSection.downStation);

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
@@ -32,15 +31,18 @@ public class Sections {
     }
 
     public List<StationResponse> getStations() {
-        Set<StationResponse> upStations = sections.stream()
-            .map(section -> StationResponse.of(section.getUpStation()))
-            .collect(Collectors.toSet());
-        Set<StationResponse> downStations = sections.stream()
-            .map(section -> StationResponse.of(section.getDownStation()))
-            .collect(Collectors.toSet());
+        List<Station> upStations = sections.stream()
+            .map(Section::getUpStation)
+            .collect(Collectors.toList());
+        List<Station> downStations = sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
 
         return Stream.of(upStations, downStations)
-            .flatMap(Collection::stream).distinct().collect(Collectors.toList());
+            .flatMap(Collection::stream)
+            .distinct()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
     }
 
 }
