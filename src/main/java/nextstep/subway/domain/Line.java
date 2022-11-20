@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -72,6 +73,14 @@ public class Line extends BaseEntity {
 
     public List<Section> getSectionList() {
         return sections.getSections();
+    }
+
+    public List<Integer> getSortedDistances() {
+        return sections.getSortedDistances();
+    }
+
+    public Set<String> getSortedStationNames() {
+        return sections.getSortedStationNames();
     }
 
     public void addDefaultSection(int distance, Station upStation, Station downStation) {

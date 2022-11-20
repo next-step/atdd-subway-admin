@@ -1,8 +1,11 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -17,6 +20,21 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public List<Integer> getSortedDistances() {
+        sections.sort((o1, o2) -> o1.getSortNo() < o2.getSortNo() ? -1 : 0);
+        return sections.stream().map(Section::getDistance).collect(Collectors.toList());
+    }
+
+    public Set<String> getSortedStationNames() {
+        Set<String> stationNames = new LinkedHashSet<>();
+        sections.sort((o1, o2) -> o1.getSortNo() < o2.getSortNo() ? -1 : 0);
+        sections.forEach(section -> {
+            stationNames.add(section.getUpStation().getName());
+            stationNames.add(section.getDownStation().getName());
+        });
+        return stationNames;
     }
 
     public void addDefaultSection(Line line, int distance, Station upStation, Station downStation) {
@@ -57,14 +75,12 @@ public class Sections {
         sections.forEach(section -> section.validateNotExistsStation(upStation, downStation));
     }
 
-    private void prependUpStation(Station upStation, Station downStation, int distance) {
-        if (isFindSameStation) {
-            return;
-        }
-        findSameUpStation(downStation).ifPresent(section -> {
-            sections.add(section.createNewSection(distance, section.getSortNo() - 1, upStation, downStation));
-            isFindSameStation = true;
-        });
+    private void isGreaterThanThenPlusSortNo(int sortNo) {
+        sections.forEach(section -> section.isGreaterThanThenPlusSortNo(sortNo));
+    }
+
+    private void isLessThanThenPlusSortNo(int sortNo) {
+        sections.forEach(section -> section.isLessThanThenPlusSortNo(sortNo));
     }
 
     private void addBetweenByUpStation(Station upStation, Station downStation, int distance) {
@@ -73,19 +89,22 @@ public class Sections {
         }
         findSameUpStation(upStation).ifPresent(section -> {
             section.validateLength(distance);
+            isGreaterThanThenPlusSortNo(section.getSortNo());
             sections.add(section.createNewSection(distance, section.getSortNo(), upStation, downStation));
-            sections.add(section.createNewDownSection(distance, section.getSortNo() + 1, downStation));
+            sections.add(section.createNewSection(Math.abs(section.getDistance() - distance), section.getSortNo() + 1,
+                    downStation, section.getDownStation()));
             removeSection(section);
             isFindSameStation = true;
         });
     }
 
-    private void appendDownStation(Station upStation, Station downStation, int distance) {
+    private void prependUpStation(Station upStation, Station downStation, int distance) {
         if (isFindSameStation) {
             return;
         }
-        findSameDownStation(upStation).ifPresent(section -> {
-            sections.add(section.createNewSection(distance, section.getSortNo() + 1, upStation, downStation));
+        findSameUpStation(downStation).ifPresent(section -> {
+            isLessThanThenPlusSortNo(section.getSortNo());
+            sections.add(section.createNewPrependUpStation(distance, section.getSortNo() - 1, upStation));
             isFindSameStation = true;
         });
     }
@@ -96,9 +115,22 @@ public class Sections {
         }
         findSameDownStation(downStation).ifPresent(section -> {
             section.validateLength(distance);
-            sections.add(section.createNewSection(distance, section.getSortNo() + 1, upStation, downStation));
-            sections.add(section.createNewUpSection(distance, section.getSortNo(), upStation));
+            isGreaterThanThenPlusSortNo(section.getSortNo());
+            sections.add(section.createNewSection(distance, section.getSortNo(), section.getUpStation(), upStation));
+            sections.add(section.createNewSection(Math.abs(section.getDistance() - distance), section.getSortNo() + 1,
+                    upStation, downStation));
             removeSection(section);
+            isFindSameStation = true;
+        });
+    }
+
+    private void appendDownStation(Station upStation, Station downStation, int distance) {
+        if (isFindSameStation) {
+            return;
+        }
+        findSameDownStation(upStation).ifPresent(section -> {
+            isGreaterThanThenPlusSortNo(section.getSortNo());
+            sections.add(section.createNewAppendDownStation(distance, section.getSortNo() + 1, downStation));
             isFindSameStation = true;
         });
     }

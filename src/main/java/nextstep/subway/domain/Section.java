@@ -110,12 +110,12 @@ public class Section {
         return new Section(line, distance, sortNo, upStation, downStation);
     }
 
-    public Section createNewDownSection(int distance, int sortNo, Station downStation) {
-        return new Section(line, Math.abs(this.distance - distance), sortNo, downStation, this.downStation);
+    public Section createNewAppendDownStation(int distance, int sortNo, Station downStation) {
+        return new Section(line, distance, sortNo, this.downStation, downStation);
     }
 
-    public Section createNewUpSection(int distance, int sortNo, Station upStation) {
-        return new Section(line, Math.abs(this.distance - distance), sortNo, this.upStation, upStation);
+    public Section createNewPrependUpStation(int distance, int sortNo, Station upStation) {
+        return new Section(line, distance, sortNo, upStation, this.upStation);
     }
 
     public void validateLength(int distance) {
@@ -134,6 +134,18 @@ public class Section {
         if (!this.upStation.equals(upStation) && !this.downStation.equals(downStation) && !this.upStation
                 .equals(downStation) && !this.downStation.equals(upStation)) {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+        }
+    }
+
+    public void isGreaterThanThenPlusSortNo(int sortNo) {
+        if (this.sortNo > sortNo) {
+            this.sortNo++;
+        }
+    }
+
+    public void isLessThanThenPlusSortNo(int sortNo) {
+        if (this.sortNo < sortNo) {
+            this.sortNo--;
         }
     }
 }

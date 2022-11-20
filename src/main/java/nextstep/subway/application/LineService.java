@@ -36,13 +36,11 @@ public class LineService {
                 .getId();
     }
 
-    public List<SectionResponse> findSectionResponsesByLineId(Long lineId) {
+    public SectionResponse findSectionResponsesByLineId(Long lineId) {
         Line line = lineRepository.findWithSectionsById(lineId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        return line.getSectionList().stream()
-                .map(SectionResponse::of)
-                .collect(Collectors.toList());
+        return new SectionResponse(line.getSortedDistances(), line.getSortedStationNames());
     }
 
     public List<LineResponse> findAllLines() {

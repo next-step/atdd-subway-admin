@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Station;
@@ -105,10 +104,10 @@ class LineServiceTest {
         lineService.addSection(lineId, new SectionRequest(station1.getId(), station3.getId(), 4));
         flushAndClear();
 
-        List<Integer> distances = lineService.findSectionResponsesByLineId(lineId).stream()
-                .map(SectionResponse::getDistance)
-                .collect(Collectors.toList());
-        assertThat(distances).contains(6, 4);
+        SectionResponse response = lineService.findSectionResponsesByLineId(lineId);
+
+        assertThat(response.getDistances()).containsExactly(4, 6);
+        assertThat(response.getSortNos()).containsExactly("경기 광주역", "모란역", "중앙역");
     }
 
     private void flushAndClear() {

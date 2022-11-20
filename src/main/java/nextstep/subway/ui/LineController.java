@@ -36,7 +36,7 @@ public class LineController {
     }
 
     @GetMapping("/{lineId}/section")
-    public ResponseEntity<List<SectionResponse>> showSections(@PathVariable("lineId") Long lineId) {
+    public ResponseEntity<SectionResponse> showSections(@PathVariable("lineId") Long lineId) {
         return ResponseEntity.ok().body(lineService.findSectionResponsesByLineId(lineId));
     }
 

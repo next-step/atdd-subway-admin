@@ -21,25 +21,23 @@ public abstract class SectionTestFixtures {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    public static void 기존_구간과_하행_종점으로_등록한_중앙역_구간이_함께_조회됨(String pathVariable,
-                                                         String... containValues) {
+    public static void 기존_구간_뒤에_하행_종점으로_등록한_중앙역_구간이_함께_조회됨(String pathVariable, String... containValues) {
         JsonPath 목록조회 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(목록조회.getList("distance", String.class)).contains(containValues);
-        assertThat(목록조회.getList("downStation.name", String.class)).contains("중앙역");
+        assertThat(목록조회.getList("distances", String.class)).containsExactly(containValues);
+        assertThat(목록조회.getList("sortNos", String.class)).contains("경기 광주역", "모란역", "중앙역");
     }
 
 
-    public static void 기존_구간과_상행_종점으로_등록한_모란역_구간이_함께_조회됨(String pathVariable,
-                                                         String... containValues) {
+    public static void 기존_구간_앞에_상행_종점으로_등록한_모란역_구간이_함께_조회됨(String pathVariable, String... containValues) {
         JsonPath 목록조회 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(목록조회.getList("distance", String.class)).contains(containValues);
-        assertThat(목록조회.getList("upStation.name", String.class)).contains("모란역");
+        assertThat(목록조회.getList("distances", String.class)).containsExactly(containValues);
+        assertThat(목록조회.getList("sortNos", String.class)).containsExactly("모란역", "경기 광주역", "중앙역");
     }
 
-    public static void 새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정(String information, String pathVariable,
-                                                         String... containValues) {
-        List<String> informationList = 목록조회(information, PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(informationList).contains(containValues);
+    public static void 새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정(String pathVariable, String... containValues) {
+        JsonPath 목록조회 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
+        assertThat(목록조회.getList("distances", String.class)).containsExactly(containValues);
+        assertThat(목록조회.getList("sortNos", String.class)).contains("경기 광주역", "모란역", "중앙역");
     }
 
     public static ExtractableResponse<Response> 새로운_역_하행_종점으로_등록(String upStationId, String downStationId,

@@ -1,7 +1,12 @@
 package nextstep.subway.section;
 
-import static nextstep.subway.section.SectionTestFixtures.기존_구간과_상행_종점으로_등록한_모란역_구간이_함께_조회됨;
-import static nextstep.subway.section.SectionTestFixtures.기존_구간과_하행_종점으로_등록한_중앙역_구간이_함께_조회됨;
+import static nextstep.subway.fixtures.StationTestFixture.setStations;
+import static nextstep.subway.fixtures.StationTestFixture.경기광주역ID;
+import static nextstep.subway.fixtures.StationTestFixture.모란역ID;
+import static nextstep.subway.fixtures.StationTestFixture.미금역ID;
+import static nextstep.subway.fixtures.StationTestFixture.중앙역ID;
+import static nextstep.subway.section.SectionTestFixtures.기존_구간_뒤에_하행_종점으로_등록한_중앙역_구간이_함께_조회됨;
+import static nextstep.subway.section.SectionTestFixtures.기존_구간_앞에_상행_종점으로_등록한_모란역_구간이_함께_조회됨;
 import static nextstep.subway.section.SectionTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
 import static nextstep.subway.section.SectionTestFixtures.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
 import static nextstep.subway.section.SectionTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
@@ -14,17 +19,22 @@ import static nextstep.subway.section.SectionTestFixtures.지하철_노선_등�
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.repository.StationRepository;
 import nextstep.subway.fixtures.TestFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("구간 추가 관련 기능")
 class SectionAcceptanceTest extends TestFixtures {
 
+    @Autowired
+    StationRepository stationRepository;
+
     @BeforeEach
     void beforeEach() {
-        setStations();
+        setStations(stationRepository);
     }
 
     /**
@@ -44,7 +54,7 @@ class SectionAcceptanceTest extends TestFixtures {
         역_사이_새로운역_등록(경기광주역ID, 모란역ID, "4", lineId);
 
         //then
-        새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정("distance", lineId, "4", "3");
+        새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정(lineId, "4", "3");
     }
 
     /**
@@ -64,7 +74,7 @@ class SectionAcceptanceTest extends TestFixtures {
         새로운_역_상행_종점으로_등록(모란역ID, 경기광주역ID, "4", lineId);
 
         //then
-        기존_구간과_상행_종점으로_등록한_모란역_구간이_함께_조회됨(lineId, "7", "4");
+        기존_구간_앞에_상행_종점으로_등록한_모란역_구간이_함께_조회됨(lineId, "4", "7");
     }
 
     /**
@@ -84,7 +94,7 @@ class SectionAcceptanceTest extends TestFixtures {
         새로운_역_하행_종점으로_등록(모란역ID, 중앙역ID, "4", lineId);
 
         //then
-        기존_구간과_하행_종점으로_등록한_중앙역_구간이_함께_조회됨(lineId, "7", "4");
+        기존_구간_뒤에_하행_종점으로_등록한_중앙역_구간이_함께_조회됨(lineId, "7", "4");
     }
 
     /**
