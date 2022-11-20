@@ -3,16 +3,15 @@ package nextstep.subway.dto;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Sections;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.HashSet;
+import java.util.Set;
 
 public class LineResponse {
 
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stations = new ArrayList<>();
+    private Set<StationResponse> stations = new HashSet<>();
 
     private LineResponse() {}
 
@@ -20,13 +19,7 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = sections.getList().stream()
-                .map(section -> StationResponse.of(section.getDownStation()))
-                .collect(Collectors.toList());
-    }
-
-    public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getSection());
+        this.stations = sections.toStationSet();
     }
 
     public Long getId() {
@@ -41,7 +34,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
+    public Set<StationResponse> getStations() {
         return stations;
     }
 

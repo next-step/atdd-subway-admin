@@ -42,26 +42,26 @@ public class LineService {
         sections.add(sectionRepository.save(
                 upStation.toSection(downStation, lineRequest.getDistance())));
 
-        return LineResponse.of(lineRepository.save(lineRequest.toLine(sections)));
+        return lineRepository.save(lineRequest.toLine(sections)).toLineResponse();
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return LineResponse.of(getLine(id));
+        return getLine(id).toLineResponse();
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll()
                 .stream()
-                .map(LineResponse::of)
+                .map(Line::toLineResponse)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public LineResponse updateById(Long id, LineRequest lineRequest) {
         Line line = getLine(id);
-        return LineResponse.of(line.updateInfo(lineRequest));
+        return line.updateByLineRequest(lineRequest).toLineResponse();
     }
 
     @Transactional

@@ -2,7 +2,6 @@ package nextstep.subway.util;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.SectionRepository;
@@ -39,16 +38,13 @@ public class InitializationEntity {
         newStation = stationRepository.save(new Station("마곡나루역"));
     }
 
-    public void initSection() {
-        section_1 = sectionRepository.save(new Section(upStation, mediumStation, 5));
-        section_2 = sectionRepository.save(new Section(mediumStation, downStation, 7));
+    public void initLine() {
+        line_1 = lineRepository.save(new Line("1호선", "빨간색"));
     }
 
-    public void initLine() {
-        Sections sections = new Sections();
-        sections.add(section_1);
-        sections.add(section_2);
-        line_1 = lineRepository.save(new Line("1호선", "", sections));
+    public void initSection() {
+        section_1 = sectionRepository.save(new Section(upStation, mediumStation, line_1, 5));
+        section_2 = sectionRepository.save(new Section(mediumStation, downStation, line_1, 7));
     }
 
 }

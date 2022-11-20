@@ -35,21 +35,21 @@ public class SectionService {
         sectionRequest.checkValidationParameter();
 
         Line line = getLine(lineId);
-        Section section = sectionRepository.save(
-                        new Section(
-                                getStation(sectionRequest.getUpStationId()),
-                                getStation(sectionRequest.getDownStationId()),
-                                sectionRequest.getDistance()
-                        ));
 
+        Section section = new Section(
+                getStation(sectionRequest.getUpStationId()),
+                getStation(sectionRequest.getDownStationId()),
+                line,
+                sectionRequest.getDistance());
         line.infixSection(section);
+        sectionRepository.save(section);
 
-        return LineResponse.of(line);
+        return line.toLineResponse();
     }
 
     @Transactional(readOnly = true)
     public SectionResponse findById(Long id) {
-        return SectionResponse.of(getSection(id));
+        return getSection(id).toSectionResponse();
     }
 
     private Line getLine(Long id) {

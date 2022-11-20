@@ -1,5 +1,6 @@
 package nextstep.subway.dto;
 
+import nextstep.subway.domain.Section;
 import nextstep.subway.exception.InvalidParameterException;
 
 public class SectionRequest {

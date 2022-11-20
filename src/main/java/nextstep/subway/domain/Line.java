@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
 
 import javax.persistence.*;
 
@@ -25,7 +26,12 @@ public class Line {
         this.sections = sections;
     }
 
-    public Line updateInfo(LineRequest lineRequest) {
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public Line updateByLineRequest(LineRequest lineRequest) {
         this.name = lineRequest.getName();
         this.color = lineRequest.getColor();
         return this;
@@ -35,20 +41,13 @@ public class Line {
         sections.infix(section);
     }
 
+    public LineResponse toLineResponse() {
+        return new LineResponse(id, name, color, sections);
+    }
+
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public String getColor() {
-        return color;
-    }
-
-    public Sections getSection() {
-        return sections;
-    }
 
 }

@@ -16,14 +16,6 @@ public class SectionResponse {
         this.distance = distance;
     }
 
-    public static SectionResponse of(Section section) {
-        return new SectionResponse(
-                section.getId(),
-                section.getUpStation().getId(),
-                section.getDownStation().getId(),
-                section.getDistance());
-    }
-
     public Long getId() {
         return id;
     }

@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.exception.InvalidParameterException;
 
 import javax.persistence.*;
@@ -19,13 +20,13 @@ public class Section {
     @JoinColumn(name = "downStationId")
     private Station downStation;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "lineId")
+    private Line line;
+
     private int distance;
 
     protected Section() {}
-
-    public Section(Station station) {
-        this.downStation = station;
-    }
 
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
@@ -33,26 +34,33 @@ public class Section {
         this.distance = distance;
     }
 
+    public Section(Station upStation, Station downStation, Line line, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+        this.line = line;
+    }
+
+    public SectionResponse toSectionResponse() {
+        return new SectionResponse(id, upStation.getId(), downStation.getId(), distance);
+    }
+
     public void changed(Section infixSection) {
-        changedStation(infixSection);
+        if (isSameUpStation(infixSection) || isSameDownStation(infixSection)) {
+            checkDistanceCondition(infixSection);
+            changedStation(infixSection);
+            changedDistance(infixSection);
+        }
     }
 
     private void changedStation(Section infixSection) {
-        if (upStation.equalsById(infixSection.upStation)) {
-            if (isLessThanDistance(infixSection)) {
-                throw new InvalidParameterException("기존의 역 사이보다 더 긴 길이의 역을 등록할 수 없습니다.");
-            }
+        if (isSameUpStation(infixSection)) {
             checkSameOtherStation(downStation, infixSection.downStation);
             this.upStation = infixSection.downStation;
-            changedDistance(infixSection);
         }
-        if (downStation.equalsById(infixSection.downStation)) {
-            if (isLessThanDistance(infixSection)) {
-                throw new InvalidParameterException("기존의 역 사이보다 더 긴 길이의 역을 등록할 수 없습니다.");
-            }
+        if (isSameDownStation(infixSection)) {
             checkSameOtherStation(upStation, infixSection.upStation);
             this.downStation = infixSection.upStation;
-            changedDistance(infixSection);
         }
     }
 
@@ -66,7 +74,21 @@ public class Section {
         this.distance = distance - infixSection.distance;
     }
 
-    public boolean isLessThanDistance(Section infixSection) {
+    private boolean isSameUpStation(Section infixSection) {
+        return upStation.equalsById(infixSection.upStation);
+    }
+
+    private boolean isSameDownStation(Section infixSection) {
+        return downStation.equalsById(infixSection.downStation);
+    }
+
+    private void checkDistanceCondition(Section infixSection) {
+        if (isLessThanDistance(infixSection)) {
+            throw new InvalidParameterException("기존의 역 사이보다 더 긴 길이의 역을 등록할 수 없습니다.");
+        }
+    }
+
+    private boolean isLessThanDistance(Section infixSection) {
         return infixSection.distance > this.distance;
     }
 
@@ -92,16 +114,6 @@ public class Section {
 
     public Station getUpStation() {
         return upStation;
-    }
-
-    @Override
-    public String toString() {
-        return "Section{" +
-                "id=" + id +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                ", distance=" + distance +
-                '}';
     }
 
 }

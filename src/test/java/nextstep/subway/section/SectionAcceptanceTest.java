@@ -24,6 +24,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest {
 
+    private static String SELECT_LINE_LOCATION = null;
+    private static String SELECT_SECTION_LOCATION = null;
+    private static String INSERT_SECTION_LOCATION = null;
+
+    private static int LINE_STATION_DISTANCE = 0;
+
+    private static int LINE_STATION_SIZE = 4;
+    private static int LESS_THAN_DISTANCE = 3;
+    private static int GATHER_THAN_DISTANCE = 15;
+
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
@@ -42,9 +52,16 @@ public class SectionAcceptanceTest {
             RestAssured.port = port;
         }
         databaseCleanup.execute();
+
         initializationEntity.initStations();
-        initializationEntity.initSection();
         initializationEntity.initLine();
+        initializationEntity.initSection();
+
+        SELECT_LINE_LOCATION = "/lines/" + line_1.getId();
+        SELECT_SECTION_LOCATION = "/sections/" + section_1.getId();
+        INSERT_SECTION_LOCATION = SELECT_LINE_LOCATION + "/sections";
+
+        LINE_STATION_DISTANCE = section_1.getDistance();
     }
 
     /**
@@ -56,23 +73,14 @@ public class SectionAcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록한다.")
     @Test
     void createSectionUpStationInside() {
-        String location = "/lines/" + line_1.getId();
-        int beforeStationSize = line_1.getSection().getList().size();
-        int beforeSectionDistance = section_1.getDistance();
-
         // when
         executeRestEntity.insertSectionSuccess(
-                location + "/sections",
-                executeRestEntity.generateSectionRequest(upStation.getId(), newStation.getId(), 3));
+                INSERT_SECTION_LOCATION,
+                executeRestEntity.generateSectionRequest(upStation.getId(), newStation.getId(), LESS_THAN_DISTANCE));
 
         // then
-        checkCreateSuccessCondition(
-                location,
-                beforeStationSize + 1);
-        checkResetSectionDistance(
-                "/sections/" + section_1.getId(),
-                beforeSectionDistance - 3
-        );
+        checkCreateSuccessCondition(SELECT_LINE_LOCATION, LINE_STATION_SIZE);
+        checkResetSectionDistance(SELECT_SECTION_LOCATION, LINE_STATION_DISTANCE - LESS_THAN_DISTANCE);
     }
 
     /**
@@ -84,20 +92,14 @@ public class SectionAcceptanceTest {
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
     void createSectionUpStation() {
-        String location = "/lines/" + line_1.getId();
-        int beforeStationSize = line_1.getSection().getList().size();
-        int beforeSectionDistance = section_1.getDistance();
         // when
         executeRestEntity.insertSectionSuccess(
-                location + "/sections", executeRestEntity.generateSectionRequest(newStation.getId(), upStation.getId(), 3));
+                INSERT_SECTION_LOCATION,
+                executeRestEntity.generateSectionRequest(newStation.getId(), upStation.getId(), LESS_THAN_DISTANCE));
 
         // then
-        checkCreateSuccessCondition(
-                location,
-                beforeStationSize + 1);
-        checkResetSectionDistance(
-                "/sections/" + section_1.getId(),
-                beforeSectionDistance
+        checkCreateSuccessCondition(SELECT_LINE_LOCATION, LINE_STATION_SIZE);
+        checkResetSectionDistance(SELECT_SECTION_LOCATION, LINE_STATION_DISTANCE
         );
     }
 
@@ -110,20 +112,14 @@ public class SectionAcceptanceTest {
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
     void createSectionDownStation() {
-        String location = "/lines/" + line_1.getId();
-        int beforeStationSize = line_1.getSection().getList().size();
-        int beforeSectionDistance = section_1.getDistance();
         // when
         executeRestEntity.insertSectionSuccess(
-                location + "/sections", executeRestEntity.generateSectionRequest(downStation.getId(), newStation.getId(), 3));
+                INSERT_SECTION_LOCATION,
+                executeRestEntity.generateSectionRequest(downStation.getId(), newStation.getId(), LESS_THAN_DISTANCE));
+
         // then
-        checkCreateSuccessCondition(
-                location,
-                beforeStationSize + 1);
-        checkResetSectionDistance(
-                "/sections/" + section_1.getId(),
-                beforeSectionDistance
-        );
+        checkCreateSuccessCondition(SELECT_LINE_LOCATION, LINE_STATION_SIZE);
+        checkResetSectionDistance(SELECT_SECTION_LOCATION, LINE_STATION_DISTANCE);
     }
 
     /**
@@ -133,11 +129,11 @@ public class SectionAcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.")
     @Test
     void createFailSectionSameAndGatherDistance() {
-        String location = "/lines/" + line_1.getId() + "/sections";
         // when
         ExtractableResponse<Response> response = executeRestEntity
-                .insert(executeRestEntity.generateSectionRequest(upStation.getId(), newStation.getId(), 15), location)
-                .extract();
+                .insert(executeRestEntity.generateSectionRequest(
+                        upStation.getId(), newStation.getId(), GATHER_THAN_DISTANCE), INSERT_SECTION_LOCATION).extract();
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -149,11 +145,11 @@ public class SectionAcceptanceTest {
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 등록할 수 없다.")
     @Test
     void createFailSectionSameStation() {
-        String location = "/lines/" + line_1.getId() + "/sections";
         // when
         ExtractableResponse<Response> response = executeRestEntity
-                .insert(executeRestEntity.generateSectionRequest(upStation.getId(), mediumStation.getId(), 3), location)
-                .extract();
+                .insert(executeRestEntity.generateSectionRequest(
+                        upStation.getId(), mediumStation.getId(), LESS_THAN_DISTANCE), INSERT_SECTION_LOCATION).extract();
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -165,11 +161,11 @@ public class SectionAcceptanceTest {
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 등록할 수 없다.")
     @Test
     void createFailSectionNoneStation() {
-        String location = "/lines/" + line_1.getId() + "/sections";
         // when
         ExtractableResponse<Response> response = executeRestEntity
-                .insert(executeRestEntity.generateSectionRequest(upStation.getId(), 999L, 15), location)
-                .extract();
+                .insert(executeRestEntity.generateSectionRequest(
+                        upStation.getId(), 999L, LESS_THAN_DISTANCE), INSERT_SECTION_LOCATION).extract();
+
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
