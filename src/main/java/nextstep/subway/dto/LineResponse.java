@@ -45,26 +45,4 @@ public class LineResponse {
                 .stream().map(LineInStationResponse::from)
                 .collect(toList());
     }
-
-    private static class LineInStationResponse {
-        private final Long id;
-        private final String name;
-
-        public LineInStationResponse(Long id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-
-        public static LineInStationResponse from(Station station) {
-            return new LineInStationResponse(station.getId(), station.getName());
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
 }

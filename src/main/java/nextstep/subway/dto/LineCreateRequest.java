@@ -46,6 +46,6 @@ public class LineCreateRequest {
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, new Sections(singletonList(new Section(upStation, downStation, distance))));
+        return new Line(name, color, upStation, downStation, distance);
     }
 }
