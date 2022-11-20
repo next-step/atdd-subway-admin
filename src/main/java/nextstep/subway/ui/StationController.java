@@ -21,10 +21,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/stations")
 public class StationController {
+
     private StationService stationService;
 
     public StationController(StationService stationService) {
         this.stationService = stationService;
+    }
+
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<StationResponse>> showStations() {
+        return ResponseEntity.ok().body(stationService.findAllStations());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<StationResponse> showStationById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(stationService.findResponseById(id));
     }
 
     @PostMapping
@@ -33,16 +44,6 @@ public class StationController {
         StationResponse stationResponse = new StationResponse();
         stationResponse.setId(id);
         return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<StationResponse> showStationById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(stationService.findById(id));
-    }
-
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(stationService.findAllStations());
     }
 
     @DeleteMapping("/{id}")

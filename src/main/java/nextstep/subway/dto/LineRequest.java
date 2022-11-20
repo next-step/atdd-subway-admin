@@ -25,7 +25,7 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, distance, upStation, downStation);
+        return new Line(name, color);
     }
 
     public String getName() {

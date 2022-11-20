@@ -21,7 +21,7 @@ class StationServiceTest {
     void saveStation() {
         StationResponse expected = new StationResponse(null, "경기 광주역", null, null);
         Long id = service.saveStation(new StationRequest("경기 광주역"));
-        StationResponse findStation = service.findById(id);
+        StationResponse findStation = service.findResponseById(id);
         assertThat(findStation.getName()).isEqualTo(expected.getName());
     }
 

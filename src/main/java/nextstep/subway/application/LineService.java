@@ -4,11 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.repository.LineRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,60 +18,76 @@ import org.springframework.transaction.annotation.Transactional;
 public class LineService {
 
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
     public Long saveLine(LineRequest lineRequest) {
         setUpDownStation(lineRequest);
-        Line persistLine = lineRepository.save(lineRequest.toLine());
-        return persistLine.getId();
+
+        Line line = lineRequest.toLine();
+        line.addSection(lineRequest.getDistance(), lineRequest.getUpStation(), lineRequest.getDownStation());
+
+        return lineRepository.save(line)
+                .getId();
+    }
+
+    public List<SectionResponse> findSectionResponsesByLineId(Long lineId) {
+        Line line = lineRepository.findWithSectionsById(lineId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        return line.getSectionList().stream()
+                .map(SectionResponse::of)
+                .collect(Collectors.toList());
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(this::getLineResponse)
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
-        return getLineResponse(line);
+    public LineResponse findResponseById(Long lineId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(EntityNotFoundException::new);
+
+        return LineResponse.of(line);
     }
 
-    public LineResponse findByName(String name) {
-        Line line = lineRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
-        return getLineResponse(line);
+    @Transactional
+    public void addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findWithSectionsById(lineId)
+                .orElseThrow(EntityNotFoundException::new);
+        Station upStation = stationService.findEntityById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findEntityById(sectionRequest.getDownStationId());
+        int distance = sectionRequest.getDistance();
+
+        line.validateAlreadyAndNotExistsStations(upStation, downStation);
+        line.isFindSameUpStationThenCreateNewSection(upStation, downStation, distance);
+        line.isFindSameDownStationThenCreateNewSection(upStation, downStation, distance);
     }
 
     @Transactional
     public void updateLine(String name, LineRequest lineRequest) {
-        Line line = lineRepository.findByName(name).orElseThrow(EntityNotFoundException::new);
-        line.changeInformation(lineRequest.getName(), lineRequest.getColor());
+        Line line = lineRepository.findByName(name)
+                .orElseThrow(EntityNotFoundException::new);
+
+        line.change(lineRequest.getName(), lineRequest.getColor());
     }
 
     @Transactional
-    public void deleteLineById(Long id) {
-        lineRepository.deleteById(id);
-    }
-
-    private LineResponse getLineResponse(Line line) {
-        LineResponse lineResponse = LineResponse.of(line);
-        lineResponse.setUpStation(StationResponse.of(line.getUpStation()));
-        lineResponse.setDownStation(StationResponse.of(line.getDownStation()));
-        return lineResponse;
+    public void deleteLineById(Long lineId) {
+        lineRepository.deleteById(lineId);
     }
 
     private void setUpDownStation(LineRequest lineRequest) {
-        lineRequest.setUpStation(
-                stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(EntityNotFoundException::new));
-        lineRequest.setDownStation(
-                stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(EntityNotFoundException::new));
+        lineRequest.setUpStation(stationService.findEntityById(lineRequest.getUpStationId()));
+        lineRequest.setDownStation(stationService.findEntityById(lineRequest.getDownStationId()));
     }
 }
