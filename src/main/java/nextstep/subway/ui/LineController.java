@@ -13,6 +13,7 @@ import java.util.List;
 
 @RestController
 public class LineController {
+
     private LineService lineService;
 
     public LineController(LineService lineService) {
@@ -39,7 +40,7 @@ public class LineController {
     @PutMapping("/lines/{id}")
     public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.updateLine(id, lineRequest);
-        return ResponseEntity.ok().body(lineService.findLineById(id));
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
