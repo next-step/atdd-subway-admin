@@ -1,5 +1,7 @@
 package nextstep.subway.dto;
 
+import nextstep.subway.exception.InvalidParameterException;
+
 public class SectionRequest {
 
     private Long upStationId;
@@ -14,6 +16,12 @@ public class SectionRequest {
         this.upStationId = upStationId;
         this.downStationId = downStationId;
         this.distance = distance;
+    }
+
+    public void checkValidationParameter() {
+        if (hasNullValue()) {
+            throw new InvalidParameterException("상행역과 하행역의 요청값은 비어있으면 안됩니다.");
+        }
     }
 
     public boolean hasNullValue() {

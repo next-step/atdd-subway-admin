@@ -16,14 +16,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class ExecuteRestEntity {
 
     public ValidatableResponse selectLine(String location) {
-        return RestAssured.given().log().all()
-                .when().get(location)
-                .then().log().all();
+        return select(location);
+    }
+
+    public ValidatableResponse selectSection(String location) {
+        return select(location);
     }
 
     public ValidatableResponse selectLines() {
+        return select("/lines");
+    }
+
+    private ValidatableResponse select(String location) {
         return RestAssured.given().log().all()
-                .when().get("/lines")
+                .when().get(location)
                 .then().log().all();
     }
 

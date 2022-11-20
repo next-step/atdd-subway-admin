@@ -5,8 +5,8 @@ import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.exception.EntityNotFoundException;
-import nextstep.subway.exception.InvalidParameterException;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.SectionRepository;
 import nextstep.subway.repository.StationRepository;
@@ -32,23 +32,24 @@ public class SectionService {
 
     @Transactional
     public LineResponse saveSection(SectionRequest sectionRequest, Long lineId) {
-        checkValidationParameter(sectionRequest);
+        sectionRequest.checkValidationParameter();
 
         Line line = getLine(lineId);
         Section section = sectionRepository.save(
-                        new Section(getStation(sectionRequest.getUpStationId()),
-                        getStation(sectionRequest.getDownStationId()),
-                        sectionRequest.getDistance()));
+                        new Section(
+                                getStation(sectionRequest.getUpStationId()),
+                                getStation(sectionRequest.getDownStationId()),
+                                sectionRequest.getDistance()
+                        ));
 
-        line.getSection().infixSection(section);
+        line.infixSection(section);
 
         return LineResponse.of(line);
     }
 
-    private void checkValidationParameter(SectionRequest sectionRequest) {
-        if (sectionRequest.hasNullValue()) {
-            throw new InvalidParameterException("상행역과 하행역이 모두 등록되어 있어야 합니다.");
-        }
+    @Transactional(readOnly = true)
+    public SectionResponse findById(Long id) {
+        return SectionResponse.of(getSection(id));
     }
 
     private Line getLine(Long id) {
@@ -59,6 +60,11 @@ public class SectionService {
     private Station getStation(Long id) {
         return stationRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Station", id));
+    }
+
+    private Section getSection(Long id) {
+        return sectionRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Section", id));
     }
 
 }

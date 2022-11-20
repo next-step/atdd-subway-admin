@@ -24,7 +24,12 @@ public class SectionController {
     public ResponseEntity createSection(@RequestBody SectionRequest sectionRequest,
                                         @PathVariable Long id) {
         LineResponse line = sectionService.saveSection(sectionRequest, id);
-        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
+        return ResponseEntity.created(URI.create("/sections/" + line.getId())).body(line);
+    }
+
+    @GetMapping("/sections/{id}")
+    public ResponseEntity<SectionResponse> getSection(@PathVariable Long id) {
+        return ResponseEntity.ok().body(sectionService.findById(id));
     }
 
 }

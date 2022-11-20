@@ -20,8 +20,8 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = sections.getSortList().stream()
-                .map(section -> StationResponse.of(section.getStation()))
+        this.stations = sections.getList().stream()
+                .map(section -> StationResponse.of(section.getDownStation()))
                 .collect(Collectors.toList());
     }
 

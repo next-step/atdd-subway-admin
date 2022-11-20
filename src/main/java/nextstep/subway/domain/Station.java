@@ -18,12 +18,12 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
-    public Section toLineUpStation() {
-        return new Section(this);
-    }
-
     public Section toSection(Station preStation, int distance) {
         return new Section(preStation, this, distance);
+    }
+
+    public boolean equalsById(Station upStation) {
+        return id.equals(upStation.id);
     }
 
     public Long getId() {
@@ -32,6 +32,14 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                '}';
     }
 
 }

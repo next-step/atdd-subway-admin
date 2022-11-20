@@ -31,6 +31,10 @@ public class Line {
         return this;
     }
 
+    public void infixSection(Section section) {
+        sections.infix(section);
+    }
+
     public Long getId() {
         return id;
     }

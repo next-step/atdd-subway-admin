@@ -15,7 +15,7 @@ public class GeneralExceptionHandler {
                 .body(new ErrorResponse("BAD_REQUEST", status.value(), throwable.getMessage()));
     }
 
-    @ExceptionHandler(InvalidParameterException.class)
+    @ExceptionHandler({InvalidParameterException.class, EntityNotFoundException.class})
     public ResponseEntity<ErrorResponse> handleBadRequestException(Exception e) {
         return newResponse(e, HttpStatus.BAD_REQUEST);
     }

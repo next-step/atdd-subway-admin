@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.ElementNotFoundException;
 import nextstep.subway.exception.InvalidParameterException;
 
 import javax.persistence.Embeddable;
@@ -21,21 +20,9 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public void infixSection(Section infixSection) {
-        Section needChangedStation = getNeedChangedStationStation(infixSection);
-
-        if (needChangedStation == null) {
-            add(infixSection);
-            return;
-        }
-        checkValidationParameter(needChangedStation, infixSection);
-
-        if (needChangedStation.isEqualsId(infixSection.getStation().getId())) {
-            infixSection.resetStation(infixSection.getPreStation());
-            infixSection.resetPreStation(needChangedStation.getPreStation());
-        }
-        needChangedStation.resetPreStation(infixSection.getStation());
-
+    public void infix(Section infixSection) {
+        Section needChangedStation = getNeedChangedStationSection(infixSection);
+        needChangedStation.changed(infixSection);
         add(infixSection);
     }
 
@@ -43,69 +30,54 @@ public class Sections {
         return sections;
     }
 
-    public List<Section> getSortList() {
-        List<Section> sortList = new ArrayList<>();
+    private Section getNeedChangedStationSection(Section infixSection) {
+        sections.stream().forEach(System.out::println);
+        Section changedStationSection = getInnerStationSection(infixSection);
 
-        Section upStation = getUpStationSection();
-        sortList.add(upStation);
-
-        for (int i = 1; i < sections.size(); i++) {
-            Section finalUpStation = upStation;
-
-            Section station = sections
-                    .stream()
-                    .filter(section
-                            -> section.getPreStation() != null
-                            && finalUpStation.isEqualsId(section.getPreStation().getId()))
-                    .findAny()
-                    .orElseThrow(() -> new ElementNotFoundException());
-
-            upStation = station;
-            sortList.add(station);
+        if (changedStationSection == null) {
+            return getOuterStationSection(infixSection);
         }
 
-        return sortList;
+        return changedStationSection;
     }
 
-    private Section getNextStationByStationId(Long id) {
-        return sections.stream()
-                .filter(section -> section.getPreStation() != null)
-                .filter(section -> section.getPreStation().getId().equals(id))
-                .findAny().orElse(null);
-    }
-
-    private Section getUpStationSection() {
-        return sections.stream()
-                .filter(section -> section.getPreStation() == null)
-                .findAny()
-                .orElseThrow(() -> new ElementNotFoundException());
-    }
-
-    private Section getNeedChangedStationStation(Section infixSection) {
-        Section existedStation = sections
+    private Section getInnerStationSection(Section infixSection) {
+        Section changedStationSection = sections
                 .stream()
-                .filter(section -> section.isEqualsId(infixSection.getStation().getId()))
+                .filter(section -> section.isUpStationEqualsId(infixSection.getUpStation().getId()))
                 .findAny()
-                .orElse(sections
-                        .stream()
-                        .filter(section -> section.isEqualsId(infixSection.getPreStation().getId()))
-                        .findAny()
-                        .orElse(null));
+                .orElse(null);
 
-        if (existedStation.isEqualsId(infixSection.getPreStation().getId())) {
-            existedStation = getNextStationByStationId(existedStation.getStation().getId());
+        if (changedStationSection == null) {
+            return sections
+                    .stream()
+                    .filter(section -> section.isDownStationEqualsId(infixSection.getDownStation().getId()))
+                    .findAny()
+                    .orElse(null);
         }
-        return existedStation;
+        return changedStationSection;
     }
 
-    private void checkValidationParameter(Section existedStation, Section infixSection) {
-        if (existedStation.isEqualsId(infixSection.getPreStation().getId())) {
-            throw new InvalidParameterException("상행선과 하행선을 모두 동일하게 등록할 수 없습니다.");
+    private Section getOuterStationSection(Section infixSection) {
+        Section changedStationSection = sections
+                .stream()
+                .filter(section -> section.isUpStationEqualsId(infixSection.getDownStation().getId()))
+                .findAny()
+                .orElse(null);
+
+        if (changedStationSection == null) {
+            changedStationSection = sections
+                    .stream()
+                    .filter(section -> section.isDownStationEqualsId(infixSection.getUpStation().getId()))
+                    .findAny()
+                    .orElse(null);
         }
 
-        if (existedStation.isLessThanDistance(infixSection)) {
-            throw new InvalidParameterException("기존의 역 사이보다 더 긴 길이의 역을 등록할 수 없습니다.");
+        if (changedStationSection == null) {
+            throw new InvalidParameterException("상행역과 하행역 모두 노선에 등록되어있지 않습니다.");
         }
+
+        return changedStationSection;
     }
 
 }
