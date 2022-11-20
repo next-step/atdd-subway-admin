@@ -35,7 +35,6 @@ class StationAcceptanceTest extends TestFixtures {
 
         // then
         List<String> stationNames = 지하철역_목록조회("name");
-
         assertThat(stationNames).containsAnyOf("강남역");
     }
 

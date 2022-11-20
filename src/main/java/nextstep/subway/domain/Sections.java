@@ -56,6 +56,7 @@ public class Sections {
 
     public void deleteSectionByStation(Line line, Station station) {
         validateRemoveStationOfOneSection(station);
+
         removeLastStation(line, station);
     }
 
@@ -76,6 +77,7 @@ public class Sections {
                     .orElseThrow(EntityNotFoundException::new);
             Section findSameUpStation = findSameUpStation(station)
                     .orElseThrow(EntityNotFoundException::new);
+
             sections.add(deleteBetweenStationAndCreateNewSection(line, findSameDownStation, findSameUpStation));
         }
     }

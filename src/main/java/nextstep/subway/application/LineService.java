@@ -86,6 +86,7 @@ public class LineService {
         Line line = lineRepository.findWithSectionsByIdOrderBySortNoAsc(lineId)
                 .orElseThrow(EntityNotFoundException::new);
         Station station = stationService.findEntityById(stationId);
+
         line.deleteSectionByStation(station);
     }
 

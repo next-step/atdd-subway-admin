@@ -6,7 +6,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import java.util.List;
-import javax.persistence.EntityManager;
 import javax.persistence.EntityNotFoundException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.repository.LineRepository;
@@ -34,9 +33,6 @@ class LineServiceTest {
 
     @Autowired
     StationRepository stationRepository;
-
-    @Autowired
-    EntityManager em;
 
     Station station1 = null;
     Station station2 = null;
@@ -100,10 +96,8 @@ class LineServiceTest {
     void addSection() {
         Long lineId = lineService.saveLine(lineRequest);
         station3 = stationRepository.save(new Station("모란역"));
-        flushAndClear();
 
         lineService.addSection(lineId, new SectionRequest(station1.getId(), station3.getId(), 4));
-        flushAndClear();
 
         SectionResponse response = lineService.findSectionResponsesByLineId(lineId);
         assertThat(response.getDistances()).containsExactly(4, 6);
@@ -161,10 +155,5 @@ class LineServiceTest {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> lineService.deleteSectionByStationId(lineId, station2.getId()))
                 .withMessageContaining("구간이 하나인 노선은 제거할 수 없습니다.");
-    }
-
-    private void flushAndClear() {
-        em.flush();
-        em.clear();
     }
 }
