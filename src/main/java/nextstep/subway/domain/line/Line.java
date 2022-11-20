@@ -78,8 +78,8 @@ public class Line extends BaseEntity {
         return distance;
     }
 
-    public List<StationResponse> getStationResponses() {
-        return Arrays.asList(upStation, downStation).stream().map(StationResponse::of)
+    public List<Station> getStations() {
+        return Arrays.asList(upStation, downStation).stream()
                 .collect(Collectors.toList());
     }
 }
