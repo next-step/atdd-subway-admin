@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -75,19 +76,9 @@ public class Sections {
     public void remove(Section upSection, Section downSection) {
         validateRemoveExistSections(upSection, downSection);
         validateRemoveLastSection();
-
-        if (Objects.nonNull(upSection) && Objects.isNull(downSection)) {
-            sections.remove(upSection);
-        }
-
-        if (Objects.isNull(upSection) && Objects.nonNull(downSection)) {
-            sections.remove(downSection);
-        }
-
-        if (Objects.nonNull(upSection) && Objects.nonNull(downSection)) {
-            upSection.extend(downSection);
-            sections.remove(downSection);
-        }
+        removeFirstSection(upSection, downSection);
+        removeLastSection(upSection, downSection);
+        removeMiddleSection(upSection, downSection);
     }
 
     private void validateRemoveExistSections(Section upSection, Section downSection) {
@@ -99,6 +90,25 @@ public class Sections {
     private void validateRemoveLastSection() {
         if (sections.size() < MIN_REMOVEABLE_SECTION_SIZE) {
             throw new IllegalArgumentException("더이상 구간을 삭제할 수 없습니다.");
+        }
+    }
+
+    private void removeFirstSection(Section upSection, Section downSection){
+        if (Objects.isNull(upSection) && Objects.nonNull(downSection)) {
+            sections.remove(downSection);
+        }
+    }
+
+    private void removeLastSection(Section upSection, Section downSection){
+        if (Objects.nonNull(upSection) && Objects.isNull(downSection)) {
+            sections.remove(upSection);
+        }
+    }
+
+    private void removeMiddleSection(Section upSection, Section downSection){
+        if (Objects.nonNull(upSection) && Objects.nonNull(downSection)) {
+            upSection.extend(downSection);
+            sections.remove(downSection);
         }
     }
 
