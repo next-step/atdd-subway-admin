@@ -23,13 +23,13 @@ public class Sections {
     }
 
     public List<Integer> getSortedDistances() {
-        sections.sort((o1, o2) -> o1.getSortNo() < o2.getSortNo() ? -1 : 0);
+        ascendingSectionsBySortNo();
         return sections.stream().map(Section::getDistance).collect(Collectors.toList());
     }
 
     public Set<String> getSortedStationNames() {
         Set<String> stationNames = new LinkedHashSet<>();
-        sections.sort((o1, o2) -> o1.getSortNo() < o2.getSortNo() ? -1 : 0);
+        ascendingSectionsBySortNo();
         sections.forEach(section -> {
             stationNames.add(section.getUpStation().getName());
             stationNames.add(section.getDownStation().getName());
@@ -53,6 +53,22 @@ public class Sections {
         prependUpStation(upStation, downStation, distance);
         addBetweenByDownStation(upStation, downStation, distance);
         appendDownStation(upStation, downStation, distance);
+    }
+
+    public void deleteSectionByStation(Station station) {
+        ascendingSectionsBySortNo();
+        ifLastSectionAndDownStationThenRemove(station);
+    }
+
+    private void ifLastSectionAndDownStationThenRemove(Station station) {
+        Section lastSection = sections.get(sections.size() - 1);
+        if (lastSection.isEqualsDownStation(station)) {
+            removeSection(lastSection);
+        }
+    }
+
+    private void ascendingSectionsBySortNo() {
+        sections.sort((o1, o2) -> o1.getSortNo() < o2.getSortNo() ? -1 : 0);
     }
 
     private Optional<Section> findSameUpStation(Station station) {

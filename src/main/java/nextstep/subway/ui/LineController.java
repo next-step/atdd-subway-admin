@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -35,7 +36,7 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
-    @GetMapping("/{lineId}/section")
+    @GetMapping("/{lineId}/sections")
     public ResponseEntity<SectionResponse> showSections(@PathVariable("lineId") Long lineId) {
         return ResponseEntity.ok().body(lineService.findSectionResponsesByLineId(lineId));
     }
@@ -53,7 +54,7 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
     }
 
-    @PostMapping("/{lineId}/section")
+    @PostMapping("/{lineId}/sections")
     public ResponseEntity addSection(@PathVariable("lineId") Long lineId,
                                      @RequestBody SectionRequest sectionRequest) {
         lineService.addSection(lineId, sectionRequest);
@@ -70,6 +71,12 @@ public class LineController {
     public ResponseEntity deleteLine(@PathVariable Long id) {
         lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity removeLineStation(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.deleteSectionByStationId(lineId, stationId);
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler({PersistenceException.class, IllegalArgumentException.class})

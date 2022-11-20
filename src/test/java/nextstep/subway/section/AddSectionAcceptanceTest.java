@@ -5,17 +5,17 @@ import static nextstep.subway.fixtures.StationTestFixture.경기광주역ID;
 import static nextstep.subway.fixtures.StationTestFixture.모란역ID;
 import static nextstep.subway.fixtures.StationTestFixture.미금역ID;
 import static nextstep.subway.fixtures.StationTestFixture.중앙역ID;
-import static nextstep.subway.section.SectionTestFixtures.기존_구간_뒤에_하행_종점으로_등록한_중앙역_구간이_함께_조회됨;
-import static nextstep.subway.section.SectionTestFixtures.기존_구간_앞에_상행_종점으로_등록한_모란역_구간이_함께_조회됨;
-import static nextstep.subway.section.SectionTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
-import static nextstep.subway.section.SectionTestFixtures.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
-import static nextstep.subway.section.SectionTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
-import static nextstep.subway.section.SectionTestFixtures.등록이_불가하다;
-import static nextstep.subway.section.SectionTestFixtures.새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정;
-import static nextstep.subway.section.SectionTestFixtures.새로운_역_상행_종점으로_등록;
-import static nextstep.subway.section.SectionTestFixtures.새로운_역_하행_종점으로_등록;
-import static nextstep.subway.section.SectionTestFixtures.역_사이_새로운역_등록;
-import static nextstep.subway.section.SectionTestFixtures.지하철_노선_등록되어_있음;
+import static nextstep.subway.section.AddSectionTestFixtures.기존_구간_뒤에_하행_종점으로_등록한_중앙역_구간이_함께_조회됨;
+import static nextstep.subway.section.AddSectionTestFixtures.기존_구간_앞에_상행_종점으로_등록한_모란역_구간이_함께_조회됨;
+import static nextstep.subway.section.AddSectionTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
+import static nextstep.subway.section.AddSectionTestFixtures.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
+import static nextstep.subway.section.AddSectionTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
+import static nextstep.subway.section.AddSectionTestFixtures.등록이_불가하다;
+import static nextstep.subway.section.AddSectionTestFixtures.새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정;
+import static nextstep.subway.section.AddSectionTestFixtures.새로운_역_상행_종점으로_등록;
+import static nextstep.subway.section.AddSectionTestFixtures.새로운_역_하행_종점으로_등록;
+import static nextstep.subway.section.AddSectionTestFixtures.역_사이_새로운역_등록;
+import static nextstep.subway.section.AddSectionTestFixtures.지하철_노선_등록되어_있음;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("구간 추가 관련 기능")
-class SectionAcceptanceTest extends TestFixtures {
+class AddSectionAcceptanceTest extends TestFixtures {
 
     @Autowired
     StationRepository stationRepository;
@@ -62,7 +62,7 @@ class SectionAcceptanceTest extends TestFixtures {
      * <p>
      * When 새로운 역을 상행 종점으로 등록한다.
      * <p>
-     * Then 기존 구간과 상행 종점으로 등록한 구간이 함께 조회된다.
+     * Then 기존 구간 앞에 상행 종점으로 등록한 구간이 함께 조회된다.
      */
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
@@ -82,7 +82,7 @@ class SectionAcceptanceTest extends TestFixtures {
      * <p>
      * When 새로운 역을 하행 종점으로 등록한다.
      * <p>
-     * Then 기존 구간과 하행 종점으로 등록한 구간이 함께 조회된다.
+     * Then 기존 구간 뒤에 하행 종점으로 등록한 구간이 함께 조회된다.
      */
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test

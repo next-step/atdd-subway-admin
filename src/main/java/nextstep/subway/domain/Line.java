@@ -90,4 +90,8 @@ public class Line extends BaseEntity {
     public void addSection(int distance, Station upStation, Station downStation) {
         sections.addSection(distance, upStation, downStation);
     }
+
+    public void deleteSectionByStation(Station station) {
+        sections.deleteSectionByStation(station);
+    }
 }

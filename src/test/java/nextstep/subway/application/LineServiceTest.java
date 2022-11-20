@@ -105,9 +105,22 @@ class LineServiceTest {
         flushAndClear();
 
         SectionResponse response = lineService.findSectionResponsesByLineId(lineId);
-
         assertThat(response.getDistances()).containsExactly(4, 6);
         assertThat(response.getSortNos()).containsExactly("경기 광주역", "모란역", "중앙역");
+    }
+
+    @DisplayName("한 노선에 두개의 구간이 등록 된 상태에서 가장 마지막역을 제거하는 경우")
+    @Test
+    void deleteSectionByStationId() {
+        Long lineId = lineService.saveLine(lineRequest);
+        station3 = stationRepository.save(new Station("모란역"));
+        lineService.addSection(lineId, new SectionRequest(station1.getId(), station3.getId(), 4));
+
+        lineService.deleteSectionByStationId(lineId, station2.getId());
+
+        SectionResponse response = lineService.findSectionResponsesByLineId(lineId);
+        assertThat(response.getDistances()).containsOnly(4);
+        assertThat(response.getSortNos()).containsExactly("경기 광주역", "모란역");
     }
 
     private void flushAndClear() {
