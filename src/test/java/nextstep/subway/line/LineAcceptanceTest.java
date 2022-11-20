@@ -19,7 +19,7 @@ import static nextstep.subway.line.LineAcceptanceTestUtil.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@DisplayName("지하철역 관련 기능")
+@DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     @LocalServerPort
@@ -76,10 +76,10 @@ public class LineAcceptanceTest {
     @Test
     void 지하철노선생성_실패_노선이름중복() {
         // when
-
         createLine("신분당선", "bg-red-600", upStationId, downStationId, "10");
         ExtractableResponse<Response> response = createLine("신분당선", "bg-red-600", upStationId, downStationId, "10");
 
+        // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
