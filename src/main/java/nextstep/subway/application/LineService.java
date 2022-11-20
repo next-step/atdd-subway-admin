@@ -1,9 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineModifyRequest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -18,9 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
     private static final String MESSAGE_ILLEGAL_LINE_ID = "부적절한 노선 식별자 입니다";
-
     private final LineRepository lineRepository;
-
     private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
@@ -32,10 +27,16 @@ public class LineService {
     public LineResponse createLine(LineRequest request) {
         Station upStationProxy = stationRepository.getById(request.getUpStationId());
         Station downStationProxy = stationRepository.getById(request.getDownStationId());
-        Line line = request.toLine();
-        line.setStations(upStationProxy, downStationProxy);
+        Line line = createNewLineEntity(request, upStationProxy, downStationProxy);
         Line save = lineRepository.save(line);
         return LineResponse.of(save);
+    }
+
+    private static Line createNewLineEntity(LineRequest request, Station upStationProxy, Station downStationProxy) {
+        Line line = request.toLine();
+        line.setStations(upStationProxy, downStationProxy);
+        line.addSection(Section.of(line, upStationProxy, downStationProxy,line.getDistance()));
+        return line;
     }
 
     public List<LineResponse> findAllLines() {
@@ -50,7 +51,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    private Line findLineOrThrowException(Long lineId) {
+    public Line findLineOrThrowException(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
     }
 

@@ -198,7 +198,11 @@ class LineAcceptanceTest {
 
     private ExtractableResponse<Response> 지하철_노선을_조회한다(ExtractableResponse<Response> response) {
         long 노선_식별자 = response.jsonPath().getLong("id");
-        return RequestUtil.getRequest(String.format("%s/%s",ServiceUrl.URL_LINES,노선_식별자));
+        return 지하철_노선을_조회한다(노선_식별자);
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선을_조회한다(Long lineId) {
+        return RequestUtil.getRequest(String.format("%s/%s",ServiceUrl.URL_LINES,lineId));
     }
 
     private ExtractableResponse<Response> 지하철_노선을_생성한다(String 신규노선, String 노선색상, long 거리, String 상행역, String 하행역) {
@@ -231,7 +235,7 @@ class LineAcceptanceTest {
 
     }
 
-    private ExtractableResponse<Response> 지하철_노선을_생성한다(String lineName, String lineColor, Long distance, List<Long> stationIds) {
+    public static ExtractableResponse<Response> 지하철_노선을_생성한다(String lineName, String lineColor, Long distance, List<Long> stationIds) {
         Long upStationId = stationIds.get(0);
         Long downStationId = stationIds.get(1);
         LineRequest request = new LineRequest(lineName, lineColor, distance, upStationId, downStationId);
