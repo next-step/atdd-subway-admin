@@ -21,15 +21,14 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) {
+    public Line saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(RuntimeException::new);
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(RuntimeException::new);
         Line line = lineRequest.toLine();
         line.addLineStation(new LineStation(line, upStation, downStation, lineRequest.getDistance()));
         line.addLineStation(new LineStation(line, downStation, null, 0));
 
-        Line persistLine = lineRepository.save(line);
-        return LineResponse.of(persistLine);
+        return lineRepository.save(line);
     }
 
     public List<LineResponse> findAllLines() {
