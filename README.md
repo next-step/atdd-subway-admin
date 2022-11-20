@@ -69,3 +69,56 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [x] given - ( sation name { "강남역" } )
   - [x] when - ( method : delete )
   - [x] then - ( statusCode : HttpStatus.NO_CONTENT(204) )
+#### Step1 리뷰 사항 반영
+- [x] Step2 1차 리뷰 사항 반영
+    - [x] 테스트 가독성 향상 - 지하철역 생성, 조회 별도의 메소드로 처리
+
+## Step2 - 지하철 노선 기능
+#### 기능 요구사항
+ - 요구사항 설명에서 제공되는 인수 조건을 기반으로 지하철 노선 관리 기능을 구현하세요.
+ - 인수 조건을 검증하는 인수 테스트를 작성하세요.
+#### 프로그래밍 요구사항
+ - 인수 조건을 검증하는 인수 테스트 작성
+ - 인수 테스트를 충족하는 기능 구현
+ - 인수 테스트의 결과가 다른 인수 테스트에 영향을 끼치지 않도록 인수 테스트를 서로 격리 시키세요.
+ - 인수 테스트의 재사용성과 가독성, 그리고 빠른 테스트 의도 파악을 위해 인수 테스트를 리팩터링 하세요 
+#### 요구사항 기능 목록
+ - 지하철 노선 생성
+ - 지하철 노선 목록 조회
+ - 지하철 노선 조회
+ - 지하철 노선 수정
+ - 지하철 노선 삭제
+#### 구현 리스트
+- [x] 지하철 노선 초기 작업
+  - [x] Entity 생성 ( name, color, start time, end time, interval time )
+  - [x] Repository 생성
+  - [x] Dto 생성
+  - [x] Controller 생성( 생성, 조회, 수정, 삭제 )
+- [x] 지하철 노선 생성
+  - [x] given - ( name, color, start time, end time, interval time )
+  - [x] when  - ( method : post )
+  - [x] then  - ( statusCode : HttpStatus.CREATED(201) )
+- [x] 지하철 노선 목록 조회
+  - [x] given - (  )
+  - [x] when  - ( method : get )
+  - [x] then  - ( statusCode : HttpStatus.OK(200) )
+- [x] 지하철 노선 조회
+  - [x] given - ( name, color )
+  - [x] when  - ( method : get )
+  - [x] then  - ( statusCode : HttpStatus.OK(200) )
+- [x] 지하철 노선 수정
+  - [x] given - ( name, color )
+  - [x] when  - ( method : put )
+  - [x] then  - ( statusCode : HttpStatus.OK(200) )
+- [x] 지하철 노선 삭제
+  - [x] given - ( name, color )
+  - [x] when  - ( method : delete )
+  - [x] then  - ( statusCode : HttpStatus.NO_CONTENT(204) )
+#### Step2 리뷰 사항 반영
+- [ ] Step2 1차 리뷰 사항 반영
+    - [x] api명세에 존재하지 않는 변수 지우기 ( createdDate, modifiedDate )
+    - [x] 기존 생성자는 되도록 public으로 풀지 않기 ( protected로 은닉화 - 외부에서 쉽게 선언 못하도록 )
+    - [x] 의존성 방향 재정의 ( respone -> entity는 가능하지만, 반대의 경우는 지양하기 )
+    - [x] api경로 확인하기
+    - [x] 중복된 테스트 하나로 빼내기        
+              
