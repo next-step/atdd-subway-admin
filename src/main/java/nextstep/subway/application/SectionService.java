@@ -8,7 +8,7 @@ import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.EntityNotFoundException;
 import nextstep.subway.exception.InvalidParameterException;
 import nextstep.subway.repository.LineRepository;
-import nextstep.subway.repository.LineStationRepository;
+import nextstep.subway.repository.SectionRepository;
 import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,14 +20,14 @@ public class SectionService {
 
     private StationRepository stationRepository;
 
-    private LineStationRepository lineStationRepository;
+    private SectionRepository sectionRepository;
 
     public SectionService(LineRepository lineRepository,
                           StationRepository stationRepository,
-                          LineStationRepository lineStationRepository) {
+                          SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.lineStationRepository = lineStationRepository;
+        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
@@ -35,12 +35,12 @@ public class SectionService {
         checkValidationParameter(sectionRequest);
 
         Line line = getLine(lineId);
-        Section section = lineStationRepository.save(
+        Section section = sectionRepository.save(
                         new Section(getStation(sectionRequest.getUpStationId()),
                         getStation(sectionRequest.getDownStationId()),
                         sectionRequest.getDistance()));
 
-        line.getLineStations().infixSection(section);
+        line.getSection().infixSection(section);
 
         return LineResponse.of(line);
     }

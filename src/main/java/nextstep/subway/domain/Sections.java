@@ -46,7 +46,7 @@ public class Sections {
     public List<Section> getSortList() {
         List<Section> sortList = new ArrayList<>();
 
-        Section upStation = getUpLineStation();
+        Section upStation = getUpStationSection();
         sortList.add(upStation);
 
         for (int i = 1; i < sections.size(); i++) {
@@ -54,9 +54,9 @@ public class Sections {
 
             Section station = sections
                     .stream()
-                    .filter(lineStation
-                            -> lineStation.getPreStation() != null
-                            && finalUpStation.isEqualsId(lineStation.getPreStation().getId()))
+                    .filter(section
+                            -> section.getPreStation() != null
+                            && finalUpStation.isEqualsId(section.getPreStation().getId()))
                     .findAny()
                     .orElseThrow(() -> new ElementNotFoundException());
 
@@ -69,14 +69,14 @@ public class Sections {
 
     private Section getNextStationByStationId(Long id) {
         return sections.stream()
-                .filter(lineStation -> lineStation.getPreStation() != null)
-                .filter(lineStation -> lineStation.getPreStation().getId().equals(id))
+                .filter(section -> section.getPreStation() != null)
+                .filter(section -> section.getPreStation().getId().equals(id))
                 .findAny().orElse(null);
     }
 
-    private Section getUpLineStation() {
+    private Section getUpStationSection() {
         return sections.stream()
-                .filter(lineStations -> lineStations.getPreStation() == null)
+                .filter(section -> section.getPreStation() == null)
                 .findAny()
                 .orElseThrow(() -> new ElementNotFoundException());
     }
@@ -84,11 +84,11 @@ public class Sections {
     private Section getNeedChangedStationStation(Section infixSection) {
         Section existedStation = sections
                 .stream()
-                .filter(lineStation -> lineStation.isEqualsId(infixSection.getStation().getId()))
+                .filter(section -> section.isEqualsId(infixSection.getStation().getId()))
                 .findAny()
                 .orElse(sections
                         .stream()
-                        .filter(lineStation -> lineStation.isEqualsId(infixSection.getPreStation().getId()))
+                        .filter(section -> section.isEqualsId(infixSection.getPreStation().getId()))
                         .findAny()
                         .orElse(null));
 

@@ -21,12 +21,12 @@ public class LineResponse {
         this.name = name;
         this.color = color;
         this.stations = sections.getSortList().stream()
-                .map(lineStation -> StationResponse.of(lineStation.getStation()))
+                .map(section -> StationResponse.of(section.getStation()))
                 .collect(Collectors.toList());
     }
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getLineStations());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getSection());
     }
 
     public Long getId() {

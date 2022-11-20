@@ -43,7 +43,7 @@ public class Line {
         return color;
     }
 
-    public Sections getLineStations() {
+    public Sections getSection() {
         return sections;
     }
 

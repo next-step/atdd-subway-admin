@@ -44,14 +44,14 @@ public class SectionAcceptanceTest {
         }
         databaseCleanup.execute();
         initializationEntity.initStations();
-        initializationEntity.initLineStation();
+        initializationEntity.initSection();
         initializationEntity.initLine();
     }
 
     /**
-     * When 상행역을 기준으로 상행역과 하행역 사이의 새로운 역을 등록하면
+     * When 상행역과 하행역 사이의 새로운 역을 등록하면
      * Then 정상적으로 등록되고
-     * Then 지하철 노선 조회시 3개의 지하철 역을 가지게 되고
+     * Then 지하철 노선 조회시 기존 노선보다 1개가 추가된 갯수의 지하철 역을 가지게 되고
      * Then 각 구간의 길이가 변경되며
      * Then 상행종점역 하행종점역 모두 변경이 없다.
      */
@@ -62,35 +62,16 @@ public class SectionAcceptanceTest {
         // when
         executeRestEntity.insertSectionSuccess(
                 location + "/sections",
-                executeRestEntity.generateSectionRequest(upStation.getId(), station_3.getId(), 5));
+                executeRestEntity.generateSectionRequest(upStation.getId(), mediumStation.getId(), 5));
 
         // then
         checkCreateSuccessCondition(location, upStation.getName(), downStation.getName());
     }
 
     /**
-     * When 하행역을 기준으로 상행역과 하행역 사이의 새로운 역을 등록하면
+     * When 상행종점역으로 새로운 역을 등록하면
      * Then 정상적으로 등록되고
-     * Then 지하철 노선 조회시 3개의 지하철 역을 가지게 되고
-     * Then 각 구간의 길이가 변경되며
-     * Then 상행종점역 하행종점역 모두 변경이 없다.
-     */
-    @DisplayName("하행역을 기준으로 역 사이에 새로운 역을 등록한다.")
-    @Test
-    void createSectionDownStationInside() {
-        String location = "/lines/" + line_1.getId();
-        // when
-        executeRestEntity.insertSectionSuccess(
-                location + "/sections", executeRestEntity.generateSectionRequest(station_3.getId(), downStation.getId(), 5));
-
-        // then
-        checkCreateSuccessCondition(location, upStation.getName(), downStation.getName());
-    }
-
-    /**
-     * When 상행역으로 새로운 역을 등록하면
-     * Then 정상적으로 등록되고
-     * Then 지하철 노선 조회시 3개의 지하철 역을 보유하고 있고
+     * Then 지하철 노선 조회시 기존 노선보다 1개가 추가된 갯수의 지하철 역을 가지게 되고
      * Then 상행종점역이 새로운 역으로 변경되어 있다.
      */
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
@@ -99,16 +80,16 @@ public class SectionAcceptanceTest {
         String location = "/lines/" + line_1.getId();
         // when
         executeRestEntity.insertSectionSuccess(
-                location + "/sections", executeRestEntity.generateSectionRequest(station_3.getId(), upStation.getId(), 5));
+                location + "/sections", executeRestEntity.generateSectionRequest(mediumStation.getId(), upStation.getId(), 5));
 
         // then
-        checkCreateSuccessCondition(location, station_3.getName(), downStation.getName());
+        checkCreateSuccessCondition(location, mediumStation.getName(), downStation.getName());
     }
 
     /**
-     * When 하행역으로 새로운 역을 등록하면
+     * When 하행종점역으로 새로운 역을 등록하면
      * Then 정상적으로 등록되고
-     * Then 지하철 노선 조회시 3개의 지하철 역을 보유하고 있고
+     * Then 지하철 노선 조회시 기존 노선보다 1개가 추가된 갯수의 지하철 역을 가지게 되고
      * Then 하행종점역이 새로운 역으로 변경되어 있다.
      */
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
@@ -117,9 +98,9 @@ public class SectionAcceptanceTest {
         String location = "/lines/" + line_1.getId();
         // when
         executeRestEntity.insertSectionSuccess(
-                location + "/sections", executeRestEntity.generateSectionRequest(downStation.getId(), station_3.getId(), 5));
+                location + "/sections", executeRestEntity.generateSectionRequest(downStation.getId(), mediumStation.getId(), 5));
         // then
-        checkCreateSuccessCondition(location, upStation.getName(), station_3.getName());
+        checkCreateSuccessCondition(location, upStation.getName(), mediumStation.getName());
     }
 
     /**
@@ -132,7 +113,7 @@ public class SectionAcceptanceTest {
         String location = "/lines/" + line_1.getId() + "/sections";
         // when
         ExtractableResponse<Response> response = executeRestEntity
-                .insert(executeRestEntity.generateSectionRequest(upStation.getId(), station_3.getId(), 15), location)
+                .insert(executeRestEntity.generateSectionRequest(upStation.getId(), mediumStation.getId(), 15), location)
                 .extract();
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

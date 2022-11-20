@@ -22,7 +22,7 @@ public class Station extends BaseEntity {
         return new Section(this);
     }
 
-    public Section toLineStation(Station preStation, int distance) {
+    public Section toSection(Station preStation, int distance) {
         return new Section(preStation, this, distance);
     }
 

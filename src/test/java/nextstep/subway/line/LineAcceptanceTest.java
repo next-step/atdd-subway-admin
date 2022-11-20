@@ -72,7 +72,7 @@ public class LineAcceptanceTest {
                 executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
                 .header("Location");
         executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("2호선", station_3.getId(), station_4.getId()))
+                executeRestEntity.generateLineRequest("2호선", mediumStation.getId(), newStation.getId()))
                 .header("Location");
 
         // when
@@ -122,7 +122,7 @@ public class LineAcceptanceTest {
 
         // when
         executeRestEntity.updateLineSuccess(location,
-                executeRestEntity.generateLineRequest("2호선", station_3.getId(), station_4.getId()));
+                executeRestEntity.generateLineRequest("2호선", mediumStation.getId(), newStation.getId()));
 
         // then
         String lineName = executeRestEntity.selectLine(location).extract().jsonPath().get("name");
