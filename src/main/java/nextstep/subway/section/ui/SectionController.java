@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.net.URI;
-
 @RestController
 public class SectionController {
 
@@ -26,7 +24,7 @@ public class SectionController {
         @PathVariable Long lineId,
         @RequestBody SectionRequest sectionRequest) {
         sectionService.addSection(lineId, sectionRequest);
-        return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).build();
+        return ResponseEntity.ok().build();
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})

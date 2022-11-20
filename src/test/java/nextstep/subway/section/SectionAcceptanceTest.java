@@ -6,8 +6,8 @@ import nextstep.subway.AbstractAcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.section.dto.SectionRequest;
-import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -54,7 +54,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     void addMiddleSection() {
         ValidatableResponse addSectionResponse = requestApiByAddSection(신분당선.getId(), new SectionRequest(교대역.getId(), 강남역.getId(), 5));
 
-        assertStatusCode(addSectionResponse, HttpStatus.CREATED);
+        assertStatusCode(addSectionResponse, HttpStatus.OK);
 
         ValidatableResponse getLineResponse = requestApiByGetLine(신분당선.getId());
         assertThat(extractStationNames(getLineResponse)).contains("교대역", "강남역", "선릉역");
@@ -70,7 +70,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     void addUpSection() {
         ValidatableResponse addSectionResponse = requestApiByAddSection(신분당선.getId(), new SectionRequest(강남역.getId(), 교대역.getId(), 3));
 
-        assertStatusCode(addSectionResponse, HttpStatus.CREATED);
+        assertStatusCode(addSectionResponse, HttpStatus.OK);
 
         ValidatableResponse getLineResponse = requestApiByGetLine(신분당선.getId());
         assertThat(extractStationNames(getLineResponse)).contains("교대역", "강남역", "선릉역");
@@ -86,7 +86,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     void addDownSection() {
         ValidatableResponse addSectionResponse = requestApiByAddSection(신분당선.getId(), new SectionRequest(선릉역.getId(), 강남역.getId(), 3));
 
-        assertStatusCode(addSectionResponse, HttpStatus.CREATED);
+        assertStatusCode(addSectionResponse, HttpStatus.OK);
 
         ValidatableResponse getLineResponse = requestApiByGetLine(신분당선.getId());
         assertThat(extractStationNames(getLineResponse)).contains("교대역", "강남역", "선릉역");
