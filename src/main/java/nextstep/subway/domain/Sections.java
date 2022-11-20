@@ -23,10 +23,10 @@ public class Sections {
         addSection(section);
     }
 
-    private void validateStationIncludeSection(Section section) {
-        boolean isNotIncludeSection = this.values.stream().noneMatch(v -> v.anyMatch(section));
-        if (isNotIncludeSection) {
-            throw new IllegalRequestBody(ErrorStatus.SECTION_STATION_ERROR.getMessage());
+    private void validateDuplicate(Section section) {
+        boolean isDuplicate = this.values.stream().anyMatch(v -> v.isDuplicateSection(section));
+        if (isDuplicate) {
+            throw new IllegalRequestBody(ErrorStatus.DUPLICATE_SECTION.getMessage());
         }
     }
 
@@ -37,6 +37,13 @@ public class Sections {
         }
         validateStationIncludeSection(section);
         add(section);
+    }
+
+    private void validateStationIncludeSection(Section section) {
+        boolean isNotIncludeSection = this.values.stream().noneMatch(v -> v.anyMatch(section));
+        if (isNotIncludeSection) {
+            throw new IllegalRequestBody(ErrorStatus.SECTION_STATION_ERROR.getMessage());
+        }
     }
 
     private void add(Section section) {
@@ -74,18 +81,6 @@ public class Sections {
         }
     }
 
-    private void updateDownStation(Section newSection) {
-        Section existSection = this.values.stream()
-                .filter(v -> v.getDownStation().equals(newSection.getDownStation()))
-                .findAny().get();
-        existSection.updateDownStation(newSection);
-    }
-
-    private boolean isAddMiddleFromDownStation(Section newSection) {
-        return this.values.stream()
-                .anyMatch(v -> v.getDownStation().equals(newSection.getDownStation()));
-    }
-
     private boolean isAddMiddleFromUpStation(Section newSection) {
         return this.values.stream()
                 .anyMatch(v -> v.getUpStation().equals(newSection.getUpStation()));
@@ -98,11 +93,16 @@ public class Sections {
         existSection.updateUpStation(newSection);
     }
 
-    private void validateDuplicate(Section section) {
-        boolean isDuplicate = this.values.stream().anyMatch(v -> v.isDuplicateSection(section));
-        if (isDuplicate) {
-            throw new IllegalRequestBody(ErrorStatus.DUPLICATE_SECTION.getMessage());
-        }
+    private boolean isAddMiddleFromDownStation(Section newSection) {
+        return this.values.stream()
+                .anyMatch(v -> v.getDownStation().equals(newSection.getDownStation()));
+    }
+
+    private void updateDownStation(Section newSection) {
+        Section existSection = this.values.stream()
+                .filter(v -> v.getDownStation().equals(newSection.getDownStation()))
+                .findAny().get();
+        existSection.updateDownStation(newSection);
     }
 
     public List<Station> allSortedStations() {
