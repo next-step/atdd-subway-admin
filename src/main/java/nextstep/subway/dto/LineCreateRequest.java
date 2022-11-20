@@ -1,7 +1,11 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
+
+import static java.util.Collections.singletonList;
 
 public class LineCreateRequest {
     private String name;
@@ -42,6 +46,6 @@ public class LineCreateRequest {
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation, distance);
+        return new Line(name, color, new Sections(singletonList(new Section(upStation, downStation, distance))));
     }
 }
