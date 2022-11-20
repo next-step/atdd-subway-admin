@@ -1,5 +1,11 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.constant.Constant.ADD_SECTION_FAIL_CAUSE_DUPLICATE;
+import static nextstep.subway.constant.Constant.ADD_SECTION_FAIL_CAUSE_NOT_MATCH;
+import static nextstep.subway.constant.Constant.DELETE_FAIL_CAUSE_ONLY_ONE;
+import static nextstep.subway.constant.Constant.NOT_FOUND_SECTION;
+import static nextstep.subway.constant.Constant.MINIMUM_SIZE_OF_SECTIONS;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -12,6 +18,7 @@ import javax.persistence.ForeignKey;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.DeleteFailException;
 import nextstep.subway.exception.NotFoundException;
 
 @Embeddable
@@ -28,8 +35,8 @@ public class Sections {
     }
 
     public void addLineStation(Section section) {
-        validateDuplicated(section);
-        validateNotMatchedStation(section);
+        validateDuplicate(section);
+        validateNotMatchStation(section);
         updateUpStation(section);
         updateDownStation(section);
         sections.add(section);
@@ -53,6 +60,43 @@ public class Sections {
                     it.updateDownStation(section.getUpStation());
                     it.minusDistance(section.getDistance());
                 });
+    }
+
+    public void remove(Station removeStation) {
+        validateSectionsSize();
+        Section firstSection = findFirstSection();
+        if (firstSection.isEqualToUpStation(removeStation)) {
+            sections.remove(firstSection);
+            return;
+        }
+        Section lastSection = findLastSection();
+        if (lastSection.isEqualToDownStation(removeStation)) {
+            sections.remove(lastSection);
+            return;
+        }
+        removeBetweenStationAndStation(removeStation);
+    }
+
+    private void removeBetweenStationAndStation(Station station){
+        Section updateTarget = findSectionByDownStation(station);
+        Section removeTarget = findSectionByUpStation(station);
+        updateTarget.updateDownStation(removeTarget.getDownStation());
+        updateTarget.plusDistance(removeTarget.getDistance());
+        sections.remove(removeTarget);
+    }
+
+    private Section findSectionByDownStation(Station station) {
+        return sections.stream()
+                .filter(it -> it.getDownStation() == station)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_SECTION));
+    }
+
+    private Section findSectionByUpStation(Station station) {
+        return sections.stream()
+                .filter(it -> it.getUpStation() == station)
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_SECTION));
     }
 
     public List<StationResponse> getLineStations() {
@@ -84,37 +128,39 @@ public class Sections {
         return sections.stream()
                 .filter(section -> sections.stream().map(Section::getDownStation).noneMatch(Predicate.isEqual(section.getUpStation())))
                 .findFirst()
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_SECTION));
     }
 
     private Section findLastSection(){
         return sections.stream()
                 .filter(section -> sections.stream().map(Section::getUpStation).noneMatch(Predicate.isEqual(section.getDownStation())))
                 .findFirst()
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_SECTION));
     }
 
-    private void validateDuplicated(Section section){
+    private void validateDuplicate(Section section) {
         boolean anyMatch = sections.stream()
-                .anyMatch(it ->
-                        it.getUpStation() == section.getUpStation()
-                                && it.getDownStation() == section.getDownStation()
-                );
-        if(anyMatch){
-            throw new IllegalArgumentException();
+                .anyMatch(it -> it.getUpStation() == section.getUpStation()
+                        && it.getDownStation() == section.getDownStation());
+        if (anyMatch) {
+            throw new IllegalArgumentException(ADD_SECTION_FAIL_CAUSE_DUPLICATE);
         }
     }
 
-    private void validateNotMatchedStation(Section section){
+    private void validateNotMatchStation(Section section) {
         boolean anyMatch = sections.stream()
-                .anyMatch(it ->
-                        it.getUpStation() == section.getUpStation()
-                                || it.getUpStation() == section.getDownStation()
-                                || it.getDownStation() == section.getUpStation()
-                                || it.getDownStation() == section.getDownStation()
-                );
-        if(!anyMatch){
-            throw new IllegalArgumentException();
+                .anyMatch(it -> it.getUpStation() == section.getUpStation()
+                        || it.getUpStation() == section.getDownStation()
+                        || it.getDownStation() == section.getUpStation()
+                        || it.getDownStation() == section.getDownStation());
+        if (!anyMatch) {
+            throw new IllegalArgumentException(ADD_SECTION_FAIL_CAUSE_NOT_MATCH);
+        }
+    }
+
+    private void validateSectionsSize(){
+        if(sections.size() <= MINIMUM_SIZE_OF_SECTIONS){
+            throw new DeleteFailException(DELETE_FAIL_CAUSE_ONLY_ONE);
         }
     }
 }

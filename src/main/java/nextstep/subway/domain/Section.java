@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import static nextstep.subway.constant.Constant.ADD_SECTION_FAIL_CAUSE_DISTANCE;
+
 import java.util.Objects;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -46,9 +48,21 @@ public class Section {
         this.downStation = newDownStation;
     }
 
+    public void plusDistance(int distance) {
+        this.distance += distance;
+    }
+
     public void minusDistance(int distance) {
         validateDistance(distance);
         this.distance -= distance;
+    }
+
+    public boolean isEqualToUpStation(Station station) {
+        return this.upStation == station;
+    }
+
+    public boolean isEqualToDownStation(Station station) {
+        return this.downStation == station;
     }
 
     public Station getUpStation() {
@@ -65,7 +79,7 @@ public class Section {
 
     private void validateDistance(int distance){
         if(this.distance <= distance){
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(ADD_SECTION_FAIL_CAUSE_DISTANCE);
         }
     }
 
