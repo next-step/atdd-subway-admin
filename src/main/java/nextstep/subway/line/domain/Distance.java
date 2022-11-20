@@ -1,9 +1,12 @@
 package nextstep.subway.line.domain;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
 @Embeddable
+@Access(AccessType.FIELD)
 public class Distance implements Comparable<Distance> {
 
     public static final int MINIMUM_DISTANCE = 0;
@@ -36,7 +39,6 @@ public class Distance implements Comparable<Distance> {
         return Objects.hash(distance);
     }
 
-
     @Override
     public int compareTo(Distance o) {
         if (this.distance < o.distance) {
@@ -45,5 +47,9 @@ public class Distance implements Comparable<Distance> {
             return -1;
         }
         return 0;
+    }
+
+    public int getDistance() {
+        return this.distance;
     }
 }

@@ -25,8 +25,14 @@ public class Sections {
                 if (section.getDistance().equals(isSameUpStationDistance(section.getUpStation()))) {
                     throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
                 }
-            }
-            if (isSameDownStation(section.getDownStation())) {
+                for (int i = 0; i < this.sections.size(); i++) {
+                    if (this.sections.get(i).getUpStation().equals(section.getUpStation())) {
+                        Section section1 = this.sections.get(i);
+                        this.sections.remove(this.sections.get(i));
+                        this.sections.add(new Section(section.getLine(), section.getDownStation(), section1.getDownStation(), new Distance(section1.getDistance().getDistance() - section.getDistance().getDistance())));
+                    }
+                }
+            } else if (isSameDownStation(section.getDownStation())) {
                 if (section.getDistance().equals(isSameDownStationDistance(section.getDownStation())) || section.getDistance().compareTo(isSameDownStationDistance(section.getDownStation())) < 0) {
                     throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
                 }
@@ -150,5 +156,13 @@ public class Sections {
             upStation = section.getUpStation();
         }
         return upStation;
+    }
+
+    public int getDistance() {
+        int distance = 0;
+        for (Section section : this.sections) {
+            distance += section.getDistance().getDistance();
+        }
+        return distance;
     }
 }

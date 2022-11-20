@@ -17,4 +17,8 @@ public class StationFixtrue {
     public static Station 역삼역() {
         return new Station(4L, "역삼역");
     }
+
+    public static Station 선릉역() {
+        return new Station(5L, "선릉역");
+    }
 }

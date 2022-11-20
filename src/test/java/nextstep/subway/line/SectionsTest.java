@@ -5,6 +5,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.SectionFixture.*;
+import static nextstep.subway.line.SectionTest.강남역_선릉역_거리;
 import static nextstep.subway.line.domain.Sections.*;
 import static nextstep.subway.station.domain.StationFixtrue.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -78,5 +79,15 @@ class SectionsTest {
         sections.add(논현역_신논현역_구간());
         sections.add(신논현역_강남역_구간());
         assertThat(sections.getStations()).containsExactly(논현역(), 신논현역(), 강남역());
+    }
+
+    @DisplayName("구간 사이에 구간을 추가한다")
+    @Test
+    void addBetweenSection() {
+        Sections sections = new Sections();
+        sections.add(강남역_선릉역_구간());
+        sections.add(강남역_역삼역_구간());
+        assertThat(sections.getStations()).containsExactly(강남역(), 역삼역(), 선릉역());
+        assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_거리);
     }
 }
