@@ -25,4 +25,15 @@ class DistanceTest {
     void create_distance_success(int num) {
         assertThatIllegalArgumentException().isThrownBy(() -> new Distance(num));
     }
+
+    @DisplayName("minus 메서드 테스트")
+    @Test
+    void minus_distance_success() {
+        int source = 10;
+        int minus = 6;
+        int expect = 4;
+        Distance sourceDistance = new Distance(source);
+        Distance minusDistance = new Distance(minus);
+        assertThat(sourceDistance.minus(minusDistance)).isEqualTo(new Distance(expect));
+    }
 }
