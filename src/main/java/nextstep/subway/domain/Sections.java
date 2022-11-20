@@ -16,6 +16,8 @@ public class Sections {
     private static final String ERROR_MESSAGE_NONE_MATCH_UP_DOWN_STATION = "상행/하행선은 하나라도 입력되어야 합니다.";
     private static final String ERROR_MESSAGE_NOT_NULL_UP_STATION = "상행종점은 필수입니다.";
     private static final String ERROR_MESSAGE_LINE_NOT_CONTAIN_STATION = "해당 역이 존재하지 않습니다.";
+    private static final String ERROR_MESSAGE_EXIST_DEFAULT_SECTION_SIZE = "노선의 구간은 1개 이상 존재해야 합니다.";
+    private static final int DEFAULT_SECTION_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -70,6 +72,7 @@ public class Sections {
         Optional<Section> sectionContainUpStation = findSectionContainUpStation(station);
         Optional<Section> sectionContainDownStation = findSectionContainDownStation(station);
 
+        validDefaultSectionSize();
         validNotContainSectionByStation(sectionContainUpStation.isPresent(), sectionContainDownStation.isPresent());
 
         if (isStationIntermediateSections(sectionContainUpStation.isPresent(), sectionContainDownStation.isPresent())) {
@@ -78,6 +81,12 @@ public class Sections {
 
         sectionContainUpStation.ifPresent(section -> sections.remove(section));
         sectionContainDownStation.ifPresent(section -> sections.remove(section));
+    }
+
+    private void validDefaultSectionSize() {
+        if (sections.size() == DEFAULT_SECTION_SIZE) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_EXIST_DEFAULT_SECTION_SIZE);
+        }
     }
 
     private void validNotContainSectionByStation(boolean upStation, boolean downStation) {

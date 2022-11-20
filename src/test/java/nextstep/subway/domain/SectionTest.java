@@ -163,16 +163,29 @@ class SectionTest {
         assertThat(line.getStations()).doesNotContain(upStation);
         assertThat(line.totalDistance()).isEqualTo(20);
     }
+
+    @Test
+    @DisplayName("노선 내 구간이 1개일 경우 역 제거시 에러 반환")
+    void deleteStationDefaultSectionSize() {
+        // when
+        // then
+        assertThatThrownBy(() -> line.removeSection(Station.from("논현역")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선의 구간은 1개 이상 존재해야 합니다.");
+    }
     
     @Test
-    @DisplayName("노선 내 존재하지 않는 라인 제거시 에러 반환")
+    @DisplayName("노선 내 존재하지 않는 역 제거시 에러 반환")
     void deleteStationNotContainLineThrowException() {
         // given
-        Station actual = Station.from("판교역");
+        Station upStation = Station.from("강남역");
+        Station downStation = Station.from("판교역");
+        Distance distance = Distance.from(10);
+        line.addSection(Section.of(upStation, downStation, distance));
 
         // when
         // then
-        assertThatThrownBy(() -> line.removeSection(actual))
+        assertThatThrownBy(() -> line.removeSection(Station.from("신사역")))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("해당 역이 존재하지 않습니다.");
     }
