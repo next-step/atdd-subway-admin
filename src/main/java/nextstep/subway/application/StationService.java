@@ -6,6 +6,8 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.ErrorCode;
+import nextstep.subway.exception.SubwayException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +43,7 @@ public class StationService {
     public Station findStationById(Long id) {
         return stationRepository.findById(id)
             .orElseThrow(() ->
-                new IllegalArgumentException("존재하지 않는 지하철 역 입니다.")
+                new SubwayException(ErrorCode.STATION_NULL_POINTER_ERROR)
             );
     }
 }

@@ -9,6 +9,9 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.exception.ErrorCode;
+import nextstep.subway.exception.SubwayException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +47,7 @@ public class LineService {
 
     public LineResponse getLineById(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() ->
-            new IllegalArgumentException("해당 id 에 존재하는 Line 이 없습니다.")
+            new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR)
         );
         return LineResponse.of(line);
     }
@@ -52,7 +55,7 @@ public class LineService {
     @Transactional
     public LineResponse updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(() ->
-            new IllegalArgumentException("해당 id 에 존재하는 Line 이 없습니다.")
+            new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR)
         );
 
         line.update(lineUpdateRequest.toLine());
@@ -63,11 +66,28 @@ public class LineService {
     @Transactional
     public void deleteLine(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() ->
-            new IllegalArgumentException("해당 id 에 존재하는 Line 이 없습니다.")
+            new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR)
         );
 
         lineRepository.delete(line);
     }
 
 
+    public LineResponse updateSection(Long id, SectionRequest sectionRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(() ->
+            new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR)
+        );
+
+        Section section = getSection(line, sectionRequest);
+
+        line.addSection(section);
+
+        return LineResponse.of(line);
+    }
+
+    private Section getSection(Line line, SectionRequest sectionRequest) {
+        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+        return new Section(line, downStation, upStation, sectionRequest.getDistance());
+    }
 }
