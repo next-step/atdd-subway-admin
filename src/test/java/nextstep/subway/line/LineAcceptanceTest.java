@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleaner;
+import nextstep.subway.domain.ErrorMessage;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -21,9 +22,11 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철호선 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -120,7 +123,7 @@ public class LineAcceptanceTest {
         updateLine(lineId, new LineUpdateRequest(newLineName, newColor));
 
         //then
-        LineResponse updatedLine = retrieveLine(lineId);
+        LineResponse updatedLine = retrieveLineResponse(lineId);
         assertThat(newLineName.equals(updatedLine.getName()) && newColor.equals(updatedLine.getColor()))
                 .isTrue();
     }
@@ -186,9 +189,19 @@ public class LineAcceptanceTest {
 
 
     /**
-     * 지하철호선id로 정 조회
+     * 지하철호선id로 정보 조회
      */
-    LineResponse retrieveLine(String lineId) {
+    ExtractableResponse<Response> retrieveLine(String lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/" + lineId)
+                .then().log().all().extract();
+    }
+
+    /**
+     * 지하철호선id로 정보 조회
+     */
+    LineResponse retrieveLineResponse(String lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + lineId)
@@ -200,7 +213,7 @@ public class LineAcceptanceTest {
      * 지하철호선 Id로 지하철호선 이름 조회
      */
     String retrieveLineName(String lineId) {
-        return retrieveLine(lineId).getName();
+        return retrieveLineResponse(lineId).getName();
     }
 
     /**
