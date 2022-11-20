@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import java.util.Objects;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -20,11 +19,13 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
 
     private int distance;
+
+    private int sortNo = 1000;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "upStationId")
@@ -40,6 +41,14 @@ public class Section {
     public Section(Line line, int distance, Station upStation, Station downStation) {
         this.line = line;
         this.distance = distance;
+        this.upStation = upStation;
+        this.downStation = downStation;
+    }
+
+    public Section(Line line, int distance, int sortNo, Station upStation, Station downStation) {
+        this.line = line;
+        this.distance = distance;
+        this.sortNo = sortNo;
         this.upStation = upStation;
         this.downStation = downStation;
     }
@@ -68,6 +77,10 @@ public class Section {
         return downStation;
     }
 
+    public int getSortNo() {
+        return this.sortNo;
+    }
+
     public boolean isEqualsUpStation(Station upStation) {
         return this.upStation.equals(upStation);
     }
@@ -93,16 +106,16 @@ public class Section {
         return Objects.hash(getId());
     }
 
-    public Section createNewSection(int distance, Station upStation, Station downStation) {
-        return new Section(line, distance, upStation, downStation);
+    public Section createNewSection(int distance, int sortNo, Station upStation, Station downStation) {
+        return new Section(line, distance, sortNo, upStation, downStation);
     }
 
-    public Section createNewDownSection(int distance, Station downStation) {
-        return new Section(line, Math.abs(this.distance - distance), downStation, this.downStation);
+    public Section createNewDownSection(int distance, int sortNo, Station downStation) {
+        return new Section(line, Math.abs(this.distance - distance), sortNo, downStation, this.downStation);
     }
 
-    public Section createNewUpSection(int distance, Station upStation) {
-        return new Section(line, Math.abs(this.distance - distance), this.upStation, upStation);
+    public Section createNewUpSection(int distance, int sortNo, Station upStation) {
+        return new Section(line, Math.abs(this.distance - distance), sortNo, this.upStation, upStation);
     }
 
     public void validateLength(int distance) {

@@ -30,7 +30,7 @@ public class LineService {
         setUpDownStation(lineRequest);
 
         Line line = lineRequest.toLine();
-        line.addSection(lineRequest.getDistance(), lineRequest.getUpStation(), lineRequest.getDownStation());
+        line.addDefaultSection(lineRequest.getDistance(), lineRequest.getUpStation(), lineRequest.getDownStation());
 
         return lineRepository.save(line)
                 .getId();
@@ -66,11 +66,8 @@ public class LineService {
                 .orElseThrow(EntityNotFoundException::new);
         Station upStation = stationService.findEntityById(sectionRequest.getUpStationId());
         Station downStation = stationService.findEntityById(sectionRequest.getDownStationId());
-        int distance = sectionRequest.getDistance();
 
-        line.validateAlreadyAndNotExistsStations(upStation, downStation);
-        line.isFindSameUpStationThenCreateNewSection(upStation, downStation, distance);
-        line.isFindSameDownStationThenCreateNewSection(upStation, downStation, distance);
+        line.addSection(sectionRequest.getDistance(), upStation, downStation);
     }
 
     @Transactional

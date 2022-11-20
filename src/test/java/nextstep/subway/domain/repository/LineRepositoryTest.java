@@ -26,19 +26,20 @@ class LineRepositoryTest {
 
     Station station1 = null;
     Station station2 = null;
+    Line line = new Line("신분당선", "bg-red-600");
 
     @Test
     void save() {
-        Line expected = getLine();
-        Line actual = lineRepository.save(expected);
+        Line actual = lineRepository.save(line);
 
-        assertThat(actual.getId()).isEqualTo(expected.getId());
-        assertThat(actual == expected).isTrue();
+        assertThat(actual.getId()).isEqualTo(line.getId());
+        assertThat(actual == line).isTrue();
     }
 
     @Test
     void delete() {
-        Line actual = lineRepository.save(getLine());
+        Line actual = lineRepository.save(line);
+
         lineRepository.deleteById(actual.getId());
         flushAndClear();
 
@@ -48,12 +49,12 @@ class LineRepositoryTest {
 
     @Test
     void change() {
-        Line saveLine = lineRepository.save(getLine());
+        Line saveLine = lineRepository.save(line);
+
         saveLine.change("신분당선2", "bg-green-600");
         flushAndClear();
 
         Line findLine = lineRepository.findById(saveLine.getId()).get();
-
         assertThat(findLine.getName()).isEqualTo("신분당선2");
         assertThat(findLine.getColor()).isEqualTo("bg-green-600");
     }
@@ -63,18 +64,13 @@ class LineRepositoryTest {
     void findWithSectionsById() {
         station1 = stationRepository.save(new Station("경기 광주역"));
         station2 = stationRepository.save(new Station("중앙역"));
-        Line line = new Line("신분당선", "bg-red-600");
-        line.addSection(10, station1, station2);
+        line.addDefaultSection(10, station1, station2);
         Line saveLine = lineRepository.save(line);
         flushAndClear();
 
         Line findLine = lineRepository.findWithSectionsById(saveLine.getId()).get();
 
         assertThat(findLine.getSectionList()).hasSize(1);
-    }
-
-    private Line getLine() {
-        return new Line("신분당선", "bg-red-600");
     }
 
     private void flushAndClear() {

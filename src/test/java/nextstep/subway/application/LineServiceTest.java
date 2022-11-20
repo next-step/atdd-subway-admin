@@ -53,6 +53,7 @@ class LineServiceTest {
     @Test
     void saveLine() {
         Long id = lineService.saveLine(lineRequest);
+
         LineResponse actual = lineService.findResponseById(id);
         assertThat(actual.getName()).isEqualTo(lineRequest.getName());
     }
@@ -60,7 +61,9 @@ class LineServiceTest {
     @Test
     void findAllLines() {
         lineService.saveLine(lineRequest);
+
         List<LineResponse> allLines = lineService.findAllLines();
+
         assertThat(allLines).hasSize(1);
     }
 
@@ -75,9 +78,10 @@ class LineServiceTest {
     void updateLine() {
         Long id = lineService.saveLine(lineRequest);
         LineRequest request = new LineRequest("신분당선2", "bg-green-600", 10, station1.getId(), station2.getId());
-        lineService.updateLine("신분당선", request);
-        LineResponse findLine = lineService.findResponseById(id);
 
+        lineService.updateLine("신분당선", request);
+
+        LineResponse findLine = lineService.findResponseById(id);
         assertThat(findLine.getName()).isEqualTo("신분당선2");
         assertThat(findLine.getColor()).isEqualTo("bg-green-600");
     }

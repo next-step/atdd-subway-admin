@@ -15,47 +15,44 @@ class LineTest {
 
     @BeforeEach
     void beforeEach() {
-        line.addSection(10, upStation, downStation);
+        line.addDefaultSection(10, upStation, downStation);
     }
 
-    @DisplayName("추가한 구간 수 만큼 가지고 있는지 확인")
+    @DisplayName("처음 노선 등록시 함께 생성되는 구간의 기본 정렬값은 1000이다")
+    @Test
+    void addDefaultSection() {
+        assertThat(line.getSectionList().get(0).getSortNo()).isEqualTo(1000);
+    }
+
+    @DisplayName("기존 노선에 구간 추가시 상행 하행역이 모두 동일하거나 둘다 다를 경우 EX 발생")
     @Test
     void addSection() {
-        assertThat(line.getSectionList()).hasSize(1);
-    }
-
-    @DisplayName("상행 하행역이 모두 동일하거나 둘다 다를 경우 EX 발생")
-    @Test
-    void validateAlreadyAndNotExistsStations() {
+        assertThatIllegalArgumentException().isThrownBy(() -> line.addSection(4, upStation, downStation));
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> line.validateAlreadyAndNotExistsStations(upStation, downStation));
-        assertThatIllegalArgumentException().isThrownBy(() ->
-                line.validateAlreadyAndNotExistsStations(new Station(3L, "판교역"), new Station(4L, "중앙역"))
-        );
+                .isThrownBy(() -> line.addSection(4, new Station(3L, "판교역"), new Station(4L, "중앙역")));
     }
 
-    @DisplayName("상행역이 같으면 새로운 구간 생성, 단 길이가 같으면 EX 발생")
     @Test
-    void isFindSameUpStationThenCreateNewSection() {
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> line.isFindSameUpStationThenCreateNewSection(upStation, new Station(3L, "판교역"), 10)
-        );
+    void 상행역으로_새로운_구간_생성시_길이가_같으면_EX_발생() {
+        assertThatIllegalArgumentException().isThrownBy(() -> line.addSection(10, upStation, new Station(3L, "판교역")));
+    }
 
-        line.isFindSameUpStationThenCreateNewSection(upStation, new Station(3L, "판교역"), 4);
+    @Test
+    void 상행역이_같으면_새로운_구간_생성() {
+        line.addSection(4, upStation, new Station(3L, "판교역"));
 
         assertThat(line.getSectionList()).hasSize(2);
     }
 
-    @DisplayName("하행역이 같으면 새로운 구간 생성, 단 길이가 같으면 EX 발생")
     @Test
-    void isFindSameDownStationThenCreateNewSection() {
-        assertThatIllegalArgumentException().isThrownBy(
-                () -> line.isFindSameDownStationThenCreateNewSection(new Station(3L, "판교역"), downStation, 10)
-        );
+    void 하행역으로_새로운_구간_생성시_길이가_같으면_EX_발생() {
+        assertThatIllegalArgumentException().isThrownBy(() -> line.addSection(10, new Station(3L, "판교역"), downStation));
+    }
 
-        line.isFindSameDownStationThenCreateNewSection(new Station(3L, "판교역"), downStation, 4);
+    @Test
+    void 하행역이_같으면_새로운_구간_생성() {
+        line.addSection(4, new Station(3L, "판교역"), downStation);
 
         assertThat(line.getSectionList()).hasSize(2);
     }
-
 }
