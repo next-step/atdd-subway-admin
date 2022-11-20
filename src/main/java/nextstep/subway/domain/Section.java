@@ -23,10 +23,11 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, int distance, Line line) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        this.line = line;
     }
 
     public Long getId() {
@@ -47,5 +48,33 @@ public class Section {
 
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
+    }
+
+    public void modify(Section section) {
+        modifyUpStation(section);
+        modifyDownStation(section);
+    }
+
+    private void modifyUpStation(Section section) {
+        if (!section.upStation.equals(this.upStation)) {
+            return;
+        }
+        this.upStation = section.downStation;
+        modifyDistance(section.distance);
+    }
+
+    private void modifyDownStation(Section section) {
+        if (!section.downStation.equals(this.downStation)) {
+            return;
+        }
+        this.downStation = section.upStation;
+        modifyDistance(section.distance);
+    }
+
+    private void modifyDistance(int distance) {
+        if (distance >= this.distance) {
+            throw new IllegalArgumentException("추가할 구간의 거리가 기존 역 사이 거리보다 길 수는 없습니다.");
+        }
+        this.distance = this.distance - distance;
     }
 }

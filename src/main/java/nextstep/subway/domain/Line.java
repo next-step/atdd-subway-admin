@@ -18,10 +18,10 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color, Sections sections) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.sections = sections;
+        this.sections.addSection(new Section(upStation, downStation, distance, this));
     }
 
     public Long getId() {
@@ -43,5 +43,9 @@ public class Line extends BaseEntity {
     public void update(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
     }
 }
