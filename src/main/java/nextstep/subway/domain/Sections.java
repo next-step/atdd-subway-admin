@@ -23,9 +23,9 @@ public class Sections {
         addSection(section);
     }
 
-    private void validateSectionExist(Section section) {
-        boolean isExist = this.values.stream().noneMatch(v -> v.anyMatch(section));
-        if (isExist) {
+    private void validateStationIncludeSection(Section section) {
+        boolean isNotIncludeSection = this.values.stream().noneMatch(v -> v.anyMatch(section));
+        if (isNotIncludeSection) {
             throw new IllegalRequestBody(ErrorStatus.SECTION_STATION_ERROR.getMessage());
         }
     }
@@ -35,7 +35,7 @@ public class Sections {
             values.add(section);
             return;
         }
-        validateSectionExist(section);
+        validateStationIncludeSection(section);
         add(section);
 
     }
