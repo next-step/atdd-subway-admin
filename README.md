@@ -89,28 +89,28 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
  - 지하철 노선 수정
  - 지하철 노선 삭제
 #### 구현 리스트
-- [ ] 지하철 노선 초기 작업
-  - [ ] Entity 생성 ( name, color, start time, end time, interval time )
-  - [ ] Repository 생성
-  - [ ] Dto 생성
-  - [ ] Controller 생성( 생성, 조회, 수정, 삭제 )
-- [ ] 지하철 노선 생성
-  - [ ] given - ( name, color, start time, end time, interval time )
-  - [ ] when  - ( method : post )
-  - [ ] then  - ( statusCode : HttpStatus.CREATED(201) )
-- [ ] 지하철 노선 목록 조회
-  - [ ] given - (  )
-  - [ ] when  - ( method : get )
-  - [ ] then  - ( statusCode : HttpStatus.OK(200) )
-- [ ] 지하철 노선 조회
-  - [ ] given - ( name, color )
-  - [ ] when  - ( method : get )
-  - [ ] then  - ( statusCode : HttpStatus.OK(200) )
-- [ ] 지하철 노선 수정
-  - [ ] given - ( name, color )
-  - [ ] when  - ( method : put )
-  - [ ] then  - ( statusCode : HttpStatus.OK(200) )
-- [ ] 지하철 노선 삭제
-  - [ ] given - ( name, color )
-  - [ ] when  - ( method : delete )
-  - [ ] then  - ( statusCode : HttpStatus.NO_CONTENT(204) )
+- [x] 지하철 노선 초기 작업
+  - [x] Entity 생성 ( name, color, start time, end time, interval time )
+  - [x] Repository 생성
+  - [x] Dto 생성
+  - [x] Controller 생성( 생성, 조회, 수정, 삭제 )
+- [x] 지하철 노선 생성
+  - [x] given - ( name, color, start time, end time, interval time )
+  - [x] when  - ( method : post )
+  - [x] then  - ( statusCode : HttpStatus.CREATED(201) )
+- [x] 지하철 노선 목록 조회
+  - [x] given - (  )
+  - [x] when  - ( method : get )
+  - [x] then  - ( statusCode : HttpStatus.OK(200) )
+- [x] 지하철 노선 조회
+  - [x] given - ( name, color )
+  - [x] when  - ( method : get )
+  - [x] then  - ( statusCode : HttpStatus.OK(200) )
+- [x] 지하철 노선 수정
+  - [x] given - ( name, color )
+  - [x] when  - ( method : put )
+  - [x] then  - ( statusCode : HttpStatus.OK(200) )
+- [x] 지하철 노선 삭제
+  - [x] given - ( name, color )
+  - [x] when  - ( method : delete )
+  - [x] then  - ( statusCode : HttpStatus.NO_CONTENT(204) )
