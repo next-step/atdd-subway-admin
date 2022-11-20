@@ -31,14 +31,14 @@ public class Sections {
             addFirstStation(preStation);
         }
 
-        Map<Station, Section> toMap = getSectionsToMap();
-        validateStation(preStation, station, toMap);
+        Map<Station, Section> sectionsMap = getSectionsToMap();
+        validateStation(preStation, station, sectionsMap);
 
-        if (toMap.containsKey(preStation)) {
+        if (sectionsMap.containsKey(preStation)) {
             updateSectionForPreStation(preStation, station, distance);
         }
 
-        if (toMap.containsKey(station)) {
+        if (sectionsMap.containsKey(station)) {
             updateSectionForStation(preStation, station, distance);
         }
 
@@ -65,10 +65,10 @@ public class Sections {
     }
 
     private Section findSectionByStation(Station station) {
-        Map<Station, Section> toMap = getSectionsToMap();
-        validateNotIncludeSection(station, toMap);
+        Map<Station, Section> sectionsMap = getSectionsToMap();
+        validateNotIncludeSection(station, sectionsMap);
         validateLastSection();
-        return toMap.get(station);
+        return sectionsMap.get(station);
 
     }
 
@@ -123,14 +123,14 @@ public class Sections {
 
 
     public List<Section> getOrderStations() {
-        Map<Station, Section> map = getSectionsToMapByPreStation();
+        Map<Station, Section> sectionsMapByPreStation = getSectionsToMapByPreStation();
         Section firstSection = findFirstSection().orElse(null);
 
         List<Section> orders = new ArrayList<>();
         while (firstSection != null) {
             Section tmp = firstSection;
             orders.add(tmp);
-            firstSection = map.get(tmp.getStation());
+            firstSection = sectionsMapByPreStation.get(tmp.getStation());
         }
 
         return orders;
