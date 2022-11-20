@@ -17,7 +17,7 @@ import static nextstep.subway.exception.StationExceptionMessage.NONE_EXISTS_STAT
 
 @Embeddable
 public class Sections {
-
+    private static final int MAX_SECTION_OF_STATION = 2;
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<Section> sections = new ArrayList<>();
 
@@ -79,7 +79,6 @@ public class Sections {
     public void deleteSection(Line line, Station deleteStation) {
         List<Section> findSections = sections.stream().filter(section -> section.hasStation(deleteStation))
                 .collect(Collectors.toList());
-        validateEmptySection(findSections);
         validateSections(findSections, sections);
         if (isSingleSection(findSections)) {
             sections.remove(findSections.get(0));
@@ -89,12 +88,13 @@ public class Sections {
     }
 
     private void validateSections(List<Section> findSections, List<Section> sections) {
+        validateEmptySection(findSections);
         validateSingleSection(findSections, sections);
         validateMultiSection(findSections);
     }
 
     private void validateMultiSection(List<Section> findSections) {
-        if (findSections.size() > 2) {
+        if (findSections.size() > MAX_SECTION_OF_STATION) {
             throw new SectionsException(MULTI_SECTION.getMessage());
         }
     }
