@@ -27,7 +27,7 @@ class SectionTest {
 
         assertThat(actual.getUpStation()).isEqualTo(upStation);
         assertThat(actual.getDownStation()).isEqualTo(downStation);
-        assertThat(actual.getDistance()).isEqualTo(10);
+        assertThat(actual.getDistance().getDistance()).isEqualTo(10);
     }
 
     @Test
@@ -144,5 +144,23 @@ class SectionTest {
         assertThat(line.getStations()).hasSize(2);
         assertThat(line.getStations()).doesNotContain(downStation);
         assertThat(line.totalDistance()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("구간 내 중간 역 제거")
+    void removeSectionByIntermediateStation() {
+        // given
+        Station upStation = Station.from("강남역");
+        Station downStation = Station.from("판교역");
+        Distance distance = Distance.from(10);
+        line.addSection(Section.of(upStation, downStation, distance));
+
+        // when
+        line.removeSection(upStation);
+
+        // then
+        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getStations()).doesNotContain(upStation);
+        assertThat(line.totalDistance()).isEqualTo(20);
     }
 }

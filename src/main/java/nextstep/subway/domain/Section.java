@@ -71,6 +71,10 @@ public class Section {
         this.downStation = newSection.upStation;
     }
 
+    public Distance addDistance(Section section) {
+        return distance.add(section.distance);
+    }
+
     public boolean isSameUpStationBySection(Section section) {
         return upStation.isSameStation(section.getUpStation());
     }
@@ -94,6 +98,10 @@ public class Section {
         return stations;
     }
 
+    public Line getLine() {
+        return line;
+    }
+
     public Station getUpStation() {
         return upStation;
     }
@@ -102,7 +110,7 @@ public class Section {
         return downStation;
     }
 
-    public int getDistance() {
-        return distance.getDistance();
+    public Distance getDistance() {
+        return distance;
     }
 }
