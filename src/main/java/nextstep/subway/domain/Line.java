@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.exception.BadRequestForLineStationException;
 
 import javax.persistence.*;
@@ -32,12 +31,12 @@ public class Line extends BaseEntity {
         this.lineStations = new LineStations(lineStations);
     }
 
-    public void update(LineUpdateRequest lineUpdateRequest) {
-        if (lineUpdateRequest.getName() != null) {
-            this.name = lineUpdateRequest.getName();
+    public void update(String name, String color) {
+        if (name != null) {
+            this.name = name;
         }
-        if (lineUpdateRequest.getColor() != null) {
-            this.color = lineUpdateRequest.getColor();
+        if (color != null) {
+            this.color = color;
         }
     }
 

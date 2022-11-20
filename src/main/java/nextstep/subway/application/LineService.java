@@ -66,7 +66,7 @@ public class LineService {
                 () -> new LineStationNotFoundException(String.format("존재하지 않는 지하철 노선입니다. (id : %s)", lineId))
         );
 
-        line.update(lineUpdateRequest);
+        line.update(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
     }
 
     @Transactional
