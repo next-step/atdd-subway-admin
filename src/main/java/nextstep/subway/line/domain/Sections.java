@@ -31,8 +31,7 @@ public class Sections {
         validateAlreadyContainsAll(newSection);
         validateNotContainsAny(newSection);
         sections.stream()
-            .filter(section -> section.getUpStation().equals(newSection.getUpStation())
-                || section.getDownStation().equals(newSection.getDownStation()))
+            .filter(section -> section.isConnectable(newSection))
             .findFirst()
             .ifPresent(section -> section.relocate(newSection));
         sections.add(newSection);

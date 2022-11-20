@@ -44,8 +44,18 @@ public class Section {
     }
 
     public void relocate(Section newSection) {
-        relocateUpStation(newSection);
-        relocateDownStation(newSection);
+        if (this.upStation.equals(newSection.upStation) && !this.downStation.equals(newSection.downStation)) {
+            relocateUpStation(newSection);
+            return;
+        }
+        if (this.downStation.equals(newSection.downStation) && !this.upStation.equals(newSection.upStation)) {
+            relocateDownStation(newSection);
+        }
+    }
+
+    public boolean isConnectable(Section newSection) {
+        return hasUpStation(newSection.getUpStation())
+            || hasDownStation(newSection.getDownStation());
     }
 
     public Section merge(Section other) {
