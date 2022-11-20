@@ -118,8 +118,8 @@ public class LineStationDeleteAcceptanceTest {
 
     /**
      * given 노선에 구간을 1개(a -> b) 추가하고
-     * when 역(b)을 제거하면
-     * then 예외를 발생시킨다.
+     * when 역(b)의 제거를 시도하면
+     * then 남은 구간이 하나 이므로 역이 제거되지 않는다.
      */
     @Test
     @DisplayName("남은 구간이 하나인 상태에서 역을 제거하려하면 예외가 발생한다.")

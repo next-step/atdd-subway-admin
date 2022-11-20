@@ -155,7 +155,7 @@ public class LineStationAcceptanceTest {
     /**
      * given 노선과 역(a,b)을 생성하고
      * when 구간(a,b)을 추가하면
-     * then 예외가 발생한다.
+     * then 상행역과 하행역이 모두 기존 구간에 포함되어 있으므로, 구간을 추가할 수 없다.
      */
     @Test
     @DisplayName("노선 구간이 기존 역에 모두 포함되면 예외를 발생시킨다.")
@@ -172,7 +172,7 @@ public class LineStationAcceptanceTest {
     /**
      * given 노선과 역(a,b)을 생성하고
      * when 구간(c,d)을 추가하면
-     * then 예외가 발생한다.
+     * then 구간 내에 존재하지 않는 역들이기 때문에 구간을 추가할 수 없다.
      */
     @Test
     @DisplayName("노선 구간이 기존 역에 존재하지 않으면 예외를 발생시킨다.")
