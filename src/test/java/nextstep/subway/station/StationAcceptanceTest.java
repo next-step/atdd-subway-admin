@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static nextstep.subway.station.StationTestFixture.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -110,40 +110,6 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = requestGetAllStation();
         List<StationResponse> stations = response.jsonPath().getList(".",StationResponse.class);
         assertThat(stations).isEmpty();
-    }
-
-    ExtractableResponse<Response> requestCreateStation(String name){
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        return requestCreateStation(params);
-    }
-
-    ExtractableResponse<Response> requestCreateStation(Map<String, String> params){
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
-                .extract();
-    }
-
-    ExtractableResponse<Response> requestGetAllStation(){
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract();
-    }
-
-    void requestDeleteStation(long id){
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations/" + id)
-                .then().log().all()
-                .statusCode(HttpStatus.NO_CONTENT.value())
-                .extract();
     }
 
 }
