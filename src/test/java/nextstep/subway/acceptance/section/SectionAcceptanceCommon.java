@@ -20,7 +20,8 @@ public class SectionAcceptanceCommon {
 
     public static ExtractableResponse<Response> 지하철_구간_삭제(long lineId, long stationId) {
         return RestAssured.given().log().all()
-                .when().delete("/lines/{id}/sections?stationId={stationId}",lineId,stationId)
+                .queryParam("stationId",stationId)
+                .when().delete("/lines/{id}/sections",lineId)
                 .then().log().all()
                 .extract();
     }
