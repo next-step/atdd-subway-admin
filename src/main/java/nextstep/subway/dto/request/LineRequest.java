@@ -2,23 +2,22 @@ package nextstep.subway.dto.request;
 
 import nextstep.subway.domain.line.Line;
 
-import java.time.LocalTime;
-
 public class LineRequest {
     private String name;
     private String color;
-    private String startTime;
-    private String endTime;
-    private String intervalTime;
+    private Long upStationId;
+    private Long downStationId;
+    private int distance;
 
-    public LineRequest() {}
+    public LineRequest() {
+    }
 
-    public LineRequest(String name, String color, String startTime, String endTime, String intervalTime) {
+    public LineRequest(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.intervalTime = intervalTime;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
     }
 
     public String getName() {
@@ -29,19 +28,19 @@ public class LineRequest {
         return color;
     }
 
-    public String  getStartTime() {
-        return startTime;
+    public Long getUpStationId() {
+        return upStationId;
     }
 
-    public String getEndTime() {
-        return endTime;
+    public Long getDownStationId() {
+        return downStationId;
     }
 
-    public String getIntervalTime() {
-        return intervalTime;
+    public int getDistance() {
+        return distance;
     }
 
     public Line toLine() {
-        return new Line(name, color, LocalTime.parse(startTime), LocalTime.parse(endTime), intervalTime);
+        return new Line(name, color, distance);
     }
 }

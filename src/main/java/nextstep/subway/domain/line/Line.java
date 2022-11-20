@@ -1,10 +1,14 @@
 package nextstep.subway.domain.line;
 
 import nextstep.subway.domain.BaseEntity;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.request.LineRequest;
+import nextstep.subway.dto.response.StationResponse;
 
 import javax.persistence.*;
-import java.time.LocalTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -18,31 +22,36 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @Column(name = "start_time", nullable = false)
-    private LocalTime startTime;
+    @ManyToOne
+    @JoinColumn(name = "up_station_id")
+    private Station upStation;
 
-    @Column(name = "end_time", nullable = false)
-    private LocalTime endTime;
+    @ManyToOne
+    @JoinColumn(name = "down_station_id")
+    private Station downStation;
 
-    @Column(name = "interval_time", nullable = false)
-    private String intervalTime;
+    private int distance;
 
-    public Line() {}
+    public Line() {
+    }
 
-    public Line(String name, String  color, LocalTime startTime, LocalTime endTime, String intervalTime) {
+    public Line(String name, String color, int distance) {
         this.name = name;
         this.color = color;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.intervalTime = intervalTime;
+        this.distance = distance;
+    }
+
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+        this.name = name;
+        this.color = color;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     public void updateLine(LineRequest lineRequest) {
         this.name = lineRequest.getName();
         this.color = lineRequest.getName();
-        this.startTime = LocalTime.parse(lineRequest.getStartTime());
-        this.endTime = LocalTime.parse(lineRequest.getEndTime());
-        this.intervalTime = lineRequest.getName();
     }
 
     public Long getId() {
@@ -57,15 +66,20 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public LocalTime getStartTime() {
-        return startTime;
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public LocalTime getEndTime() {
-        return endTime;
+    public Station getDownStation() {
+        return downStation;
     }
 
-    public String getIntervalTime() {
-        return intervalTime;
+    public int getDistance() {
+        return distance;
+    }
+
+    public List<StationResponse> getStationResponses() {
+        return Arrays.asList(upStation, downStation).stream().map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 }

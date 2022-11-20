@@ -3,6 +3,8 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.request.LineRequest;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,8 +16,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +29,9 @@ public class LineAcceptanceTest {
     private int port;
 
     @Autowired
+    private StationRepository stationRepository;
+
+    @Autowired
     private DatabaseCleanup databaseCleanup;
 
     @BeforeEach
@@ -37,6 +40,8 @@ public class LineAcceptanceTest {
             RestAssured.port = port;
         }
         databaseCleanup.execute();
+        stationRepository.save(new Station("강남역"));
+        stationRepository.save(new Station("서초역"));
     }
 
     /**
@@ -47,9 +52,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선도 생성 테스트")
     public void crete_line_test() {
         // Given
-        LineRequest lineRequest = new LineRequest("신분당선", "red"
-                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
-                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+        LineRequest lineRequest = new LineRequest("신분당선", "red", Long.valueOf(1), Long.valueOf(2), 5);
 
         // When
         reqeust_register_line(lineRequest);
@@ -68,9 +71,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선도 생성 실패 테스트")
     public void crete_line_with_duplicate_name_test() {
         // Given
-        LineRequest lineRequest = new LineRequest("신분당선", "red"
-                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
-                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+        LineRequest lineRequest = new LineRequest("신분당선", "red", Long.valueOf(1), Long.valueOf(2), 5);
 
         // When
         reqeust_register_line(lineRequest);
@@ -90,12 +91,12 @@ public class LineAcceptanceTest {
     }
 
     private ExtractableResponse<Response> reqeust_register_line(LineRequest lineRequest) {
-        Map<String, String> params = new HashMap<>();
+        Map<String, Object> params = new HashMap<>();
         params.put("name", lineRequest.getName());
         params.put("color", lineRequest.getColor());
-        params.put("startTime", lineRequest.getStartTime());
-        params.put("endTime", lineRequest.getEndTime());
-        params.put("intervalTime", lineRequest.getIntervalTime());
+        params.put("upStationId", lineRequest.getUpStationId());
+        params.put("downStationId", lineRequest.getDownStationId());
+        params.put("distance", lineRequest.getDistance());
 
         return RestAssured.given().log().all()
                 .body(params)
@@ -114,12 +115,8 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선도 목록 조회 테스트")
     public void get_lines_test() {
         // Given
-        LineRequest firstLineRequest = new LineRequest("신분당선", "red"
-                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
-                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
-        LineRequest secondLineRequest = new LineRequest("6호선", "orange"
-                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
-                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+        LineRequest firstLineRequest = new LineRequest("신분당선", "red", Long.valueOf(1), Long.valueOf(2), 5);
+        LineRequest secondLineRequest = new LineRequest("분당선", "green", Long.valueOf(1), Long.valueOf(2), 5);
 
         // When
         reqeust_register_line(firstLineRequest);
@@ -127,7 +124,7 @@ public class LineAcceptanceTest {
         List<String> lineNames = reqeust_get_line_names();
 
         // Then
-        assertThat(lineNames).contains("신분당선", "6호선");
+        assertThat(lineNames).contains("신분당선", "분당선");
     }
 
     /**
@@ -139,12 +136,10 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 조회 테스트")
     public void get_line_test() {
         // Given
-        LineRequest firstLineRequest = new LineRequest("신분당선", "red"
-                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
-                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+        LineRequest lineRequest = new LineRequest("신분당선", "red", Long.valueOf(1), Long.valueOf(2), 5);
 
         // When
-        ExtractableResponse<Response> createLine = reqeust_register_line(firstLineRequest);
+        ExtractableResponse<Response> createLine = reqeust_register_line(lineRequest);
         String name = RestAssured.given().log().all()
                 .pathParam("id", createLine.jsonPath().get("id"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -166,12 +161,8 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 수정 테스트")
     public void update_line_test() {
         // Given
-        LineRequest firstLineRequest = new LineRequest("신분당선", "red"
-                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
-                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
-        LineRequest updateLineRequest = new LineRequest("6호선", "orange"
-                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
-                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+        LineRequest firstLineRequest = new LineRequest("신분당선", "red", Long.valueOf(1), Long.valueOf(2), 5);
+        LineRequest updateLineRequest = new LineRequest("6호선", "green", Long.valueOf(1), Long.valueOf(2), 5);
 
         // When
         ExtractableResponse<Response> createLine = reqeust_register_line(firstLineRequest);
@@ -197,9 +188,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 삭제 테스트")
     public void delete_line_test() {
         // Given
-        LineRequest firstLineRequest = new LineRequest("신분당선", "red"
-                , LocalTime.of(05, 38).format(DateTimeFormatter.ISO_TIME)
-                , LocalTime.of(23, 30).format(DateTimeFormatter.ISO_TIME), "5");
+        LineRequest firstLineRequest = new LineRequest("신분당선", "red", Long.valueOf(1), Long.valueOf(2), 5);
 
         // When
         ExtractableResponse<Response> createLine = reqeust_register_line(firstLineRequest);
