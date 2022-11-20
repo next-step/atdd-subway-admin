@@ -163,4 +163,17 @@ class SectionTest {
         assertThat(line.getStations()).doesNotContain(upStation);
         assertThat(line.totalDistance()).isEqualTo(20);
     }
+    
+    @Test
+    @DisplayName("노선 내 존재하지 않는 라인 제거시 에러 반환")
+    void deleteStationNotContainLineThrowException() {
+        // given
+        Station actual = Station.from("판교역");
+
+        // when
+        // then
+        assertThatThrownBy(() -> line.removeSection(actual))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 역이 존재하지 않습니다.");
+    }
 }

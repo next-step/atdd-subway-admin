@@ -15,6 +15,7 @@ public class Sections {
     private static final String ERROR_MESSAGE_DUPLICATE_UP_DOWN_STATION = "동일한 상행/하행선을 등록할 수 없습니다.";
     private static final String ERROR_MESSAGE_NONE_MATCH_UP_DOWN_STATION = "상행/하행선은 하나라도 입력되어야 합니다.";
     private static final String ERROR_MESSAGE_NOT_NULL_UP_STATION = "상행종점은 필수입니다.";
+    private static final String ERROR_MESSAGE_LINE_NOT_CONTAIN_STATION = "해당 역이 존재하지 않습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -69,6 +70,8 @@ public class Sections {
         Optional<Section> sectionContainUpStation = findSectionContainUpStation(station);
         Optional<Section> sectionContainDownStation = findSectionContainDownStation(station);
 
+        validNotContainSectionByStation(sectionContainUpStation.isPresent(), sectionContainDownStation.isPresent());
+
         if (isStationIntermediateSections(sectionContainUpStation.isPresent(), sectionContainDownStation.isPresent())) {
             joinSections(line, sectionContainDownStation.get(), sectionContainUpStation.get());
         }
@@ -77,15 +80,21 @@ public class Sections {
         sectionContainDownStation.ifPresent(section -> sections.remove(section));
     }
 
+    private void validNotContainSectionByStation(boolean upStation, boolean downStation) {
+        if (!upStation && !downStation) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_LINE_NOT_CONTAIN_STATION);
+        }
+    }
+
+    private boolean isStationIntermediateSections(boolean upStation, boolean downStation) {
+        return upStation && downStation;
+    }
+
     private void joinSections(Line line, Section upSection, Section downSection) {
         Section section = Section.of(upSection.getUpStation(), downSection.getDownStation(),
                 upSection.addDistance(downSection));
         section.toLine(line);
         sections.add(section);
-    }
-
-    private boolean isStationIntermediateSections(boolean upStation, boolean downStation) {
-        return upStation && downStation;
     }
 
     private Optional<Section> findSectionContainUpStation(Station station) {
