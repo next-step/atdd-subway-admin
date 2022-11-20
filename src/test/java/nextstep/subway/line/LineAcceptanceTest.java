@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleaner;
-import nextstep.subway.domain.ErrorMessage;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -19,14 +18,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철호선 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -81,14 +76,10 @@ public class LineAcceptanceTest {
         createLine(new LineRequest(lineName2, "bg-red-600", stationId, anotherStationId, 10));
 
         //when
-        List<String> lineNames = retrieveAllLineNames();
+        Set<String> results = new HashSet<>(retrieveAllLineNames());
 
         //then
-        assertThat(lineNames.size()).isEqualTo(2);
-        assertThat(lineNames.stream()
-                .filter(lineName -> lineName1.equals(lineName) || lineName2.equals(lineName))
-                .collect(Collectors.toSet()).size())
-                .isEqualTo(2);
+        assertThat(results).containsExactly(lineName1, lineName2);
     }
 
     @Test
@@ -102,9 +93,10 @@ public class LineAcceptanceTest {
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
-        assertThat(lineName.equals(retrieveLineName(lineId)))
-                //then
-                .isTrue();
+        String resultLineName = retrieveLineName(lineId);
+
+        //then
+        assertThat(lineName.equals(resultLineName)).isTrue();
     }
 
     @Test
@@ -139,9 +131,10 @@ public class LineAcceptanceTest {
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
-        assertThat(deleteLine(lineId).statusCode())
-                //then
-                .isEqualTo(HttpStatus.NO_CONTENT.value());
+        int resultCode = deleteLine(lineId).statusCode();
+
+        //then
+        assertThat(resultCode).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     /**

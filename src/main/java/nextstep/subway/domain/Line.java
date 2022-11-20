@@ -70,8 +70,8 @@ public class Line extends BaseEntity {
                 .collect(Collectors.toList());
     }
 
-    public void updateRequest(LineUpdateRequest lineUpdateRequest) {
-        this.name = lineUpdateRequest.getName();
-        this.color = lineUpdateRequest.getColor();
+    public void updateNameAndColor(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 }

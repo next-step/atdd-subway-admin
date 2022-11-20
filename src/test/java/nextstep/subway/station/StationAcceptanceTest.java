@@ -14,9 +14,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -75,9 +73,10 @@ public class StationAcceptanceTest {
         createStation(stationName);
 
         // when
-        assertThat(createStationAndGetResponseCode(stationName))
-                // then
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+        int resultCode = createStationAndGetResponseCode(stationName);
+
+        //then
+        assertThat(resultCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -95,16 +94,10 @@ public class StationAcceptanceTest {
         createStation(stationName2);
 
         //when
-        final List<String> stationNames = getStationNames();
+        final Set<String> results = new HashSet<>(getStationNames());
 
         //then
-        //size 테스트
-        assertThat(stationNames.size()).isEqualTo(2);
-        //이름 포함 테스트
-        assertThat(stationNames.stream()
-                .filter(stationName -> stationName.equals(stationName1) || stationName.equals(stationName2))
-                .collect(Collectors.toSet()).size())
-                .isEqualTo(2);
+        assertThat(results).containsExactly(stationName1, stationName2);
     }
 
     /**

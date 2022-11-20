@@ -16,11 +16,11 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
@@ -41,7 +41,7 @@ public class LineService {
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.LINE_NO_FIND_BY_ID.getMessage()));
-        line.updateRequest(lineUpdateRequest);
+        line.updateNameAndColor(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
         lineRepository.save(line);
     }
 
@@ -51,13 +51,9 @@ public class LineService {
 
     private Line lineRequestToLine(LineRequest lineRequest) {
         return new Line(lineRequest.getName(), lineRequest.getColor(),
-                getStationById(lineRequest.getUpStationId()),
-                getStationById(lineRequest.getDownStationId()),
+                stationService.getStationById(lineRequest.getUpStationId()),
+                stationService.getStationById(lineRequest.getDownStationId()),
                 lineRequest.getDistance());
     }
 
-    private Station getStationById(Long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.LINE_NO_FIND_BY_ID.getMessage()));
-    }
 }
