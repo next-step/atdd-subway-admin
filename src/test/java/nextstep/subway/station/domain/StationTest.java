@@ -6,7 +6,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class StationTest {
     @Test
-    void 동등성() {
+    void equals() {
         assertThat(new Station(1L, "강남역")).isEqualTo(new Station(1L, "강남역"));
     }
 }

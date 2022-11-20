@@ -48,6 +48,18 @@ public class Section {
         relocateDownStation(newSection);
     }
 
+    public Section merge(Section other) {
+        return new Section(this.upStation, other.downStation, sum(other.distance));
+    }
+
+    public boolean hasUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
     private void relocateUpStation(Section newSection) {
         if (this.upStation.equals(newSection.upStation)) {
             this.upStation = newSection.getDownStation();
@@ -65,6 +77,10 @@ public class Section {
     private void modifyDistance(Section newSection) {
         validateDistanceOver(newSection.getDistance());
         this.distance = this.distance - newSection.getDistance();
+    }
+
+    public int sum(int distance) {
+        return this.distance + distance;
     }
 
     private void validateDistanceOver(int distance) {

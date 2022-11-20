@@ -25,7 +25,7 @@ class SectionTest {
 
     @DisplayName("구간 추가 반영 - 상행선 일치")
     @Test
-    void modify_upStaion() {
+    void modify_up_station() {
         Section section = new Section(교대역, 삼성역, 10);
         Section newSection = new Section(교대역, 강남역, 5);
 
@@ -39,7 +39,7 @@ class SectionTest {
 
     @DisplayName("구간 추가 반영 - 하행선 일치")
     @Test
-    void modify_downStation() {
+    void modify_down_station() {
         Section section = new Section(교대역, 삼성역, 10);
         Section newSection = new Section(선릉역, 삼성역, 5);
 

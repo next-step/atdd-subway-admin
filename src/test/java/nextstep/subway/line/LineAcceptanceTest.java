@@ -6,8 +6,8 @@ import nextstep.subway.AbstractAcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.LineUpdateRequest;
-import nextstep.subway.station.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +40,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @DisplayName("노선을 생성한다.")
     @Test
-    void requestApiByCreateLine() {
+    void create_line() {
         LineRequest request = new LineRequest("신분당선", "bg-red-600", 서초역.getId(), 교대역.getId(), 10);
 
         ValidatableResponse response = requestApiByCreateLine(request);
@@ -55,7 +55,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @DisplayName("노선 목록을 조회한다.")
     @Test
-    void findAllLines () {
+    void find_all_lines() {
         requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 서초역.getId(), 교대역.getId(), 10));
         requestApiByCreateLine(new LineRequest("분당선", "bg-red-600", 서초역.getId(), 강남역.getId(), 10));
 
@@ -71,7 +71,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @DisplayName("노선을 조회한다.")
     @Test
-    void getLine () {
+    void get_line() {
         Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 서초역.getId(), 교대역.getId(), 10))
             .extract()
             .as(LineResponse.class)
@@ -89,7 +89,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @DisplayName("노선 정보를 수정한다.")
     @Test
-    void updateLine () {
+    void update_line() {
         Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 서초역.getId(), 교대역.getId(), 10))
             .extract()
             .as(LineResponse.class)
@@ -107,7 +107,7 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
      */
     @DisplayName("노선 정보를 삭제한다.")
     @Test
-    void deleteLine () {
+    void delete_line() {
         Long lineId = requestApiByCreateLine(new LineRequest("신분당선", "bg-red-600", 서초역.getId(), 교대역.getId(), 10))
             .extract()
             .as(LineResponse.class)
@@ -153,5 +153,4 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest {
             .when().delete("/lines/{id}", id)
             .then().log().all();
     }
-
 }

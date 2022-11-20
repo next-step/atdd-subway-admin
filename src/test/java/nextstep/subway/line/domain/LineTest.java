@@ -1,13 +1,16 @@
 package nextstep.subway.line.domain;
 
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 class LineTest {
+
+    @DisplayName("노선의 이름과 컬러를 업데이트한다.")
     @Test
-    void 노선_업데이트() {
+    void line_update() {
         Line line = new Line(1L, "2호선", "bg-green-600", new Sections());
         line.updateNameAndColor("5호선", "bg-red-600");
 

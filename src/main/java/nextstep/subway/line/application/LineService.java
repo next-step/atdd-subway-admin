@@ -71,6 +71,15 @@ public class LineService {
         line.addSection(new Section(upStation, downStation, request.getDistance()));
     }
 
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findLine(lineId);
+        Station station = stationRepository.findById(stationId)
+            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 ID 입니다."));
+
+        line.removeSection(station);
+    }
+
     private Line findLine(Long lineId) {
         return lineRepository.findById(lineId)
             .orElseThrow(() -> new IllegalArgumentException(String.format("노선을 찾을 수 없습니다 id = %d", lineId)));
