@@ -3,16 +3,14 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.BaseTest;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.request.LineRequest;
-import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -23,23 +21,14 @@ import java.util.Map;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @DisplayName("지하철 노선 테스트")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-    @LocalServerPort
-    private int port;
-
+public class LineAcceptanceTest extends BaseTest {
     @Autowired
     private StationRepository stationRepository;
 
-    @Autowired
-    private DatabaseCleanup databaseCleanup;
-
     @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleanup.execute();
+    void setUp() {
+        setUpBaseTestEnvironment();
+
         stationRepository.save(new Station("강남역"));
         stationRepository.save(new Station("서초역"));
     }
