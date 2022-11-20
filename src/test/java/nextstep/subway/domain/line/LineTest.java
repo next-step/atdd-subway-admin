@@ -127,7 +127,7 @@ public class LineTest {
         @DisplayName("등록된 구간을 삭제")
         @Test
         void context_with_section_returns_remain_stations() {
-            line.deleteSection(line, jamsilStation);
+            line.deleteSection(jamsilStation);
             assertAll(
                     () -> assertThat(line.getStations()).hasSize(2),
                     () -> assertThat(line.getStations()).containsExactly(gangnamStation, bangbaeStation)
@@ -137,7 +137,7 @@ public class LineTest {
         @DisplayName("주어진 역이 노선안에 없는경우 예외발생")
         @Test
         void context_with_station_not_in_line_throw_exception() {
-            assertThatThrownBy(() -> line.deleteSection(line, new Station("상일역")))
+            assertThatThrownBy(() -> line.deleteSection(new Station("상일역")))
                     .isInstanceOf(SectionsException.class)
                     .hasMessage("등록안된 구간입니다");
         }
@@ -145,8 +145,8 @@ public class LineTest {
         @DisplayName("주어진 역이 노선안에 있고 노선안에 구간이 하나만 남은경우 예외발생")
         @Test
         void context_with_station_in_single_line_throw_exception() {
-            line.deleteSection(line, jamsilStation);
-            assertThatThrownBy(() -> line.deleteSection(line, gangnamStation))
+            line.deleteSection(jamsilStation);
+            assertThatThrownBy(() -> line.deleteSection(gangnamStation))
                     .isInstanceOf(SectionsException.class)
                     .hasMessage("마지막구간은 삭제할 수 없습니다");
         }
