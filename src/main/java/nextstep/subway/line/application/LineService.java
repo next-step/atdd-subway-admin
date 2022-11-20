@@ -1,5 +1,6 @@
 package nextstep.subway.line.application;
 
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.line.domain.Section;
@@ -29,10 +30,8 @@ public class LineService {
 
     @Transactional
     public LineResponse createLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-            .orElseThrow(() -> new IllegalArgumentException(String.format("역을 찾을 수 없습니다 id = %d", lineRequest.getUpStationId())));
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-            .orElseThrow(() -> new IllegalArgumentException(String.format("역을 찾을 수 없습니다 id = %d", lineRequest.getDownStationId())));
+        Station upStation = findStation(lineRequest.getUpStationId(), String.format("역을 찾을 수 없습니다 id = %d", lineRequest.getUpStationId()));
+        Station downStation = findStation(lineRequest.getDownStationId(), String.format("역을 찾을 수 없습니다 id = %d", lineRequest.getDownStationId()));
         Line saveLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.from(saveLine);
     }
@@ -64,20 +63,22 @@ public class LineService {
     @Transactional
     public void addSection(Long lineId, SectionRequest request) {
         Line line = findLine(lineId);
-        Station upStation = stationRepository.findById(request.getUpStationId())
-            .orElseThrow(() -> new IllegalArgumentException(String.format("역을 찾을 수 없습니다 id = %d", request.getUpStationId())));
-        Station downStation = stationRepository.findById(request.getDownStationId())
-            .orElseThrow(() -> new IllegalArgumentException(String.format("역을 찾을 수 없습니다 id = %d", request.getDownStationId())));
-        line.addSection(new Section(upStation, downStation, request.getDistance()));
+        Station upStation = findStation(request.getUpStationId(), String.format("역을 찾을 수 없습니다 id = %d", request.getUpStationId()));
+        Station downStation = findStation(request.getDownStationId(), String.format("역을 찾을 수 없습니다 id = %d", request.getDownStationId()));
+        line.addSection(new Section(upStation, downStation, Distance.from(request.getDistance())));
     }
 
     @Transactional
     public void removeSectionByStationId(Long lineId, Long stationId) {
         Line line = findLine(lineId);
-        Station station = stationRepository.findById(stationId)
-            .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철 ID 입니다."));
+        Station station = findStation(stationId, "존재하지 않는 지하철 ID 입니다.");
 
         line.removeSection(station);
+    }
+
+    private Station findStation(Long request, String request1) {
+        return stationRepository.findById(request)
+            .orElseThrow(() -> new IllegalArgumentException(request1));
     }
 
     private Line findLine(Long lineId) {

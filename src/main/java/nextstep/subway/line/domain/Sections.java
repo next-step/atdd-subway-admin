@@ -17,6 +17,9 @@ public class Sections {
     @JoinColumn(name = "lineId")
     private List<Section> sections = new ArrayList<>();
 
+    public Sections() {
+    }
+
     public List<Station> getStations() {
         return sections.stream()
             .flatMap(section -> section.getStations().stream())

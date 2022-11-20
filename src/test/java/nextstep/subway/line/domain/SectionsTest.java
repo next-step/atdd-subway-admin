@@ -29,7 +29,7 @@ class SectionsTest {
     @Test
     void add() {
         Sections sections = new Sections();
-        sections.add(new Section(교대역, 강남역, 10));
+        sections.add(new Section(교대역, 강남역, Distance.from(10)));
 
         assertThat(sections.getStations()).contains(교대역, 강남역);
     }
@@ -38,9 +38,9 @@ class SectionsTest {
     @Test
     void add_already_contains_all() {
         Sections sections = new Sections();
-        sections.add(new Section(교대역, 강남역, 10));
+        sections.add(new Section(교대역, 강남역, Distance.from(10)));
 
-        assertThatThrownBy(() -> sections.add(new Section(교대역, 강남역, 10)))
+        assertThatThrownBy(() -> sections.add(new Section(교대역, 강남역, Distance.from(10))))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -48,9 +48,9 @@ class SectionsTest {
     @Test
     void add_not_contains_any() {
         Sections sections = new Sections();
-        sections.add(new Section(교대역, 강남역, 10));
+        sections.add(new Section(교대역, 강남역, Distance.from(10)));
 
-        assertThatThrownBy(() -> sections.add(new Section(선릉역, 삼성역, 10)))
+        assertThatThrownBy(() -> sections.add(new Section(선릉역, 삼성역, Distance.from(10))))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -59,9 +59,9 @@ class SectionsTest {
     @ValueSource(ints = {10, 20})
     void add_distance_over(int distance) {
         Sections sections = new Sections();
-        sections.add(new Section(교대역, 삼성역, 10));
+        sections.add(new Section(교대역, 삼성역, Distance.from(10)));
 
-        assertThatThrownBy(() -> sections.add(new Section(교대역, 강남역, distance)))
+        assertThatThrownBy(() -> sections.add(new Section(교대역, 강남역, Distance.from(distance))))
             .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -69,8 +69,8 @@ class SectionsTest {
     @Test
     void remove_section_up_station() {
         Sections sections = new Sections();
-        sections.add(new Section(1L, 교대역, 강남역, 10));
-        sections.add(new Section(2L, 강남역, 선릉역, 10));
+        sections.add(new Section(1L, 교대역, 강남역, Distance.from(10)));
+        sections.add(new Section(2L, 강남역, 선릉역, Distance.from(10)));
 
         sections.removeSectionByStation(교대역);
 
@@ -84,8 +84,8 @@ class SectionsTest {
     @Test
     void remove_section_down_station() {
         Sections sections = new Sections();
-        sections.add(new Section(1L, 교대역, 강남역, 10));
-        sections.add(new Section(2L, 강남역, 선릉역, 10));
+        sections.add(new Section(1L, 교대역, 강남역, Distance.from(10)));
+        sections.add(new Section(2L, 강남역, 선릉역, Distance.from(10)));
 
         sections.removeSectionByStation(선릉역);
 
@@ -99,8 +99,8 @@ class SectionsTest {
     @Test
     void remove_section_mid_station() {
         Sections sections = new Sections();
-        sections.add(new Section(1L, 교대역, 강남역, 10));
-        sections.add(new Section(2L, 강남역, 선릉역, 10));
+        sections.add(new Section(1L, 교대역, 강남역, Distance.from(10)));
+        sections.add(new Section(2L, 강남역, 선릉역, Distance.from(10)));
 
         sections.removeSectionByStation(강남역);
         assertAll(
@@ -113,8 +113,8 @@ class SectionsTest {
     @Test
     void remove_section_not_contains_station() {
         Sections sections = new Sections();
-        sections.add(new Section(1L, 교대역, 강남역, 10));
-        sections.add(new Section(2L, 강남역, 선릉역, 10));
+        sections.add(new Section(1L, 교대역, 강남역, Distance.from(10)));
+        sections.add(new Section(2L, 강남역, 선릉역, Distance.from(10)));
 
         assertThatThrownBy(() -> sections.removeSectionByStation(삼성역))
             .isInstanceOf(IllegalArgumentException.class);
@@ -124,7 +124,7 @@ class SectionsTest {
     @Test
     void remove_section_only_section_stations() {
         Sections sections = new Sections();
-        sections.add(new Section(1L, 교대역, 강남역, 10));
+        sections.add(new Section(1L, 교대역, 강남역, Distance.from(10)));
 
         assertThatThrownBy(() -> sections.removeSectionByStation(교대역))
             .isInstanceOf(IllegalStateException.class);
@@ -133,14 +133,14 @@ class SectionsTest {
     @DisplayName("구간 병합")
     @Test
     void merge() {
-        Section upSection = new Section(1L, 교대역, 강남역, 10);
-        Section downSection = new Section(2L, 강남역, 선릉역, 10);
+        Section upSection = new Section(1L, 교대역, 강남역, Distance.from(10));
+        Section downSection = new Section(2L, 강남역, 선릉역, Distance.from(10));
 
         Section combine = upSection.merge(downSection);
         assertAll(
             () -> assertThat(combine.getUpStation()).isEqualTo(교대역),
             () -> assertThat(combine.getDownStation()).isEqualTo(선릉역),
-            () -> assertThat(combine.getDistance()).isEqualTo(20)
+            () -> assertThat(combine.getDistance()).isEqualTo(Distance.from(20))
         );
     }
 }

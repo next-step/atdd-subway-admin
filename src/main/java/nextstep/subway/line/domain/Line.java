@@ -103,6 +103,6 @@ public class Line extends BaseEntity {
     private Line(Builder builder) {
         this.name = builder.name;
         this.color = builder.color;
-        this.addSection(new Section(builder.upStation, builder.downStation, builder.distance));
+        this.addSection(new Section(builder.upStation, builder.downStation, Distance.from(builder.distance)));
     }
 }

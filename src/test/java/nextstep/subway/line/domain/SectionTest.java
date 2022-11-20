@@ -26,28 +26,28 @@ class SectionTest {
     @DisplayName("구간 추가 반영 - 상행선 일치")
     @Test
     void modify_up_station() {
-        Section section = new Section(교대역, 삼성역, 10);
-        Section newSection = new Section(교대역, 강남역, 5);
+        Section section = new Section(교대역, 삼성역, Distance.from(10));
+        Section newSection = new Section(교대역, 강남역, Distance.from(5));
 
         section.relocate(newSection);
         assertAll(
             () -> assertThat(section.getUpStation()).isEqualTo(강남역),
             () -> assertThat(section.getDownStation()).isEqualTo(삼성역),
-            () -> assertThat(section.getDistance()).isEqualTo(5L)
+            () -> assertThat(section.getDistance()).isEqualTo(Distance.from(5))
         );
     }
 
     @DisplayName("구간 추가 반영 - 하행선 일치")
     @Test
     void modify_down_station() {
-        Section section = new Section(교대역, 삼성역, 10);
-        Section newSection = new Section(선릉역, 삼성역, 5);
+        Section section = new Section(교대역, 삼성역, Distance.from(10));
+        Section newSection = new Section(선릉역, 삼성역, Distance.from(5));
 
         section.relocate(newSection);
         assertAll(
             () -> assertThat(section.getUpStation()).isEqualTo(교대역),
             () -> assertThat(section.getDownStation()).isEqualTo(선릉역),
-            () -> assertThat(section.getDistance()).isEqualTo(5L)
+            () -> assertThat(section.getDistance()).isEqualTo(Distance.from(5))
         );
     }
 
@@ -55,8 +55,8 @@ class SectionTest {
     @DisplayName("구간 추가 반영 - 거리 기존 역 사이 거리보다 크거나 같은 경우")
     @Test
     void modify_IllegalArgumentException() {
-        Section section = new Section(교대역, 삼성역, 10);
-        Section newSection = new Section(교대역, 선릉역, 15);
+        Section section = new Section(교대역, 삼성역, Distance.from(10));
+        Section newSection = new Section(교대역, 선릉역, Distance.from(15));
 
         assertThatThrownBy(() -> section.relocate(newSection))
             .isInstanceOf(IllegalArgumentException.class);
