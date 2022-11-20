@@ -10,7 +10,9 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
+    private static final int MINIMUM_SECTIONS_SIZE = 3;
+
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
 
@@ -46,20 +48,38 @@ public class Sections {
             return;
         }
 
-        Optional<Section> matchDownSection = findMatchSectionByDownStation(downStation);
-        Optional<Section> matchUpSection = findMatchSectionByUpStation(upStation);
+        Optional<Section> matchedSectionByDownStation = findMatchSectionByDownStation(downStation);
+        Optional<Section> matchedSectionByUpStation = findMatchSectionByUpStation(upStation);
 
-        validStation(matchDownSection, matchUpSection);
+        validForAddSection(matchedSectionByDownStation, matchedSectionByUpStation);
 
-        insertSectionIntoFrontSide(upStation, distance, line, matchDownSection);
-        insertSectionIntoBackSide(downStation, distance, line, matchUpSection);
+        insertSectionIntoFrontSide(upStation, distance, line, matchedSectionByDownStation);
+        insertSectionIntoBackSide(downStation, distance, line, matchedSectionByUpStation);
 
+    }
+
+    public void deleteSection(Station station) {
+        Section matchedSectionByDownStation = findMatchSectionByDownStation(station)
+                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 역입니다."));
+        Section matchedSectionByUpStation = findMatchSectionByUpStation(station)
+                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 역입니다."));
+
+        validForDeleteSection();
+
+        matchedSectionByUpStation.changeUpStationForDelete(matchedSectionByDownStation);
+        sections.remove(matchedSectionByDownStation);
+    }
+
+    private void validForDeleteSection() {
+        if (sections.size() == MINIMUM_SECTIONS_SIZE) {
+            throw new IllegalArgumentException("구간이 하나인 상태에서는 삭제할 수 없습니다.");
+        }
     }
 
     private void insertSectionIntoBackSide(Station downStation, Integer distance, Line line, Optional<Section> matchUpSection) {
         if (matchUpSection.isPresent()) {
             Section section = matchUpSection.get();
-            Section newSection = section.changeDownStation(downStation, distance);
+            Section newSection = section.changeDownStationForAdd(downStation, distance);
             addSection(newSection, line);
         }
     }
@@ -67,12 +87,12 @@ public class Sections {
     private void insertSectionIntoFrontSide(Station upStation, Integer distance, Line line, Optional<Section> matchDownSection) {
         if (matchDownSection.isPresent()) {
             Section section = matchDownSection.get();
-            Section newSection = section.changeUpStation(upStation, distance);
+            Section newSection = section.changeUpStationForAdd(upStation, distance);
             addSection(newSection, line);
         }
     }
 
-    private static void validStation(Optional<Section> matchDownSection, Optional<Section> matchUpSection) {
+    private static void validForAddSection(Optional<Section> matchDownSection, Optional<Section> matchUpSection) {
         if (matchDownSection.isPresent() && matchUpSection.isPresent()) {
             throw new IllegalArgumentException("이미 등록되어 있는 역 입니다.");
         }

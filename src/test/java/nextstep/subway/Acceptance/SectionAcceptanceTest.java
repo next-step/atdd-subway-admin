@@ -30,7 +30,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     @BeforeEach
     public void setUpData() {
         강남역 = 지하철역_신규_생성_요청("강남역").as(StationResponse.class);
-        정자역 = 지하철역_신규_생성_요청("광교역").as(StationResponse.class);
+        정자역 = 지하철역_신규_생성_요청("정자역").as(StationResponse.class);
         신분당선 = 지하철_노선_신규_생성_요청("신분당선", "bg-red-600", 강남역.getId(), 정자역.getId()).as(LineResponse.class);
     }
 
@@ -124,7 +124,7 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     }
 
     /**
-     * Given 서초역과 교대역을 생성고
+     * Given 서초역과 교대역을 생성하고
      * When 신분당선에 서초역과 교대역을 등록하면
      * Then 두 역이 신분당선에 포함되어 있지 않기 때문에 등록할 수 없다.
      */
@@ -142,6 +142,102 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
+
+    /**
+     * When 신분당선에서 강남역을 제거하면
+     * Then 구간이 하나인 노선에서는 역을 제거할 수 없다.
+     */
+    @DisplayName("구간이 하나인 노선에서는 역을 제거할 수 없다.")
+    @Test
+    void one_section_line_delete_not_allow() {
+        //when
+        ExtractableResponse<Response> response = 지하철_역_제거_요청(신분당선.getId(), 강남역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 광교역을 생성하고,
+     * When 신분당선에서 광교역을 제거하면
+     * Then 신분당선에 등록된 역이 아니기 떄문에 제거할 수 없다.
+     */
+    @DisplayName("구간에 포함되지 않는 역은 제거할 수 없다.")
+    @Test
+    void not_included_station_can_not_delete () {
+        //given
+        StationResponse 광교역 = 지하철역_신규_생성_요청("광교역").as(StationResponse.class);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_역_제거_요청(신분당선.getId(), 광교역.getId());
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 광교역을 생성하고,
+     * Given 신분당선에 광교역을 하행 종점으로 추가하고,
+     * When 강남역을 제거하면
+     * Then 신분당선에서 강남역이 제거되고
+     * Then 상행 종점은 정자이다.
+     */
+    @DisplayName("구간이 두개 이상인 노선에서 상행 종점을 제거하면 다음 역이 상행 종점이 된다.")
+    @Test
+    void delete_up_station() {
+        //given
+        StationResponse 광교역 = 지하철역_신규_생성_요청("광교역").as(StationResponse.class);
+        지하철_구간_신규_등록_요청(신분당선.getId(), 정자역.getId(), 광교역.getId(), 10);
+        //when
+        ExtractableResponse<Response> response = 지하철_역_제거_요청(신분당선.getId(), 강남역.getId());
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId()))
+                .containsExactly((int)(long)정자역.getId(), (int)(long)광교역.getId());
+    }
+
+    /**
+     * Given 신사역을 생성하고,
+     * Given 신분당선에 신사역을 상행 종점으로 추가하고,
+     * When 정자역을 제거하면
+     * Then 신분당선에서 정자역이 제거되고
+     * Then 하행 종점은 강남역이된다.
+     */
+    @DisplayName("구간이 두개 이상인 노선에서 하행 종점을 제거하면 다음 역이 하행 종점이 된다.")
+    @Test
+    void delete_down_station () {
+        //given
+        StationResponse 신사역 = 지하철역_신규_생성_요청("신사역").as(StationResponse.class);
+        지하철_구간_신규_등록_요청(신분당선.getId(), 신사역.getId(), 강남역.getId(), 10);
+        //when
+        ExtractableResponse<Response> response = 지하철_역_제거_요청(신분당선.getId(), 정자역.getId());
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId()))
+                .containsExactly((int)(long)신사역.getId(), (int)(long)강남역.getId());
+    }
+
+    /**
+     * Given 광교역을 생성하고
+     * Given 신분당선에 정자역 하행으로 광교역을 추가하고,
+     * When 신분당선에서 정자역을 제거하면
+     * Then 강남역 다음 역은 광교역이 된다.
+     */
+    @DisplayName("구간이 세개인 노선에 가운데 역을 제거할 수 있다.")
+    @Test
+    void delete_middle_station() {
+        //given
+        StationResponse 광교역 = 지하철역_신규_생성_요청("광교역").as(StationResponse.class);
+        지하철_구간_신규_등록_요청(신분당선.getId(), 정자역.getId(), 광교역.getId(), 10);
+        //when
+        ExtractableResponse<Response> response = 지하철_역_제거_요청(신분당선.getId(), 정자역.getId());
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        assertThat(지하철_노선_단일_조회_및_소속_역_아이디_조회(신분당선.getId()))
+                .containsExactly((int)(long)강남역.getId(), (int)(long)광교역.getId());
+    }
+
+
 
     private ExtractableResponse<Response> 지하철_구간_신규_등록_요청(Long lineId, Long upStationId, Long downStationId, int distance) {
         HashMap<String, Object> param = new HashMap<>();
@@ -164,5 +260,12 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
                 .statusCode(HttpStatus.OK.value())
                 .extract().jsonPath()
                 .getList("stations.id");
+    }
+
+    private ExtractableResponse<Response> 지하철_역_제거_요청(Long lineId, Long deleteStationId) {
+        return RestAssured.given().log().all()
+                .when().delete("/lines/" + lineId + "/sections?stationId=" + deleteStationId)
+                .then().log().all()
+                .extract();
     }
 }

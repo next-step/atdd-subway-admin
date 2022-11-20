@@ -14,7 +14,8 @@ import javax.persistence.ManyToOne;
 @Entity
 public class Section extends BaseEntity {
 
-    public static final int END_SECTION_DISTANCE = 0;
+    private static final int END_SECTION_DISTANCE = 0;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -31,7 +32,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station"))
     private Station downStation;
 
-    Integer distance;
+    private Integer distance;
 
     public static List<Section> makeInitialSections(Station upStation, Station downStation, Integer distance) {
         return Arrays.asList(
@@ -66,23 +67,43 @@ public class Section extends BaseEntity {
         return line;
     }
 
-    public Section changeUpStation(Station upStation, Integer distance) {
-        Section section = new Section(line, this.upStation, upStation, calDistance(distance));
+    public Section changeUpStationForAdd(Station upStation, Integer distance) {
+        Section section = new Section(line, this.upStation, upStation, calAddDistance(distance));
         setUpStation(upStation);
         setDistance(distance);
         return section;
     }
 
-    public Section changeDownStation(Station downStation, Integer distance) {
-        Section section = new Section(line, downStation, this.downStation, calDistance(distance));
+    public Section changeDownStationForAdd(Station downStation, Integer distance) {
+        Section section = new Section(line, downStation, this.downStation, calAddDistance(distance));
         setDownStation(downStation);
         setDistance(distance);
         return section;
     }
 
-    private Integer calDistance(Integer distance) {
-        if (isEndSection(distance)) {
-            return distance;
+    public void changeUpStationForDelete(Section section) {
+        setUpStation(section.upStation);
+        setDistance(calDeleteDistance(section));
+    }
+
+    public void setLine(Line line) {
+        if (this.line != null) {
+            this.line.getSections().remove(this);
+        }
+        this.line = line;
+        line.addSection(this);
+    }
+
+    private int calDeleteDistance(Section section) {
+        if (isEndSection()) {
+            return END_SECTION_DISTANCE;
+        }
+        return this.distance + section.distance;
+    }
+
+    private Integer calAddDistance(Integer distance) {
+        if (isEndSection()) {
+            return END_SECTION_DISTANCE;
         }
 
         if (distance >= this.distance) {
@@ -92,7 +113,7 @@ public class Section extends BaseEntity {
         return this.distance - distance;
     }
 
-    private boolean isEndSection(Integer distance) {
+    private boolean isEndSection() {
         return downStation == null || upStation == null;
     }
 
@@ -106,13 +127,5 @@ public class Section extends BaseEntity {
 
     private void setDistance(Integer distance) {
         this.distance = distance;
-    }
-
-    public void setLine(Line line) {
-        if (this.line != null) {
-            this.line.getSections().remove(this);
-        }
-        this.line = line;
-        line.addSection(this);
     }
 }
