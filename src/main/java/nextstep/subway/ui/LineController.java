@@ -5,6 +5,8 @@ import nextstep.subway.domain.LineRepository;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionCreateRequest;
+import nextstep.subway.dto.SectionCreateResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -68,9 +70,16 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
+    /* 노선 구간 생성 */
+    @PostMapping(value = "/{id}/sections")
+    public ResponseEntity<SectionCreateResponse> createSection(@PathVariable(value = "id") long id,
+            @RequestBody SectionCreateRequest request) {
+        SectionCreateResponse response = lineService.createSection(id, request);
+        return ResponseEntity.ok(response);
+    }
+
+    @ExceptionHandler({ IllegalArgumentException.class, IllegalStateException.class })
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
-
 }
