@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -28,7 +29,15 @@ public class Section {
     protected Section() {
     }
 
+
     public Section(Station upStation, Station downStation, int distance) {
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public Section(long id, Station upStation, Station downStation, int distance) {
+        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -82,5 +91,26 @@ public class Section {
 
     public int getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Section section = (Section) o;
+        return distance == section.distance
+            && Objects.equals(id, section.id)
+            && Objects.equals(lineId, section.lineId)
+            && Objects.equals(upStation, section.upStation)
+            && Objects.equals(downStation, section.downStation);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, lineId, upStation, downStation, distance);
     }
 }
