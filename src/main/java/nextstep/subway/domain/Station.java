@@ -10,7 +10,10 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public Station() {
+    public Station() {}
+
+    public Station(Long id) {
+        this.id = id;
     }
 
     public Station(String name) {

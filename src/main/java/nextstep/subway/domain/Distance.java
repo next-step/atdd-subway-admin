@@ -27,4 +27,8 @@ public class Distance {
         }
         this.distance -= distance.distance;
     }
+
+    public Long getDistance() {
+        return distance;
+    }
 }

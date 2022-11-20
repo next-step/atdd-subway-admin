@@ -57,6 +57,10 @@ public class Section {
         return downStation;
     }
 
+    public Distance getDistance() {
+        return distance;
+    }
+
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
     }
