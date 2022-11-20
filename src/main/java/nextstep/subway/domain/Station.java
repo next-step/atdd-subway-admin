@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
 import javax.persistence.*;
 
 @Entity
@@ -35,5 +36,10 @@ public class Station extends BaseEntity {
         }
         return id != null
                 && id.equals(((Station) obj).getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }
