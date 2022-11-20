@@ -1,6 +1,6 @@
-package nextstep.subway.dto;
+package nextstep.subway.line.dto;
 
-import nextstep.subway.domain.Line;
+import nextstep.subway.line.Line;
 
 public class UpdateLineRequest {
 

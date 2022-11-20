@@ -1,16 +1,16 @@
-package nextstep.subway.application;
+package nextstep.subway.line;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.UpdateLineRequest;
-import nextstep.subway.exception.NoLineException;
-import nextstep.subway.exception.NoStationException;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
+import nextstep.subway.line.dto.SectionRequest;
+import nextstep.subway.line.dto.SectionResponse;
+import nextstep.subway.line.dto.UpdateLineRequest;
+import nextstep.subway.line.exception.NoLineException;
+import nextstep.subway.line.exception.NoStationException;
+import nextstep.subway.station.Station;
+import nextstep.subway.station.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,8 +43,7 @@ public class LineService {
     }
 
     public LineResponse getLine(final Long id) {
-        Line line = findLine(id);
-        return LineResponse.of(line);
+        return LineResponse.of(findLine(id));
     }
 
     @Transactional
@@ -58,6 +57,14 @@ public class LineService {
         lineRepository.delete(findLine(id));
     }
 
+    @Transactional
+    public void addSection(final Long id, final SectionRequest request) {
+        Line line = findLine(id);
+        Section section = new Section(findStation(request.getUpStationId()),
+            findStation(request.getDownStationId()), request.getDistance());
+        line.addSection(section);
+    }
+
     private Line findLine(Long id) {
         return lineRepository.findById(id).orElseThrow(NoLineException::new);
     }
@@ -65,5 +72,13 @@ public class LineService {
     public Station findStation(final Long stationId) {
         return stationRepository.findById(stationId)
             .orElseThrow(NoStationException::new);
+    }
+
+    public List<SectionResponse> getSections(final Long id) {
+        Line line = findLine(id);
+        Sections sections = line.getSections();
+        return sections.getSections().stream()
+            .map(SectionResponse::of)
+            .collect(Collectors.toList());
     }
 }
