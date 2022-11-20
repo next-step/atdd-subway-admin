@@ -143,7 +143,7 @@ public class LineAcceptanceTest {
         String name = RestAssured.given().log().all()
                 .pathParam("id", createLine.jsonPath().get("id"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/line/{id}")
+                .when().get("/lines/{id}")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract().jsonPath().get("name");
@@ -170,7 +170,7 @@ public class LineAcceptanceTest {
                 .pathParam("id", createLine.jsonPath().get("id"))
                 .body(updateLineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/line/{id}")
+                .when().put("/lines/{id}")
                 .then().log().all()
                 .statusCode(HttpStatus.OK.value())
                 .extract().jsonPath().get("name");
@@ -195,7 +195,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .pathParam("id", createLine.jsonPath().get("id"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/line/{id}")
+                .when().delete("/lines/{id}")
                 .then().log().all()
                 .extract();
 
