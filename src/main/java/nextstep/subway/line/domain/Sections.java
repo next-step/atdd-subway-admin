@@ -22,7 +22,7 @@ public class Sections {
             validateSection(section);
             validateContainsSection(section);
             if (isSameUpStation(section.getUpStation())) {
-                if (section.getDistance().equals(isSameUpStationDistance(section.getUpStation()))) {
+                if (section.getDistance().equals(isSameUpStationDistance(section.getUpStation())) || section.getDistance().compareTo(isSameUpStationDistance(section.getUpStation())) < 0) {
                     throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
                 }
                 for (int i = 0; i < this.sections.size(); i++) {

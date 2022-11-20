@@ -29,6 +29,10 @@ public class SectionFixture {
     public static Section 논현역_강남역_구간() {
         return new Section(5L, LineFixture.이호선(), 논현역(), 강남역(), new Distance(논현역_강남역_거리));
     }
+
+    public static Section 논현역_강남역_구간_짧은거리() {
+        return new Section(5L, LineFixture.이호선(), 논현역(), 강남역(), new Distance(2));
+    }
     
     public static Section 역삼역_선릉역_구간() {
         return new Section(5L, LineFixture.이호선(), 역삼역(), 선릉역(), new Distance(논현역_강남역_거리));
