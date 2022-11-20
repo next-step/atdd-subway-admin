@@ -94,26 +94,22 @@ public class Sections {
                 .orElseThrow(NotFoundException::new);
     }
 
-    private void validateDuplicated(Section section){
+    private void validateDuplicated(Section section) {
         boolean anyMatch = sections.stream()
-                .anyMatch(it ->
-                        it.getUpStation() == section.getUpStation()
-                                && it.getDownStation() == section.getDownStation()
-                );
-        if(anyMatch){
+                .anyMatch(it -> it.getUpStation() == section.getUpStation()
+                        && it.getDownStation() == section.getDownStation());
+        if (anyMatch) {
             throw new IllegalArgumentException();
         }
     }
 
-    private void validateNotMatchedStation(Section section){
+    private void validateNotMatchedStation(Section section) {
         boolean anyMatch = sections.stream()
-                .anyMatch(it ->
-                        it.getUpStation() == section.getUpStation()
-                                || it.getUpStation() == section.getDownStation()
-                                || it.getDownStation() == section.getUpStation()
-                                || it.getDownStation() == section.getDownStation()
-                );
-        if(!anyMatch){
+                .anyMatch(it -> it.getUpStation() == section.getUpStation()
+                        || it.getUpStation() == section.getDownStation()
+                        || it.getDownStation() == section.getUpStation()
+                        || it.getDownStation() == section.getDownStation());
+        if (!anyMatch) {
             throw new IllegalArgumentException();
         }
     }
