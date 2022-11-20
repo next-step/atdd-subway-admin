@@ -36,6 +36,13 @@ public class Sections {
                 if (section.getDistance().equals(isSameDownStationDistance(section.getDownStation())) || section.getDistance().compareTo(isSameDownStationDistance(section.getDownStation())) < 0) {
                     throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
                 }
+                for (int i = 0; i < this.sections.size(); i++) {
+                    if (this.sections.get(i).getDownStation().equals(section.getDownStation())) {
+                        Section section1 = this.sections.get(i);
+                        this.sections.remove(this.sections.get(i));
+                        this.sections.add(new Section(section.getLine(), section1.getUpStation(), section.getUpStation(), new Distance(section1.getDistance().getDistance() - section.getDistance().getDistance())));
+                    }
+                }
             }
         }
         this.sections.add(section);

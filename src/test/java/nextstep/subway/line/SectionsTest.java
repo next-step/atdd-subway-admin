@@ -81,12 +81,22 @@ class SectionsTest {
         assertThat(sections.getStations()).containsExactly(논현역(), 신논현역(), 강남역());
     }
 
-    @DisplayName("구간 사이에 구간을 추가한다")
+    @DisplayName("구간 사이에 구간을 추가한다 / 상행역을 기준으로 구간을 추가한다.")
     @Test
-    void addBetweenSection() {
+    void addSameUpStation() {
         Sections sections = new Sections();
         sections.add(강남역_선릉역_구간());
         sections.add(강남역_역삼역_구간());
+        assertThat(sections.getStations()).containsExactly(강남역(), 역삼역(), 선릉역());
+        assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_거리);
+    }
+
+    @DisplayName("구간 사이에 구간을 추가한다 / 하행역을 기준으로 구간을 추가한다.")
+    @Test
+    void addSameDownStation() {
+        Sections sections = new Sections();
+        sections.add(강남역_선릉역_구간());
+        sections.add(역삼역_선릉역_구간());
         assertThat(sections.getStations()).containsExactly(강남역(), 역삼역(), 선릉역());
         assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_거리);
     }
