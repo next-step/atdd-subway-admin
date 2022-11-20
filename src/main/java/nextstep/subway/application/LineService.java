@@ -1,5 +1,8 @@
 package nextstep.subway.application;
 
+import static nextstep.subway.constant.Constant.NOT_FOUND_LINE;
+import static nextstep.subway.constant.Constant.NOT_FOUND_STATION;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
@@ -27,9 +30,9 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_STATION));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_STATION));
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.from(persistLine);
     }
@@ -42,29 +45,36 @@ public class LineService {
     }
 
     public LineResponse findById(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException(NOT_FOUND_LINE));
         return LineResponse.from(line);
     }
 
     @Transactional
     public void updateLineById(Long lineId, LineRequest lineRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException(NOT_FOUND_LINE));
         line.updateLine(lineRequest);
     }
 
     @Transactional
     public void delete(Long lineId) {
-        lineRepository.delete(lineRepository.findById(lineId).orElseThrow(NotFoundException::new));
+        lineRepository.delete(lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException(NOT_FOUND_LINE)));
     }
 
     @Transactional
     public void addLineStation(Long lineId, LineStationRequest lineStationRequest) {
         Station upStation = stationRepository.findById(lineStationRequest.getUpStationId())
-                .orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_STATION));
         Station downStation = stationRepository.findById(lineStationRequest.getDownStationId())
-                .orElseThrow(NotFoundException::new);
-        Line line = lineRepository.findById(lineId).orElseThrow(NotFoundException::new);
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND_STATION));
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException(NOT_FOUND_LINE));
         line.addLineStation(
                 lineStationRequest.toLineStation(line, upStation, downStation, lineStationRequest.getDistance()));
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Station removeStation = stationRepository.findById(stationId).orElseThrow(() -> new NotFoundException(NOT_FOUND_STATION));
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundException(NOT_FOUND_LINE));
+        line.remove(removeStation);
     }
 }
