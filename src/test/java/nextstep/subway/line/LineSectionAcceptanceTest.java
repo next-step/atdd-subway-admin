@@ -14,14 +14,18 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,19 +38,20 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationRepository stationRepository;
     private Line line;
-    private Station upStation;
-    private Station downStation;
-    private Station otherUpStation;
-    private Station otherDownStation;
+    private Station gangNamStation;
+    private Station seungSuStation;
+    private Station hongDaeStation;
+    private Station guiStation;
+
 
     @BeforeEach
     void init() {
-        upStation = stationRepository.save(new Station("강남역"));
-        downStation = stationRepository.save(new Station("성수역"));
-        otherUpStation = stationRepository.save(new Station("홍대역"));
-        otherDownStation = stationRepository.save(new Station("구의역"));
+        gangNamStation = stationRepository.save(new Station("강남역"));
+        seungSuStation = stationRepository.save(new Station("성수역"));
+        hongDaeStation = stationRepository.save(new Station("홍대역"));
+        guiStation = stationRepository.save(new Station("구의역"));
         line = new Line("테스트노선", "red");
-        line.addStations(upStation, downStation, 10L);
+        line.addStations(gangNamStation, seungSuStation, 10L);
         lineRepository.save(line);
     }
 
@@ -54,7 +59,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSection() {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), downStation.getId(), otherDownStation.getId(), 8L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), seungSuStation.getId(), guiStation.getId(), 8L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -68,14 +73,14 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addUpStation() {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), otherUpStation.getId(), upStation.getId(), 8L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), hongDaeStation.getId(), gangNamStation.getId(), 8L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findResponse.jsonPath());
         assertThat(isSameSectionCount(sections.size(), 2)).isTrue();
-        assertThat(sections.get(0).getUpStationId()).isEqualTo(otherUpStation.getId());
+        assertThat(sections.get(0).getUpStationId()).isEqualTo(hongDaeStation.getId());
 
     }
 
@@ -83,14 +88,14 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addDownStation() {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), downStation.getId(), otherUpStation.getId(), 8L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), seungSuStation.getId(), hongDaeStation.getId(), 8L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findResponse.jsonPath());
         assertThat(isSameSectionCount(sections.size(), 2)).isTrue();
-        assertThat(sections.get(sections.size() - 1).getDownStationId()).isEqualTo(otherUpStation.getId());
+        assertThat(sections.get(sections.size() - 1).getDownStationId()).isEqualTo(hongDaeStation.getId());
 
     }
 
@@ -98,18 +103,18 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionFailedDuplicate() {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), downStation.getId(), 8L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), gangNamStation.getId(), seungSuStation.getId(), 8L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 
-    @DisplayName("이미 존재하는 구간 사이에 새로운 구간을 등록 할 수 있다.")
+    @DisplayName("이미 존재하는 구간 하나 사이에 새로운 구간을 등록 할 수 있다.")
     @Test
-    void addSectionMiddle() {
+    void addSectionMiddleExistOneSection() {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), otherDownStation.getId(), downStation.getId(), 3L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), guiStation.getId(), seungSuStation.getId(), 3L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -120,12 +125,30 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(isSameDistance(sections.get(1), 3L)).isTrue();
     }
 
+    @DisplayName("이미 여러 구간이 존재하는 구간 사이에 새로운 구간을 등록 할 수 있다.(현재 구간 강남역-화곡역-성수역-온수역 )")
+    @ParameterizedTest
+    @MethodSource("createExpectDistance")
+    void addSectionMiddleExistManySection(List<Long> expectDistance) {
+        //given
+        createManySection();
+
+        //when
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), guiStation.getId(), seungSuStation.getId(), 3L);
+
+        //then
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findResponse.jsonPath());
+        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(expectDistance);
+
+    }
+
     @DisplayName("이미 존재하는 구간 사이에 새로운 구간을 등록 하려고 하나 기존 구간의 길이보다 크거나(11L) , 같아서 저장 할 수 없다.(10L)")
     @ParameterizedTest
-    @ValueSource(longs = {11L,10L})
+    @ValueSource(longs = {11L, 10L})
     void addSectionMiddleFailedDistance(long distance) {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), distance);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), gangNamStation.getId(), guiStation.getId(), distance);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -135,12 +158,11 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void addSectionMiddleNotExsitUpAndDownStation() {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), otherUpStation.getId(), otherDownStation.getId(), 11L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), hongDaeStation.getId(), guiStation.getId(), 11L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
-
 
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> params = new HashMap<>();
@@ -176,5 +198,17 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private boolean isSameSectionCount(int sectionCount, int expect) {
         return sectionCount == expect;
+    }
+
+    private void createManySection() {
+        Station station = stationRepository.save(new Station("화곡역"));
+        createSection(line.getId(), gangNamStation.getId(), station.getId(), 1L);
+        Station otherStation = stationRepository.save(new Station("온수역"));
+        createSection(line.getId(), seungSuStation.getId(), otherStation.getId(), 1L);
+    }
+
+    private static Stream<Arguments> createExpectDistance() {
+        List<Long> distances = Arrays.asList(1L, 6L, 3L, 1L);
+        return Stream.of(Arguments.of(distances));
     }
 }
