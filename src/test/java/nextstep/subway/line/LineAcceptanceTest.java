@@ -140,7 +140,7 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선 생성
      */
-    ExtractableResponse<Response> createLine(LineRequest lineRequest) {
+    static ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         final Map param = new HashMap();
         param.put("name", lineRequest.getName());
         param.put("color", lineRequest.getColor());
@@ -158,7 +158,7 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선 생성 후 id 조회
      */
-    String createLineAndGetId(LineRequest lineRequest) {
+    public static String createLineAndGetId(LineRequest lineRequest) {
         return createLine(lineRequest).jsonPath().get("id").toString();
     }
 

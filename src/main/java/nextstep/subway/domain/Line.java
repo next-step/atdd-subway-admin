@@ -1,10 +1,9 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +26,12 @@ public class Line extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
+    @OneToMany(mappedBy = "line")
+    private List<LineStation> lineStations = new ArrayList<>();
+
+    @OneToMany(mappedBy = "line")
+    private List<Section> sections = new ArrayList<>();
+
     private int distance;
 
     protected Line() {
@@ -39,6 +44,8 @@ public class Line extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
+        lineStations.add(new LineStation(this, upStation));
+        lineStations.add(new LineStation(this, downStation));
     }
 
     public Long getId() {
@@ -66,12 +73,25 @@ public class Line extends BaseEntity {
     }
 
     public List<StationResponse> getStationResponses() {
-        return Arrays.asList(upStation, downStation).stream().map(StationResponse::of)
+        return lineStations.stream().map(LineStation::getStation)
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
     public void updateNameAndColor(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public int compareToDistance(int distance) {
+        return Integer.compare(this.distance, distance);
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+    }
+
+    public void addLineStation(LineStation lineStation) {
+        lineStations.add(lineStation);
     }
 }

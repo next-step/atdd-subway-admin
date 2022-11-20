@@ -33,9 +33,13 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLineById(Long id) {
-        return lineRepository.findById(id).map(LineResponse::of)
+    public Line getLineById(Long id) {
+        return lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.LINE_NO_FIND_BY_ID.getMessage()));
+    }
+
+    public LineResponse findLineById(Long id) {
+        return LineResponse.of(getLineById(id));
     }
 
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
