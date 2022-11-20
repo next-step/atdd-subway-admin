@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -14,7 +15,7 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LineService {
 
     private LineRepository lineRepository;
@@ -25,7 +26,6 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequestToLine(lineRequest));
         return LineResponse.of(persistLine);
@@ -41,23 +41,26 @@ public class LineService {
                 .orElseThrow(() -> new NoSuchElementException("주어진 id로 생성된 지하철호선이 없습니다."));
     }
 
-    private Line lineRequestToLine(LineRequest lineRequest) {
-        return new Line(lineRequest.getName(), lineRequest.getColor(),
-                stationRepository.getById(lineRequest.getUpStationId()),
-                stationRepository.getById(lineRequest.getDownStationId()),
-                lineRequest.getDistance());
-    }
-
-    @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException("주어진 id로 생성된 지하철호선이 없습니다."));
-        lineRepository.save(new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor(),
-                line.getUpStation(), line.getDownStation(), line.getDistance()));
+        line.updateRequest(lineUpdateRequest);
+        lineRepository.save(line);
     }
 
-    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Line lineRequestToLine(LineRequest lineRequest) {
+        return new Line(lineRequest.getName(), lineRequest.getColor(),
+                getStationById(lineRequest.getUpStationId()),
+                getStationById(lineRequest.getDownStationId()),
+                lineRequest.getDistance());
+    }
+
+    private Station getStationById(Long id) {
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("주어진 id로 생성된 지하철호선이 없습니다."));
     }
 }

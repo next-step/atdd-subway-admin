@@ -17,6 +17,7 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,11 +54,12 @@ public class StationAcceptanceTest {
         String stationName = "강남역";
 
         // when
-        assertThat(createStationAndGetResponseCode(stationName))
-                .isEqualTo(HttpStatus.CREATED.value());
+        ExtractableResponse<Response> apiResponse = createStation(stationName);
 
         // then
-        assertThat(getStationNames()).containsAnyOf(stationName);
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(stationName.equals(apiResponse.jsonPath().getObject("name",String.class)))
+                .isTrue();
     }
 
     /**
@@ -100,8 +102,9 @@ public class StationAcceptanceTest {
         assertThat(stationNames.size()).isEqualTo(2);
         //이름 포함 테스트
         assertThat(stationNames.stream()
-                .allMatch(stationName -> stationName.equals(stationName1) || stationName.equals(stationName2)))
-                .isTrue();
+                .filter(stationName -> stationName.equals(stationName1) || stationName.equals(stationName2))
+                .collect(Collectors.toSet()).size())
+                .isEqualTo(2);
     }
 
     /**

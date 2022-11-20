@@ -1,9 +1,9 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,15 +31,6 @@ public class Line extends BaseEntity {
 
     protected Line() {
 
-    }
-
-    public Line(Long id, String name, String color, Station upStation, Station downStation, int distance) {
-        this.id = id;
-        this.name = name;
-        this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {
@@ -77,5 +68,10 @@ public class Line extends BaseEntity {
     public List<StationResponse> getStationResponses() {
         return Arrays.asList(upStation, downStation).stream().map(StationResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public void updateRequest(LineUpdateRequest lineUpdateRequest) {
+        this.name = lineUpdateRequest.getName();
+        this.color = lineUpdateRequest.getColor();
     }
 }

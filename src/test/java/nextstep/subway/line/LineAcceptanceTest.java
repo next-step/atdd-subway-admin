@@ -21,11 +21,9 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철호선 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -58,12 +56,12 @@ public class LineAcceptanceTest {
         Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
 
         //when
-        assertThat(createLineAndGetResponseCode(
-                new LineRequest(lineName,"bg-red-600",upStationId,downStationId,10)))
-                .isEqualTo(HttpStatus.CREATED.value());
+        final ExtractableResponse<Response> apiResponse =
+                createLine(new LineRequest(lineName,"bg-red-600",upStationId,downStationId,10));
 
         //then
-        assertThat(retrieveAllLineNames().stream().anyMatch(lineName::equals))
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(lineName.equals(apiResponse.jsonPath().getObject("name",String.class)))
                 .isTrue();
     }
 
@@ -85,8 +83,9 @@ public class LineAcceptanceTest {
         //then
         assertThat(lineNames.size()).isEqualTo(2);
         assertThat(lineNames.stream()
-                .allMatch(lineName -> lineName1.equals(lineName) || lineName2.equals(lineName)))
-                .isTrue();
+                .filter(lineName -> lineName1.equals(lineName) || lineName2.equals(lineName))
+                .collect(Collectors.toSet()).size())
+                .isEqualTo(2);
     }
 
     @Test
@@ -100,8 +99,8 @@ public class LineAcceptanceTest {
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
-        //then
         assertThat(lineName.equals(retrieveLineName(lineId)))
+                //then
                 .isTrue();
     }
 
@@ -137,12 +136,9 @@ public class LineAcceptanceTest {
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
-        deleteLine(lineId);
-
-        //then
-        assertThat(retrieveAllLines().size()).isEqualTo(0);
-        assertThat(retrieveAllLineNames().stream().anyMatch(lineName::equals))
-                .isFalse();
+        assertThat(deleteLine(lineId).statusCode())
+                //then
+                .isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     /**
@@ -161,13 +157,6 @@ public class LineAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all().extract();
-    }
-
-    /**
-     * 지하철호선 생성 후 http상태코드 조회
-     */
-    int createLineAndGetResponseCode(LineRequest lineRequest) {
-        return createLine(lineRequest).statusCode();
     }
 
     /**
@@ -232,8 +221,8 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선 정보 삭제
      */
-    private void deleteLine(String lineId) {
-        RestAssured.given().log().all()
+    private ExtractableResponse<Response> deleteLine(String lineId) {
+        return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/lines/" + lineId)
                 .then().log().all().extract();
