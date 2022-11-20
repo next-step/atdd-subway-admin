@@ -13,7 +13,7 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
-    public static final int MIN_SECTION_COUNT = 2;
+    private static final int MIN_SECTION_COUNT = 2;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
