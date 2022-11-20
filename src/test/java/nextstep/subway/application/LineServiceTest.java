@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
 import java.util.List;
@@ -135,6 +136,31 @@ class LineServiceTest {
         SectionResponse response = lineService.findSectionResponsesByLineId(lineId);
         assertThat(response.getDistances()).containsOnly(10);
         assertThat(response.getSortNos()).containsExactly("경기 광주역", "중앙역");
+    }
+
+    @DisplayName("노선에 등록되어있지 않은 역을 제거하려 하면 EX 발생")
+    @Test
+    void deleteNotExistsStationOfSections() {
+        Long lineId = lineService.saveLine(lineRequest);
+        station3 = stationRepository.save(new Station("모란역"));
+        Station station4 = stationRepository.save(new Station("미금역"));
+        lineService.addSection(lineId, new SectionRequest(station1.getId(), station3.getId(), 4));
+
+        assertThatExceptionOfType(EntityNotFoundException.class)
+                .isThrownBy(() -> lineService.deleteSectionByStationId(lineId, station4.getId()));
+    }
+
+    @DisplayName("구간이 하나인 노선의 상행 혹은 하행에 해당하는 역을 제거하려 하면 EX 발생")
+    @Test
+    void deleteStationOfOneSectionThenThrow() {
+        Long lineId = lineService.saveLine(lineRequest);
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> lineService.deleteSectionByStationId(lineId, station1.getId()))
+                .withMessageContaining("구간이 하나인 노선은 제거할 수 없습니다.");
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> lineService.deleteSectionByStationId(lineId, station2.getId()))
+                .withMessageContaining("구간이 하나인 노선은 제거할 수 없습니다.");
     }
 
     private void flushAndClear() {

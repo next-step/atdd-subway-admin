@@ -67,14 +67,14 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineService.deleteLineById(id);
+    @DeleteMapping("/{lineId}")
+    public ResponseEntity deleteLine(@PathVariable("lineId") Long lineId) {
+        lineService.deleteLineById(lineId);
         return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{lineId}/sections")
-    public ResponseEntity removeLineStation(@PathVariable Long lineId, @RequestParam Long stationId) {
+    public ResponseEntity removeLineStation(@PathVariable("lineId") Long lineId, @RequestParam Long stationId) {
         lineService.deleteSectionByStationId(lineId, stationId);
         return ResponseEntity.ok().build();
     }

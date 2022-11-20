@@ -127,7 +127,7 @@ class LineAcceptanceTest extends TestFixtures {
         String id = 노선_생성_값_리턴("신분당선", "bg-red-600", 경기광주역ID, 중앙역ID, "10", "id");
 
         //when
-        ExtractableResponse<Response> response = 노선_삭제("/{id}", id);
+        ExtractableResponse<Response> response = 노선_삭제("/{lineId}", id);
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

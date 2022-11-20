@@ -55,7 +55,19 @@ public class Sections {
     }
 
     public void deleteSectionByStation(Line line, Station station) {
+        validateRemoveStationOfOneSection(station);
         removeLastStation(line, station);
+    }
+
+    private void validateRemoveStationOfOneSection(Station station) {
+        if (sections.size() == 1) {
+            findSameUpStation(station).ifPresent(section -> {
+                throw new IllegalArgumentException("구간이 하나인 노선은 제거할 수 없습니다.");
+            });
+            findSameDownStation(station).ifPresent(section -> {
+                throw new IllegalArgumentException("구간이 하나인 노선은 제거할 수 없습니다.");
+            });
+        }
     }
 
     private void removeBetweenStation(Line line, Station station) {
