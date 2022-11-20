@@ -64,16 +64,22 @@ public class Sections {
 
     public void remove(Station removeStation) {
         validateSectionsSize();
-        if (findFirstSection().isEqualToUpStation(removeStation)) {
-            sections.remove(removeStation);
+        Section firstSection = findFirstSection();
+        if (firstSection.isEqualToUpStation(removeStation)) {
+            sections.remove(firstSection);
             return;
         }
-        if (findLastSection().isEqualToDownStation(removeStation)) {
-            sections.remove(removeStation);
+        Section lastSection = findLastSection();
+        if (lastSection.isEqualToDownStation(removeStation)) {
+            sections.remove(lastSection);
             return;
         }
-        Section updateTarget = findSectionByDownStation(removeStation);
-        Section removeTarget = findSectionByUpStation(removeStation);
+        removeBetweenStationAndStation(removeStation);
+    }
+
+    private void removeBetweenStationAndStation(Station station){
+        Section updateTarget = findSectionByDownStation(station);
+        Section removeTarget = findSectionByUpStation(station);
         updateTarget.updateDownStation(removeTarget.getDownStation());
         updateTarget.plusDistance(removeTarget.getDistance());
         sections.remove(removeTarget);
