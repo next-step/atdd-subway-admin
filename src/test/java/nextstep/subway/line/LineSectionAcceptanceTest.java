@@ -13,6 +13,8 @@ import nextstep.subway.dto.SectionResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -118,10 +120,12 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(isSameDistance(sections.get(1), 3L)).isTrue();
     }
 
-    @DisplayName("이미 존재하는 구간 사이에 새로운 구간을 등록 하려고 하나 기존 구간의 길이보다 크거나 , 같아서 저장 할 수 없다.")
-    void addSectionMiddleFailedDistance() {
+    @DisplayName("이미 존재하는 구간 사이에 새로운 구간을 등록 하려고 하나 기존 구간의 길이보다 크거나(11L) , 같아서 저장 할 수 없다.(10L)")
+    @ParameterizedTest
+    @ValueSource(longs = {11L,10L})
+    void addSectionMiddleFailedDistance(long distance) {
         //when
-        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), 11L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), upStation.getId(), otherDownStation.getId(), distance);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
