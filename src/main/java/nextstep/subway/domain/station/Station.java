@@ -17,7 +17,7 @@ public class Station extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    public Station() {
+    protected Station() {
     }
 
     public Station(String name) {

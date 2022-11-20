@@ -10,7 +10,7 @@ public class StationResponse {
         return new StationResponse(station.getId(), station.getName());
     }
 
-    public StationResponse() {
+    protected StationResponse() {
     }
 
     public StationResponse(Long id, String name) {

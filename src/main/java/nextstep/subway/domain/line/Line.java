@@ -32,7 +32,7 @@ public class Line extends BaseEntity {
 
     private int distance;
 
-    public Line() {
+    protected Line() {
     }
 
     public Line(String name, String color, int distance) {

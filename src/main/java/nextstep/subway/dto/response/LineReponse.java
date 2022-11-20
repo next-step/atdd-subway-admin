@@ -15,7 +15,7 @@ public class LineReponse {
         return new LineReponse(line.getId(), line.getName(), line.getColor(), line.getStationResponses(), line.getDistance());
     }
 
-    public LineReponse() {
+    protected LineReponse() {
     }
 
     public LineReponse(Long id, String name, String color, List<StationResponse> stations, int distance) {
