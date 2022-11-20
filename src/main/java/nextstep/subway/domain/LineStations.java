@@ -144,7 +144,7 @@ public class LineStations {
         if (!this.contains(station)) {
             throw new BadRequestForLineStationException("노선에 포함되지 않은 역은 삭제할 수 없습니다.");
         }
-        if (lineStations.size() == 3) {
+        if (getStationsInOrder().size() == 2) {
             throw new BadRequestForLineStationException("단일 구간 노선의 역은 삭제할 수 없습니다.");
         }
 
