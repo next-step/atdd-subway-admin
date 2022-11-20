@@ -72,9 +72,10 @@ public class Line extends BaseEntity {
     public void addSection(Section newSection) {
         Objects.requireNonNull(newSection, NOT_FOUND_SECTION_ERR);
 
-        // 새로운 section에 Line 정보 매핑(양방향)
+        // line에도 새로운 section 정보 등록 (양방향)
         newSection.updateLine(this);
         sections.addSection(newSection);
+
     }
 
     public void removeSection(Station station) {

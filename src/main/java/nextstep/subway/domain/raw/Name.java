@@ -1,8 +1,11 @@
 package nextstep.subway.domain.raw;
 
+import nextstep.subway.dto.LineRequest;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.util.Objects;
+
+import static nextstep.subway.constant.Message.NOT_VALID_EMPTY;
 
 @Embeddable
 public class Name {
@@ -20,5 +23,11 @@ public class Name {
         return name;
     }
 
+    public Name from(LineRequest updateRequest) {
+        if (updateRequest.getName().isEmpty() || updateRequest.getName() == "") {
+            throw new IllegalArgumentException(NOT_VALID_EMPTY);
+        }
+        return new Name(updateRequest.getName());
+    }
 
 }

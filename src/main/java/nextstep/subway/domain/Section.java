@@ -6,6 +6,7 @@ import nextstep.subway.dto.LineResponse;
 import javax.persistence.*;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 import static nextstep.subway.constant.Message.STATION_IS_NOT_NULL;
 
@@ -51,7 +52,6 @@ public class Section extends BaseEntity implements Comparable<Section> {
         validateStationIsNotNull(downStation);
         return new Section(upStation, downStation, distance);
     }
-
 
     public Long getId() {
         return id;
@@ -112,11 +112,26 @@ public class Section extends BaseEntity implements Comparable<Section> {
     public void changeDownStation(Section section) {
         validateStationIsNotNull(section.downStation);
         this.downStation = section.downStation;
-        this.distance = plusDistance(section.getDistance());
+        this.distance = sumDistance(section.getDistance());
     }
 
-    private Distance plusDistance(int distance) {
-        return this.distance.plusDistance(distance);
+    private Distance subtractDistance(int distance) {
+        return this.distance.subtract(distance);
+    }
+
+    public Stream<Station> stations() {
+        return Stream.of(upStation, downStation);
+    }
+
+    private static void validateStationIsNotNull(Station station) {
+        if (Objects.isNull(station)) {
+            throw new IllegalArgumentException(STATION_IS_NOT_NULL);
+        }
+    }
+
+
+    private Distance sumDistance(int distance) {
+        return this.distance.sumDistance(distance);
     }
 
     public void updateLine(Line line) {
@@ -126,19 +141,11 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.line = line;
     }
 
-    private Distance subtractDistance(int distance) {
-        return this.distance.subtract(distance);
-    }
 
     public LineResponse.Section from() {
         return LineResponse.Section.of(id, upStation.getId(), downStation.getId(), distance.getDistance());
     }
 
-    private static void validateStationIsNotNull(Station station) {
-        if (Objects.isNull(station)) {
-            throw new IllegalArgumentException(STATION_IS_NOT_NULL);
-        }
-    }
 
     @Override
     public int hashCode() {

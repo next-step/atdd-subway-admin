@@ -70,6 +70,7 @@ public class Sections {
         }
     }
 
+
     private void changeSectionsAndRemove(Station station, Section section) {
         Section upSection = sections.stream()
                 .filter(u -> u.getUpStation().equals(station))
@@ -78,6 +79,14 @@ public class Sections {
 
         //
         sections.remove(upSection);
+    }
+
+
+    public List<Station> getAllStations() {
+        return sections.stream()
+                .flatMap(Section::stations)// Stream<Station> return
+                .distinct()
+                .collect(Collectors.toList());
     }
 
     private void deleteSection(Section section) {
@@ -149,17 +158,4 @@ public class Sections {
                 .findAny()
                 .ifPresent(s -> s.changeUpStation(newSection));
     }
-
-    public List<Station> getAllStations() {
-        List<Station> allStations = new ArrayList<>();
-        this.getSections().forEach(section -> {
-            allStations.add(section.getUpStation());
-            allStations.add(section.getDownStation());
-        });
-
-        // 중복제거
-        return allStations.stream().distinct().collect(Collectors.toList());
-    }
-
-
 }

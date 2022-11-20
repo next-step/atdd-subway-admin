@@ -38,7 +38,7 @@ public class LineService {
 
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new CannotFindException(NOT_FOUND_LINE_ERR));
+                .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
         return LineResponse.from(line);
     }
 
@@ -46,13 +46,9 @@ public class LineService {
     @Transactional
     public void updateLineById(Long id, LineRequest updateRequest) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new CannotFindException(NOT_FOUND_LINE_ERR));
+                .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
 
         line.update(updateRequest);
-
-
-        // save 없어도 처리
-//        lineRepository.save(line);
     }
 
     @Transactional
@@ -61,7 +57,8 @@ public class LineService {
     }
 
     private Station findStationById(Long id) {
-        return stationRepository.findById(id).orElseThrow(() -> new CannotFindException(NOT_FOUND_STATION_ERR));
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new CannotFindException(NOT_FOUND_STATION_ERR));
     }
 
     private Line findById(Long id) {
@@ -72,12 +69,11 @@ public class LineService {
     public LineResponse saveSection(Long lineId, SectionRequest sectionRequest) {
         // 이전에 저장됐던 section이 Line에 같이 조회됨
         Line line = findById(lineId);
-
-        // line에 새로운 section정보 등록
         line.addSection(toSection(sectionRequest));
 
         return LineResponse.from(line);
     }
+
 
     @Transactional
     public void removeSection(Long lineId, Long stationId) {

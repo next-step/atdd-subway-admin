@@ -18,7 +18,8 @@ public class LineResponse {
     public String name;
     public String color;
     public List<StationResponse> stations;
-    public List<Section> sections;
+    public int totalDistance;
+
 
 
     public static List<LineResponse> of(List<Line> lines) {
@@ -36,7 +37,7 @@ public class LineResponse {
         name = line.getName();
         color = line.getColor();
         stations = line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
-        sections = line.getSections().stream().map(s -> s.from()).collect(Collectors.toList());
+        totalDistance = line.getSections().stream().mapToInt(s -> s.getDistance()).sum();
     }
 
     @Data
@@ -63,11 +64,5 @@ public class LineResponse {
             else if (this.upStationId.equals(s.getDownStationId())) return 1;
             return 0;
         }
-    }
-
-    public void sortSection() {
-        sections = sections.stream()
-                .sorted(Section::compareTo)
-                .collect(Collectors.toList());
     }
 }
