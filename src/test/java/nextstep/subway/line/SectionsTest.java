@@ -4,9 +4,8 @@ import nextstep.subway.line.domain.Sections;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static nextstep.subway.line.SectionFixture.논현역_신논현역_구간;
-import static nextstep.subway.line.SectionFixture.신논현역_강남역_구간;
-import static nextstep.subway.line.domain.Sections.SECTION_DUPLIDATE_EXCEPTION_MESSAGE;
+import static nextstep.subway.line.SectionFixture.*;
+import static nextstep.subway.line.domain.Sections.*;
 import static nextstep.subway.station.domain.StationFixtrue.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -40,6 +39,16 @@ class SectionsTest {
         sections.add(신논현역_강남역_구간());
         assertThatThrownBy(() -> sections.add(신논현역_강남역_구간()))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining(SECTION_DUPLIDATE_EXCEPTION_MESSAGE);
+                .hasMessageContaining(SECTION_DUPLICATE_EXCEPTION_MESSAGE);
+    }
+
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.")
+    @Test
+    void contains() {
+        Sections sections = new Sections();
+        sections.add(논현역_신논현역_구간());
+        assertThatThrownBy(() -> sections.add(강남역_역삼역_구간()))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining(SECTION_CONTAINS_EXCEPTION_MESSAGE);
     }
 }
