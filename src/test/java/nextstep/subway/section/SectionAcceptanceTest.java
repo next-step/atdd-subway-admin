@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.HashMap;
+import java.util.Map;
 import nextstep.subway.common.BaseAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -180,7 +182,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * Given 1개의 지하철 구간을 추가하고
      * When 종점을 가진 구간을 제거할 경우
      * Then 지하철 노선을 조회 시 역이 제외된 것을 확인할 수 있다
-     * */
+     */
     @Test
     @DisplayName("노선의 종점 구간을 제거하는 경우")
     void 구간삭제_종점() {
@@ -209,7 +211,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * Given 1개의 지하철 구간을 추가하고
      * When 중간역을 가진 구간을 제거할 경우
      * Then 지하철 노선을 조회 시 역이 제외된 것을 확인할 수 있다
-     * */
+     */
     @Test
     @DisplayName("노선의 중간 구간을 제거하는 경우")
     void 구간삭제_중간() {
@@ -236,7 +238,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * Given 1개의 지하철 노선을 생성하고
      * When 남은 마지막 구간을 제거하려 할 때
      * Then 구간을 제거할 수 없다
-     * */
+     */
     @Test
     @DisplayName("노선의 남은 마지막 구간을 제거하는 경우, 삭제할 수 없다")
     void 구간삭제_마지막_구간() {
@@ -252,7 +254,7 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
      * Given 1개의 지하철 노선을 생성하고
      * When 존재하지 않는 구간을 삭제하려 하면
      * Then 구간을 제거할 수 없다
-     * */
+     */
     @Test
     @DisplayName("노선에 존재하지 않는 구간을 제거하는 경우, 삭제할 수 없다")
     void 구간삭제_존재하지_않는_구간_구간() {
@@ -261,5 +263,43 @@ public class SectionAcceptanceTest extends BaseAcceptanceTest {
 
         // then
         assertThat(지하철구간_제거_결과.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+
+    /**
+     * Given 2개의 지하철역을 생성하고
+     * Given 1개의 지하철 노선을 생성하고
+     * Given 1개의 지하철역을 생성하고
+     * When 지하철 구간을 등록하면
+     * Then 지하철 노선을 조회 시 추가된 구간을 확인할 수 있다.
+     */
+    @Test
+    @DisplayName("최근에 생성한 역 사이에 오래된 역을 등록할 경우에도 조회시 구간 정렬 확인")
+    public void 조회시_구간_정렬_확인() {
+        // given
+        int max = 40;
+        Map<String, Long> stationMap = new HashMap<>();
+        for (int i = 1; i <= max; i++) {
+            String name = i + "역";
+            Long stationId = 지하철역_생성(name).jsonPath().getLong("id");
+            stationMap.put(name, stationId);
+        }
+
+        // when
+        지하철구간_추가(노선_id, 가락시장역_id, stationMap.get("10역"), 10000);
+        지하철구간_추가(노선_id, 가락시장역_id, stationMap.get("20역"), 2000);
+        지하철구간_추가(노선_id, stationMap.get("20역"), stationMap.get("30역"), 1000);
+        지하철구간_추가(노선_id, stationMap.get("20역"), stationMap.get("40역"), 500);
+        지하철구간_추가(노선_id, stationMap.get("11역"), stationMap.get("10역"), 500);
+        지하철구간_추가(노선_id, 잠실역_id, stationMap.get("39역"), 2);
+
+        // then
+        ExtractableResponse<Response> 지하철노선_조회_결과 = 지하철노선_조회(노선_id);
+        JsonPath jsonPath = 지하철노선_조회_결과.jsonPath();
+        assertAll(
+                () -> assertThat(지하철노선_조회_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(jsonPath.getList("stations.name")).containsExactly("잠실역", "39역", "가락시장역", "20역", "40역", "30역", "11역",
+                        "10역")
+        );
     }
 }

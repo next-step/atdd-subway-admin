@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -17,19 +16,6 @@ import javax.persistence.OneToMany;
 public class Sections {
 
     private static final int MIN_REMOVEABLE_SECTION_SIZE = 2;
-
-    private static final Comparator<Section> ORDER_ASC = new Comparator<Section>() {
-        @Override
-        public int compare(Section source, Section target) {
-            if (source.getDownStation().equalsId(target.getUpStation())) {
-                return -1;
-            }
-            if (source.getUpStation().equalsId(target.getDownStation())) {
-                return 1;
-            }
-            return 0;
-        }
-    };
 
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -93,19 +79,19 @@ public class Sections {
         }
     }
 
-    private void removeFirstSection(Section upSection, Section downSection){
+    private void removeFirstSection(Section upSection, Section downSection) {
         if (Objects.isNull(upSection) && Objects.nonNull(downSection)) {
             sections.remove(downSection);
         }
     }
 
-    private void removeLastSection(Section upSection, Section downSection){
+    private void removeLastSection(Section upSection, Section downSection) {
         if (Objects.nonNull(upSection) && Objects.isNull(downSection)) {
             sections.remove(upSection);
         }
     }
 
-    private void removeMiddleSection(Section upSection, Section downSection){
+    private void removeMiddleSection(Section upSection, Section downSection) {
         if (Objects.nonNull(upSection) && Objects.nonNull(downSection)) {
             upSection.extend(downSection);
             sections.remove(downSection);
@@ -113,7 +99,44 @@ public class Sections {
     }
 
     public void order() {
-        Collections.sort(sections, ORDER_ASC);
+        Section firstSection = findFirstSection().orElse(null);
+        if (Objects.isNull(firstSection)) {
+            return;
+        }
+        addLast(firstSection);
+
+        Section currentLastSection = firstSection;
+        while (true) {
+            Section nextSection = findNextSection(currentLastSection.getDownStation()).orElse(null);
+            if (Objects.isNull(nextSection)) {
+                break;
+            }
+            addLast(nextSection);
+            currentLastSection = nextSection;
+        }
+    }
+
+    private Optional<Section> findFirstSection() {
+        return sections.stream()
+                .filter(section -> !matchByDownStation(section.getUpStation()))
+                .findAny();
+    }
+
+    private boolean matchByDownStation(Station station) {
+        return sections.stream()
+                .map(section -> section.getDownStation())
+                .anyMatch(downStation -> station.equalsId(downStation));
+    }
+
+    private Optional<Section> findNextSection(Station downStation) {
+        return sections.stream()
+                .filter(section -> downStation.equalsId(section.getUpStation()))
+                .findAny();
+    }
+
+    private void addLast(Section section) {
+        sections.remove(section);
+        sections.add(section);
     }
 
     public List<Section> getSections() {
