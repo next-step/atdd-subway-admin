@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 
 import java.util.Arrays;
 import java.util.List;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -10,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import nextstep.subway.value.ErrMsg;
 
 @Entity
 public class Section extends BaseEntity{
@@ -31,7 +31,8 @@ public class Section extends BaseEntity{
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
@@ -40,10 +41,7 @@ public class Section extends BaseEntity{
     public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        if(distance<=0){
-            throw new IllegalArgumentException(ErrMsg.INAPPROPRIATE_DISTANCE);
-        }
-        this.distance = distance;
+        this.distance = Distance.from(distance);
     }
 
     public void addLine(Line line) {
@@ -67,7 +65,7 @@ public class Section extends BaseEntity{
         return downStation.getId();
     }
 
-    public int getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
@@ -84,18 +82,17 @@ public class Section extends BaseEntity{
     }
 
     public void updateDownStation(Section section) {
-        if(section.getDistance()>=this.distance){
-            throw new IllegalArgumentException(ErrMsg.DISTANCE_TOO_LONG);
-        }
         this.downStation = section.getUpStation();
-        this.distance -= section.getDistance();
+        this.distance = this.distance.subtract(section.getDistance());
     }
 
     public void updateUpStation(Section section) {
-        if(section.getDistance()>=this.distance){
-            throw new IllegalArgumentException(ErrMsg.DISTANCE_TOO_LONG);
-        }
         this.upStation = section.getDownStation();
-        this.distance -= section.getDistance();
+        this.distance = this.distance.subtract(section.getDistance());
+    }
+
+    public void updateSectionInDelete(Section section) {
+        this.downStation = section.getDownStation();
+        this.distance = this.distance.add(section.getDistance());
     }
 }
