@@ -21,13 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static nextstep.subway.line.LineAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("노선 구간 관련 기능")
 public class LineSectionAcceptanceTest extends AcceptanceTest {
     private static final String STATIONS = "stations";
-    private static final String SECTION_MAIN_PATH = LINE_MAIN_PATH + "/%d" + "/sections";
+    private static final String SECTION_MAIN_PATH = LineConstant.LINE_MAIN_PATH + "/%d" + "/sections";
     @Autowired
     private LineRepository lineRepository;
     @Autowired
@@ -57,7 +56,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findResponse = findById(line.getId());
+        ExtractableResponse<Response> findResponse = null;
         List<StationResponse> stations = convertStationsName(findResponse.jsonPath());
         assertThat(stations).hasSize(3);
 
@@ -71,7 +70,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findResponse = findById(line.getId());
+        ExtractableResponse<Response> findResponse = null;
         List<StationResponse> stations = convertStationsName(findResponse.jsonPath());
         assertThat(stations).hasSize(3);
         assertThat(stations.get(0).getId()).isEqualTo(otherUpStation.getId());
@@ -86,7 +85,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findResponse = findById(line.getId());
+        ExtractableResponse<Response> findResponse = null;
         List<StationResponse> stations = convertStationsName(findResponse.jsonPath());
         assertThat(stations).hasSize(3);
         assertThat(stations.get(stations.size() - 1).getId()).isEqualTo(otherUpStation.getId());
@@ -112,7 +111,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        ExtractableResponse<Response> findResponse = findById(line.getId());
+        ExtractableResponse<Response> findResponse = null;
         List<StationResponse> stations = convertStationsName(findResponse.jsonPath());
         assertThat(stations).hasSize(3);
     }
@@ -140,9 +139,9 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> params = new HashMap<>();
-        params.put(UP_STATION, upStationId);
-        params.put(DOWN_STATION, downStationId);
-        params.put(DISTANCE, distance);
+        params.put(LineConstant.UP_STATION, upStationId);
+        params.put(LineConstant.DOWN_STATION, downStationId);
+        params.put(LineConstant.DISTANCE, distance);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
