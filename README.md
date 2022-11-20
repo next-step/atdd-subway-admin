@@ -114,3 +114,11 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   - [x] given - ( name, color )
   - [x] when  - ( method : delete )
   - [x] then  - ( statusCode : HttpStatus.NO_CONTENT(204) )
+#### Step2 리뷰 사항 반영
+- [ ] Step2 1차 리뷰 사항 반영
+    - [ ] api명세에 존재하지 않는 변수 지우기 ( createdDate, modifiedDate )
+    - [ ] 기존 생성자는 되도록 public으로 풀지 않기 ( protected로 은닉화 - 외부에서 쉽게 선언 못하도록 )
+    - [ ] 의존성 방향 재정의 ( respone -> entity는 가능하지만, 반대의 경우는 지양하기 )
+    - [ ] api경로 확인하기
+    - [ ] 중복된 테스트 하나로 빼내기        
+              
