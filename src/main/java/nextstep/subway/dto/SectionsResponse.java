@@ -13,7 +13,7 @@ public class SectionsResponse {
     }
 
     public static SectionsResponse of(Line line) {
-        List<SectionResponse> sections = line.getSections().allSection().stream()
+        List<SectionResponse> sections = line.getSections().allSortedSections().stream()
                 .map(SectionResponse::new).collect(Collectors.toList());
         return new SectionsResponse(sections);
     }

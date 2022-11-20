@@ -40,7 +40,7 @@ public class Sections {
     }
 
     private void add(Section section) {
-        LinkedList<Section> sections = new LinkedList<>(allSection());
+        LinkedList<Section> sections = new LinkedList<>(allSortedSections());
         if (isAddUpStationTerminus(section, sections)) {
             values.add(section);
             return;
@@ -105,7 +105,7 @@ public class Sections {
         }
     }
 
-    public List<Station> allStation() {
+    public List<Station> allSortedStations() {
         Station upStationTerminus = findUpStationTerminus();
         return Collections.unmodifiableList(new ArrayList<>(createStations(upStationTerminus)));
     }
@@ -137,7 +137,7 @@ public class Sections {
         return stations;
     }
 
-    public List<Section> allSection() {
+    public List<Section> allSortedSections() {
         Station upStationTerminus = findUpStationTerminus();
         return createSections(upStationTerminus);
     }
