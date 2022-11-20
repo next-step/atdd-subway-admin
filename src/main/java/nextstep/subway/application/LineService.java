@@ -41,8 +41,7 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
+        Line line = getLine(id);
         return LineResponse.from(line);
     }
 
@@ -74,10 +73,13 @@ public class LineService {
 
     @Transactional
     public void deleteSection(Long lineId,Long stationId) {
-        Line line = lineRepository.findById(lineId)
-                .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
-        Station station = stationRepository.findById(stationId)
-                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+        Line line = getLine(lineId);
+        Station station = findStation(stationId);
         line.deleteSection(line,station);
+    }
+
+    private Line getLine(Long lineId){
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
     }
 }
