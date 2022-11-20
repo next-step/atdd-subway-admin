@@ -25,7 +25,7 @@ public class LineStations {
 
     private void validateLineStation(LineStation lineStation) {
         if (lineStations.contains(lineStation)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("이미 등록되어 있는 구간입니다.");
         }
     }
 }
