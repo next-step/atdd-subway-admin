@@ -39,13 +39,11 @@ public class Section extends BaseEntity {
         return upStation;
     }
 
-    public void validateDuplicate(Section section) {
+    public boolean isDuplicateSection(Section section) {
         if (this.getUpStation().equals(section.getUpStation()) && this.getDownStation().equals(section.getDownStation())) {
-            throw new IllegalRequestBody(ErrorStatus.DUPLICATE_SECTION.getMessage());
+            return true;
         }
-        if (this.getUpStation().equals(section.downStation) && this.getDownStation().equals(section.upStation)) {
-            throw new IllegalRequestBody(ErrorStatus.DUPLICATE_SECTION.getMessage());
-        }
+        return this.getUpStation().equals(section.downStation) && this.getDownStation().equals(section.upStation);
     }
 
     public Station getDownStation() {

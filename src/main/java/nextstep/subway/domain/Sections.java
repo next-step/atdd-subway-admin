@@ -97,7 +97,10 @@ public class Sections {
     }
 
     private void validateDuplicate(Section section) {
-        values.forEach(v -> v.validateDuplicate(section));
+        boolean isDuplicate = this.values.stream().anyMatch(v -> v.isDuplicateSection(section));
+        if (isDuplicate) {
+            throw new IllegalRequestBody(ErrorStatus.DUPLICATE_SECTION.getMessage());
+        }
     }
 
     public List<Station> allStation() {
