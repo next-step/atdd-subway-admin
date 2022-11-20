@@ -8,9 +8,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.StationResponse;
-import nextstep.subway.line.utils.DatabaseCleanUtil;
-import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.utils.DatabaseCleanUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -21,25 +21,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    DatabaseCleanUtil databaseCleanUtil;
-
+public class LineAcceptanceTest extends AcceptanceTest {
     StationResponse 잠실역;
     StationResponse 몽촌토성역;
     StationResponse 교대역;
 
     @BeforeEach
     public void setUp(){
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleanUtil.cleanUp();
+        super.setUp();
 
         잠실역 = 지하철역_1개_생성("잠실역").as(StationResponse.class);
         몽촌토성역 = 지하철역_1개_생성("몽촌토성역").as(StationResponse.class);

@@ -8,39 +8,25 @@ import static org.assertj.core.api.Assertions.*;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
-import nextstep.subway.line.utils.DatabaseCleanUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class LineStationDeleteAcceptanceTest {
-
-    @LocalServerPort
-    int port;
+public class LineStationDeleteAcceptanceTest extends AcceptanceTest {
 
     StationResponse 강남역;
     StationResponse 잠실역;
     StationResponse 건대입구역;
     LineResponse _2호선;
 
-    @Autowired
-    DatabaseCleanUtil databaseCleanUtil;
-
     @BeforeEach
     void beforeEach(){
-        if(RestAssured.port == RestAssured.UNDEFINED_PORT){
-           RestAssured.port = port;
-        }
-        databaseCleanUtil.cleanUp();
+        super.setUp();
 
         강남역 = 지하철역_1개_생성("강남역").as(StationResponse.class);
         잠실역 = 지하철역_1개_생성("잠실역").as(StationResponse.class);

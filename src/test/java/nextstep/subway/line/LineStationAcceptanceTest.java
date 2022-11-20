@@ -9,9 +9,10 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
-import nextstep.subway.line.utils.DatabaseCleanUtil;
+import nextstep.subway.utils.DatabaseCleanUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,25 +23,14 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class LineStationAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    DatabaseCleanUtil databaseCleanUtil;
-
+public class LineStationAcceptanceTest extends AcceptanceTest {
     StationResponse 강남역;
     StationResponse 잠실역;
     LineResponse _2호선;
 
     @BeforeEach
     void beforeEach(){
-        if(RestAssured.port == RestAssured.UNDEFINED_PORT){
-            RestAssured.port = port;
-        }
-        databaseCleanUtil.cleanUp();
+        super.setUp();
 
         강남역 = 지하철역_1개_생성("강남역").as(StationResponse.class);
         잠실역 = 지하철역_1개_생성("잠실역").as(StationResponse.class);

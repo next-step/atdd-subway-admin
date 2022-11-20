@@ -1,4 +1,4 @@
-package nextstep.subway.line.utils;
+package nextstep.subway.utils;
 
 import com.google.common.base.CaseFormat;
 import java.util.List;
