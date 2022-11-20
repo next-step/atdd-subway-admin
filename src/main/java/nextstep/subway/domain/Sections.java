@@ -18,6 +18,8 @@ import static nextstep.subway.exception.StationExceptionMessage.NONE_EXISTS_STAT
 @Embeddable
 public class Sections {
     private static final int MAX_SECTION_OF_STATION = 2;
+    private static final int MIN_SECTION = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<Section> sections = new ArrayList<>();
 
@@ -120,7 +122,7 @@ public class Sections {
     }
 
     private boolean isSingleSection(List<Section> findSections) {
-        return findSections.size() == 1;
+        return findSections.size() == MIN_SECTION;
     }
 
     private void arrageSection(Line line, List<Section> findSections, Station deleteStation) {
