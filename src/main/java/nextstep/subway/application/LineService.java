@@ -2,11 +2,10 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,9 +16,11 @@ import java.util.stream.Collectors;
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
 
+    private LineRepository lineRepository;
     private StationRepository stationRepository;
+    private static final String NO_SUCH_LINE_EXCEPTION = "해당 ID의 노선 정보가 없습니다.";
+    private static final String NO_SUCH_STATION_EXCEPTION = "해당 ID의 역 정보가 없습니다.";
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -29,7 +30,7 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
-        LineResponse lineResponse = findStationInLine(persistLine);
+        LineResponse lineResponse = getLineResponseWithStations(persistLine);
         return lineResponse;
     }
 
@@ -37,38 +38,45 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> findStationInLine(line))
+                .map(line -> getLineResponseWithStations(line))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineById(Long id) {
-        return findStationInLine(lineRepository.findById(id).get());
+        Line line = lineRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION));
+        return getLineResponseWithStations(line);
     }
 
     @Transactional
     public void deleteLineById(Long id) {
+        lineRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION));
         lineRepository.deleteById(id);
     }
 
     @Transactional
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).get();
+        Line line = lineRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION));
+        Line persistLine = line.of(lineRequest);
 
-        line.setName(lineRequest.getName());
-        line.setColor(lineRequest.getColor());
-        line.setDistance(lineRequest.getDistance());
-        line.setUpStationId(lineRequest.getUpStationId());
-        line.setDownStationId(lineRequest.getDownStationId());
-
-        Line persistLine = lineRepository.save(line);
-
-        return findStationInLine(persistLine);
+        return getLineResponseWithStations(persistLine);
     }
 
-    private LineResponse findStationInLine(Line line) {
-        List<Station> stations = new ArrayList<>();
-        stations.add(stationRepository.findById(line.getUpStationId()).get());
-        stations.add(stationRepository.findById(line.getDownStationId()).get());
+    private LineResponse getLineResponseWithStations(Line line) {
+        List<StationResponse> stations = new ArrayList<>();
+
+        stations.add(StationResponse.of(stationRepository
+                .findById(line.getUpStationId())
+                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION))));
+        stations.add(StationResponse.of(stationRepository
+                .findById(line.getDownStationId())
+                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION))));
+
         return LineResponse.of(line).setStations(stations);
     }
 }

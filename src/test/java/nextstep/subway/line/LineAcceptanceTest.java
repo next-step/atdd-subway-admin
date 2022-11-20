@@ -3,13 +3,11 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.utils.DatabaseCleanup;
-import org.apache.http.protocol.HTTP;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,11 +44,6 @@ public class LineAcceptanceTest {
             RestAssured.port = port;
         }
         databaseCleanup.execute();
-
-        stations.save(new Station("신사역"));
-        stations.save(new Station("광교중앙"));
-        stations.save(new Station("정자"));
-
     }
 
     /**
@@ -61,13 +54,10 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_생성_테스트() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "10");
+        Station station1 = stations.save(new Station("신사역"));
+        Station station2 = stations.save(new Station("광교중앙"));
 
+        Map<String, String> params = setParams(new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10L));
         ExtractableResponse<Response> response = createLine(params);
 
         //then
@@ -88,22 +78,15 @@ public class LineAcceptanceTest {
     @Test
     void 지하철_노선_목록_조회_테스트() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "10");
+        Station station1 = stations.save(new Station("신사역"));
+        Station station2 = stations.save(new Station("광교중앙"));
+        Station station3 = stations.save(new Station("정자"));
 
+        Map<String, String> params = setParams(new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10L));
         ExtractableResponse<Response> response1 = createLine(params);
 
         params.clear();
-        params.put("name", "분당선");
-        params.put("color", "bg-green-600");
-        params.put("upStationId", "1");
-        params.put("downStationId", "3");
-        params.put("distance", "10");
-
+        params = setParams(new LineRequest("분당선", "bg-red-600", station1.getId(), station3.getId(), 10L));
         ExtractableResponse<Response> response2 = createLine(params);
 
         // when
@@ -124,24 +107,22 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     @Test
     void 지하철_노선_조회_테스트() {
-
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "10");
+        Station station1 = stations.save(new Station("신사역"));
+        Station station2 = stations.save(new Station("광교중앙"));
+
+        Map<String, String> params = setParams(new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10L));
 
         ExtractableResponse<Response> response = createLine(params);
+        String lineId = parseIdByLocation(response.header("Location"));
 
         // when
-        List<String> line = retrieveLineByName(params.get("name"));
+        LineResponse lineResponse = retrieveLineById(lineId);
 
         // then
         assertAll(
-                () -> assertThat(line).isNotNull(),
-                () -> assertThat(line.get(0)).isEqualTo(params.get("name"))
+                () -> assertThat(lineResponse).isNotNull(),
+                () -> assertThat(lineResponse.getName()).isEqualTo(params.get("name"))
         );
 
     }
@@ -156,27 +137,27 @@ public class LineAcceptanceTest {
     void 지하철_노선_수정_테스트() {
 
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "10");
+        Station station1 = stations.save(new Station("신사역"));
+        Station station2 = stations.save(new Station("광교중앙"));
+        Station station3 = stations.save(new Station("정자"));
 
+        Map<String, String> params = setParams(new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10L));
         ExtractableResponse<Response> response1 = createLine(params);
+        String lineId = parseIdByLocation(response1.header("Location"));
 
         // when
         params.put("name", "수인분당선");
+        params.put("downStationId", String.valueOf(station3.getId()));
 
-        ExtractableResponse<Response> response2 = updateLine(response1.header("Location"), params);
+        ExtractableResponse<Response> response2 = updateLine(lineId, params);
 
         // then
-        List<String> line = retrieveLineByName(params.get("name"));
+        LineResponse lineResponse = retrieveLineById(lineId);
 
 
         assertAll(
                 () -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(line.get(0)).isEqualTo("수인분당선")
+                () -> assertThat(lineResponse.getName()).isEqualTo("수인분당선")
         );
     }
 
@@ -188,27 +169,26 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void 지하철_노선_삭제_테스트() {
-        // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "신분당선");
-        params.put("color", "bg-red-600");
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        params.put("distance", "10");
 
+        // given
+        Station station1 = stations.save(new Station("신사역"));
+        Station station2 = stations.save(new Station("광교중앙"));
+
+        Map<String, String> params = setParams(new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10L));
         ExtractableResponse<Response> response1 = createLine(params);
 
+        String lineId = parseIdByLocation(response1.header("Location"));
+
         // when
-        ExtractableResponse<Response> response2 = deleteLineByIe(response1.header("Location"));
+        ExtractableResponse<Response> response2 = deleteLineById(lineId);
 
         // then
-        List<String> line = retrieveLineByName(params.get("name"));
+        LineResponse lineResponse = retrieveLineById(lineId);
 
         assertAll(
                 () -> assertThat(response2.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
-                () -> assertThat(line).isEmpty()
+                () -> assertThat(lineResponse).isNull()
         );
-
     }
 
     public static ExtractableResponse<Response> createLine(Map<String, String> params) {
@@ -236,21 +216,22 @@ public class LineAcceptanceTest {
         return lineNames;
     }
 
-    public static List<String> retrieveLineByName(String lineName) {
-        List<String> line =
-                RestAssured.given().log().all()
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .queryParam("name", lineName)
-                        .when().get(BASE_URL)
-                        .then().log().all()
-                        .extract()
-                        .jsonPath().getList("name", String.class);
-        return line;
+    public static LineResponse retrieveLineById(String id) {
+
+        ExtractableResponse response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get(BASE_URL + id)
+                .then().log().all()
+                .extract();
+
+        if (HttpStatus.BAD_REQUEST.value() == response.statusCode()) {
+            return null;
+        }
+
+        return response.jsonPath().getObject(".", LineResponse.class);
     }
 
-    private static ExtractableResponse<Response> updateLine(String location, Map<String, String> params) {
-
-        String id = location.substring(location.lastIndexOf("/"));
+    private static ExtractableResponse<Response> updateLine(String id, Map<String, String> params) {
 
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
@@ -263,14 +244,30 @@ public class LineAcceptanceTest {
         return response;
     }
 
-    private static ExtractableResponse<Response> deleteLineByIe(String location) {
+    private static ExtractableResponse<Response> deleteLineById(String id) {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(location)
+                .when().delete(BASE_URL + id)
                 .then().log().all()
                 .extract();
 
         return response;
+    }
+
+    public String parseIdByLocation(String location) {
+        return location.substring(location.lastIndexOf("/"));
+    }
+
+    public Map<String, String> setParams(LineRequest lineRequest) {
+
+        Map<String, String> params = new HashMap<>();
+        params.put("name", lineRequest.getName());
+        params.put("color", lineRequest.getColor());
+        params.put("upStationId", String.valueOf(lineRequest.getUpStationId()));
+        params.put("downStationId", String.valueOf(lineRequest.getDownStationId()));
+        params.put("distance", String.valueOf(lineRequest.getDistance()));
+
+        return params;
     }
 }
