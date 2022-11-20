@@ -37,27 +37,29 @@ public class Sections {
         }
         validateStationIncludeSection(section);
         add(section);
-
     }
 
     private void add(Section section) {
-        if (isAddUpStationTerminus(section)) {
-            this.values.add(section);
+        LinkedList<Section> sections = new LinkedList<>(allSection());
+        if (isAddUpStationTerminus(section, sections)) {
+            values.add(section);
             return;
         }
-        if (isAddDownStationTerminus(section)) {
-            this.values.add(section);
+        if (isAddDownStationTerminus(section, sections)) {
+            values.add(section);
             return;
         }
         addMiddle(section);
     }
 
-    private boolean isAddDownStationTerminus(Section section) {
-        return this.values.stream().anyMatch(v -> v.getDownStation().equals(section.getUpStation()));
+    private boolean isAddUpStationTerminus(Section section, LinkedList<Section> sections) {
+        Section firstSection = sections.getFirst();
+        return firstSection.getUpStation().equals(section.getDownStation());
     }
 
-    private boolean isAddUpStationTerminus(Section section) {
-        return this.values.stream().anyMatch(v -> v.getUpStation().equals(section.getDownStation()));
+    private boolean isAddDownStationTerminus(Section section, LinkedList<Section> sections) {
+        Section lastSections = sections.getLast();
+        return lastSections.getDownStation().equals(section.getUpStation());
     }
 
     private void addMiddle(Section newSection) {
@@ -134,7 +136,6 @@ public class Sections {
 
         return stations;
     }
-
 
     public List<Section> allSection() {
         Station upStationTerminus = findUpStationTerminus();
