@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.exception.ErrorCode;
+import nextstep.subway.exception.SubwayException;
 
 @Entity
 public class Section extends BaseEntity {
@@ -16,19 +18,15 @@ public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id")
     private Line line;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id")
     private Station downStation;
-
     @Embedded
     private Distance distance;
 
@@ -42,6 +40,67 @@ public class Section extends BaseEntity {
         this.distance = new Distance(distance);
     }
 
+    @Override
+    public String toString() {
+        return "Section{" +
+            "id=" + id +
+            ", line=" + line +
+            ", upStation=" + upStation +
+            ", downStation=" + downStation +
+            ", distance=" + distance +
+            '}';
+    }
+
+    public void validSection(Section section) {
+        System.out.println(this.upStation.toString());
+        System.out.println(this.downStation.toString());
+        validNotInStations(section);
+        validSameStation(section);
+        isInDistance(section);
+    }
+
+    private void isInDistance(Section section) {
+        if (distance.getDistance() < section.distance.getDistance()
+            || distance.getDistance() == section.distance.getDistance()) {
+            throw new SubwayException(ErrorCode.VALID_DISTANCE_ERROR);
+        }
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public boolean isSameUpDownStation(Section compareSection) {
+        return isSameUpStation(compareSection.upStation) && isSameDownStation(compareSection.downStation);
+    }
+
+    private void validSameStation(Section compareSection) {
+        if (isSameUpDownStation(compareSection)) {
+            throw new SubwayException(ErrorCode.VALID_SAME_STATION_ERROR);
+        }
+    }
+
+    private boolean isInStations(Section compareSection) {
+        if (compareSection.upStation != this.upStation) {
+            return compareSection.downStation.equals(this.upStation);
+        }
+
+        if (compareSection.downStation != this.downStation) {
+            return compareSection.upStation.equals(downStation);
+        }
+
+        return isSameUpStation(compareSection.upStation) || isSameUpStation(compareSection.downStation);
+    }
+
+    public void validNotInStations(Section section) {
+        if (!isInStations(section)) {
+            throw new SubwayException(ErrorCode.VALID_NOT_IN_STATIONS_ERROR);
+        }
+    }
 
     public Long getId() {
         return id;

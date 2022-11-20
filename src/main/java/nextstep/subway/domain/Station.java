@@ -23,6 +23,14 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    @Override
+    public String toString() {
+        return "Station{" +
+            "id=" + id +
+            ", name='" + name + '\'' +
+            '}';
+    }
+
     public Long getId() {
         return id;
     }
@@ -40,7 +48,7 @@ public class Station extends BaseEntity {
             return false;
         }
         Station station = (Station) o;
-        return Objects.equals(getId(), station.getId());
+        return Objects.equals(getId(), station.getId()) && Objects.equals(name, station.getName());
     }
 
     @Override

@@ -27,6 +27,7 @@ public class Sections {
     }
 
     public void addSection(Section section) {
+        this.sections.forEach(value -> value.validSection(section));
         this.sections.add(section);
     }
 
