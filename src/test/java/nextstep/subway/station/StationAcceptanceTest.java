@@ -1,17 +1,14 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.request.StationApi;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,11 +22,11 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 생성한다.")
     @Test
     void createStation() {
-        ExtractableResponse<Response> response = requestCreateStation("강남역");
+        ExtractableResponse<Response> response = StationApi.createStation("강남역");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
-        List<String> stationNames = getList(requestGetStations(), "name");
+        List<String> stationNames = getList(StationApi.getStations(), "name");
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -41,9 +38,9 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
     void createStationWithDuplicateName() {
-        requestCreateStation("강남역");
+        StationApi.createStation("강남역");
 
-        ExtractableResponse<Response> response = requestCreateStation("강남역");
+        ExtractableResponse<Response> response = StationApi.createStation("강남역");
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
@@ -56,10 +53,10 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
-        requestCreateStation("강남역");
-        requestCreateStation("서울역");
+        StationApi.createStation("강남역");
+        StationApi.createStation("서울역");
 
-        List<String> stations = getList(requestGetStations(), "name");
+        List<String> stations = getList(StationApi.getStations(), "name");
         assertThat(stations).contains("강남역", "서울역");
     }
 
@@ -71,40 +68,13 @@ class StationAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
-        Long stationId = getId(requestCreateStation("강남역"));
+        Long stationId = getId(StationApi.createStation("강남역"));
 
-        ExtractableResponse<Response> response = requestDeleteStation(stationId);
+        ExtractableResponse<Response> response = StationApi.deleteStation(stationId);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
-        List<String> stations = getList(requestGetStations(), "name");
+        List<String> stations = getList(StationApi.getStations(), "name");
         assertThat(stations).isEmpty();
-    }
-
-    private ExtractableResponse<Response> requestDeleteStation(Long stationId) {
-        return RestAssured.given().log().all().
-                when().
-                delete(String.format("/stations/%s", stationId)).
-                then().log().all().
-                extract();
-    }
-
-    private ExtractableResponse<Response> requestCreateStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> requestGetStations() {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
     }
 }
