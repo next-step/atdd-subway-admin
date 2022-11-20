@@ -39,7 +39,7 @@ public class Section {
 
     public Section(Line line, Long distance, Station upStation, Station downStation) {
         this.line = line;
-        this.distance = new Distance(distance);
+        this.distance = Distance.from(distance);
         this.upStation = upStation;
         this.downStation = downStation;
     }
@@ -63,14 +63,14 @@ public class Section {
 
     private void rebaseIfUpStationEquals(Section section) {
         if(this.upStation.equals(section.upStation)) {
-            this.distance.sub(section.distance);
+            this.distance.subtract(section.distance);
             upStation = section.downStation;
         }
     }
 
     private void rebaseIfDownStationEquals(Section section) {
         if(this.downStation.equals(section.downStation)) {
-            this.distance.sub(section.distance);
+            this.distance.subtract(section.distance);
             downStation = section.upStation;
         }
     }
