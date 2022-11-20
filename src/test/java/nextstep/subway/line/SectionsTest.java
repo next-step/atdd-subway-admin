@@ -61,4 +61,13 @@ class SectionsTest {
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
     }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록한다.")
+    @Test
+    void addUpStation() {
+        Sections sections = new Sections();
+        sections.add(신논현역_강남역_구간());
+        sections.add(논현역_신논현역_구간());
+        assertThat(sections.getStations()).containsExactly(논현역(), 신논현역(), 강남역());
+    }
 }
