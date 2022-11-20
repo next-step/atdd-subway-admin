@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 public class CommonTestFixture {
     public static final String STATION_BASE_PATH = "/stations";
     public static final String LINE_BASE_PATH = "/lines";
+    public static final String SECTION_BASE_PATH = "/sections";
     public static final String PATH_VARIABLE_ID = "/{id}";
     public static final String ID = "id";
     public static final String NAME = "name";
@@ -60,7 +61,7 @@ public class CommonTestFixture {
     public static ExtractableResponse<Response> 삭제(String path, long deleteId) {
         return given().log().all()
                 .pathParam(ID, deleteId)
-                .when().delete(path + PATH_VARIABLE_ID)
+                .when().delete(path)
                 .then().log().all()
                 .statusCode(HttpStatus.NO_CONTENT.value())
                 .extract();

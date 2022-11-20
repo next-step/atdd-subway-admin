@@ -51,7 +51,7 @@ public class LineAcceptanceTestUtils {
     }
 
     public static ExtractableResponse<Response> 지하철노선을_삭제한다(ExtractableResponse<Response> response) {
-        return 삭제(LINE_BASE_PATH, 응답_ID_추출(response));
+        return 삭제(LINE_BASE_PATH + PATH_VARIABLE_ID, 응답_ID_추출(response));
     }
 
     public static void 지하철노선_목록_검증_입력된_지하철노선이_존재(List<String> actualNames, String... lineNames) {
