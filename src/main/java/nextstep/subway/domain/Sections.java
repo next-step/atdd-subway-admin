@@ -112,14 +112,23 @@ public class Sections {
     }
 
     private List<Station> createStations(Station upStationTerminus) {
+        Map<Station, Station> allStation = values.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+
+        List<Station> stations = findStationRecursive(upStationTerminus, allStation);
+
+        return Collections.unmodifiableList(new ArrayList<>(stations));
+    }
+
+    private List<Station> findStationRecursive(Station upStationTerminus, Map<Station, Station> allStation) {
         List<Station> stations = new ArrayList<>();
         stations.add(upStationTerminus);
-        Map<Station, Station> allStation = values.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+
         Station downStation = allStation.get(upStationTerminus);
         while (downStation != null) {
             stations.add(downStation);
             downStation = allStation.get(downStation);
         }
+
         return stations;
     }
 
@@ -135,18 +144,20 @@ public class Sections {
 
         Map<Station, Section> allSection = values.stream().collect(Collectors.toMap(Section::getUpStation, Function.identity()));
 
-        LinkedList<Section> sections = createSectionRecursive(firstSection, allSection);
-        sections.addFirst(firstSection);
-        return sections;
+        List<Section> sections = createSectionRecursive(firstSection, allSection);
+        return Collections.unmodifiableList(new ArrayList<>(sections));
     }
 
-    private LinkedList<Section> createSectionRecursive(Section firstSection, Map<Station, Section> allSection) {
-        LinkedList<Section> sections = new LinkedList<>();
+    private List<Section> createSectionRecursive(Section firstSection, Map<Station, Section> allSection) {
+        List<Section> sections = new ArrayList<>();
+        sections.add(firstSection);
+
         Section section = allSection.get(firstSection.getDownStation());
         while (section != null) {
             sections.add(section);
             section = allSection.get(section.getDownStation());
         }
+
         return sections;
     }
 }
