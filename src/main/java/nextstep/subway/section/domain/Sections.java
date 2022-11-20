@@ -26,7 +26,11 @@ public class Sections {
     public void add(Section newSection) {
         validateAlreadyContainsAll(newSection);
         validateNotContainsAny(newSection);
-        this.sections.forEach(section -> section.relocate(newSection));
+        sections.stream()
+            .filter(section -> section.getUpStation().equals(newSection.getUpStation())
+                || section.getDownStation().equals(newSection.getDownStation()))
+            .findFirst()
+            .ifPresent(section -> section.relocate(newSection));
         sections.add(newSection);
     }
 
