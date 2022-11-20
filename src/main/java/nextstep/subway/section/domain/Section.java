@@ -29,17 +29,14 @@ public class Section extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
-    private int distance;
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        if(distance <= 0) {
-            throw new IllegalArgumentException("노선의 길이는 0보다 커야합니다.");
-        }
         this.distance = distance;
     }
 
@@ -55,33 +52,46 @@ public class Section extends BaseEntity {
         return id;
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
     public void update(Section newSection) {
-        if(distance <= newSection.distance){
-            throw new IllegalArgumentException("추가하는 노선의 길이는 기존 역 사이의 길이보다 크거나 같을 수 없습니다.");
-        }
-        if (isEqualUpStation(newSection)) {
+        distance.validNewDistance(newSection.distance);
+        if (isEqualUpStation(newSection.upStation)) {
             updateUpStation(newSection);
         }
-        if (isEqualDownStation(newSection)) {
+        if (isEqualDownStation(newSection.downStation)) {
             updateDownStation(newSection);
         }
     }
 
-    private boolean isEqualUpStation(Section newSection) {
-        return upStation.equals(newSection.upStation);
+    public Section merge(Section nextSection) {
+        Distance newDistance = distance.add(nextSection.distance);
+        Section section = new Section(upStation, nextSection.getDownStation(), newDistance);
+        section.addLine(line);
+        return section;
+    }
+
+    public boolean isEqualUpStation(Station station) {
+        return upStation.equals(station);
     }
 
     private void updateUpStation(Section newSection) {
         upStation = newSection.upStation;
-        distance = distance - newSection.distance;
+        distance.subtract(newSection.distance);
     }
 
-    private boolean isEqualDownStation(Section newSection) {
-        return downStation.equals(newSection.downStation);
+    public boolean isEqualDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     private void updateDownStation(Section newSection) {
         downStation = newSection.upStation;
-        distance = distance - newSection.distance;
+        distance.subtract(newSection.distance);
     }
 }

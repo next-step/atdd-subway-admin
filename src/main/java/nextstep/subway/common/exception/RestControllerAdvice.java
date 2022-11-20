@@ -1,12 +1,11 @@
-package nextstep.subway.common.ui;
+package nextstep.subway.common.exception;
 
 import java.util.HashMap;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-public class BaseController {
+@org.springframework.web.bind.annotation.RestControllerAdvice
+public class RestControllerAdvice {
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<HashMap> handleIllegalArgsException(IllegalArgumentException e) {
@@ -18,7 +17,7 @@ public class BaseController {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<HashMap> handleException(Exception e) {
         HashMap<Object, Object> errorMap = new HashMap<>();
-        errorMap.put("errorMessage", "오류가 발생하였습니다.");
+        errorMap.put("errorMessage", ErrorEnum.ERROR_MESSAGE_DEFAULT.message());
         return ResponseEntity.badRequest().body(errorMap);
     }
 }

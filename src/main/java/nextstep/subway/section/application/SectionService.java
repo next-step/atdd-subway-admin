@@ -1,5 +1,6 @@
 package nextstep.subway.section.application;
 
+import nextstep.subway.common.exception.ErrorEnum;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.LineRepository;
 import nextstep.subway.station.domain.Station;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class SectionService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -22,12 +23,28 @@ public class SectionService {
 
     @Transactional
     public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new RuntimeException("지하철 노선이 존재하지 않습니다."));
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).get(); // TODO: optional 사용 어떻게 하는게 좋은 코드인지?
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).get();
-
+        Line line = findLineById(lineId);
+        Station upStation = findStation(sectionRequest.getUpStationId());
+        Station downStation = findStation(sectionRequest.getDownStationId());
         line.addSection(sectionRequest.toSection(upStation, downStation));
         lineRepository.save(line);
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = findStation(stationId);
+        line.deleteSection(station);
+    }
+
+    public Line findLineById(Long lineId) {
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new RuntimeException(ErrorEnum.NOT_EXISTS_LINE.message()));
+    }
+
+    private Station findStation(Long sectionRequest) {
+        return stationRepository.findById(sectionRequest)
+                .orElseThrow(() -> new RuntimeException(ErrorEnum.NOT_EXISTS_STATION.message()));
     }
 }

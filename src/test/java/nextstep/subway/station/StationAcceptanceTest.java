@@ -7,7 +7,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
-import nextstep.subway.BaseAcceptanceTest;
+import nextstep.subway.common.BaseAcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -21,9 +21,8 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
      * Then 지하철역이 생성된다
      * Then 지하철역 목록 조회 시 생성한 역을 찾을 수 있다
      */
-    @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    void 지하철역_생성() {
         // when
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청("강남역");
 
@@ -39,9 +38,8 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
      * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
      * Then 지하철역 생성이 안된다
      */
-    @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void 기존에_존재하는_지하철역_이름으로_지하철_생성_예외() {
         // given
         지하철역_생성_요청("강남역");
 
@@ -57,9 +55,8 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
      * When 지하철역 목록을 조회하면
      * Then 2개의 지하철역을 응답 받는다
      */
-    @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() {
+    void 지하철역_목록_조회() {
         // given
         지하철역_생성_요청("강남역");
         지하철역_생성_요청("양재역");
@@ -76,9 +73,8 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
      * When 그 지하철역을 삭제하면
      * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
-    @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() {
+    void 지하철역_삭제() {
         // given
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성_요청("강남역");
 
@@ -91,7 +87,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     public static ExtractableResponse<Response> 지하철역_생성_요청(String name){
         return RestAssured.given().log().all()
-                .body(createParam(name))
+                .body(지하철역_이름_맵_생성(name))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
                 .then().log().all()
@@ -100,13 +96,13 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
 
     private static List<String> 지하철역_조회_요청(String name) {
         return RestAssured.given().log().all()
-                .body(createParam(name))
+                .body(지하철역_이름_맵_생성(name))
                 .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
     }
 
-    private static List<String> 지하철역_이름_목록_조회_요청() {
+    public static List<String> 지하철역_이름_목록_조회_요청() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()
@@ -119,7 +115,7 @@ public class StationAcceptanceTest extends BaseAcceptanceTest {
                 .then().log().all();
     }
 
-    private static HashMap<Object, Object> createParam(String name) {
+    private static HashMap<Object, Object> 지하철역_이름_맵_생성(String name) {
         HashMap<Object, Object> params = new HashMap<>();
         params.put("name", name);
         return params;

@@ -5,6 +5,9 @@ import nextstep.subway.station.domain.Station;
 public class StationRequest {
     private String name;
 
+    protected StationRequest() {
+    }
+
     public String getName() {
         return name;
     }
