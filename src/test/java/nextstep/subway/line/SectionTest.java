@@ -3,8 +3,9 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.exception.IllegalDistanceException;
-import nextstep.subway.station.Station;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

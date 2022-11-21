@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 import java.util.List;
 import javax.persistence.Embedded;
@@ -6,7 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import nextstep.subway.station.Station;
+import nextstep.subway.station.domain.Station;
 
 @Entity
 public class Line {

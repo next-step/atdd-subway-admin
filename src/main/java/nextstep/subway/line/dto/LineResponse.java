@@ -2,8 +2,8 @@ package nextstep.subway.line.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.station.StationResponse;
-import nextstep.subway.line.Line;
+import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.line.domain.Line;
 
 public class LineResponse {
 

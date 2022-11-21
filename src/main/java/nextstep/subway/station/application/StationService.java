@@ -1,7 +1,11 @@
-package nextstep.subway.station;
+package nextstep.subway.station.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.station.dto.StationRequest;
+import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.station.infra.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,7 +29,7 @@ public class StationService {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-            .map(station -> StationResponse.of(station))
+            .map(StationResponse::of)
             .collect(Collectors.toList());
     }
 

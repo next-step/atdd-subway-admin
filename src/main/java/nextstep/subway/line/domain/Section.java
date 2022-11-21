@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import nextstep.subway.line.exception.IllegalDistanceException;
-import nextstep.subway.station.Station;
+import nextstep.subway.station.domain.Station;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 

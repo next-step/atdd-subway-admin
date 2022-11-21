@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,7 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.line.exception.NoRelationStationException;
 import nextstep.subway.line.exception.SameStationException;
-import nextstep.subway.station.Station;
+import nextstep.subway.station.domain.Station;
 
 @Embeddable
 public class Sections {

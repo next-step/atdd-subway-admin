@@ -1,7 +1,8 @@
-package nextstep.subway.line;
+package nextstep.subway.line.ui;
 
 import java.net.URI;
 import java.util.List;
+import nextstep.subway.line.application.LineService;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import nextstep.subway.line.dto.SectionRequest;
