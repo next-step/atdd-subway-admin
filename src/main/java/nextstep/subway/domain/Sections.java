@@ -8,6 +8,8 @@ import static nextstep.subway.constant.Message.*;
 
 @Embeddable
 public class Sections {
+    private static final int SECTIONS_MIN_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> sections = new ArrayList<>();
 
@@ -108,7 +110,7 @@ public class Sections {
     }
 
     private void validateOnlyOneSection() {
-        if (sections.size() == 1) {
+        if (sections.size() == SECTIONS_MIN_SIZE) {
             throw new IllegalArgumentException(NOT_VALID_REMOVE_ONLY_ONE_SECTION);
         }
     }

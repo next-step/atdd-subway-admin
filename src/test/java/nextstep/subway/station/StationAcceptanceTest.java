@@ -11,12 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+import static nextstep.subway.station.StationAcceptanceStep.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
@@ -38,6 +36,7 @@ public class StationAcceptanceTest {
         databaseCleanup.execute();
     }
 
+
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -47,16 +46,17 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // given
-        지하철역_생성_호출("강남역");
+        String name = "강남역";
+        지하철역_생성_호출(name);
 
         // when
-        List<String> allStationNames = 모든_지하철역_이름을_조회한다("name");
+        List<String> allStationNames = 모든_지하철역을_조회한다().jsonPath().getList("name", String.class);
 
         // then
         지하철역_이름이_조회된다(allStationNames, "강남역");
-
     }
 
+    private
 
 
     /**
@@ -76,6 +76,7 @@ public class StationAcceptanceTest {
         // then
         상태코드를_체크한다(response.statusCode(), HttpStatus.BAD_REQUEST.value());
     }
+
 
     /**
      * Given 2개의 지하철역을 생성하고
@@ -109,115 +110,10 @@ public class StationAcceptanceTest {
         int id = response.jsonPath().getInt("id");
 
         // when
-        deleteStationById(id);
+        특정_역_삭제(id);
 
         // then
-        assertThat(findStationById(id).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
+        assertThat(특정_역_조회(id).statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
 
-    }
-
-
-    /**
-     * 특정 지하철역 조회
-     *
-     * @param id
-     * @return
-     */
-    private ExtractableResponse<Response> findStationById(int id) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations/" + id)
-                .then().log().all()
-                .extract();
-    }
-
-    /**
-     * 아이디로 지하철역 제거
-     *
-     * @param id
-     * @return
-     */
-    private ExtractableResponse<Response> deleteStationById(int id) {
-        return RestAssured.given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations/" + id)
-                .then().log().all()
-                .extract();
-    }
-
-
-    private void 지하철역_생성_호출(String 강남역) {
-        ExtractableResponse<Response> response = 지하철역을_생성한다("강남역");
-        상태코드를_체크한다(response.statusCode(), HttpStatus.CREATED.value());
-    }
-
-    /**
-     * 지하철역 생성
-     *
-     * @param stationName
-     * @return
-     */
-    public static ExtractableResponse<Response> 지하철역을_생성한다(String stationName) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", stationName);
-
-        return RestAssured.given()
-                .body(params).log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then()
-                .log().all()
-                .extract();
-    }
-
-    /**
-     * 지하철역 전체 조회
-     *
-     * @return
-     */
-    private ExtractableResponse<Response> 모든_지하철역을_조회한다() {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations")
-                .then().log().all()
-                .extract();
-    }
-
-    /**
-     * 상태 코드 체크
-     *
-     * @param statusCode
-     * @param value
-     */
-    private static void 상태코드를_체크한다(int statusCode, int value) {
-        assertThat(statusCode).isEqualTo(value);
-    }
-
-    /**
-     * 모든 역 이름으로 조회
-     *
-     * @param target
-     * @return
-     */
-    private List<String> 모든_지하철역_이름을_조회한다(String target) {
-        return RestAssured.given().log().all()
-                .when().get("/stations")
-                .then().log().all()
-                .extract().jsonPath().getList(target, String.class);
-    }
-
-
-    /**
-     * 역 이름이 존재하는가
-     *
-     * @param allStationNames
-     * @param stationName
-     */
-    private void 지하철역_이름이_조회된다(List<String> allStationNames, String stationName) {
-        assertThat(allStationNames).containsAnyOf(stationName);
-    }
-
-    private void 조회된_지하철역의_수가_일치한다(ExtractableResponse<Response> response, int size) {
-        assertThat(response.jsonPath().getList("name", String.class)).hasSize(size);
     }
 }

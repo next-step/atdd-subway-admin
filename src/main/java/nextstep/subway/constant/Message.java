@@ -15,4 +15,5 @@ public class Message {
     public final static String NOT_VALID_EMPTY = "빈 값은 입력할 수 없습니다.";
     public final static String STATION_IS_NOT_NULL = "역 선택은 필수 입니다.";
 
+
 }

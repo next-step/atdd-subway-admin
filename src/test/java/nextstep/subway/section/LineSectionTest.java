@@ -15,7 +15,8 @@ import static nextstep.subway.section.LineSectionStep.*;
 
 @DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineSectionTest {
+public class LineSectionTest{
+
 
     @Autowired
     DatabaseCleanup databaseCleanup;
@@ -144,4 +145,23 @@ public class LineSectionTest {
         // then
         구간_추가_등록_결과_확인(response, 3 ,17);
     }
+
+
+    /**
+     * Given 3개 이상의 지하철 역이 등록되어 있다
+     * When 상행 종점이 제거 될 경우
+     * Then 다음으로 오던 역이 종점이 된다
+     */
+//    @DisplayName("상행 종점을 제거할 수 있다")
+//    @Test
+//    void 상행_종점_제거() {
+//        // given -> beforeEach
+//        구간_생성_요청(lineId, 1L, 3L, 4);
+//
+//        // when
+//        ExtractableResponse<Response> response = 구간_삭제_호출(lineId, 2L, 3L, 10);
+//
+//        // then
+//        구간_추가_등록_결과_확인(response, 3 ,17);
+//    }
 }

@@ -1,11 +1,10 @@
 package nextstep.subway.line;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.utils.CommonMethodFixture;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
 import java.util.List;
 
@@ -13,7 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 
-public class LineAcceptanceStep {
+public class LineAcceptanceStep extends CommonMethodFixture {
+    public static final String SLASH = "/";
+    public static final String LINE_PATH = "/lines";
 
     public static ExtractableResponse<Response> 노선_한개_생성한다(int upLastStationId, int downLastStationId) {
         LineRequest request = LineRequest.builder()
@@ -46,30 +47,18 @@ public class LineAcceptanceStep {
                 .distance(33)
                 .build();
 
-        return RestAssured.given()
-                .body(updateRequest).log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/line/" + id)
-                .then()
-                .log().all()
-                .extract();
+        String path = LINE_PATH + SLASH + id;
+        return put(path, updateRequest);
     }
 
     public static ExtractableResponse<Response> 노선을_생성한다(LineRequest request) {
-        return RestAssured.given()
-                .body(request).log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then()
-                .log().all()
-                .extract();
+        String path = LINE_PATH + SLASH;
+        return post(path, request);
     }
 
     public static List<String> 모든_노선_이름을_조회한다() {
-        return RestAssured.given().log().all()
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+        String path = LINE_PATH + SLASH;
+        return get(path).jsonPath().getList("name", String.class);
     }
 
     public static void 노선_이름이_조회된다(List<String> allLineNames, String lineName) {
@@ -98,11 +87,8 @@ public class LineAcceptanceStep {
 
 
     public static ExtractableResponse<Response> 모든_노선을_조회한다() {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
+        String path = LINE_PATH + SLASH;
+        return get(path);
     }
 
     public static void 노선의_수가_일치한다(ExtractableResponse<Response> allLines, int size) {
@@ -110,11 +96,8 @@ public class LineAcceptanceStep {
     }
 
     public static ExtractableResponse<Response> 특정_노선을_조회한다(int id) {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/line/" + id)
-                .then().log().all()
-                .extract();
+        String path = LINE_PATH + SLASH + id;
+        return get(path);
     }
 
     public static void 지하철_노선_정보_확인(ExtractableResponse<Response> savedLine, ExtractableResponse<Response> result) {
@@ -126,19 +109,12 @@ public class LineAcceptanceStep {
     }
 
     public static ExtractableResponse<Response> 특정_노선을_제거한다(int id) {
-        return RestAssured.given()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/line/" + id)
-                .then().log().all()
-                .extract();
+        String path = LINE_PATH + SLASH + id;
+        return delete(path);
     }
 
     public static void 해당_노선의_정보가_삭제된다(int id) {
         ExtractableResponse<Response> response = 특정_노선을_조회한다(id);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
-
-
-
-
 }

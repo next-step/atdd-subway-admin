@@ -1,23 +1,21 @@
 package nextstep.subway.section;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.SectionRequest;
-import org.json.JSONObject;
+import nextstep.subway.utils.CommonMethodFixture;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.List;
-
-import static nextstep.subway.line.LineAcceptanceStep.노선_한개_생성한다;
-import static nextstep.subway.line.LineAcceptanceStep.특정_노선을_조회한다;
-import static nextstep.subway.station.StationAcceptanceTest.지하철역을_생성한다;
+import static nextstep.subway.line.LineAcceptanceStep.*;
+import static nextstep.subway.station.StationAcceptanceStep.*;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class LineSectionStep {
+public class LineSectionStep extends CommonMethodFixture{
+    private static final String SECTION_PATH = "/sections";
+    private static final String REQUEST_PARAM_STATION_ID = "?stationId=";
+
 
     public static ExtractableResponse<Response> 역_3개와_노선을_생성한다() {
         int upLastStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
@@ -33,18 +31,13 @@ public class LineSectionStep {
                 .downStationId(downStationId)
                 .distance(distance)
                 .build();
-        return 구간_생성_호출(lineId, request);
+        String path = LINE_PATH + SLASH + lineId + SECTION_PATH;
+        return post(path, request);
     }
 
-
-    public static ExtractableResponse<Response> 구간_생성_호출(int lineId, SectionRequest request) {
-        return RestAssured.given()
-                .body(request).log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/" + lineId + "/sections")
-                .then()
-                .log().all()
-                .extract();
+    public static ExtractableResponse<Response> 구간_삭제_호출(int lineId, int stationId) {
+        String path = LINE_PATH + SLASH + lineId + SECTION_PATH;
+        return delete(path);
     }
 
     public static void 추가_역을_3개_생성한다() {
@@ -78,12 +71,4 @@ public class LineSectionStep {
                 () -> assertThat(jsonPath.getList("stations")).hasSize(count)
         );
     }
-
-
-    public static void 구간_등록_결과_검증(int lineId, int count, String target) {
-        List<JSONObject> jsonObjects = 특정_노선을_조회한다(lineId).jsonPath().getList(target);
-        assertThat(jsonObjects).hasSize(count);
-    }
-
-
 }
