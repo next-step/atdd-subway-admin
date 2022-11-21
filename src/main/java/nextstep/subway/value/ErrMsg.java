@@ -10,7 +10,7 @@ public class ErrMsg {
 
     public static final String SECTION_ALREADY_EXISTS = "이미 해당 구간이 존재합니다.";
     public static final String NO_MATCHING_STATIONS = "구간을 추가하기위한 상행역과 하행역이 존재하지 않습니다.";
-    public static final String DISTANCE_TOO_LONG = "주어진 구간의 거리가 추가 가능한 구간의 길이보다 깁니다.";
+    public static final String CANNOT_DELETE_SECTION_WHEN_ONE = "구간이 하나인 경우에는 역을 삭제할 수 없습니다.";
 
     public static final String INAPPROPRIATE_DISTANCE = "구간의 길이는 양수여야 합니다.";
 
