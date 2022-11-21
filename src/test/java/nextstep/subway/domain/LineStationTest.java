@@ -62,7 +62,7 @@ public class LineStationTest {
 
     @DisplayName("역 사이에 새로운 역을 등록하는 경우")
     @Test
-    void 라인생성_addBetweenSection테스트() {
+    void 역_사이에_새로운역_등록() {
         // line과 station 기반으로 lineStation 생성
         Line 신분당선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
@@ -72,6 +72,28 @@ public class LineStationTest {
 
         // when : 라인에 linestation을 추가 후 중간에 midLineStation을 추가
         Station 이매역 = stationRepository.getById(2L);
+        신분당선.addSection(new LineStation(판교역, 이매역, 40));
+        lineRepository.save(신분당선);
+        flushAndClear();
+
+        // then : line의 linestations에 잘 들어갔는 지 확인
+        Optional<Line> getLine = lineRepository.findById(1L);
+        assertThat(getLine).isPresent();
+        assertThat(getLine.get().getLineStations()).hasSize(3);
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 등록")
+    @Test
+    void 새로운역_상행_종점_등록() {
+        // line과 station 기반으로 lineStation 생성
+        Line 신분당선 = lineRepository.getById(1L);
+        Station 이매역 = stationRepository.getById(2L);
+        Station 경기광주역 = stationRepository.getById(3L);
+        신분당선.addLineStation(new LineStation(null, 이매역, 0));
+        신분당선.addLineStation(new LineStation(이매역, 경기광주역, 100));
+
+        // when : 라인에 linestation을 추가 후 중간에 midLineStation을 추가
+        Station 판교역 = stationRepository.getById(1L);
         신분당선.addSection(new LineStation(판교역, 이매역, 40));
         lineRepository.save(신분당선);
         flushAndClear();

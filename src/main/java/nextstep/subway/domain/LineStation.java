@@ -53,6 +53,11 @@ public class LineStation extends BaseEntity {
         oldLineStation.distance -= newLineStation.distance;
     }
 
+    public void updatePreLineStation(LineStation newLineStation) {
+        LineStation oldLineStation = this;
+        oldLineStation.station = newLineStation.preStation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

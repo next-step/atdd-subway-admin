@@ -27,6 +27,14 @@ public class LineStations {
                     lt.updateLineStation(lineStation);
                     lineStations.add(lineStation);
                 });
+
+        lineStations.stream()
+                .filter(lt -> lineStation.getStation().isSame(lt.getStation()))
+                .findFirst()
+                .ifPresent(lt -> {
+                    lt.updatePreLineStation(lineStation);
+                    lineStations.add(lineStation);
+                });
     }
 
     public List<LineStation> values() {
