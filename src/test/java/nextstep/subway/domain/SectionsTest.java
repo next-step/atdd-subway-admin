@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Collections;
+import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -48,7 +49,7 @@ public class SectionsTest {
         sections.add(addSection);
 
         // when
-        sections.remove(section, addSection);
+        sections.remove(Optional.ofNullable(section), Optional.ofNullable(addSection));
 
         // then
         assertThat(sections.size()).isEqualTo(1);
@@ -65,7 +66,7 @@ public class SectionsTest {
         sections.add(addSection);
 
         // when
-        sections.remove(null, addSection);
+        sections.remove(Optional.ofNullable(null), Optional.ofNullable(addSection));
 
         // then
         assertThat(sections.size()).isEqualTo(1);

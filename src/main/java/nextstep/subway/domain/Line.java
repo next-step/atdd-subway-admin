@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -69,7 +70,7 @@ public class Line extends BaseEntity {
         sections.add(section);
     }
 
-    public void removeSection(Section upSection, Section downSection) {
+    public void removeSection(Optional<Section> upSection, Optional<Section> downSection) {
         sections.remove(upSection, downSection);
     }
 

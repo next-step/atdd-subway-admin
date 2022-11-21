@@ -59,7 +59,7 @@ public class Sections {
         sections.stream().forEach(section -> section.update(source));
     }
 
-    public void remove(Section upSection, Section downSection) {
+    public void remove(Optional<Section> upSection, Optional<Section> downSection) {
         validateRemoveExistSections(upSection, downSection);
         validateRemoveLastSection();
         removeFirstSection(upSection, downSection);
@@ -67,8 +67,8 @@ public class Sections {
         removeMiddleSection(upSection, downSection);
     }
 
-    private void validateRemoveExistSections(Section upSection, Section downSection) {
-        if (Objects.isNull(upSection) && Objects.isNull(downSection)) {
+    private void validateRemoveExistSections(Optional<Section> upSection, Optional<Section> downSection) {
+        if (!upSection.isPresent() && !downSection.isPresent()) {
             throw new IllegalArgumentException("구간이 존재하지 않습니다.");
         }
     }
@@ -79,40 +79,40 @@ public class Sections {
         }
     }
 
-    private void removeFirstSection(Section upSection, Section downSection) {
-        if (Objects.isNull(upSection) && Objects.nonNull(downSection)) {
-            sections.remove(downSection);
+    private void removeFirstSection(Optional<Section> upSection, Optional<Section> downSection) {
+        if (!upSection.isPresent() && downSection.isPresent()) {
+            sections.remove(downSection.get());
         }
     }
 
-    private void removeLastSection(Section upSection, Section downSection) {
-        if (Objects.nonNull(upSection) && Objects.isNull(downSection)) {
-            sections.remove(upSection);
+    private void removeLastSection(Optional<Section> upSection, Optional<Section> downSection) {
+        if (upSection.isPresent() && !downSection.isPresent()) {
+            sections.remove(upSection.get());
         }
     }
 
-    private void removeMiddleSection(Section upSection, Section downSection) {
-        if (Objects.nonNull(upSection) && Objects.nonNull(downSection)) {
-            upSection.extend(downSection);
-            sections.remove(downSection);
+    private void removeMiddleSection(Optional<Section> upSection, Optional<Section> downSection) {
+        if (upSection.isPresent() && downSection.isPresent()) {
+            upSection.get().extend(downSection.get());
+            sections.remove(downSection.get());
         }
     }
 
     public void order() {
-        Section firstSection = findFirstSection().orElse(null);
-        if (Objects.isNull(firstSection)) {
+        Optional<Section> firstSection = findFirstSection();
+        if (!firstSection.isPresent()) {
             return;
         }
-        addLast(firstSection);
+        moveLast(firstSection.get());
 
-        Section currentLastSection = firstSection;
+        Section currentLastSection = firstSection.get();
         while (true) {
-            Section nextSection = findNextSection(currentLastSection.getDownStation()).orElse(null);
-            if (Objects.isNull(nextSection)) {
+            Optional<Section> nextSection = findNextSection(currentLastSection.getDownStation());
+            if (!nextSection.isPresent()) {
                 break;
             }
-            addLast(nextSection);
-            currentLastSection = nextSection;
+            moveLast(nextSection.get());
+            currentLastSection = nextSection.get();
         }
     }
 
@@ -134,7 +134,7 @@ public class Sections {
                 .findAny();
     }
 
-    private void addLast(Section section) {
+    private void moveLast(Section section) {
         sections.remove(section);
         sections.add(section);
     }
