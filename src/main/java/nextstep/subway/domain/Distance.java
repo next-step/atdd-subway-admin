@@ -15,7 +15,15 @@ public class Distance {
         this.distance = distance;
     }
 
-    public int getDistance() {
+    public void add(int distance) {
+        this.distance += distance;
+    }
+
+    public Distance subtract(Distance distance) {
+        return new Distance(this.distance - distance.value());
+    }
+
+    public int value() {
         return distance;
     }
 }
