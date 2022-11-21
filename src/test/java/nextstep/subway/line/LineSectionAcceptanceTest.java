@@ -44,7 +44,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private Station hongDaeStation;
     private Station guiStation;
 
-
     @BeforeEach
     void init() {
         gangNamStation = stationRepository.save(new Station("강남역"));
@@ -217,6 +216,40 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(sections.get(0).getDistance()).isEqualTo(10L);
     }
 
+    @DisplayName("중간 구간을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간 존재)")
+    @Test
+    void deleteMiddleSection() {
+        //given
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), seungSuStation.getId(), hongDaeStation.getId(), 1L);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = deleteSection(line.getId(), seungSuStation);
+
+        //then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findSection.jsonPath());
+        assertThat(sections.get(0).getDistance()).isEqualTo(11L);
+    }
+
+    @DisplayName("중간 구간을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간- 구의 존재)")
+    @ParameterizedTest
+    @MethodSource("deleteManySectionCase")
+    void deleteMiddleSectionManyCase(List<Long> expectDistance) {
+        //given
+        createSection(line.getId(), seungSuStation.getId(), hongDaeStation.getId(), 1L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), hongDaeStation.getId(), guiStation.getId(), 1L);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = deleteSection(line.getId(), hongDaeStation);
+
+        //then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findSection.jsonPath());
+        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(expectDistance);
+    }
+
     private ExtractableResponse<Response> deleteSection(Long id, Station hongDaeStation) {
         return RestAssured.given().log().all()
                 .param(STATION_ID, hongDaeStation.getId())
@@ -272,6 +305,11 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private static Stream<Arguments> createExpectDistance() {
         List<Long> distances = Arrays.asList(1L, 6L, 3L, 1L);
+        return Stream.of(Arguments.of(distances));
+    }
+
+    private static Stream<Arguments> deleteManySectionCase() {
+        List<Long> distances = Arrays.asList(10L,2L);
         return Stream.of(Arguments.of(distances));
     }
 }
