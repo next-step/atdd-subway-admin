@@ -5,9 +5,7 @@ import nextstep.subway.common.exception.NotFoundDataException;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.common.type.AlreadyExceptionType.ALREADY_LINE_STATION;
@@ -22,7 +20,6 @@ public class LineStations {
     protected LineStations() {
     }
 
-
     public List<Station> getStations() {
         return lineStations.stream()
                 .map(LineStation::getRelationStation)
@@ -31,36 +28,23 @@ public class LineStations {
                 .collect(Collectors.toList());
     }
 
-
-    public void addLineStation(Station upStation, Station downStation, int distance) {
-        LineStation newStation = LineStation.of(upStation, downStation, distance);
+    public void addLineStation(LineStation station) {
         if (lineStations.isEmpty()) {
-            lineStations.add(newStation);
+            lineStations.add(station);
             return;
         }
+        checkAlreadyExistStation(station);
+        checkExistBothStation(station);
 
-        checkAlreadyExistStation(upStation, downStation);
-        checkExistBothStation(newStation);
-
-
-        lineStations.forEach(lineStation -> lineStation.update(newStation));
-        lineStations.add(newStation);
+        lineStations.forEach(lineStation -> lineStation.update(station));
+        lineStations.add(station);
     }
 
-    private void checkAlreadyExistStation(Station upStation, Station downStation) {
-        if (isContainUpStation(upStation) && isContainDownStation(downStation)) {
+    private void checkAlreadyExistStation(LineStation station) {
+        if (getStations().containsAll(station.getRelationStation())) {
             throw new NotFoundDataException(ALREADY_LINE_STATION.getMessage());
         }
     }
-
-    private boolean isContainUpStation(Station upStation) {
-        return getStations().contains(upStation);
-    }
-
-    private boolean isContainDownStation(Station downStation) {
-        return this.getStations().contains(downStation);
-    }
-
 
     private void checkExistBothStation(LineStation station) {
         if (isExistStations(station)) {

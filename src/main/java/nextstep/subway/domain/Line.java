@@ -21,16 +21,18 @@ public class Line extends BaseEntity {
     @Embedded
     private LineStations lineStations = new LineStations();
 
-    protected Line() {}
+    protected Line() {
+    }
 
     private Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        addLineStation(upStation, downStation, distance);
+        addLineStation(LineStation.of(upStation, downStation, distance));
     }
 
-    public void addLineStation(Station upStation, Station downStation, int distance) {
-        lineStations.addLineStation(upStation, downStation, distance);
+    public void addLineStation(LineStation station) {
+        lineStations.addLineStation(station);
+        station.addLine(this);
     }
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {

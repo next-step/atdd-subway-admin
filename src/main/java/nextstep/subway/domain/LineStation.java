@@ -12,6 +12,10 @@ public class LineStation extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id")
+    private Line line;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id")
     private Station upStation;
 
@@ -67,5 +71,9 @@ public class LineStation extends BaseEntity {
     private void updateUpStation(LineStation newStation) {
         this.upStation = newStation.downStation;
         this.distance = distance.minus(newStation.distance);
+    }
+
+    public void addLine(Line line) {
+        this.line = line;
     }
 }

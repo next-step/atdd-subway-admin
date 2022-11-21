@@ -11,7 +11,6 @@ public class Distance {
 
     private static final int SIZE_ZERO = 0;
 
-
     @Column(nullable = false)
     private int distance;
 

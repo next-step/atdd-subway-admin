@@ -18,6 +18,7 @@ import static nextstep.subway.station.StationAcceptanceFixture.지하철역_생�
 class LineAcceptanceTest extends AcceptanceTest {
 
     private Long upStationId;
+
     private Long downStationId;
 
     @BeforeEach
