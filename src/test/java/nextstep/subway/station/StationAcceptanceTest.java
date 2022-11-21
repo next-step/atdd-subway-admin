@@ -76,6 +76,15 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        createStation("강남역");
+        createStation("신림역");
+
+        // when
+        ExtractableResponse<Response> response = findAllStations();
+
+        // then
+        assertThat(response.body().jsonPath().getInt("size()")).isEqualTo(2);
     }
 
     /**
