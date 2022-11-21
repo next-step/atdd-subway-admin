@@ -2,10 +2,12 @@ package nextstep.subway.application;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -21,6 +23,9 @@ public class LineService {
 
     @Autowired
     private LineRepository lineRepository;
+
+    @Autowired
+    private SectionRepository sectionRepository;
 
     @Autowired
     private StationService stationService;
@@ -68,6 +73,14 @@ public class LineService {
         Section section = sectionRequest.toSection(upStation, downStation, persistLine);
         persistLine.addSection(section);
         return LineResponse.from(persistLine);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Optional<Section> upSection = sectionRepository.findByLineIdAndDownStationId(lineId, stationId);
+        Optional<Section> downSection = sectionRepository.findByLineIdAndUpStationId(lineId, stationId);
+        Line persistLine = getLineById(lineId);
+        persistLine.removeSection(upSection, downSection);
     }
 
     private Line getLineById(Long id) {

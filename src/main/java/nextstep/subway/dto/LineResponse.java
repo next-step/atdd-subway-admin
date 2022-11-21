@@ -1,6 +1,5 @@
 package nextstep.subway.dto;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
@@ -18,10 +17,11 @@ public class LineResponse {
         this.id = id;
         this.name = name;
         this.color = color;
+
+        sections.order();
         this.stations = sections.getStations()
                 .stream()
                 .map(StationResponse::from)
-                .sorted(Comparator.comparing(StationResponse::getId))
                 .collect(Collectors.toList());
     }
 

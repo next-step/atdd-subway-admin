@@ -70,6 +70,23 @@ public class SectionTest {
                 () -> assertThat(z.getStations()).containsExactly(BStation, CStation),
                 () -> assertThat(z.getDistance()).isEqualTo(7)
         );
+    }
+
+    @Test
+    @DisplayName("A역과 B역을 가진 길이 10짜리 Z 구간 중간에, A역과 b역을 가진 길이 3짜리 구간으로 업데이트 할 수 없다")
+    void update_실패_같은역() {
+        // given
+        Station AStation = Station.of(1L, "A역");
+        Station BStation = Station.of(2L, "C역");
+        Integer distance = 10;
+        Section z = Section.of(AStation, BStation, distance);
+
+        // given
+        Integer ABdistance = 3;
+        Section y = Section.of(AStation, BStation, ABdistance);
+
+        // expect
+        assertThatIllegalArgumentException().isThrownBy(() -> z.update(y));
 
     }
 }

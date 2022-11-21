@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "SECTION")
 public class Section extends BaseEntity {
 
-    private static int MIN_DISTANCE = 1;
+    private static final int MIN_DISTANCE = 1;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,23 +51,28 @@ public class Section extends BaseEntity {
         return new Section(null, upStation, downStation, distance, null);
     }
 
+    public static Section of(Long id, Station upStation, Station downStation, Integer distance) {
+        return new Section(id, upStation, downStation, distance, null);
+    }
+
     public static Section of(Station upStation, Station downStation, Integer distance, Line line) {
         return new Section(null, upStation, downStation, distance, line);
     }
 
     private void validateStations(Station... stations) {
-        if (stations == null || Arrays.stream(stations).anyMatch(Objects::isNull)) {
+        if (Objects.isNull(stations) || Arrays.stream(stations).anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("구간은 상행역, 하행역 둘다 존재해야 합니다.");
         }
     }
 
     private void validateDistance(Integer distance) {
-        if (distance == null || distance < MIN_DISTANCE) {
+        if (Objects.isNull(distance) || distance < MIN_DISTANCE) {
             throw new IllegalArgumentException(String.format("구간길이는 %d 이상이여 합니다.", MIN_DISTANCE));
         }
     }
 
     public void update(Section section) {
+        validateContainsAllStation(section);
         if (this.upStation.equals(section.upStation)) {
             validateUpdateDistance(section.distance);
             updateWhenEqualsUpStation(section);
@@ -88,17 +93,53 @@ public class Section extends BaseEntity {
         this.distance = this.distance - section.distance;
     }
 
+    private void validateContainsAllStation(Section section) {
+        if (getStations().containsAll(section.getStations())) {
+            throw new IllegalArgumentException("구간의 두 역은 일치할 수 없습니다.");
+        }
+    }
+
     private void validateUpdateDistance(Integer distance) {
         if (this.distance <= distance) {
             throw new IllegalArgumentException("역 사이에 새로운 역을 등록할 경우는 길이가 기존 구간길이보다 작아야 합니다.");
         }
     }
 
+    public void extend(Section downSection) {
+        this.distance = distance + downSection.distance;
+        this.downStation = downSection.downStation;
+    }
+
     public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
     public Integer getDistance() {
         return distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

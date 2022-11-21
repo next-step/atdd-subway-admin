@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -57,7 +58,7 @@ public class Line extends BaseEntity {
     }
 
     private boolean isBlankString(String text) {
-        return text == null || text.trim().isEmpty();
+        return Objects.isNull(text) || text.trim().isEmpty();
     }
 
     public void update(String name, String color) {
@@ -67,6 +68,10 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         sections.add(section);
+    }
+
+    public void removeSection(Optional<Section> upSection, Optional<Section> downSection) {
+        sections.remove(upSection, downSection);
     }
 
     public Long getId() {
