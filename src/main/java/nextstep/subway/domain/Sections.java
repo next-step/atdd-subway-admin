@@ -1,12 +1,12 @@
 package nextstep.subway.domain;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -27,19 +27,49 @@ public class Sections {
     }
 
     public void addSection(Section section) {
-        this.sections.add(section);
+        if (!sections.isEmpty()) {
+            sections.forEach(inner -> inner.validSection(section));
+            sections
+                .stream()
+                .filter(inner -> inner.isSameUpDownStation(section))
+                .findAny()
+                .ifPresent(inner -> inner.resetSection(section));
+        }
+
+        sections.add(section);
     }
 
     public List<StationResponse> getStations() {
-        Set<StationResponse> upStations = sections.stream()
-            .map(section -> StationResponse.of(section.getUpStation()))
-            .collect(Collectors.toSet());
-        Set<StationResponse> downStations = sections.stream()
-            .map(section -> StationResponse.of(section.getDownStation()))
-            .collect(Collectors.toSet());
+        return getStationList().stream()
+            .map(StationResponse::of)
+            .collect(Collectors.toList());
+    }
 
-        return Stream.of(upStations, downStations)
-            .flatMap(Collection::stream).distinct().collect(Collectors.toList());
+    private List<Station> getStationList() {
+
+        Deque<Station> stationDeque = new ArrayDeque<>();
+
+        sections.forEach(section -> {
+            Station upStation = section.getUpStation();
+            Station downStation = section.getDownStation();
+
+            if (stationDeque.isEmpty()) {
+                stationDeque.addAll(Arrays.asList(upStation, downStation));
+            } else {
+                getSequenceStation(stationDeque, upStation, downStation);
+            }
+        });
+
+        return new ArrayList(stationDeque);
+    }
+
+    private void getSequenceStation(Deque stationDeque, Station upStation, Station downStation) {
+        if (stationDeque.getFirst().equals(downStation)) {
+            stationDeque.addFirst(upStation);
+            return;
+        }
+
+        stationDeque.addLast(downStation);
     }
 
 }

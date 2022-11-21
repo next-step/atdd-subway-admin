@@ -9,6 +9,9 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.exception.ErrorCode;
+import nextstep.subway.exception.SubwayException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,32 +45,46 @@ public class LineService {
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
 
-    public LineResponse getLineById(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() ->
-            new IllegalArgumentException("해당 id 에 존재하는 Line 이 없습니다.")
-        );
+    public LineResponse getLineById(Long id) {
+        Line line = this.findLineById(id);
+
         return LineResponse.of(line);
     }
 
     @Transactional
-    public LineResponse updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() ->
-            new IllegalArgumentException("해당 id 에 존재하는 Line 이 없습니다.")
-        );
-
+    public LineResponse updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+        Line line = this.findLineById(id);
         line.update(lineUpdateRequest.toLine());
 
         return LineResponse.of(line);
     }
 
     @Transactional
-    public void deleteLine(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() ->
-            new IllegalArgumentException("해당 id 에 존재하는 Line 이 없습니다.")
-        );
+    public void deleteLine(Long id) {
+        Line line = this.findLineById(id);
 
         lineRepository.delete(line);
     }
 
 
+    public LineResponse updateSection(Long id, SectionRequest sectionRequest) {
+        Line line = this.findLineById(id);
+
+        Section section = reqToSection(line, sectionRequest);
+        
+        line.addSection(section);
+
+        return LineResponse.of(line);
+    }
+
+    private Section reqToSection(Line line, SectionRequest sectionRequest) {
+        Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
+        return new Section(line, downStation, upStation, sectionRequest.getDistance());
+    }
+
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR));
+    }
 }
