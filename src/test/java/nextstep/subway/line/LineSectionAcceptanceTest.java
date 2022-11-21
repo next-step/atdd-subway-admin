@@ -175,6 +175,16 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(deleteResonse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("구간이 하나인 경우에는 삭제 할 수 없다.(기본 강남 - 성수역 구간만 존재)")
+    @Test
+    void deleteSectionFailedHasOneSection() {
+        //when
+        ExtractableResponse<Response> deleteResonse = deleteSection(line.getId(), gangNamStation);
+
+        //then
+        assertThat(deleteResonse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private ExtractableResponse<Response> deleteSection(Long id, Station hongDaeStation) {
         return RestAssured.given().log().all()
                 .param(STATION_ID, hongDaeStation.getId())
