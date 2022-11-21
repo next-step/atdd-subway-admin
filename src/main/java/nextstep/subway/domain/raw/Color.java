@@ -20,6 +20,10 @@ public class Color {
         this.color = color;
     }
 
+    public static Color fromColor(String color) {
+        return new Color(color);
+    }
+
     public String getColor() {
         return color;
     }

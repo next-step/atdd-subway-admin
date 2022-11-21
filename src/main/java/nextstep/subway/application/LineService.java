@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 import static nextstep.subway.constant.Message.*;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -22,14 +22,12 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = findStationById(Long.valueOf(lineRequest.getUpLastStationId()));
-        Station downStation = findStationById(Long.valueOf(lineRequest.getDownLastStationId()));
-
-        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.from(persistLine);
+        Line line = Line.of(lineRequest.getName(), lineRequest.getColor(), toSectionWithLine(lineRequest));
+        lineRepository.save(line);
+        return LineResponse.from(line);
     }
+
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
@@ -38,20 +36,18 @@ public class LineService {
 
     public LineResponse findLineById(Long id) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
+                .orElseThrow(() -> new CannotFindException(NOT_FOUND_LINE_ERR));
         return LineResponse.from(line);
     }
 
     // @Transactional 이 있어야 update문 탐
-    @Transactional
     public void updateLineById(Long id, LineRequest updateRequest) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(()-> new CannotFindException(NOT_FOUND_LINE_ERR));
+                .orElseThrow(() -> new CannotFindException(NOT_FOUND_LINE_ERR));
 
         line.update(updateRequest);
     }
 
-    @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
     }
@@ -65,7 +61,7 @@ public class LineService {
         return lineRepository.findById(id).orElseThrow(() -> new CannotFindException(NOT_FOUND_LINE_ERR));
     }
 
-    @Transactional
+
     public LineResponse saveSection(Long lineId, SectionRequest sectionRequest) {
         // 이전에 저장됐던 section이 Line에 같이 조회됨
         Line line = findById(lineId);
@@ -75,7 +71,6 @@ public class LineService {
     }
 
 
-    @Transactional
     public void removeSection(Long lineId, Long stationId) {
         Line line = findById(lineId);
         line.removeSection(findStationById(stationId));
@@ -86,6 +81,12 @@ public class LineService {
         Station downStation = findStationById(sectionRequest.getDownStationId());
 
         return Section.of(upStation, downStation, sectionRequest.getDistance());
+    }
+
+    private Section toSectionWithLine(LineRequest lineRequest) {
+        Station upStation = findStationById(Long.valueOf(lineRequest.getUpLastStationId()));
+        Station downStation = findStationById(Long.valueOf(lineRequest.getDownLastStationId()));
+        return Section.of(upStation, downStation, lineRequest.getDistance());
     }
 
 

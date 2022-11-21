@@ -11,20 +11,21 @@ import java.util.stream.Stream;
 import static nextstep.subway.constant.Message.STATION_IS_NOT_NULL;
 
 @Entity
-public class Section extends BaseEntity implements Comparable<Section> {
+public class Section implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station_to_station"))
+//    @ManyToOne(fetch = FetchType.LAZY)        // LAZY 하면 저장 후 제다로 section정보가 Line에 반영되지 않음
+    @ManyToOne
+    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station_to_station"), nullable = false)
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station_to_station"))
+    @ManyToOne
+    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station_to_station"), nullable = false)
     private Station downStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
@@ -41,16 +42,16 @@ public class Section extends BaseEntity implements Comparable<Section> {
         this.distance = new Distance(distance);
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = distance;
     }
 
     public static Section of(Station upStation, Station downStation, int distance) {
         validateStationIsNotNull(upStation);
         validateStationIsNotNull(downStation);
-        return new Section(upStation, downStation, distance);
+        return new Section(upStation, downStation, Distance.from(distance));
     }
 
     public Long getId() {
@@ -179,4 +180,10 @@ public class Section extends BaseEntity implements Comparable<Section> {
     }
 
 
+    public void addTo(Line line) {
+        if (line.equals(this.line)) {
+            return;
+        }
+        this.line = line;
+    }
 }

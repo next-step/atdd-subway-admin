@@ -1,7 +1,10 @@
 package nextstep.subway.domain;
 
+import com.google.common.collect.Lists;
+
 import javax.persistence.*;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.constant.Message.*;
@@ -11,7 +14,7 @@ public class Sections {
     private static final int SECTIONS_MIN_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> sections;
 
     public Sections() {
     }
@@ -20,12 +23,20 @@ public class Sections {
         sections = Arrays.asList(section);
     }
 
+    private Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
+    public static Sections from(Section section) {
+        return new Sections(Lists.newArrayList(section));
+    }
+
     public List<Section> getSections() {
         return Collections.unmodifiableList(sections);
     }
 
     public void addSection(Section newSection) {
-        validateNotMatchedStaton(newSection);
+        validateNotMatchedStation(newSection);
         validateDistance(newSection);
         validateDuplicated(newSection);
 
@@ -43,7 +54,7 @@ public class Sections {
     private void deleteSection(Station station) {
         // 순서대로 정렬
         List<Section> sortedSections = sections.stream()
-                .sorted(Section::compareTo)
+//                .sorted(Section::compareTo)
                 .collect(Collectors.toList());
 
         // 종점 구간 찾기
@@ -52,9 +63,20 @@ public class Sections {
 
 
         // 역으로 타켓 구간 찾기
+        AtomicReference<Section> tt = new AtomicReference<>(new Section());
+        sections.forEach(s -> {
+            Station temp = s.getDownStation();
+            boolean bo = temp.equals(station);
+            if(temp.equals(station)) {
+                tt.set(s);
+            }
+        });
+
         Section targetSection = sections.stream()
                 .filter(s -> s.getDownStation().equals(station))
-                .findFirst().get();
+                .findFirst()
+//                .orElseThrow()
+                .get();
 
 
 
@@ -116,7 +138,7 @@ public class Sections {
     }
 
 
-    private void validateNotMatchedStaton(Section newSection) {
+    private void validateNotMatchedStation(Section newSection) {
         // 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
         boolean anyMatch = sections.stream()
                 .anyMatch(s -> s.isContainAnyStaion(newSection));

@@ -36,7 +36,7 @@ public class LineSectionStep extends CommonMethodFixture{
     }
 
     public static ExtractableResponse<Response> 구간_삭제_호출(int lineId, int stationId) {
-        String path = LINE_PATH + SLASH + lineId + SECTION_PATH;
+        String path = LINE_PATH + SLASH + lineId + SECTION_PATH + REQUEST_PARAM_STATION_ID + stationId;
         return delete(path);
     }
 
