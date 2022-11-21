@@ -200,7 +200,23 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
         assertThat(sections.get(0).getDistance()).isEqualTo(1L);
     }
-    
+
+    @DisplayName("하행 종점을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간 존재)")
+    @Test
+    void deleteDownStationTerminus() {
+        //given
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), seungSuStation.getId(), hongDaeStation.getId(), 1L);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = deleteSection(line.getId(), hongDaeStation);
+
+        //then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findSection.jsonPath());
+        assertThat(sections.get(0).getDistance()).isEqualTo(10L);
+    }
+
     private ExtractableResponse<Response> deleteSection(Long id, Station hongDaeStation) {
         return RestAssured.given().log().all()
                 .param(STATION_ID, hongDaeStation.getId())
