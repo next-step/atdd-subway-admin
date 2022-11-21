@@ -73,7 +73,7 @@ public class SectionLineUp {
     }
 
     private void createInternalSection(Section section) {
-        validInternal(section);
+        validSameSection(section);
         List<Section> createUpdateSection = new ArrayList<>();
 
         /* 상행역과 연결 된 역을 추가할 경우 */
@@ -103,11 +103,6 @@ public class SectionLineUp {
         return Arrays.asList(source, add);
     }
 
-    private void validInternal(Section section) {
-        validSameSection(section);
-        validDistance(section);
-    }
-
     private void validSameSection(Section section) {
         if (sectionList.stream()
                 .anyMatch(streamSection -> streamSection.isKnownStationId(section.getUpStationId())) &&
@@ -116,17 +111,6 @@ public class SectionLineUp {
             throw new IllegalArgumentException(
                     "이미 중복된 구간이 있습니다. 상행선id:" + section.getUpStationId()
                             + ", 하행선id:" + section.getDownStationId());
-        }
-    }
-
-    private void validDistance(Section section) {
-        if (sectionList.stream()
-                .filter(streamSection -> streamSection.isSameUpStationId(section.getUpStationId()))
-                .anyMatch(section::distanceEquealsOrGreaterThan) ||
-                sectionList.stream()
-                        .filter(streamSection -> streamSection.isSameDownStationId(section.getDownStationId()))
-                        .anyMatch(section::distanceEquealsOrGreaterThan)) {
-            throw new IllegalArgumentException("기존 역 사이의 길이보다 크거나 같습니다. 입력값:" + section.getDistance());
         }
     }
 }

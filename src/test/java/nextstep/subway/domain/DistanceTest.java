@@ -36,4 +36,14 @@ class DistanceTest {
         Distance minusDistance = new Distance(minus);
         assertThat(sourceDistance.minus(minusDistance)).isEqualTo(new Distance(expect));
     }
+
+    @DisplayName("minus 메서드 테스트 실패 - 기존 거리보다 큰 값 뺄셈을 시도할 경우")
+    @Test
+    void minus_distance_IllegalArgumentException() {
+        int source = 10;
+        int minus = 11;
+        Distance sourceDistance = new Distance(source);
+        Distance minusDistance = new Distance(minus);
+        assertThatIllegalArgumentException().isThrownBy(() -> sourceDistance.minus(minusDistance));
+    }
 }

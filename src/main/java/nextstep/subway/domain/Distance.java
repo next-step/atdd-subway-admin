@@ -36,7 +36,7 @@ public class Distance {
 
     public Distance minus(Distance distance) {
         if (this.distance <= distance.getDistance()) {
-            return this;
+            throw new IllegalArgumentException("구간 길이가 같거나 기존의 구간이 더 작습니다. 입력값:" + distance.getDistance());
         }
         return new Distance(this.distance - distance.getDistance());
     }
