@@ -53,52 +53,16 @@ public class Sections {
 
     private void deleteSection(Station station) {
         // 순서대로 정렬
-        List<Section> sortedSections = sections.stream()
-                .sorted(Section::compareTo)
-                .collect(Collectors.toList());
+        List<Section> sortedSections = sortSections();
 
-        // 종점 구간 찾기
-        Section firstSection = sortedSections.get(0);
-        Section lastSection = sortedSections.get(sortedSections.size() - 1);
-
-        // 종점 여부 확인
-        if (isLastStation(firstSection, lastSection, station)) {
-            Section targetSection = sortedSections
-                    .stream()
-                    .map(section -> findLastStation(firstSection, lastSection, station))
-                    .findAny()
-                    .get();
-
-            // 종점 구간 삭제
-            deleteSection(targetSection);
-
+        // 종점 삭제
+        if (isLastStation(sortedSections, station)) {
+            removeLastSection(sortedSections, station);
             return;
         }
 
-
-        // 역으로 타켓 구간 찾기
-//        AtomicReference<Section> tt = new AtomicReference<>(new Section());
-//        for (Section s : sections) {
-//            Station target = station;
-//            Station temp = s.getDownStation();
-//
-//            boolean wh = target.equals(temp);
-//
-//        }
-
-//        Section targetSection = sections.stream()
-//                .filter(s -> s.getDownStation().equals(station))
-//                .findAny()
-//                .get();
-//
-
-        if (!isLastStation(firstSection, lastSection, station)) {
-            // 중간 구간 삭제
-            sections.stream()
-                    .filter(s -> s.getDownStation().equals(station))
-                    .findAny()
-                    .ifPresent(s -> changeSectionsAndRemove(station, s));
-        }
+        // 중간 삭제
+        removeNotLastSection(station);
     }
 
 
@@ -107,7 +71,6 @@ public class Sections {
                 .filter(u -> u.getUpStation().equals(station))
                 .findFirst().get();
         downSection.changeDownStation(deleteSection);
-//        deleteSection.changeDownStation(downSection);
 
         // section-line 매핑 끊기
         deleteSection.removeFromLine();
@@ -128,7 +91,9 @@ public class Sections {
         sections.remove(section);
     }
 
-    private boolean isLastStation(Section firstSection, Section lastSection, Station targetStation) {
+    private boolean isLastStation(List<Section> sortedSections, Station targetStation) {
+        Section firstSection = sortedSections.get(0);
+        Section lastSection = sortedSections.get(sortedSections.size() - 1);
         return firstSection.getUpStation().equals(targetStation) || lastSection.getDownStation().equals(targetStation);
     }
 
@@ -136,7 +101,6 @@ public class Sections {
         // 상행 종점
         if (firstSection.getUpStation().equals(targetStation)) {
             return firstSection;
-
         }
 
         if (lastSection.getDownStation().equals(targetStation)) {
@@ -206,5 +170,28 @@ public class Sections {
                 .filter(s -> s.getUpStation().equals(newSection.getUpStation()))
                 .findAny()
                 .ifPresent(s -> s.changeUpStation(newSection));
+    }
+
+    private List<Section> sortSections() {
+        return sections.stream()
+                .sorted(Section::compareTo)
+                .collect(Collectors.toList());
+    }
+
+    private void removeLastSection(List<Section> sortedSections, Station station) {
+        Section targetSection = sortedSections
+                .stream()
+                .map(section -> findLastStation(sortedSections.get(0), sortedSections.get(sortedSections.size() - 1), station))
+                .findAny()
+                .get();
+
+        deleteSection(targetSection);
+    }
+
+    private void removeNotLastSection(Station station) {
+        sections.stream()
+                .filter(s -> s.getDownStation().equals(station))
+                .findAny()
+                .ifPresent(s -> changeSectionsAndRemove(station, s));
     }
 }
