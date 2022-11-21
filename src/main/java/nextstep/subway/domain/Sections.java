@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.SectionsException;
+import nextstep.subway.exception.StationException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -8,19 +9,21 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.exception.SectionsExceptionMessage.*;
+import static nextstep.subway.exception.StationExceptionMessage.NONE_EXISTS_STATION;
 
 @Embeddable
 public class Sections {
+    private static final int MAX_SECTION_OF_STATION = 2;
+    private static final int MIN_SECTION = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private final List<Section> sections = new ArrayList<>();
 
-    protected Sections() {
-
-    }
+    protected Sections() {}
 
     public void addSection(Section newSection) {
         validationSection(newSection);
@@ -36,7 +39,7 @@ public class Sections {
     }
 
     private void validationSection(Section newSection) {
-        if (newSection == null) {
+        if (Objects.isNull(newSection)) {
             throw new NullPointerException(EMPTY_SECTION.getMessage());
         }
         if (isContainsAllStation(newSection)) {
@@ -75,11 +78,80 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
+    public void deleteSection(Line line, Station deleteStation) {
+        List<Section> findSections = sections.stream().filter(section -> section.hasStation(deleteStation))
+                .collect(Collectors.toList());
+        validateSections(findSections, sections);
+        if (removeEdgeSection(findSections)) {
+            return;
+        }
+        arrageSection(line, findSections, deleteStation);
+    }
+
+    private void validateSections(List<Section> findSections, List<Section> sections) {
+        validateEmptySection(findSections);
+        validateSingleSection(sections);
+        validateMultiSection(findSections);
+    }
+
+    private void validateMultiSection(List<Section> findSections) {
+        if (findSections.size() > MAX_SECTION_OF_STATION) {
+            throw new SectionsException(MULTI_SECTION.getMessage());
+        }
+    }
+
     private boolean isContainsAllStation(Section newSection) {
         return newSection.isComponentAllOfStations(getStations());
     }
 
     private boolean isNotContainsAnyStation(Section newSection) {
         return !sections.isEmpty() && !newSection.isComponentAnyOfStations(getStations());
+    }
+
+    private void validateEmptySection(List<Section> sections) {
+        if (sections.isEmpty()) {
+            throw new SectionsException(NOT_REGISTER_SECTION.getMessage());
+        }
+    }
+
+    private void validateSingleSection(List<Section> sections) {
+        if (isSingleSection(sections)) {
+            throw new SectionsException(SINGLE_SECTION.getMessage());
+        }
+    }
+
+    private boolean isSingleSection(List<Section> findSections) {
+        return findSections.size() == MIN_SECTION;
+    }
+
+    private void arrageSection(Line line, List<Section> findSections, Station deleteStation) {
+        sections.removeAll(findSections);
+        Station upStation = getUpStation(findSections, deleteStation);
+        Station downStation = getDownStation(findSections, deleteStation);
+        long distance = findSections.stream().mapToLong(Section::getDistance).sum();
+        sections.add(new Section(line, upStation, downStation, distance));
+    }
+
+    private Station getUpStation(List<Section> sections, Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .map(Section::getUpStation)
+                .findFirst()
+                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+    }
+
+    private Station getDownStation(List<Section> sections, Station station) {
+        return sections.stream()
+                .filter(section -> section.isSameUpStation(station))
+                .map(Section::getDownStation)
+                .findFirst()
+                .orElseThrow(() -> new StationException(NONE_EXISTS_STATION.getMessage()));
+    }
+
+    private boolean removeEdgeSection(List<Section> findSections){
+        if (isSingleSection(findSections)) {
+            return sections.remove(findSections.get(0));
+        }
+        return false;
     }
 }

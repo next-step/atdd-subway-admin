@@ -27,9 +27,7 @@ public class Section extends BaseEntity {
     private Station downStation;
     private long distance;
 
-    protected Section() {
-
-    }
+    protected Section() {}
 
     public Section(Line line, Station upStation, Station downStation, long distance) {
         validateDistance(distance);
@@ -92,6 +90,19 @@ public class Section extends BaseEntity {
     public void modifyDownStation(Section newSection) {
         this.downStation = newSection.getUpStation();
         this.distance -= newSection.getDistance();
+    }
+
+    public boolean hasStation(Station station) {
+        return upStation.equals(station) || downStation.equals(station);
+
+    }
+
+    public boolean isSameUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isSameDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     @Override

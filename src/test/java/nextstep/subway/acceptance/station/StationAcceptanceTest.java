@@ -99,4 +99,3 @@ public class StationAcceptanceTest extends RestAssuredSetUp {
         );
     }
 }
-

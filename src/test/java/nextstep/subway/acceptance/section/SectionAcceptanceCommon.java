@@ -17,5 +17,12 @@ public class SectionAcceptanceCommon {
                 .then().log().all()
                 .extract();
     }
-}
 
+    public static ExtractableResponse<Response> 지하철_구간_삭제(long lineId, long stationId) {
+        return RestAssured.given().log().all()
+                .queryParam("stationId",stationId)
+                .when().delete("/lines/{id}/sections",lineId)
+                .then().log().all()
+                .extract();
+    }
+}

@@ -4,6 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.exception.LineException;
+import nextstep.subway.exception.SectionsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
@@ -18,7 +19,7 @@ public class LineTest {
 
     @Nested
     @DisplayName("생성자는")
-    class Describe_constructor {
+    class DescribeConstructor {
 
         @DisplayName("이름이 null이면 예외를 반환")
         @Test
@@ -56,7 +57,7 @@ public class LineTest {
 
     @Nested
     @DisplayName("addSection 메소드는")
-    class Describe_addSection {
+    class DescribeAddSection {
 
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
@@ -85,7 +86,7 @@ public class LineTest {
 
     @Nested
     @DisplayName("getStations 메소드는")
-    class Describe_getStations {
+    class DescribeGetStations {
 
         private Line line = new Line("2호선", "green");
         private Station gangnamStation = new Station("강남역");
@@ -105,6 +106,49 @@ public class LineTest {
                     () -> assertThat(line.getStations()).hasSize(3),
                     () -> assertThat(line.getStations()).containsExactly(gangnamStation, jamsilStation, bangbaeStation)
             );
+        }
+    }
+
+    @Nested
+    @DisplayName("deleteSection 메소드는")
+    class DescribeDeleteSection {
+
+        private Line line = new Line("2호선", "green");
+        private Station gangnamStation = new Station("강남역");
+        private Station jamsilStation = new Station("잠실역");
+        private Station bangbaeStation = new Station("방배역");
+
+        @BeforeEach
+        void setUpSection() {
+            line.addSection(new Section(line, gangnamStation, jamsilStation, 10));
+            line.addSection(new Section(line, jamsilStation, bangbaeStation, 7));
+        }
+
+        @DisplayName("등록된 구간을 삭제")
+        @Test
+        void context_with_section_returns_remain_stations() {
+            line.deleteSection(jamsilStation);
+            assertAll(
+                    () -> assertThat(line.getStations()).hasSize(2),
+                    () -> assertThat(line.getStations()).containsExactly(gangnamStation, bangbaeStation)
+            );
+        }
+
+        @DisplayName("주어진 역이 노선안에 없는경우 예외발생")
+        @Test
+        void context_with_station_not_in_line_throw_exception() {
+            assertThatThrownBy(() -> line.deleteSection(new Station("상일역")))
+                    .isInstanceOf(SectionsException.class)
+                    .hasMessage("등록안된 구간입니다");
+        }
+
+        @DisplayName("주어진 역이 노선안에 있고 노선안에 구간이 하나만 남은경우 예외발생")
+        @Test
+        void context_with_station_in_single_line_throw_exception() {
+            line.deleteSection(jamsilStation);
+            assertThatThrownBy(() -> line.deleteSection(gangnamStation))
+                    .isInstanceOf(SectionsException.class)
+                    .hasMessage("마지막구간은 삭제할 수 없습니다");
         }
     }
 }

@@ -18,5 +18,4 @@ public class RestAssuredSetUp {
             RestAssured.port = port;
         }
     }
-
 }

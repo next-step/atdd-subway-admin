@@ -16,8 +16,7 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
-    public Station() {
-    }
+    protected Station() {}
 
     public Station(String name) {
         validateStation(name);
@@ -25,7 +24,7 @@ public class Station extends BaseEntity {
     }
 
     private void validateStation(String name) {
-        if (name == null || name.isEmpty()) {
+        if (Objects.isNull(name) || name.isEmpty()) {
             throw new StationException(EMPTY_STATION_NAME.getMessage());
         }
     }

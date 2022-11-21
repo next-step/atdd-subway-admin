@@ -18,6 +18,7 @@ import static nextstep.subway.exception.StationExceptionMessage.NONE_EXISTS_STAT
 @Service
 @Transactional(readOnly = true)
 public class LineService {
+
     private LineRepository lineRepository;
     private StationRepository stationRepository;
 
@@ -40,8 +41,7 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
+        Line line = getLine(id);
         return LineResponse.from(line);
     }
 
@@ -69,5 +69,17 @@ public class LineService {
         Station upStation = findStation(sectionRequest.getUpStationId());
         Station downStation = findStation(sectionRequest.getDownStationId());
         line.addSection(new Section(line, upStation, downStation, sectionRequest.getDistance()));
+    }
+
+    @Transactional
+    public void deleteSection(Long lineId,Long stationId) {
+        Line line = getLine(lineId);
+        Station station = findStation(stationId);
+        line.deleteSection(station);
+    }
+
+    private Line getLine(Long lineId){
+        return lineRepository.findById(lineId)
+                .orElseThrow(() -> new LineException(NONE_EXISTS_LINE.getMessage()));
     }
 }

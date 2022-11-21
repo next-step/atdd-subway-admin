@@ -21,7 +21,7 @@ public class SectionTest {
 
     @Nested
     @DisplayName("생성자는")
-    class Describe_constructor {
+    class DescribeConstructor {
 
         private Line line;
         private Station upStation;
@@ -45,7 +45,7 @@ public class SectionTest {
 
     @Nested
     @DisplayName("getStations 메소드")
-    class Describe_getStations {
+    class DescribeGetStations {
 
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
@@ -69,7 +69,7 @@ public class SectionTest {
 
     @Nested
     @DisplayName("isShortDistance 메소드")
-    class Describe_isShortDistance {
+    class DescribeIsShortDistance {
 
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
@@ -92,7 +92,7 @@ public class SectionTest {
 
     @Nested
     @DisplayName("isSameUpStation 메소드")
-    class Describe_isSameUpStation {
+    class DescribeIsSameUpStation {
 
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
@@ -115,7 +115,7 @@ public class SectionTest {
 
     @Nested
     @DisplayName("isSameDownStation 메소드")
-    class Describe_isSameDownStation {
+    class DescribeIsSameDownStation {
 
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
@@ -138,7 +138,7 @@ public class SectionTest {
 
     @Nested
     @DisplayName("isComponentAllOfStations 메소드")
-    class Describe_isComponentAllOfStations {
+    class DescribeIsComponentAllOfStations {
 
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
@@ -164,7 +164,7 @@ public class SectionTest {
 
     @Nested
     @DisplayName("isComponentAnyOfStations 메소드")
-    class Describe_isComponentAnyOfStations {
+    class DescribeIsComponentAnyOfStations {
 
         private Line line = new Line("2호선", "green");
         private Station upStation = new Station("강남역");
@@ -189,7 +189,7 @@ public class SectionTest {
 
     @Nested
     @DisplayName("modifyUpStation 메소드")
-    class Describe_modifyUpStation {
+    class DescribeModifyUpStation {
 
         private Line line = new Line("2호선", "green");
         private Station gangnameStation = new Station("강남역");
@@ -218,7 +218,7 @@ public class SectionTest {
 
     @Nested
     @DisplayName("modifyDownStation 메소드")
-    class Describe_modifyDownStation {
+    class DescribeModifyDownStation {
 
         private Line line = new Line("2호선", "green");
         private Station gangnameStation = new Station("강남역");
