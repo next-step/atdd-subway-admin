@@ -26,7 +26,7 @@ public class LineResponse {
                 line.getName(),
                 line.getColor(),
                 line.getLineStations().stream()
-                        .map(it -> StationResponseForLine.of(it.getCurrentStation()))
+                        .map(it -> StationResponseForLine.of(it.getStation()))
                         .collect(Collectors.toList())
         );
     }

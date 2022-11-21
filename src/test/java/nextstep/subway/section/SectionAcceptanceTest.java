@@ -14,6 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
+import java.util.List;
+
 import static nextstep.subway.section.SectionAcceptanceTestUtil.createSection;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,8 +58,25 @@ public class SectionAcceptanceTest {
     void 역사이에_새로운역_등록_성공() {
         // given / when
         ExtractableResponse<Response> response = createSection(upStationId, newStationId, "4", lineId);
+        List<String> stations = LineAcceptanceTestUtil.getLines(1L).jsonPath().getList("stations.name", String.class);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(stations).hasSize(3);
+    }
+
+    /**
+     * Given : 새로운 역을 상행 종점으로 하는 구간을 생성한다
+     * When : 새로운 구간을 등록하면,
+     * Then : 구간이 등록된다.
+     */
+    @DisplayName("새로운 역을 상행 종점으로 생성하고, 등록한다")
+    @Test
+    void 새로운_상행_등록_성공() {
+        // given / when
+        ExtractableResponse<Response> response = createSection(newStationId, upStationId, "4", lineId);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 }

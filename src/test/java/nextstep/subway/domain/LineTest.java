@@ -10,7 +10,6 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import java.util.Arrays;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,7 +58,7 @@ public class LineTest {
     void 라인수정_성공() {
         // given
         Line line = new Line("신분당선", "bg-red-600");
-        line.addLineStation(new LineStation(line, upStation, downStation, 100));
+        line.addLineStation(new LineStation(upStation, downStation, 100));
         lineRepository.save(line);
         flushAndClear();
 
@@ -70,48 +69,6 @@ public class LineTest {
 
         // then
         assertThat(newLine.getName()).isEqualTo("경기광주선");
-    }
-
-    @DisplayName("라인을 생성하고, station을 linestation으로 추가한다.")
-    @Test
-    void 라인생성_addLineStation테스트() {
-        // given : 라인과 station을 생성하고, LineStation도 생성
-        Line line = new Line("신분당선", "빨강");
-        LineStation firstLineStation = new LineStation(line, upStation, downStation, 100);
-        LineStation secondLineStation = new LineStation(line, downStation, null, 0);
-
-        // when : 라인에 linestation을 추가 후 save
-        line.addLineStation(firstLineStation);
-        line.addLineStation(secondLineStation);
-        lineRepository.save(line);
-        flushAndClear();
-
-        // then : line의 linestations에 잘 들어갔는 지 확인
-        Optional<Line> getLine = lineRepository.findById(1L);
-        assertThat(getLine).isPresent();
-        assertThat(getLine.get().getLineStations()).containsAll(Arrays.asList(firstLineStation, secondLineStation));
-    }
-
-    @DisplayName("역 사이에 새로운 역을 등록하는 경우")
-    @Test
-    void 라인생성_addBetweenSection테스트() {
-        // given : 라인과 station을 생성하고, LineStation도 생성
-        Line line = new Line("신분당선", "빨강");
-        LineStation firstLineStation = new LineStation(line, upStation, downStation, 100);
-        LineStation secondLineStation = new LineStation(line, downStation, null, 0);
-        LineStation midLineStation = new LineStation(line, upStation, newStation, 40);
-
-        // when : 라인에 linestation을 추가 후 중간에 midLineStation을 추가
-        line.addLineStation(firstLineStation);
-        line.addLineStation(secondLineStation);
-        line.addBetweenSection(midLineStation);
-        lineRepository.save(line);
-        flushAndClear();
-
-        // then : line의 linestations에 잘 들어갔는 지 확인
-        Optional<Line> getLine = lineRepository.findById(1L);
-        assertThat(getLine).isPresent();
-        assertThat(getLine.get().getLineStations()).containsAll(Arrays.asList(firstLineStation, midLineStation, secondLineStation));
     }
 
     private void flushAndClear() {

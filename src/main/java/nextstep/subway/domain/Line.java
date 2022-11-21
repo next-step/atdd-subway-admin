@@ -30,11 +30,11 @@ public class Line extends BaseEntity {
     }
 
     public void addLineStation(LineStation lineStation) {
-        this.lineStations.addLineStation(lineStation);
+        this.lineStations.add(lineStation);
     }
 
-    public void addBetweenSection(LineStation lineStation) {
-        this.lineStations.addBetweenSection(lineStation);
+    public void addSection(LineStation lineStation) {
+        this.lineStations.addLineStation(lineStation);
     }
 
     public Long getId() {

@@ -17,10 +17,10 @@ public class LineStationService {
     }
 
     @Transactional
-    public void saveSection(Long lineId, SectionRequest sectionRequest) {
+    public void addLineStation(Long lineId, SectionRequest sectionRequest) {
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(RuntimeException::new);
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(RuntimeException::new);
         Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
-        line.addBetweenSection(sectionRequest.toLineStation(line, upStation, downStation));
+        line.addSection(sectionRequest.toLineStation(upStation, downStation));
     }
 }
