@@ -2,7 +2,10 @@ package nextstep.subway.application;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
+import nextstep.subway.domain.Section;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
@@ -57,6 +60,16 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = getLineBy(lineId);
+        Long distance = sectionRequest.getDistance();
+        Station upStation = getLastStation(sectionRequest.getUpStationId());
+        Station downStation = getLastStation(sectionRequest.getDownStationId());
+        line.addSection(new Section(line, distance, upStation, downStation));
+        return getLineResponseBy(lineRepository.save(line));
+    }
+
     private Line getLineBy(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new EntityNotFoundException("지하철 노선 아이디 [ " + lineId + " ]를 찾을 수 없습니다."));
@@ -80,9 +93,10 @@ public class LineService {
     }
 
     private LineResponse getLineResponseBy(Line line) {
-        List<StationResponse> stations = new ArrayList<>();
-        stations.add(StationResponse.of(line.getLastUpStation()));
-        stations.add(StationResponse.of(line.getLastDownStation()));
+        List<StationResponse> stations = line.getStations()
+                .stream()
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
 
         return new LineResponse(line.getId(),
                 line.getName(),

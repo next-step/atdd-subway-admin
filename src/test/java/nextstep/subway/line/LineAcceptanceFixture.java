@@ -7,19 +7,27 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.StationResponse;
 import org.springframework.http.MediaType;
 
 public class LineAcceptanceFixture {
 
     public static LineRequest 노선_요청(String 노선명, String 노션_색깔, String 상행_지하철역, String 하행_지하철역) {
+        return 노선_요청(노선명, 노션_색깔, 상행_지하철역, 하행_지하철역, 100L);
+    }
+
+    public static LineRequest 노선_요청(String 노선명, String 노션_색깔, String 상행_지하철역, String 하행_지하철역, Long 거리) {
         ExtractableResponse<Response> 상행_지하철역_생성_결과 = 지하철_역을_생성한다(상행_지하철역);
         ExtractableResponse<Response> 하행_지하철역_생성_결과 = 지하철_역을_생성한다(하행_지하철역);
         Long 상행_지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(상행_지하철역_생성_결과);
         Long 하행_지하철역_번호 = 지하철_생성_결과에서_지하철역_번호를_조회한다(하행_지하철역_생성_결과);
-        return new LineRequest(노선명, 노션_색깔, 상행_지하철역_번호, 하행_지하철역_번호, 30L);
+        return new LineRequest(노선명, 노션_색깔, 상행_지하철역_번호, 하행_지하철역_번호, 거리);
     }
+
 
     public static LineUpdateRequest 노선_수정_요청(String 노선명, String 노션_색깔) {
         return new LineUpdateRequest(노선명, 노션_색깔);
@@ -80,6 +88,32 @@ public class LineAcceptanceFixture {
         return RestAssured.given().log().all()
                 .pathParam("id", 노선_아이디)
                 .when().delete("/lines/{id}")
+                .then().log().all()
+                .extract();
+    }
+
+    public static SectionRequest 구간_요청_정보(Long 상행역_번호, Long 하행역_번호) {
+        return new SectionRequest(상행역_번호, 하행역_번호, 1L);
+    }
+
+    public static SectionRequest 구간_요청_정보(Long 상행역_번호, Long 두정역_번호, Long 길이) {
+        return new SectionRequest(상행역_번호, 두정역_번호, 길이);
+    }
+
+    public static List<Long> 구간_생성_결과에서_지하철역_번호들을_조회한다(ExtractableResponse<Response> 구간_생성_결과) {
+        return 구간_생성_결과.jsonPath().getList("stations", StationResponse.class)
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+    }
+
+
+    public static ExtractableResponse<Response> 노선에_구간을_생성한다(Long 노선_아이디, SectionRequest 구간_요청_정보) {
+        return RestAssured.given().log().all()
+                .body(구간_요청_정보)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", 노선_아이디)
+                .when().post("lines/{id}/sections")
                 .then().log().all()
                 .extract();
     }
