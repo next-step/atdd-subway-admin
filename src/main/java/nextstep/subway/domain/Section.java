@@ -43,31 +43,12 @@ public class Section extends BaseEntity {
     public void validSection(Section section) {
         validNotInStations(section);
         validSameStation(section);
-        isInDistance(section);
+        this.distance.validDistance(section.distance);
     }
 
-    private void isInDistance(Section section) {
-        if (distance.getDistance() < section.distance.getDistance()
-            || distance.getDistance() == section.distance.getDistance()) {
-            throw new SubwayException(ErrorCode.VALID_DISTANCE_ERROR);
-        }
-    }
-
-    public boolean isSameUpStation(Station station) {
-        return upStation.equals(station);
-    }
-
-    public boolean isSameDownStation(Station station) {
-        return downStation.equals(station);
-    }
-
-    public boolean isSameUpDownStation(Section compareSection) {
-        return isSameUpStation(compareSection.upStation) && isSameDownStation(compareSection.downStation);
-    }
-
-    private void validSameStation(Section compareSection) {
-        if (isSameUpDownStation(compareSection)) {
-            throw new SubwayException(ErrorCode.VALID_SAME_STATION_ERROR);
+    private void validNotInStations(Section section) {
+        if (!isInStations(section)) {
+            throw new SubwayException(ErrorCode.VALID_NOT_IN_STATIONS_ERROR);
         }
     }
 
@@ -83,10 +64,34 @@ public class Section extends BaseEntity {
         return isSameUpStation(compareSection.upStation) || isSameUpStation(compareSection.downStation);
     }
 
-    public void validNotInStations(Section section) {
-        if (!isInStations(section)) {
-            throw new SubwayException(ErrorCode.VALID_NOT_IN_STATIONS_ERROR);
+    private boolean isSameUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    private boolean isSameDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    private void validSameStation(Section compareSection) {
+        if (isSameUpDownStation(compareSection)) {
+            throw new SubwayException(ErrorCode.VALID_SAME_STATION_ERROR);
         }
+    }
+
+    public boolean isSameUpDownStation(Section compareSection) {
+        return isSameUpStation(compareSection.upStation) && isSameDownStation(compareSection.downStation);
+    }
+
+    public void resetSection(Section expectSection) {
+        if (isSameUpStation(expectSection.upStation)) {
+            this.upStation = expectSection.downStation;
+        }
+
+        if (isSameDownStation(expectSection.downStation)) {
+            this.downStation = expectSection.upStation;
+        }
+
+        this.distance.divideDistance(expectSection.distance);
     }
 
     public Long getId() {
