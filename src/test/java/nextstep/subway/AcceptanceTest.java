@@ -11,6 +11,7 @@ import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public abstract class AcceptanceTest {
@@ -29,13 +30,22 @@ public abstract class AcceptanceTest {
         databaseCleaner.clean();
     }
 
-    protected ExtractableResponse<Response> createStation(String name) {
+    protected ExtractableResponse<Response> 지하철역_등록(String name) {
         HashMap<String, String> params = new HashMap<>();
         params.put("name", name);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> 지하철노선_등록(Map<String, Object> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
                 .then().log().all()
                 .extract();
     }
