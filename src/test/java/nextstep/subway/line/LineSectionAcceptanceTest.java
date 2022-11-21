@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineSectionAcceptanceTest extends AcceptanceTest {
     private static final String SECTIONS = "sections";
     private static final String SECTION_MAIN_PATH = LineConstant.LINE_MAIN_PATH + "/%d" + "/sections";
+    private static final String STATION_ID = "stationId";
     @Autowired
     private LineRepository lineRepository;
     @Autowired
@@ -156,13 +157,33 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("새로운 구간을 저장하려고 하나 기존 구간에 부합하는 upStation ,downStation이 존재 하지 않는다.")
     @Test
-    void addSectionMiddleNotExsitUpAndDownStation() {
+    void addSectionMiddleNotExistUpAndDownStation() {
         //when
         ExtractableResponse<Response> saveResponse = createSection(line.getId(), hongDaeStation.getId(), guiStation.getId(), 11L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    @DisplayName("삭제하고자 하는 역이 구간에 존재 하지 않아서 삭제 할 수 없다.(기본 강남 - 성수역 구간만 존재)")
+    @Test
+    void deleteSectionFailedStationNotInclude() {
+        //when
+        ExtractableResponse<Response> saveResponse = deleteSection(line.getId(), hongDaeStation);
+
+        //then
+        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    private ExtractableResponse<Response> deleteSection(Long id, Station hongDaeStation) {
+        return RestAssured.given().log().all()
+                .param(STATION_ID, hongDaeStation.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(String.format(SECTION_MAIN_PATH, id))
+                .then().log().all()
+                .extract();
+    }
+
 
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> params = new HashMap<>();
