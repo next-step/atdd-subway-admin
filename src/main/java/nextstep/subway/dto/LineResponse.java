@@ -3,8 +3,9 @@ package nextstep.subway.dto;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 public class LineResponse {
     private final Long id;
@@ -40,35 +41,8 @@ public class LineResponse {
     }
 
     private static List<LineInStationResponse> createStations(Line line) {
-        List<LineInStationResponse> responses = new ArrayList<>();
-        if (line.getUpStation() != null) {
-            responses.add(LineInStationResponse.of(line.getUpStation()));
-        }
-        if (line.getDownStation() != null) {
-            responses.add(LineInStationResponse.of(line.getDownStation()));
-        }
-        return responses;
-    }
-
-    private static class LineInStationResponse {
-        private final Long id;
-        private final String name;
-
-        public LineInStationResponse(Long id, String name) {
-            this.id = id;
-            this.name = name;
-        }
-
-        public static LineInStationResponse of(Station station) {
-            return new LineInStationResponse(station.getId(), station.getName());
-        }
-
-        public Long getId() {
-            return id;
-        }
-
-        public String getName() {
-            return name;
-        }
+        return line.getStations()
+                .stream().map(LineInStationResponse::from)
+                .collect(toList());
     }
 }

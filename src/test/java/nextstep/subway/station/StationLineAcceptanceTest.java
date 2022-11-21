@@ -1,13 +1,13 @@
 package nextstep.subway.station;
 
-import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.station.request.LineApi;
+import nextstep.subway.station.request.StationApi;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,8 +22,8 @@ class StationLineAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     private void before() {
-        upStationId = getId(requestCreateStation("강남역"));
-        downStationId = getId(requestCreateStation("성수역"));
+        upStationId = getId(StationApi.createStation("강남역"));
+        downStationId = getId(StationApi.createStation("성수역"));
     }
 
     /**
@@ -33,10 +33,10 @@ class StationLineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("지하철 노선 생성")
     void createStationLine() {
-        ExtractableResponse<Response> response = requestCreateStationLine("신분당선");
+        ExtractableResponse<Response> response = LineApi.createStationLine("신분당선", upStationId, downStationId, 10);
         assertThat(response.statusCode()).isEqualTo(200);
 
-        List<String> lineNames = getList(requestGetStationLines(), "name");
+        List<String> lineNames = getList(LineApi.getStationLines(), "name");
         assertThat(lineNames).contains("신분당선");
     }
 
@@ -48,10 +48,10 @@ class StationLineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("지하철 노선 목록 조회")
     void getStationLines() {
-        requestCreateStationLine("신분당선");
-        requestCreateStationLine("분당선");
+        LineApi.createStationLine("신분당선", upStationId, downStationId, 10);
+        LineApi.createStationLine("분당선", upStationId, downStationId, 10);
 
-        ExtractableResponse<Response> response = requestGetStationLines();
+        ExtractableResponse<Response> response = LineApi.getStationLines();
         assertThat(response.statusCode()).isEqualTo(200);
 
         List<String> lineNames = getList(response, "name");
@@ -66,9 +66,9 @@ class StationLineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("지하철 노선 조회")
     void getStationLine() {
-        Long lineId = getId(requestCreateStationLine("신분당선"));
+        Long lineId = getId(LineApi.createStationLine("신분당선", upStationId, downStationId, 10));
 
-        ExtractableResponse<Response> response = requestGetStationLine(lineId);
+        ExtractableResponse<Response> response = LineApi.getStationLine(lineId);
         assertThat(response.statusCode()).isEqualTo(200);
 
         String name = getProperty(response, "name");
@@ -83,17 +83,17 @@ class StationLineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("지하철 노선 수정")
     void updateStationLine() {
-        Long lineId = getId(requestCreateStationLine("신분당선"));
+        Long lineId = getId(LineApi.createStationLine("신분당선", upStationId, downStationId, 10));
 
         Map<String, Object> updateParams = new HashMap<>();
         updateParams.put("name", "분당선");
         updateParams.put("color", "bg-red-600");
 
-        ExtractableResponse<Response> response = requestUpdateStationLine(lineId, updateParams);
+        ExtractableResponse<Response> response = LineApi.updateStationLine(lineId, updateParams);
         assertThat(response.statusCode()).isEqualTo(200);
 
-        String lineName = getProperty(requestGetStationLine(lineId), "name");
-        String color = getProperty(requestGetStationLine(lineId), "color");
+        String lineName = getProperty(LineApi.getStationLine(lineId), "name");
+        String color = getProperty(LineApi.getStationLine(lineId), "color");
         assertThat(lineName).isEqualTo("분당선");
         assertThat(color).isEqualTo("bg-red-600");
     }
@@ -106,71 +106,12 @@ class StationLineAcceptanceTest extends AcceptanceTest {
     @Test
     @DisplayName("지하철 노선 삭제")
     void deleteStationLine() {
-        Long lineId = getId(requestCreateStationLine("신분당선"));
+        Long lineId = getId(LineApi.createStationLine("신분당선", upStationId, downStationId, 10));
 
-        ExtractableResponse<Response> response = requestDeleteStationLine(lineId);
+        ExtractableResponse<Response> response = LineApi.deleteStationLine(lineId);
         assertThat(response.statusCode()).isEqualTo(200);
 
-        List<String> lineNames = getList(requestGetStationLines(), "name");
+        List<String> lineNames = getList(LineApi.getStationLines(), "name");
         assertThat(lineNames).isEmpty();
-    }
-
-    private ExtractableResponse<Response> requestDeleteStationLine(Long lineId) {
-        return RestAssured
-                .given().log().all()
-                .when().delete("/lines/{lineId}", lineId)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> requestCreateStationLine(String lineName) {
-        Map<String, Object> params = new HashMap<>();
-        params.put("name", lineName);
-        params.put("color", "bg-red-600");
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
-        params.put("distance", 10);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> requestUpdateStationLine(long stationLineId, Map<String, Object> params) {
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{stationLineId}", stationLineId)
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> requestGetStationLines() {
-        return RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> requestGetStationLine(long stationLineId) {
-        return RestAssured.given().log().all()
-                .when().get("/lines/{stationLineId}", stationLineId)
-                .then().log().all().extract();
-    }
-
-    private ExtractableResponse<Response> requestCreateStation(final String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all()
-                .extract();
     }
 }

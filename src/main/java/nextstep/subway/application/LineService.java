@@ -1,12 +1,10 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionCreateRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,5 +64,15 @@ public class LineService {
     private Line findById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 노선이 존재하지 않습니다. id=" + id));
+    }
+
+    @Transactional
+    public void addSection(Long id, SectionCreateRequest request) {
+        final Line line = findById(id);
+        final Station upStation = findStation(request.getUpStationId());
+        final Station downStation = findStation(request.getDownStationId());
+
+        Section section = request.toSection(upStation, downStation, line);
+        line.addSection(section);
     }
 }
