@@ -28,7 +28,7 @@ public class StationAcceptanceTestUtils {
     }
 
     public static ExtractableResponse<Response> 지하철역을_제거한다(ExtractableResponse<Response> response) {
-        return 삭제(STATION_BASE_PATH, 응답_ID_추출(response));
+        return 삭제(STATION_BASE_PATH + PATH_VARIABLE_ID, 응답_ID_추출(response));
     }
 
     public static void 지하철역_생성을_확인한다(ExtractableResponse<Response> response) {

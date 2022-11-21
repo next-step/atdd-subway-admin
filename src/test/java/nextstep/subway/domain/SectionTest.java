@@ -27,7 +27,7 @@ class SectionTest {
 
         assertThat(actual.getUpStation()).isEqualTo(upStation);
         assertThat(actual.getDownStation()).isEqualTo(downStation);
-        assertThat(actual.getDistance()).isEqualTo(10);
+        assertThat(actual.getDistance().getDistance()).isEqualTo(10);
     }
 
     @Test
@@ -108,5 +108,85 @@ class SectionTest {
 
         assertThat(line.getStations()).hasSize(3);
         assertThat(line.totalDistance()).isEqualTo(20);
+    }
+    
+    @Test
+    @DisplayName("구간 내 상행 종점 역 제거")
+    void removeSectionByUpStation() {
+        // given
+        Station upStation = Station.from("신사역");
+        Station downStation = Station.from("논현역");
+        Distance distance = Distance.from(5);
+        line.addSection(Section.of(upStation, downStation, distance));
+
+        // when
+        line.removeSection(upStation);
+
+        // then
+        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getStations()).doesNotContain(upStation);
+        assertThat(line.totalDistance()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("구간 내 하행 종점 역 제거")
+    void removeSectionByDownStation() {
+        // given
+        Station upStation = Station.from("강남역");
+        Station downStation = Station.from("판교역");
+        Distance distance = Distance.from(10);
+        line.addSection(Section.of(upStation, downStation, distance));
+
+        // when
+        line.removeSection(downStation);
+
+        // then
+        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getStations()).doesNotContain(downStation);
+        assertThat(line.totalDistance()).isEqualTo(10);
+    }
+
+    @Test
+    @DisplayName("구간 내 중간 역 제거")
+    void removeSectionByIntermediateStation() {
+        // given
+        Station upStation = Station.from("강남역");
+        Station downStation = Station.from("판교역");
+        Distance distance = Distance.from(10);
+        line.addSection(Section.of(upStation, downStation, distance));
+
+        // when
+        line.removeSection(upStation);
+
+        // then
+        assertThat(line.getStations()).hasSize(2);
+        assertThat(line.getStations()).doesNotContain(upStation);
+        assertThat(line.totalDistance()).isEqualTo(20);
+    }
+
+    @Test
+    @DisplayName("노선 내 구간이 1개일 경우 역 제거시 에러 반환")
+    void deleteStationDefaultSectionSize() {
+        // when
+        // then
+        assertThatThrownBy(() -> line.removeSection(Station.from("논현역")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선의 구간은 1개 이상 존재해야 합니다.");
+    }
+    
+    @Test
+    @DisplayName("노선 내 존재하지 않는 역 제거시 에러 반환")
+    void deleteStationNotContainLineThrowException() {
+        // given
+        Station upStation = Station.from("강남역");
+        Station downStation = Station.from("판교역");
+        Distance distance = Distance.from(10);
+        line.addSection(Section.of(upStation, downStation, distance));
+
+        // when
+        // then
+        assertThatThrownBy(() -> line.removeSection(Station.from("신사역")))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("해당 역이 존재하지 않습니다.");
     }
 }
