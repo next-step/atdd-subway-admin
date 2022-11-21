@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.persistence.CascadeType;
@@ -36,12 +37,10 @@ public class Sections {
         SectionsValidator.validateNotContainsStation(this.allStations(), station);
         SectionsValidator.validateOnlySection(this.sections);
 
-        Optional<Section> removedUpSection = removeUpSection(station);
-        Optional<Section> removedDownSection = removeDownSection(station);
+        Section removedUpSection = removeUpSection(station).orElse(null);
+        Section removedDownSection = removeDownSection(station).orElse(null);
 
-        if (removedUpSection.isPresent() && removedDownSection.isPresent()) {
-            this.addSection(mergeSection(removedUpSection.get(), removedDownSection.get()));
-        }
+        addMergeSection(removedUpSection, removedDownSection);
     }
 
     private Optional<Section> removeUpSection(Station station) {
@@ -60,8 +59,14 @@ public class Sections {
         return downSection;
     }
 
-    private Section mergeSection(Section upSection, Section downSection) {
-        return upSection.merge(downSection);
+    private void addMergeSection(Section upSection, Section downSection) {
+        if (Objects.isNull(upSection)) {
+            return;
+        }
+        if (Objects.isNull(downSection)) {
+            return;
+        }
+        addSection(upSection.merge(downSection));
     }
 
     public List<Section> getList() {
