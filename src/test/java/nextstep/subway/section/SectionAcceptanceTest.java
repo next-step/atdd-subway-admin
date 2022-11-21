@@ -54,7 +54,7 @@ public class SectionAcceptanceTest {
     @Test
     void 역사이에_새로운역_등록_성공() {
         // given
-        경강선 = LineAcceptanceTestUtil.createLine("신분당선", "bg-blue-600", 판교역, 경기광주역, "10")
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 경기광주역, "10")
                 .jsonPath().getString("id");
 
         // when
@@ -75,7 +75,7 @@ public class SectionAcceptanceTest {
     @Test
     void 새로운_상행_등록_성공() {
         // given
-        경강선 = LineAcceptanceTestUtil.createLine("신분당선", "bg-blue-600", 이매역, 경기광주역, "10")
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 이매역, 경기광주역, "10")
                 .jsonPath().getString("id");
 
         // when
@@ -96,7 +96,7 @@ public class SectionAcceptanceTest {
     @Test
     void 새로운_하행_등록_성공() {
         // given
-        경강선 = LineAcceptanceTestUtil.createLine("신분당선", "bg-blue-600", 판교역, 이매역, "10")
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 이매역, "10")
                 .jsonPath().getString("id");
 
         // when
@@ -106,5 +106,21 @@ public class SectionAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(stations).hasSize(3);
+    }
+
+    /**
+     * When : 새로운 역의 구간 길이가 기존 구간 길이보다 길면
+     * Then : 구간 등록이 실패한다.
+     */
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록할 수 없음")
+    @Test
+    void 길이가_더_긴경우_예외() {
+        // when
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 경기광주역, "10")
+                .jsonPath().getString("id");
+        ExtractableResponse<Response> response = createSection(이매역, 경기광주역, "10", 경강선);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

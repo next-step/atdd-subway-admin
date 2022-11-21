@@ -2,6 +2,7 @@ package nextstep.subway.ui;
 
 import nextstep.subway.application.LineStationService;
 import nextstep.subway.dto.SectionRequest;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,6 +20,11 @@ public class LineStationController {
     @PostMapping("/{id}/sections")
     public ResponseEntity addLineStation(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         lineStationService.addLineStation(id, sectionRequest);
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})
+    public ResponseEntity handleIllegalArgsException() {
+        return ResponseEntity.badRequest().build();
     }
 }

@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class LineStations {
@@ -14,39 +15,71 @@ public class LineStations {
     protected LineStations() {
     }
 
-    public void add(LineStation newLineStation) {
-        validateLineStation(newLineStation);
-        lineStations.add(newLineStation);
+    private List<LineStation> getOrderdLineStations() {
+        Optional<LineStation> lineStationOptional = lineStations.stream()
+                .filter(it -> it.getPreStation() == null)
+                .findFirst();
+
+        List<LineStation> orderedLineStations = new ArrayList<>();
+
+        while (lineStationOptional.isPresent()) {
+            LineStation lineStation = lineStationOptional.get();
+            orderedLineStations.add(lineStation);
+            lineStationOptional = lineStations.stream()
+                    .filter(it -> it.getPreStation().isSame(lineStation.getStation()))
+                    .findFirst();
+        }
+
+        return orderedLineStations;
+    }
+
+    public void add(LineStation lineStation) {
+        validateLineStation(lineStation);
+
+//        updateWhenAddablePre(lineStation);
+//        updateWhenAddablePost(lineStation);
+//        checkContinuable(lineStation);
+
+        lineStations.add(lineStation);
     }
 
     public void addLineStation(LineStation lineStation) {
-        lineStations.stream()
-                .filter(lt -> lineStation.getPreStation().isSame(lt.getPreStation()))
-                .findFirst()
-                .ifPresent(lt -> {
-                    lt.updateLineStation(lineStation);
-                    lineStations.add(lineStation);
-                });
+        updateWhenAddablePre(lineStation);
+        updateWhenAddablePost(lineStation);
+        checkContinuable(lineStation);
 
-        lineStations.stream()
-                .filter(lt -> lineStation.getStation().isSame(lt.getStation()))
-                .findFirst()
-                .ifPresent(lt -> {
-                    lt.updatePreLineStation(lineStation);
-                    lineStations.add(lineStation);
-                });
-
-        lineStations.stream()
-                .filter(lt -> lineStation.getPreStation().isSame(lt.getStation()))
-                .findFirst()
-                .ifPresent(lt -> lineStations.add(lineStation));
+        lineStations.add(lineStation);
     }
 
     public List<LineStation> values() {
         return Collections.unmodifiableList(lineStations);
     }
 
+    private void updateWhenAddablePre(LineStation lineStation) {
+        lineStations.stream()
+                .filter(it -> lineStation.getStation().isSame(it.getStation()))
+                .findFirst()
+                .ifPresent(it -> it.updatePreLineStation(lineStation));
+    }
+
+    private void updateWhenAddablePost(LineStation lineStation) {
+        lineStations.stream()
+                .filter(it -> lineStation.getPreStation().isSame(it.getPreStation()))
+                .findFirst()
+                .ifPresent(it -> it.updateLineStation(lineStation));
+    }
+
+    private void checkContinuable(LineStation lineStation) {
+        lineStations.stream()
+                .filter(it -> lineStation.getPreStation().isSame(it.getStation()))
+                .findFirst()
+                .orElseThrow(IllegalArgumentException::new);
+    }
+
     private void validateLineStation(LineStation lineStation) {
+        if (lineStation.getStation() == null) {
+            throw new IllegalArgumentException("유효하지 않은 역입니다.");
+        }
         if (lineStations.contains(lineStation)) {
             throw new IllegalArgumentException("이미 등록되어 있는 구간입니다.");
         }

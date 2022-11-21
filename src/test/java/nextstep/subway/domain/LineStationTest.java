@@ -32,7 +32,8 @@ public class LineStationTest {
         stationRepository.saveAll(Arrays.asList(
                 new Station("판교역"),
                 new Station("이매역"),
-                new Station("경기광주역")
+                new Station("경기광주역"),
+                new Station("여주역")
         ));
         lineRepository.save(new Line("경강선", "bg-blue-600"));
     }
@@ -125,6 +126,29 @@ public class LineStationTest {
         assertThat(getLine).isPresent();
         assertThat(getLine.get().getLineStations()).hasSize(3);
     }
+
+    @DisplayName("여러개역이 있을 때 상행쪽으로 구간 등록")
+    @Test
+    void 여러개_역이_있을때_상행쪽으로_등록() {
+        // line과 station 기반으로 lineStation 생성
+        Line 경강선 = lineRepository.getById(1L);
+        Station 판교역 = stationRepository.getById(1L);
+        Station 경기광주역 = stationRepository.getById(3L);
+        경강선.addLineStation(new LineStation(null, 판교역, 0));
+        경강선.addLineStation(new LineStation(판교역, 경기광주역, 100));
+
+        // when
+        Station 이매역 = stationRepository.getById(2L);
+        경강선.addSection(new LineStation(이매역, 경기광주역, 50));
+        lineRepository.save(경강선);
+        flushAndClear();
+
+        // then : line의 linestations에 잘 들어갔는 지 확인
+        Optional<Line> getLine = lineRepository.findById(1L);
+        assertThat(getLine).isPresent();
+        assertThat(getLine.get().getLineStations()).hasSize(3);
+    }
+
 
     private void flushAndClear() {
         entityManager.flush();

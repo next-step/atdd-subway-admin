@@ -48,14 +48,23 @@ public class LineStation extends BaseEntity {
     }
 
     public void updateLineStation(LineStation newLineStation) {
-        LineStation oldLineStation = this;
-        oldLineStation.preStation = newLineStation.station;
-        oldLineStation.distance -= newLineStation.distance;
+        validateDistance(newLineStation);
+        this.preStation = newLineStation.station;
+        this.distance = this.distance - newLineStation.distance;
     }
 
     public void updatePreLineStation(LineStation newLineStation) {
-        LineStation oldLineStation = this;
-        oldLineStation.station = newLineStation.preStation;
+        if (this.preStation != null) {
+            validateDistance(newLineStation);
+            this.distance = this.distance - newLineStation.distance;
+        }
+        this.station = newLineStation.preStation;
+    }
+
+    private void validateDistance(LineStation newLineStation) {
+        if (this.distance - newLineStation.distance <= 0) {
+            throw new IllegalArgumentException("기존 역 사이 길이보다 새로운 역의 구간 길이가 깁니다!");
+        }
     }
 
     @Override
