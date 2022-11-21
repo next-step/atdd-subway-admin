@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.common.exception.NotFoundDataException;
+import nextstep.subway.application.exception.exception.NotFoundDataException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -8,8 +8,8 @@ import javax.persistence.OneToMany;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.common.type.AlreadyExceptionType.ALREADY_LINE_STATION;
-import static nextstep.subway.common.type.LineStationExceptionType.NOT_FOUND_LINE_STATION_BOTH;
+import static nextstep.subway.application.exception.type.AlreadyExceptionType.ALREADY_LINE_STATION;
+import static nextstep.subway.application.exception.type.LineStationExceptionType.NOT_FOUND_LINE_STATION_BOTH;
 
 @Embeddable
 public class LineStations {

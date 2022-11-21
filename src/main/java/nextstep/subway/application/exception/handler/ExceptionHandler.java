@@ -1,9 +1,8 @@
-package nextstep.subway.common.handler;
+package nextstep.subway.application.exception.handler;
 
-import javassist.NotFoundException;
-import nextstep.subway.common.exception.AlreadyDataException;
-import nextstep.subway.common.exception.NotFoundDataException;
-import nextstep.subway.common.exception.NotValidDataException;
+import nextstep.subway.application.exception.exception.AlreadyDataException;
+import nextstep.subway.application.exception.exception.NotFoundDataException;
+import nextstep.subway.application.exception.exception.NotValidDataException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestControllerAdvice;

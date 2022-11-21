@@ -1,4 +1,4 @@
-package nextstep.subway.common.type;
+package nextstep.subway.application.exception.type;
 
 public enum LineExceptionType {
     NOT_FOUND_LINE("존재하지 않는 라인이에요");

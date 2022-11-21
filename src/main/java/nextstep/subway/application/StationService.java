@@ -1,6 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.common.exception.NotFoundDataException;
+import nextstep.subway.application.exception.exception.NotFoundDataException;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.common.type.StationExceptionType.NOT_FOUND_STATION;
+import static nextstep.subway.application.exception.type.StationExceptionType.NOT_FOUND_STATION;
 
 @Service
 @Transactional(readOnly = true)

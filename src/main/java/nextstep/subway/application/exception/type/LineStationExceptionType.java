@@ -1,4 +1,4 @@
-package nextstep.subway.common.type;
+package nextstep.subway.application.exception.type;
 
 public enum LineStationExceptionType {
     NOT_FOUND_LINE_STATION_BOTH("상행선, 하행선 둘다 존재하지 않습니다.");

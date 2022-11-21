@@ -5,14 +5,14 @@ import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.UpdateLineRequest;
-import nextstep.subway.common.exception.NotFoundDataException;
+import nextstep.subway.application.exception.exception.NotFoundDataException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.common.type.LineExceptionType.NOT_FOUND_LINE;
+import static nextstep.subway.application.exception.type.LineExceptionType.NOT_FOUND_LINE;
 
 @Service
 public class LineService {

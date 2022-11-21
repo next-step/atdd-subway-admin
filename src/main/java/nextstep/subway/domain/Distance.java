@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.common.exception.NotValidDataException;
-import nextstep.subway.common.type.ValidExceptionType;
+import nextstep.subway.application.exception.exception.NotValidDataException;
+import nextstep.subway.application.exception.type.ValidExceptionType;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

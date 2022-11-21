@@ -1,4 +1,4 @@
-package nextstep.subway.common.exception;
+package nextstep.subway.application.exception.exception;
 
 public class NotValidDataException extends RuntimeException {
 
