@@ -95,6 +95,16 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> createResponse = createStation("강남역");
+
+        // when
+        int stationId = createResponse.body().jsonPath().getInt("id");
+        removeStation(stationId);
+
+        // then
+        ExtractableResponse<Response> findAllResponse = findAllStations();
+        assertThat(findAllResponse.body().jsonPath().getInt("size()")).isEqualTo(0);
     }
 
     private static ExtractableResponse<Response> createStation(String stationName) {
@@ -112,6 +122,13 @@ public class StationAcceptanceTest {
     private static ExtractableResponse<Response> findAllStations() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> removeStation(int stationId) {
+        return RestAssured.given().log().all()
+                .when().delete(String.format("/stations/%d", stationId))
                 .then().log().all()
                 .extract();
     }
