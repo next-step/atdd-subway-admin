@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import nextstep.subway.line.LineConstant.*;
 
 import java.util.HashMap;
 import java.util.List;
@@ -23,12 +24,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
-    private static final String LINE_MAIN_PATH = "/lines";
     private static final String LINE_NAME = "name";
     private static final String COLOR = "color";
-    private static final String DISTANCE = "distance";
-    private static final String UP_STATION = "upStationId";
-    private static final String DOWN_STATION = "downStationId";
     private static final String LINE_ID = "id";
 
     @Autowired
@@ -188,7 +185,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private ExtractableResponse<Response> deleteLine(Long id) {
         return RestAssured.given().log().all()
-                .when().delete(LINE_MAIN_PATH + "/" + id)
+                .when().delete(LineConstant.LINE_MAIN_PATH + "/" + id)
                 .then().log().all()
                 .extract();
     }
@@ -200,21 +197,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put(LINE_MAIN_PATH + "/" + id)
+                .when().put(LineConstant.LINE_MAIN_PATH + "/" + id)
                 .then().log().all()
                 .extract();
     }
 
     private ExtractableResponse<Response> findAllLine() {
         return RestAssured.given().log().all()
-                .when().get(LINE_MAIN_PATH)
+                .when().get(LineConstant.LINE_MAIN_PATH)
                 .then().log().all()
                 .extract();
     }
 
     private ExtractableResponse<Response> findById(Long id) {
         return RestAssured.given().log().all()
-                .when().get(LINE_MAIN_PATH + "/" + id)
+                .when().get(LineConstant.LINE_MAIN_PATH + "/" + id)
                 .then().log().all()
                 .extract();
     }
@@ -223,13 +220,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = new HashMap<>();
         params.put(LINE_NAME, name);
         params.put(COLOR, color);
-        params.put(DISTANCE, distance);
-        params.put(UP_STATION, upStationId);
-        params.put(DOWN_STATION, downStationId);
+        params.put(LineConstant.DISTANCE, distance);
+        params.put(LineConstant.UP_STATION, upStationId);
+        params.put(LineConstant.DOWN_STATION, downStationId);
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(LINE_MAIN_PATH)
+                .when().post(LineConstant.LINE_MAIN_PATH)
                 .then().log().all()
                 .extract();
     }

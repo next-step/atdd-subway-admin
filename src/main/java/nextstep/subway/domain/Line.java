@@ -14,23 +14,20 @@ public class Line extends BaseEntity {
     private String name;
     @Column
     private String color;
-    @Column
-    private Long distance;
     @Embedded
-    private Stations stations;
+    private Sections sections;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Long distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.stations = new Stations();
+        this.sections = new Sections();
     }
 
-    public void addStations(Station upStation, Station downStation) {
-        this.stations.addStations(upStation, downStation);
+    public void addStations(Station upStation, Station downStation, Long distance) {
+        this.sections.addSection(this, upStation, downStation, distance);
     }
 
     public Long getId() {
@@ -45,12 +42,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Long getDistance() {
-        return distance;
-    }
-
-    public Stations getStations() {
-        return stations;
+    public Sections getSections() {
+        return sections;
     }
 
     @Override
