@@ -1,9 +1,6 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.exception.ErrorStatus;
-import nextstep.subway.exception.IllegalRequestBody;
-import nextstep.subway.exception.NotFoundSection;
-import nextstep.subway.exception.NotFoundStation;
+import nextstep.subway.exception.*;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -12,8 +9,11 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.exception.ErrorStatus.SECTION_DEFAULT_SIZE;
+
 @Embeddable
 public class Sections {
+    private static final int DEFAULT_SECTIONS_SIZE = 1;
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private List<Section> values = new ArrayList<>();
 
@@ -167,6 +167,13 @@ public class Sections {
 
     public void deleteSection(Station deleteStation) {
         validateIncludeStation(deleteStation);
+        validateSectionsDefaultSize();
+    }
+
+    private void validateSectionsDefaultSize() {
+        if (this.values.size() == DEFAULT_SECTIONS_SIZE) {
+            throw new DeleteSection(SECTION_DEFAULT_SIZE.getMessage());
+        }
     }
 
     private void validateIncludeStation(Station deleteStation) {
