@@ -63,6 +63,29 @@ public class Section {
 		return distance.getValue();
 	}
 
+	public boolean isSameUpStation(Section newSection) {
+		return isSameStation(this.upStation, newSection.upStation);
+	}
+
+	public boolean isSameDownStation(Section newSection) {
+		return isSameStation(this.downStation, newSection.downStation);
+	}
+
+	private boolean isSameStation(Station station, Station newStation) {
+		return station.equals(newStation);
+	}
+
+	public void rearrange(Section newSection) {
+		if (isSameUpStation(newSection)) {
+			this.upStation = newSection.downStation;
+			this.distance = this.distance.subtract(newSection.distance);
+		}
+		if (isSameDownStation(newSection)) {
+			this.downStation = newSection.upStation;
+			this.distance = this.distance.subtract(newSection.distance);
+		}
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -80,15 +103,4 @@ public class Section {
 		return Objects.hashCode(id);
 	}
 
-	public boolean isSameUpStation(Section newSection) {
-		return isSameStation(this.upStation, newSection.upStation);
-	}
-
-	public boolean isSameDownStation(Section newSection) {
-		return isSameStation(this.downStation, newSection.downStation);
-	}
-
-	private boolean isSameStation(Station station, Station newStation) {
-		return station.equals(newStation);
-	}
 }

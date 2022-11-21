@@ -70,6 +70,7 @@ public class Sections {
 
 	public void add(Section section) {
 		validateAddSection(section);
+		sections.forEach(it -> it.rearrange(section));
 		sections.add(section);
 	}
 

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.exception.InvalidSectionAddException;
 
 @DisplayName("구간 테스트")
 class SectionsTest {
@@ -57,25 +58,6 @@ class SectionsTest {
 		assertThat(stations).containsExactly(강남역, 역삼역);
 	}
 
-	@DisplayName("구간 추가 - 상행 종점 등록 테스트")
-	@Test
-	void addFirstUpStationTest() {
-		// given
-		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
-		Section 새로운_구간 = new Section(이호선, 선릉역, 강남역, 10);
-
-		Sections sections = Sections.initialSections(구간);
-
-		// when
-		sections.add(새로운_구간);
-
-		// then
-		assertAll(
-			() -> assertThat(sections.getSections()).hasSize(3),
-			() -> assertThat(sections.allStations()).containsExactly(선릉역, 강남역, 역삼역)
-		);
-	}
-
 	@DisplayName("상행 종점 조회 테스트")
 	@Test
 	void findFirstUpStationTest() {
@@ -121,7 +103,7 @@ class SectionsTest {
 
 		// when, then
 		assertThatThrownBy(() -> sections.add(새로운_구간))
-			.isInstanceOf(IllegalArgumentException.class);
+			.isInstanceOf(InvalidSectionAddException.class);
 	}
 
 	@DisplayName("구간 추가 시 상행역, 하행역이 모두 존재하지 않으면 예외 발생")
@@ -136,7 +118,109 @@ class SectionsTest {
 
 		// when, then
 		assertThatThrownBy(() -> sections.add(새로운_구간))
-			.isInstanceOf(IllegalArgumentException.class);
+			.isInstanceOf(InvalidSectionAddException.class);
 	}
 
+	@DisplayName("구간 추가 시 상행역이 존재하고 하행역이 존재하지 않으면 구간 추가")
+	@Test
+	void addSectionWithExistsUpStationTest() {
+		// given
+		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
+		Section 새로운_구간 = new Section(이호선, 강남역, 선릉역, 5);
+
+		Sections sections = Sections.initialSections(구간);
+
+		// when
+		sections.add(새로운_구간);
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getSections()).hasSize(2),
+			() -> assertThat(sections.allStations()).contains(강남역, 선릉역, 역삼역),
+			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(5),
+			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(선릉역),
+			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(역삼역),
+			() -> assertThat(sections.getSections().get(1).getDistance()).isEqualTo(5),
+			() -> assertThat(sections.getSections().get(1).getUpStation()).isEqualTo(강남역),
+			() -> assertThat(sections.getSections().get(1).getDownStation()).isEqualTo(선릉역)
+		);
+
+	}
+
+	@DisplayName("구간 추가 시 하행역이 존재하고 상행역이 존재하지 않으면 구간 추가")
+	@Test
+	void addSectionWithExistsDownStationTest() {
+		// given
+		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
+		Section 새로운_구간 = new Section(이호선, 선릉역, 역삼역, 5);
+
+		Sections sections = Sections.initialSections(구간);
+
+		// when
+		sections.add(새로운_구간);
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getSections()).hasSize(2),
+			() -> assertThat(sections.allStations()).contains(강남역, 선릉역, 역삼역),
+			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(5),
+			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(강남역),
+			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(선릉역),
+			() -> assertThat(sections.getSections().get(1).getDistance()).isEqualTo(5),
+			() -> assertThat(sections.getSections().get(1).getUpStation()).isEqualTo(선릉역),
+			() -> assertThat(sections.getSections().get(1).getDownStation()).isEqualTo(역삼역)
+		);
+	}
+
+	@DisplayName("구간 추가 시 하행역이 상행 종점이면 구간 추가")
+	@Test
+	void addSectionWithDownStationIsFirstStationTest() {
+		// given
+		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
+		Section 새로운_구간 = new Section(이호선, 선릉역, 강남역, 5);
+
+		Sections sections = Sections.initialSections(구간);
+
+		// when
+		sections.add(새로운_구간);
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getSections()).hasSize(2),
+			() -> assertThat(sections.allStations()).contains(강남역, 선릉역, 역삼역),
+			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(10),
+			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(강남역),
+			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(역삼역),
+			() -> assertThat(sections.getSections().get(1).getDistance()).isEqualTo(5),
+			() -> assertThat(sections.getSections().get(1).getUpStation()).isEqualTo(선릉역),
+			() -> assertThat(sections.getSections().get(1).getDownStation()).isEqualTo(강남역),
+			() -> assertThat(sections.firstUpStation()).isEqualTo(선릉역)
+		);
+	}
+
+	@DisplayName("구간 추가 시 상행역이 하행 종점이면 구간 추가")
+	@Test
+	void addSectionWithUpStationIsLastStationTest() {
+		// given
+		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
+		Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 5);
+
+		Sections sections = Sections.initialSections(구간);
+
+		// when
+		sections.add(새로운_구간);
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getSections()).hasSize(2),
+			() -> assertThat(sections.allStations()).contains(강남역, 선릉역, 역삼역),
+			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(10),
+			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(강남역),
+			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(역삼역),
+			() -> assertThat(sections.getSections().get(1).getDistance()).isEqualTo(5),
+			() -> assertThat(sections.getSections().get(1).getUpStation()).isEqualTo(역삼역),
+			() -> assertThat(sections.getSections().get(1).getDownStation()).isEqualTo(선릉역),
+			() -> assertThat(sections.lastDownStation()).isEqualTo(선릉역)
+		);
+	}
 }
