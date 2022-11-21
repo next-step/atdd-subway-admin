@@ -27,6 +27,8 @@ public class Section {
     @Embedded
     private Distance distance;
 
+    private int number = 1;
+
     protected Section() { }
 
     public Section(Station upStation, Station downStation, Distance distance) {
@@ -45,5 +47,17 @@ public class Section {
 
     public Station getDownStation() {
         return downStation;
+    }
+
+    public void increaseNumber() {
+        this.number += 1;
+    }
+
+    public void addNumber(int number) {
+        this.number = number + 1;
+    }
+
+    public int getNumber() {
+        return number;
     }
 }
