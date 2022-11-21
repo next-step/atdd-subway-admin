@@ -24,7 +24,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
      */
     @DisplayName("지하철역을 생성한다.")
     @Test
-    void createStation() {
+    void create_station() {
         // when
         ValidatableResponse response = createStation("강남역");
 
@@ -42,7 +42,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
      */
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역을 생성한다.")
     @Test
-    void createStationWithDuplicateName() {
+    void create_station_with_duplicate_name() {
         // given
         String stationName = "강남역";
         createStation(stationName);
@@ -61,7 +61,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
      */
     @DisplayName("지하철역을 조회한다.")
     @Test
-    void getStations() {
+    void get_stations() {
         // given
         createStation("강남역");
         createStation("양재역");
@@ -81,7 +81,7 @@ public class StationAcceptanceTest extends AbstractAcceptanceTest {
      */
     @DisplayName("지하철역을 제거한다.")
     @Test
-    void deleteStation() {
+    void delete_station() {
         // given
         long id = createStation("강남역").extract()
             .jsonPath().getLong("id");

@@ -1,8 +1,6 @@
 package nextstep.subway.line.domain;
 
 import nextstep.subway.common.domain.BaseEntity;
-import nextstep.subway.section.domain.Section;
-import nextstep.subway.section.domain.Sections;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.Column;
@@ -29,10 +27,21 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
+    public Line(Long id, String name, String color, Sections sections) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = sections;
+    }
+
     public void addSection(Section section) {
         sections.add(section);
-
     }
+
+    public void removeSection(Station station) {
+        this.sections.removeSectionByStation(station);
+    }
+
     public Long getId() {
         return id;
     }
@@ -94,6 +103,6 @@ public class Line extends BaseEntity {
     private Line(Builder builder) {
         this.name = builder.name;
         this.color = builder.color;
-        this.addSection(new Section(builder.upStation, builder.downStation, builder.distance));
+        this.addSection(new Section(builder.upStation, builder.downStation, Distance.from(builder.distance)));
     }
 }
