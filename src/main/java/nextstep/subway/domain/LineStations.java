@@ -35,6 +35,11 @@ public class LineStations {
                     lt.updatePreLineStation(lineStation);
                     lineStations.add(lineStation);
                 });
+
+        lineStations.stream()
+                .filter(lt -> lineStation.getPreStation().isSame(lt.getStation()))
+                .findFirst()
+                .ifPresent(lt -> lineStations.add(lineStation));
     }
 
     public List<LineStation> values() {
