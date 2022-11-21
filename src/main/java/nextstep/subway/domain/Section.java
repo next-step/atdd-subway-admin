@@ -143,9 +143,7 @@ public class Section implements Comparable<Section> {
     }
 
 
-    public LineResponse.Section from() {
-        return LineResponse.Section.of(id, upStation.getId(), downStation.getId(), distance.getDistance());
-    }
+
 
 
     @Override
@@ -185,5 +183,13 @@ public class Section implements Comparable<Section> {
             return;
         }
         this.line = line;
+    }
+
+    public void removeFromLine() {
+        this.line = null;
+    }
+
+    public boolean isIncludedSection(Station targetStation) {
+        return downStation.equals(targetStation) || upStation.equals(targetStation);
     }
 }

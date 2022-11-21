@@ -54,23 +54,38 @@ public class Sections {
     private void deleteSection(Station station) {
         // 순서대로 정렬
         List<Section> sortedSections = sections.stream()
-//                .sorted(Section::compareTo)
+                .sorted(Section::compareTo)
                 .collect(Collectors.toList());
 
         // 종점 구간 찾기
         Section firstSection = sortedSections.get(0);
         Section lastSection = sortedSections.get(sortedSections.size() - 1);
 
+        // 종점 여부 확인
+        if (isLastStation(firstSection, lastSection, station)) {
+            Section targetSection = sortedSections
+                    .stream()
+                    .map(section -> findLastStation(firstSection, lastSection, station))
+                    .findAny()
+                    .get();
+
+            // 종점 구간 삭제
+            deleteSection(targetSection);
+
+            return;
+        }
+
 
         // 역으로 타켓 구간 찾기
         AtomicReference<Section> tt = new AtomicReference<>(new Section());
-        sections.forEach(s -> {
+        for (Section s : sections) {
+            Station target = station;
             Station temp = s.getDownStation();
-            boolean bo = temp.equals(station);
-            if(temp.equals(station)) {
-                tt.set(s);
-            }
-        });
+
+            boolean wh = target.equals(temp);
+
+        }
+
 
         Section targetSection = sections.stream()
                 .filter(s -> s.getDownStation().equals(station))
@@ -78,12 +93,6 @@ public class Sections {
 //                .orElseThrow()
                 .get();
 
-
-
-        if (isLastStation(firstSection, lastSection, station)) {
-            // 종점 구간 삭제
-            deleteSection(targetSection);
-        }
 
         if (!isLastStation(firstSection, lastSection, station)) {
             // 중간 구간 삭제
@@ -114,19 +123,35 @@ public class Sections {
     }
 
     private void deleteSection(Section section) {
+        // section-line 매핑 끊기
+        section.removeFromLine();
         sections.remove(section);
     }
 
     private boolean isLastStation(Section firstSection, Section lastSection, Station targetStation) {
-        return firstSection.getDownStation().equals(targetStation) || lastSection.getDownStation().equals(targetStation);
+        return firstSection.getUpStation().equals(targetStation) || lastSection.getDownStation().equals(targetStation);
+    }
+
+    private Section findLastStation(Section firstSection, Section lastSection, Station targetStation) {
+        // 상행 종점
+        if (firstSection.getUpStation().equals(targetStation)) {
+            return firstSection;
+
+        }
+
+        if (lastSection.getDownStation().equals(targetStation)) {
+            return lastSection;
+        }
+
+        return null;
     }
 
     private void validateContainStation(Station targetStation) {
         Optional<Section> invalidSections = sections.stream()
-                .filter(s -> s.getDownStation().equals(targetStation))
+                .filter(s -> s.isIncludedSection(targetStation))
                 .findAny();
 
-        if (invalidSections.isPresent()) {
+        if (!invalidSections.isPresent()) {
             throw new IllegalArgumentException(NOT_CONTAIN_STATION_IN_LINE);
         }
     }

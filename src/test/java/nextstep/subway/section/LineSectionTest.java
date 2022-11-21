@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
-import static nextstep.subway.line.LineAcceptanceStep.특정_노선을_조회한다;
+import static nextstep.subway.line.LineAcceptanceStep.*;
 import static nextstep.subway.section.LineSectionStep.*;
 
 @DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineSectionTest{
+public class LineSectionTest {
 
 
     @Autowired
@@ -130,7 +130,6 @@ public class LineSectionTest{
     }
 
 
-
     /**
      * Given 2개의 지하철역이 등록되어 있고, 노선이 등록되어있다
      * When 새로운 역을 하행 종점으로 생성하면
@@ -145,7 +144,7 @@ public class LineSectionTest{
         ExtractableResponse<Response> response = 구간_생성_요청(lineId, 2L, 3L, 10);
 
         // then
-        구간_추가_등록_결과_확인(response, 3 ,17);
+        구간_추가_등록_결과_확인(response, 3, 17);
     }
 
 
@@ -164,8 +163,24 @@ public class LineSectionTest{
         ExtractableResponse<Response> response = 구간_삭제_호출(lineId, 1);
 
         // then
-//        구간_추가_등록_결과_확인(response, 3 ,17);
-        ExtractableResponse<Response> result = 특정_노선을_조회한다(lineId);
-        JsonPath jsonPath = response.body().jsonPath();
+        상행_구간_삭졔_확인(lineId);
+    }
+
+    /**
+     * Given 3개 이상의 지하철 역이 등록되어 있다
+     * When 하행 종점이 제거 될 경우
+     * Then 전으로 오던 역이 종점이 된다
+     */
+    @DisplayName("하행 종점을 제거할 수 있다")
+    @Test
+    void 하행_종점_제거() {
+        // given -> beforeEach
+        구간_생성_요청(lineId, 1L, 3L, 4);
+
+        // when
+        ExtractableResponse<Response> response = 구간_삭제_호출(lineId, 2);
+
+        // then
+        하행_구간_삭졔_확인(lineId);
     }
 }

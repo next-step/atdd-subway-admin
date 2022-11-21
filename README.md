@@ -335,7 +335,7 @@ public ResponseEntity addSection(
 <details open>
 <summary> </summary>
 
-* [ ] 종점을 제거하는 경우
+* [x] 종점을 제거하는 경우
 * [ ] 가운데 역을 제거하는 경우
 * [ ] 구간이 하나인 노선에서 역을 제거하는 경우
 </details>

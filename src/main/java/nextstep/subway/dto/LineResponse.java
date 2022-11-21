@@ -19,6 +19,7 @@ public class LineResponse {
     public String color;
     public List<StationResponse> stations;
     public int totalDistance;
+    public List<Section> sections;
 
 
 
@@ -38,6 +39,7 @@ public class LineResponse {
         color = line.getColor();
         stations = line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
         totalDistance = line.getSections().stream().mapToInt(s -> s.getDistance()).sum();
+        sections = line.getSections().stream().map(LineResponse.Section::of).collect(Collectors.toList());
     }
 
     @Data
@@ -47,6 +49,9 @@ public class LineResponse {
         private Long downStationId;
         private int distance;
 
+        protected Section() {
+        }
+
         private Section(Long id, Long upStationId, Long downStationId, int distance) {
             this.id = id;
             this.upStationId = upStationId;
@@ -54,8 +59,9 @@ public class LineResponse {
             this.distance = distance;
         }
 
-        public static Section of(Long id, Long upStationId, Long downStationId, int distance) {
-            return new Section(id, upStationId, downStationId, distance);
+
+        public static Section of(nextstep.subway.domain.Section section) {
+            return new Section(section.getId(), section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
         }
 
         @Override

@@ -3,10 +3,16 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.utils.CommonMethodFixture;
+import org.assertj.core.api.Assertions;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -117,4 +123,29 @@ public class LineAcceptanceStep extends CommonMethodFixture {
         ExtractableResponse<Response> response = 특정_노선을_조회한다(id);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NOT_FOUND.value());
     }
+
+    public static void 상행_구간_삭졔_확인(int lineId) {
+        LineResponse temp = 특정_노선을_조회한다(lineId).as(LineResponse.class);
+
+        List<String> allNames = temp.getStations().stream()
+                .map(s -> s.getName()).collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(allNames).hasSize(2),
+                () -> assertThat(allNames).containsExactly("역삼역" ,"선릉역"));
+
+    }
+
+    public static void 하행_구간_삭졔_확인(int lineId) {
+        LineResponse temp = 특정_노선을_조회한다(lineId).as(LineResponse.class);
+
+        List<String> allNames = temp.getStations().stream()
+                .map(s -> s.getName()).collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(allNames).hasSize(2),
+                () -> assertThat(allNames).containsExactly("강남역" ,"역삼역"));
+
+    }
+
 }
