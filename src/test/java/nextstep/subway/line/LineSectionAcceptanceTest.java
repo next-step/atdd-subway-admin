@@ -169,10 +169,10 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteSectionFailedStationNotInclude() {
         //when
-        ExtractableResponse<Response> saveResponse = deleteSection(line.getId(), hongDaeStation);
+        ExtractableResponse<Response> deleteResonse = deleteSection(line.getId(), hongDaeStation);
 
         //then
-        assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(deleteResonse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private ExtractableResponse<Response> deleteSection(Long id, Station hongDaeStation) {
