@@ -3,7 +3,6 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,8 +14,7 @@ import java.util.List;
 @Embeddable
 public class SectionLineUp {
 
-    @JoinColumn(name = "line_id")
-    @OneToMany(orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "line", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Section> sectionList = new ArrayList<>();
 
     protected SectionLineUp() {
