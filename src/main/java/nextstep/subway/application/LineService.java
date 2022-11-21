@@ -45,38 +45,30 @@ public class LineService {
         return lines.stream().map(LineResponse::of).collect(Collectors.toList());
     }
 
-    public LineResponse getLineById(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() ->
-            new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR)
-        );
+    public LineResponse getLineById(Long id) {
+        Line line = this.findLineById(id);
+
         return LineResponse.of(line);
     }
 
     @Transactional
-    public LineResponse updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() ->
-            new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR)
-        );
-
+    public LineResponse updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+        Line line = this.findLineById(id);
         line.update(lineUpdateRequest.toLine());
 
         return LineResponse.of(line);
     }
 
     @Transactional
-    public void deleteLine(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() ->
-            new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR)
-        );
+    public void deleteLine(Long id) {
+        Line line = this.findLineById(id);
 
         lineRepository.delete(line);
     }
 
 
     public LineResponse updateSection(Long id, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() ->
-            new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR)
-        );
+        Line line = this.findLineById(id);
 
         Section section = getSection(line, sectionRequest);
 
@@ -89,5 +81,10 @@ public class LineService {
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
         return new Section(line, downStation, upStation, sectionRequest.getDistance());
+    }
+
+    public Line findLineById(Long id) {
+        return lineRepository.findById(id)
+            .orElseThrow(() -> new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR));
     }
 }
