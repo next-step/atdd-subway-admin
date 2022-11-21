@@ -14,13 +14,29 @@ import static nextstep.subway.exception.ErrorStatus.SECTION_DEFAULT_SIZE;
 @Embeddable
 public class Sections {
     private static final int DEFAULT_SECTIONS_SIZE = 1;
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL,orphanRemoval = true)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
     public void addSection(Line line, Station upStation, Station downStation, Long distance) {
         Section section = new Section(line, upStation, downStation, distance);
         validateDuplicate(section);
         addSection(section);
+    }
+
+    public List<Section> allSortedSections() {
+        Station upStationTerminus = findUpStationTerminus();
+        return createSections(upStationTerminus);
+    }
+
+    public void deleteSection(Station deleteStation) {
+        validateIncludeStation(deleteStation);
+        validateSectionsDefaultSize();
+
+        LinkedList<Section> sections = new LinkedList<>(allSortedSections());
+        deleteUpStationTerminus(sections, deleteStation);
+        deleteDownStationTerminus(sections, deleteStation);
+        deleteMiddle(sections, deleteStation);
+
     }
 
     private void validateDuplicate(Section section) {
@@ -39,13 +55,6 @@ public class Sections {
         add(section);
     }
 
-    private void validateStationIncludeSection(Section section) {
-        boolean isNotIncludeSection = this.values.stream().noneMatch(v -> v.anyMatch(section));
-        if (isNotIncludeSection) {
-            throw new IllegalRequestBody(ErrorStatus.SECTION_STATION_ERROR.getMessage());
-        }
-    }
-
     private void add(Section section) {
         LinkedList<Section> sections = new LinkedList<>(allSortedSections());
         if (isAddUpStationTerminus(section, sections)) {
@@ -58,6 +67,14 @@ public class Sections {
         }
         addMiddle(section);
     }
+
+    private void validateStationIncludeSection(Section section) {
+        boolean isNotIncludeSection = this.values.stream().noneMatch(v -> v.anyMatch(section));
+        if (isNotIncludeSection) {
+            throw new IllegalRequestBody(ErrorStatus.SECTION_STATION_ERROR.getMessage());
+        }
+    }
+
 
     private boolean isAddUpStationTerminus(Section section, LinkedList<Section> sections) {
         Section firstSection = sections.getFirst();
@@ -137,10 +154,6 @@ public class Sections {
         return stations;
     }
 
-    public List<Section> allSortedSections() {
-        Station upStationTerminus = findUpStationTerminus();
-        return createSections(upStationTerminus);
-    }
 
     private List<Section> createSections(Station upStationTerminus) {
         Section firstSection = values.stream().filter(v -> v.getUpStation().equals(upStationTerminus))
@@ -165,12 +178,31 @@ public class Sections {
         return sections;
     }
 
-    public void deleteSection(Station deleteStation) {
-        validateIncludeStation(deleteStation);
-        validateSectionsDefaultSize();
 
-        LinkedList<Section> sections = new LinkedList<>(allSortedSections());
-        deleteUpStationTerminus(sections, deleteStation);
+    private void deleteMiddle(LinkedList<Section> sections, Station deleteStation) {
+        Section upStationSection = sections.stream().filter(v -> v.getDownStation().equals(deleteStation))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundSection(deleteStation.getId()));
+
+        Section downStationSection = sections.stream().filter(v -> v.getUpStation().equals(deleteStation))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundSection(deleteStation.getId()));
+
+        mergeAndDeleteSection(upStationSection, downStationSection);
+    }
+
+    private void mergeAndDeleteSection(Section upStationSection, Section downStationSection) {
+        Section section = upStationSection.merge(downStationSection);
+        this.values.add(section);
+        this.values.remove(upStationSection);
+        this.values.remove(downStationSection);
+    }
+
+    private void deleteDownStationTerminus(LinkedList<Section> sections, Station deleteStation) {
+        Section downStationTerminus = sections.getFirst();
+        if (downStationTerminus.getDownStation().equals(deleteStation)) {
+            this.values.remove(downStationTerminus);
+        }
     }
 
     private void deleteUpStationTerminus(LinkedList<Section> sections, Station deleteStation) {
@@ -187,7 +219,7 @@ public class Sections {
     }
 
     private void validateIncludeStation(Station deleteStation) {
-        boolean isNotIncludeStation = this.values.stream().noneMatch(v -> v.includStationInSection(deleteStation));
+        boolean isNotIncludeStation = this.values.stream().noneMatch(v -> v.inCludeStationInSection(deleteStation));
         if (isNotIncludeStation) {
             throw new NotFoundSection(deleteStation.getId());
         }
