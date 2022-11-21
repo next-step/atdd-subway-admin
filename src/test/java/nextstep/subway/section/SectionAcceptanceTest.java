@@ -8,7 +8,6 @@ import io.restassured.response.Response;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.line.LineTestFixture;
-import nextstep.subway.station.StationTestFixture;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,6 +28,7 @@ public class SectionAcceptanceTest {
 
     StationResponse 강남역;
     StationResponse 광교역;
+    StationResponse 역삼역;
     LineResponse 신분당선;
 
     @BeforeEach
@@ -40,8 +40,10 @@ public class SectionAcceptanceTest {
 
         // given
         강남역 = requestCreateStation("강남역").as(StationResponse.class);
-        광교역 = StationTestFixture.requestCreateStation("광교역").as(StationResponse.class);
-        신분당선 = LineTestFixture.requestCreateLine("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10 ).as(LineResponse.class);
+        광교역 = requestCreateStation("광교역").as(StationResponse.class);
+        역삼역 = requestCreateStation("역삼역").as(StationResponse.class);
+        신분당선 = LineTestFixture.requestCreateLine("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 10)
+                .as(LineResponse.class);
     }
 
     /**
@@ -52,9 +54,8 @@ public class SectionAcceptanceTest {
     @Test
     void addSection() {
         // when
-        ExtractableResponse<Response> response = SectionTestFixture.requestAddSection(2L, 4L, 10 );
+        ExtractableResponse<Response> response = SectionTestFixture.requestAddSection(강남역.getId(), 역삼역.getId(), 10);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
     }
 }
