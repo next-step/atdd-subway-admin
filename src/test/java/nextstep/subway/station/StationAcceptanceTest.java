@@ -95,8 +95,7 @@ public class StationAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(stationNames).hasSize(2),
-                () -> assertThat(stationNames).containsAnyOf("강남역"),
-                () -> assertThat(stationNames).containsAnyOf("역삼역")
+                () -> assertThat(stationNames).contains("강남역", "역삼역")
         )
         ;
     }
@@ -113,15 +112,15 @@ public class StationAcceptanceTest {
         ExtractableResponse<Response> response = createStation("강남역");
 
         // when
-        RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(BASE_URL + "/{id}", 1)
-                .then().log().all();
+        ExtractableResponse<Response> response1 = deleteStationById(response.header("Location"));
 
         // then
         List<Station> station = retrieveStationByName("강남역");
 
-        assertThat(station).isEmpty();
+        assertAll(
+                () -> assertThat(response1.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
+                () -> assertThat(station).isEmpty()
+        );
 
     }
 
@@ -141,6 +140,7 @@ public class StationAcceptanceTest {
     }
 
     public static List<String> retrieveStationNames() {
+
         List<String> stations = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get(BASE_URL)
@@ -160,5 +160,16 @@ public class StationAcceptanceTest {
                 .extract().jsonPath().getList(".", Station.class);
 
         return stations;
+    }
+
+    public static ExtractableResponse<Response> deleteStationById(String location) {
+
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(location)
+                .then().log().all()
+                .extract();
+
+        return response;
     }
 }
