@@ -70,14 +70,14 @@ public class LineService {
     public LineResponse updateSection(Long id, SectionRequest sectionRequest) {
         Line line = this.findLineById(id);
 
-        Section section = getSection(line, sectionRequest);
-
+        Section section = reqToSection(line, sectionRequest);
+        
         line.addSection(section);
 
         return LineResponse.of(line);
     }
 
-    private Section getSection(Line line, SectionRequest sectionRequest) {
+    private Section reqToSection(Line line, SectionRequest sectionRequest) {
         Station upStation = stationService.findStationById(sectionRequest.getUpStationId());
         Station downStation = stationService.findStationById(sectionRequest.getDownStationId());
         return new Section(line, downStation, upStation, sectionRequest.getDistance());
