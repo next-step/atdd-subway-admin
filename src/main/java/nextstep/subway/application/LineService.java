@@ -70,7 +70,7 @@ public class LineService {
     public SectionCreateResponse createSection(long id, SectionCreateRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("요청한 노선을 찾을 수 없습니다. 노선ID:" + id));
-        line.addSection(request.toSection());
+        line.addSection(request.toSection(line));
         refreshDistance(line);
         return SectionCreateResponse.of(line, line.getSectionList());
     }

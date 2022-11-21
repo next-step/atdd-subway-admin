@@ -32,11 +32,12 @@ public class Section {
     @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
 
-    public Section(long downStationId, long upStationId, Distance distance) {
+    public Section(long downStationId, long upStationId, Distance distance, Line line) {
         validSameStationId(downStationId, upStationId);
         this.downStationId = downStationId;
         this.upStationId = upStationId;
         this.distance = distance;
+        this.line = line;
     }
 
     public Section(Line line) {
