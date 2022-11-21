@@ -28,21 +28,11 @@ public class Section {
 
     protected Section() {}
 
-    public Section(Station upStation, Station downStation, int distance) {
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
-    }
-
     public Section(Station upStation, Station downStation, Line line, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
         this.line = line;
-    }
-
-    public SectionResponse toSectionResponse() {
-        return new SectionResponse(id, upStation.getId(), downStation.getId(), distance);
     }
 
     public void changed(Section infixSection) {
@@ -55,18 +45,10 @@ public class Section {
 
     private void changedStation(Section infixSection) {
         if (isSameUpStation(infixSection)) {
-            checkSameOtherStation(downStation, infixSection.downStation);
             this.upStation = infixSection.downStation;
         }
         if (isSameDownStation(infixSection)) {
-            checkSameOtherStation(upStation, infixSection.upStation);
             this.downStation = infixSection.upStation;
-        }
-    }
-
-    private void checkSameOtherStation(Station station, Station targetStation) {
-        if (station.equalsById(targetStation)) {
-            throw new InvalidParameterException("상행역과 하행역이 모두 노선에 등록되어 있는 경우 새롭게 등록할 수 없습니다.");
         }
     }
 
@@ -74,12 +56,23 @@ public class Section {
         this.distance = distance - infixSection.distance;
     }
 
-    private boolean isSameUpStation(Section infixSection) {
+    public boolean isSameUpStation(Section infixSection) {
         return upStation.equalsById(infixSection.upStation);
     }
 
-    private boolean isSameDownStation(Section infixSection) {
+    public boolean isSameDownStation(Section infixSection) {
         return downStation.equalsById(infixSection.downStation);
+    }
+
+    public boolean isPreStation(Section section) {
+        if (section == null) {
+            return true;
+        }
+        return downStation.equalsById(section.getUpStation());
+    }
+
+    public boolean isPostStation(Section firstSection) {
+        return upStation.equalsById(firstSection.getDownStation());
     }
 
     private void checkDistanceCondition(Section infixSection) {
@@ -92,12 +85,20 @@ public class Section {
         return infixSection.distance > this.distance;
     }
 
-    public boolean isUpStationEqualsId(Long id) {
-        return upStation.getId().equals(id);
+    public boolean isUpStationEqualsId(Station station) {
+        return upStation.equalsById(station);
     }
 
-    public boolean isDownStationEqualsId(Long id) {
-        return downStation.getId().equals(id);
+    public boolean isDownStationEqualsId(Station station) {
+        return downStation.equalsById(station);
+    }
+
+    public boolean containsAllStation(Section infixSection) {
+        if ((upStation.equalsById(infixSection.upStation) && downStation.equalsById(infixSection.downStation))
+                || (upStation.equalsById(infixSection.downStation) && downStation.equalsById(infixSection.upStation))) {
+            return true;
+        }
+        return false;
     }
 
     public Long getId() {
@@ -114,6 +115,14 @@ public class Section {
 
     public Station getUpStation() {
         return upStation;
+    }
+
+    public Long getUpStationId() {
+        return upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        return downStation.getId();
     }
 
 }

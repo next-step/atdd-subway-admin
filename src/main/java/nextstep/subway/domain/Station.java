@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.StationResponse;
-
 import javax.persistence.*;
 
 @Entity
@@ -20,15 +18,10 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
-    public StationResponse toStationResponse() {
-        return new StationResponse(id, name, super.getCreatedDate(), super.getModifiedDate());
-    }
-
-    public Section toSection(Station preStation, int distance) {
-        return new Section(preStation, this, distance);
-    }
-
     public boolean equalsById(Station station) {
+        if (id == null) {
+            return false;
+        }
         return id.equals(station.getId());
     }
 
@@ -36,4 +29,7 @@ public class Station extends BaseEntity {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
 }

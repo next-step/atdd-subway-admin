@@ -44,12 +44,12 @@ public class SectionService {
         line.infixSection(section);
         sectionRepository.save(section);
 
-        return line.toLineResponse();
+        return LineResponse.of(line);
     }
 
     @Transactional(readOnly = true)
     public SectionResponse findById(Long id) {
-        return getSection(id).toSectionResponse();
+        return SectionResponse.of(getSection(id));
     }
 
     private Line getLine(Long id) {

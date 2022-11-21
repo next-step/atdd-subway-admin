@@ -17,11 +17,6 @@ public class InitializationEntity {
     public static Station mediumStation;
     public static Station newStation;
 
-    public static Section section_1;
-    public static Section section_2;
-
-    public static Line line_1;
-
     @Autowired
     private StationRepository stationRepository;
 
@@ -38,13 +33,12 @@ public class InitializationEntity {
         newStation = stationRepository.save(new Station("마곡나루역"));
     }
 
-    public void initLine() {
-        line_1 = lineRepository.save(new Line("1호선", "빨간색"));
+    public Line createLine(String name) {
+        return lineRepository.save(new Line(name, "빨간색"));
     }
 
-    public void initSection() {
-        section_1 = sectionRepository.save(new Section(upStation, mediumStation, line_1, 5));
-        section_2 = sectionRepository.save(new Section(mediumStation, downStation, line_1, 7));
+    public Section addedSections(Line line, Station upStation, Station downStation, int distance) {
+        return sectionRepository.save(new Section(upStation, downStation, line, distance));
     }
 
 }

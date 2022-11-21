@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
@@ -38,30 +39,32 @@ public class LineService {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
 
-        Sections sections = new Sections();
-        sections.add(sectionRepository.save(
-                upStation.toSection(downStation, lineRequest.getDistance())));
+        Line line = lineRequest.toLine();
 
-        return lineRepository.save(lineRequest.toLine(sections)).toLineResponse();
+        Sections sections = new Sections();
+        sections.add(new Section(upStation, downStation, line, lineRequest.getDistance()));
+        line.addSections(sections);
+
+        return LineResponse.of(lineRepository.save(line));
     }
 
     @Transactional(readOnly = true)
     public LineResponse findById(Long id) {
-        return getLine(id).toLineResponse();
+        return LineResponse.of(getLine(id));
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll()
                 .stream()
-                .map(Line::toLineResponse)
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public LineResponse updateById(Long id, LineRequest lineRequest) {
         Line line = getLine(id);
-        return line.updateByLineRequest(lineRequest).toLineResponse();
+        return LineResponse.of(line.update(lineRequest.toLine()));
     }
 
     @Transactional

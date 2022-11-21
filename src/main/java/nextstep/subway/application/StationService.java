@@ -23,14 +23,14 @@ public class StationService {
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
         Station persistStation = stationRepository.save(stationRequest.toStation());
-        return persistStation.toStationResponse();
+        return StationResponse.of(persistStation);
     }
 
     public List<StationResponse> findAllStations() {
         List<Station> stations = stationRepository.findAll();
 
         return stations.stream()
-                .map(Station::toStationResponse)
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 

@@ -1,8 +1,10 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.domain.Station;
 import nextstep.subway.util.DatabaseCleanup;
-import nextstep.subway.util.ExecuteRestEntity;
 import nextstep.subway.util.InitializationEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +30,7 @@ public class LineAcceptanceTest {
     private InitializationEntity initializationEntity;
 
     @Autowired
-    private ExecuteRestEntity executeRestEntity;
+    private LineExecuteRestEntity lineExecuteRestEntity;
 
     @LocalServerPort
     int port;
@@ -50,12 +52,10 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        String location = executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
-                .header("Location");
+        String location = createLineSuccess("1호선", upStation, downStation).header("Location");
 
         // then
-        String lineName = executeRestEntity.selectLine(location).extract().jsonPath().get("name");
+        String lineName = lineExecuteRestEntity.selectLine(location).extract().jsonPath().get("name");
         assertThat(lineName).isEqualTo("1호선");
     }
 
@@ -68,16 +68,12 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
-                .header("Location");
-        executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("2호선", mediumStation.getId(), newStation.getId()))
-                .header("Location");
+        createLineSuccess("1호선", upStation, downStation);
+        createLineSuccess("2호선", mediumStation, newStation);
 
         // when
         List<String> lineNames =
-                executeRestEntity.selectLines().extract().jsonPath().getList("name", String.class);
+                lineExecuteRestEntity.selectLines().extract().jsonPath().getList("name", String.class);
 
         // then
         assertAll (
@@ -95,12 +91,10 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        String location = executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
-                .header("Location");
+        String location = createLineSuccess("1호선", upStation, downStation).header("Location");
 
         // when
-        String lineName = executeRestEntity.selectLine(location).extract().jsonPath().get("name");
+        String lineName = lineExecuteRestEntity.selectLine(location).extract().jsonPath().get("name");
 
         // then
         assertThat(lineName).isNotNull();
@@ -116,16 +110,14 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        String location = executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
-                .header("Location");
+        String location = createLineSuccess("1호선", upStation, downStation).header("Location");
 
         // when
-        executeRestEntity.updateLineSuccess(location,
-                executeRestEntity.generateLineRequest("2호선", mediumStation.getId(), newStation.getId()));
+        lineExecuteRestEntity.updateLineSuccess(location,
+                lineExecuteRestEntity.generateLineRequest("2호선", mediumStation.getId(), newStation.getId()));
 
         // then
-        String lineName = executeRestEntity.selectLine(location).extract().jsonPath().get("name");
+        String lineName = lineExecuteRestEntity.selectLine(location).extract().jsonPath().get("name");
         assertThat(lineName).isEqualTo("2호선");
     }
 
@@ -138,16 +130,19 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        String location = executeRestEntity.insertLineSuccess(
-                executeRestEntity.generateLineRequest("1호선", upStation.getId(), downStation.getId()))
-                .header("Location");
+        String location = createLineSuccess("1호선", upStation, downStation).header("Location");
 
         // when
-        executeRestEntity.deleteLineSuccess(location);
+        lineExecuteRestEntity.deleteLineSuccess(location);
 
         // then
-        String lineName = executeRestEntity.selectLine(location).extract().jsonPath().get("name");
+        String lineName = lineExecuteRestEntity.selectLine(location).extract().jsonPath().get("name");
         assertThat(lineName).isNullOrEmpty();
+    }
+
+    private ExtractableResponse<Response> createLineSuccess(String name, Station upStation, Station downStation) {
+        return lineExecuteRestEntity.insertLineSuccess(
+                lineExecuteRestEntity.generateLineRequest(name, upStation.getId(), downStation.getId()));
     }
 
 }
