@@ -79,7 +79,7 @@ public class LineAcceptanceTest {
         Set<String> results = new HashSet<>(retrieveAllLineNames());
 
         //then
-        assertThat(results).containsExactly(lineName1, lineName2);
+        assertThat(results).containsOnly(lineName1, lineName2);
     }
 
     @Test

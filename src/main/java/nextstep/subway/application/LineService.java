@@ -17,14 +17,19 @@ public class LineService {
 
     private LineRepository lineRepository;
     private StationService stationService;
+    private LineStationService lineStationService;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService,
+                       LineStationService lineStationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
+        this.lineStationService = lineStationService;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequestToLine(lineRequest));
+        lineStationService.saveLineStation(new LineStation(persistLine, persistLine.getDownStation()));
+        lineStationService.saveLineStation(new LineStation(persistLine, persistLine.getUpStation()));
         return LineResponse.of(persistLine);
     }
 
@@ -50,6 +55,7 @@ public class LineService {
     }
 
     public void deleteLineById(Long id) {
+        lineStationService.deleteLineStationByLineId(id);
         lineRepository.deleteById(id);
     }
 

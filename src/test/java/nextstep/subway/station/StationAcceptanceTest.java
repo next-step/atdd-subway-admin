@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -97,7 +96,7 @@ public class StationAcceptanceTest {
         final Set<String> results = new HashSet<>(getStationNames());
 
         //then
-        assertThat(results).containsExactly(stationName1, stationName2);
+        assertThat(results).containsOnly(stationName1, stationName2);
     }
 
     /**

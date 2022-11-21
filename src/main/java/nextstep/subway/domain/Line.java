@@ -29,9 +29,6 @@ public class Line extends BaseEntity {
     @OneToMany(mappedBy = "line")
     private List<LineStation> lineStations = new ArrayList<>();
 
-    @OneToMany(mappedBy = "line")
-    private List<Section> sections = new ArrayList<>();
-
     private int distance;
 
     protected Line() {
@@ -44,8 +41,9 @@ public class Line extends BaseEntity {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
-        lineStations.add(new LineStation(this, upStation));
-        lineStations.add(new LineStation(this, downStation));
+
+        addLineStation(new LineStation(this, upStation));
+        addLineStation(new LineStation(this, downStation));
     }
 
     public Long getId() {
@@ -87,11 +85,11 @@ public class Line extends BaseEntity {
         return Integer.compare(this.distance, distance);
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
-    }
-
     public void addLineStation(LineStation lineStation) {
         lineStations.add(lineStation);
+    }
+
+    public boolean isContainStation(Station station) {
+        return lineStations.stream().anyMatch(lineStation -> station.equals(lineStation.getStation()));
     }
 }

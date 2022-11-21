@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.section;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -7,6 +7,7 @@ import nextstep.subway.DatabaseCleaner;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;

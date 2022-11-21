@@ -37,4 +37,5 @@ public class LineStation extends BaseEntity {
     public Station getStation() {
         return station;
     }
+
 }

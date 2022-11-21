@@ -1,8 +1,6 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Station extends BaseEntity {
@@ -13,13 +11,6 @@ public class Station extends BaseEntity {
 
     @Column(unique = true)
     private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "line_id")
-    private Line line;
-
-    @OneToMany(mappedBy = "station")
-    private List<LineStation> lineStations = new ArrayList<>();
 
     public Station() {
     }
@@ -36,7 +27,4 @@ public class Station extends BaseEntity {
         return name;
     }
 
-    public List<LineStation> getLineStations() {
-        return lineStations;
-    }
 }
