@@ -67,6 +67,7 @@ public class LineService {
         return SectionsResponse.of(line);
     }
 
+    @Transactional
     public void deleteSection(Long lineId, Long deleteStationId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLine(lineId));
         Station deleteStation = stationService.findStation(deleteStationId);

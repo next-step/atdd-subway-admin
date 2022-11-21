@@ -14,7 +14,7 @@ import static nextstep.subway.exception.ErrorStatus.SECTION_DEFAULT_SIZE;
 @Embeddable
 public class Sections {
     private static final int DEFAULT_SECTIONS_SIZE = 1;
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
     public void addSection(Line line, Station upStation, Station downStation, Long distance) {
@@ -168,6 +168,16 @@ public class Sections {
     public void deleteSection(Station deleteStation) {
         validateIncludeStation(deleteStation);
         validateSectionsDefaultSize();
+
+        LinkedList<Section> sections = new LinkedList<>(allSortedSections());
+        deleteUpStationTerminus(sections, deleteStation);
+    }
+
+    private void deleteUpStationTerminus(LinkedList<Section> sections, Station deleteStation) {
+        Section upStationTerminus = sections.getFirst();
+        if (upStationTerminus.getUpStation().equals(deleteStation)) {
+            this.values.remove(upStationTerminus);
+        }
     }
 
     private void validateSectionsDefaultSize() {
