@@ -81,6 +81,10 @@ public class Section extends BaseEntity {
         return this.upStation.equals(section.getUpStation());
     }
 
+    public boolean includStationInSection(Station deleteStation) {
+        return this.upStation.equals(deleteStation) || this.downStation.equals(deleteStation);
+    }
+
     public Long getDistance() {
         return distance;
     }
@@ -104,5 +108,6 @@ public class Section extends BaseEntity {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 
 }

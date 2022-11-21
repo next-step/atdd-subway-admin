@@ -164,4 +164,15 @@ public class Sections {
 
         return sections;
     }
+
+    public void deleteSection(Station deleteStation) {
+        validateIncludeStation(deleteStation);
+    }
+
+    private void validateIncludeStation(Station deleteStation) {
+        boolean isNotIncludeStation = this.values.stream().noneMatch(v -> v.includStationInSection(deleteStation));
+        if (isNotIncludeStation) {
+            throw new NotFoundSection(deleteStation.getId());
+        }
+    }
 }
