@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.domain.raw.Distance;
-import nextstep.subway.dto.LineResponse;
 
 import javax.persistence.*;
 import java.util.List;
