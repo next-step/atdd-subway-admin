@@ -29,9 +29,14 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
-    @PutMapping(value = "/lines", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity updateLine(@RequestBody LineRequest lineRequest) {
-        return null;
+    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> showLines(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findLineById(id));
+    }
+
+    @PutMapping(value = "/lines/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> modifyLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        return ResponseEntity.ok().body(lineService.modifyLine(id, lineRequest));
     }
 
     @DeleteMapping("lines")

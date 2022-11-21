@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,8 +23,7 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line persistLine = lineRepository.save(lineRequest.toLine());
-        return LineResponse.of(persistLine);
+        return LineResponse.of(lineRepository.save(lineRequest.toLine()));
     }
 
     public List<LineResponse> findAllLines() {
@@ -32,5 +32,18 @@ public class LineService {
         return lines.asList().stream()
                 .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findLineById(Long id) {
+        Optional<Line> retrieveLine = lineRepository.findById(id);
+        return LineResponse.of(retrieveLine.get());
+    }
+
+    @Transactional
+    public LineResponse modifyLine(Long id, LineRequest lineRequest) {
+        Optional<Line> retrieveLine = lineRepository.findById(id);
+        Line line = retrieveLine.get();
+        line.modify(lineRequest.getName(), lineRequest.getColor());
+        return LineResponse.of(lineRepository.save(line));
     }
 }

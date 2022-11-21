@@ -36,7 +36,20 @@ public class Line extends BaseEntity{
         return this.color;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public List<Station> getStations() {
         return stations.asList();
+    }
+
+    public void modify(String name, String color) {
+        setName(name);
+        setColor(color);
     }
 }
