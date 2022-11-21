@@ -21,6 +21,6 @@ public class LineStationService {
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(RuntimeException::new);
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(RuntimeException::new);
         Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
-        line.addSection(sectionRequest.toLineStation(upStation, downStation));
+        line.addLineStation(sectionRequest.toLineStation(upStation, downStation));
     }
 }

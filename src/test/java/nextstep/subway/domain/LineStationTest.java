@@ -10,7 +10,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -34,6 +36,7 @@ public class LineStationTest {
                 new Station("판교역"),
                 new Station("이매역"),
                 new Station("경기광주역"),
+                new Station("부발역"),
                 new Station("여주역")
         ));
         lineRepository.save(new Line("경강선", "bg-blue-600"));
@@ -46,9 +49,8 @@ public class LineStationTest {
         Line line = lineRepository.getById(1L);
         Station upStation = stationRepository.getById(1L);
         Station downStation = stationRepository.getById(2L);
-
-        LineStation firstLineStation = new LineStation(upStation, downStation, 100);
-        LineStation secondLineStation = new LineStation(null, upStation, 0);
+        LineStation firstLineStation = new LineStation(null, upStation, 0);
+        LineStation secondLineStation = new LineStation(upStation, downStation, 100);
 
         // when
         line.addLineStation(firstLineStation);
@@ -74,7 +76,7 @@ public class LineStationTest {
 
         // when : 라인에 linestation을 추가 후 중간에 midLineStation을 추가
         Station 이매역 = stationRepository.getById(2L);
-        신분당선.addSection(new LineStation(판교역, 이매역, 40));
+        신분당선.addLineStation(new LineStation(판교역, 이매역, 40));
         lineRepository.save(신분당선);
         flushAndClear();
 
@@ -96,7 +98,7 @@ public class LineStationTest {
 
         // when
         Station 판교역 = stationRepository.getById(1L);
-        경강선.addSection(new LineStation(판교역, 이매역, 40));
+        경강선.addLineStation(new LineStation(판교역, 이매역, 40));
         lineRepository.save(경강선);
         flushAndClear();
 
@@ -118,7 +120,7 @@ public class LineStationTest {
 
         Station 경기광주역 = stationRepository.getById(3L);
         // when
-        경강선.addSection(new LineStation(이매역, 경기광주역, 40));
+        경강선.addLineStation(new LineStation(이매역, 경기광주역, 40));
         lineRepository.save(경강선);
         flushAndClear();
 
@@ -140,7 +142,7 @@ public class LineStationTest {
 
         // when
         Station 이매역 = stationRepository.getById(2L);
-        경강선.addSection(new LineStation(이매역, 경기광주역, 50));
+        경강선.addLineStation(new LineStation(이매역, 경기광주역, 50));
         lineRepository.save(경강선);
         flushAndClear();
 
@@ -162,7 +164,7 @@ public class LineStationTest {
 
         // when
         Station 이매역 = stationRepository.getById(2L);
-        assertThatThrownBy(() -> 경강선.addSection(new LineStation(이매역, 경기광주역, 100)))
+        assertThatThrownBy(() -> 경강선.addLineStation(new LineStation(이매역, 경기광주역, 100)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -177,8 +179,56 @@ public class LineStationTest {
         경강선.addLineStation(new LineStation(판교역, 경기광주역, 100));
 
         // when
-        assertThatThrownBy(() -> 경강선.addSection(new LineStation(판교역, 경기광주역, 50)))
+        assertThatThrownBy(() -> 경강선.addLineStation(new LineStation(판교역, 경기광주역, 50)))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상행 하행이 노선에 모두 없는 경우 예외")
+    @Test
+    void 등록되지않은_상하행_예외() {
+        // line과 station 기반으로 lineStation 생성
+        Line 경강선 = lineRepository.getById(1L);
+        Station 판교역 = stationRepository.getById(1L);
+        Station 경기광주역 = stationRepository.getById(3L);
+        Station 여주역 = stationRepository.getById(5L);
+        경강선.addLineStation(new LineStation(null, 판교역, 0));
+        경강선.addLineStation(new LineStation(판교역, 경기광주역, 100));
+        경강선.addLineStation(new LineStation(경기광주역, 여주역, 500));
+
+        // when
+        Station 이매역 = stationRepository.getById(2L);
+        Station 부발역 = stationRepository.getById(4L);
+        assertThatThrownBy(() -> 경강선.addLineStation(new LineStation(이매역, 부발역, 200)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("구간등록한 순서대로 출력되는 지 확인")
+    @Test
+    void 경로_반환_테스트() {
+        // given
+        Line 경강선 = lineRepository.getById(1L);
+        Station 판교역 = stationRepository.getById(1L);
+        Station 이매역 = stationRepository.getById(2L);
+        Station 경기광주역 = stationRepository.getById(3L);
+        Station 부발역 = stationRepository.getById(4L);
+        Station 여주역 = stationRepository.getById(5L);
+        경강선.addLineStation(new LineStation(null, 판교역, 0));
+        경강선.addLineStation(new LineStation(판교역, 이매역, 100));
+        경강선.addLineStation(new LineStation(이매역, 경기광주역, 500));
+        경강선.addLineStation(new LineStation(경기광주역, 부발역, 500));
+        경강선.addLineStation(new LineStation(부발역, 여주역, 500));
+
+        // when
+        List<String> stationsNames = 경강선.getOrderedLineStations().stream()
+                .map(it -> it.getStation().getName())
+                .collect(Collectors.toList());
+
+        // then
+        assertThat(stationsNames).containsSequence("판교역",
+                "이매역",
+                "경기광주역",
+                "부발역",
+                "여주역");
     }
 
     private void flushAndClear() {

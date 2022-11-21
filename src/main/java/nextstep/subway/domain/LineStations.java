@@ -15,7 +15,7 @@ public class LineStations {
     protected LineStations() {
     }
 
-    private List<LineStation> getOrderdLineStations() {
+    public List<LineStation> getOrderdLineStations() {
         Optional<LineStation> lineStationOptional = lineStations.stream()
                 .filter(it -> it.getPreStation() == null)
                 .findFirst();
@@ -26,25 +26,19 @@ public class LineStations {
             LineStation lineStation = lineStationOptional.get();
             orderedLineStations.add(lineStation);
             lineStationOptional = lineStations.stream()
-                    .filter(it -> it.getPreStation().isSame(lineStation.getStation()))
+                    .filter(it -> lineStation.getStation().isSame(it.getPreStation()))
                     .findFirst();
         }
 
-        return orderedLineStations;
+        return Collections.unmodifiableList(orderedLineStations);
     }
 
     public void add(LineStation lineStation) {
         validateLineStation(lineStation);
-
-//        updateWhenAddablePre(lineStation);
-//        updateWhenAddablePost(lineStation);
-//        checkContinuable(lineStation);
-
-        lineStations.add(lineStation);
-    }
-
-    public void addLineStation(LineStation lineStation) {
-        validateLineStation(lineStation);
+        if (lineStations.isEmpty()) {
+            lineStations.add(lineStation);
+            return;
+        }
 
         updateWhenAddablePre(lineStation);
         updateWhenAddablePost(lineStation);

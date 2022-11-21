@@ -33,10 +33,6 @@ public class Line extends BaseEntity {
         this.lineStations.add(lineStation);
     }
 
-    public void addSection(LineStation lineStation) {
-        this.lineStations.addLineStation(lineStation);
-    }
-
     public Long getId() {
         return id;
     }
@@ -51,6 +47,10 @@ public class Line extends BaseEntity {
 
     public List<LineStation> getLineStations() {
         return lineStations.values();
+    }
+
+    public List<LineStation> getOrderedLineStations() {
+        return lineStations.getOrderdLineStations();
     }
 
     @Override

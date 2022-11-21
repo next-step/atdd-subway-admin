@@ -29,6 +29,8 @@ public class SectionAcceptanceTest {
     private String 판교역;
     private String 경기광주역;
     private String 이매역;
+    private String 부발역;
+    private String 여주역;
     private String 경강선;
 
     @BeforeEach
@@ -42,6 +44,10 @@ public class SectionAcceptanceTest {
         경기광주역 = StationAcceptanceTestUtil.createStation("경기광주역")
                 .jsonPath().getString("id");
         이매역 = StationAcceptanceTestUtil.createStation("이매역")
+                .jsonPath().getString("id");
+        부발역 = StationAcceptanceTestUtil.createStation("부발역")
+                .jsonPath().getString("id");
+        여주역 = StationAcceptanceTestUtil.createStation("여주역")
                 .jsonPath().getString("id");
     }
 
@@ -119,6 +125,42 @@ public class SectionAcceptanceTest {
         경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 경기광주역, "10")
                 .jsonPath().getString("id");
         ExtractableResponse<Response> response = createSection(이매역, 경기광주역, "10", 경강선);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When : 새로운 구간의 상하행이 이미 등록되어 있는 구간이라면
+     * Then : 구간 등록이 실패한다.
+     */
+    @DisplayName("새로운 구간의 상하행이 이미등록된 경우 예외")
+    @Test
+    void 상하행_기등록_예외() {
+        // when
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 경기광주역, "10")
+                .jsonPath().getString("id");
+        ExtractableResponse<Response> response = createSection(판교역, 경기광주역, "5", 경강선);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given : 구간에 3개의 역이 등록되어 있다.
+     * When : 새로운 구간의 상하행 중 하나라도 기존 구간과 일치하지 않으면
+     * Then : 구간 등록이 실패한다.
+     */
+    @DisplayName("새로운 구간의 상하행중 하나라도 기존 구간에 없으면 예외")
+    @Test
+    void 상하행_미등록_예외() {
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 경기광주역, "10")
+                .jsonPath().getString("id");
+        createSection(경기광주역, 여주역, "50", 경강선);
+
+        // when
+        ExtractableResponse<Response> response = createSection(이매역, 부발역, "20", 경강선);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
