@@ -20,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest {
-
+    private final String DELIMITER = "/";
     private static Map<String, String> of(String lineName, String color) {
         Map<String, String> map = new HashMap<>();
         map.put("name", lineName);
@@ -47,24 +47,15 @@ class LineAcceptanceTest {
     void createLine() {
         // when
         Map<String, String> params = LineAcceptanceTest.of("2호선", "green");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/lines")
-                        .then().log().all()
-                        .extract();
-
+        ExtractableResponse<Response> response = createLine(params);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-
-        // then
         List<String> lineNames =
                 RestAssured.given().log().all()
                         .when().get("/lines")
                         .then().log().all()
                         .extract().jsonPath().getList("name", String.class);
+        // then
         assertThat(lineNames).containsAnyOf("2호선");
     }
 
@@ -76,6 +67,22 @@ class LineAcceptanceTest {
     @DisplayName("지하철 노선 목록 조회.")
     @Test
     void showCreatedLines() {
+        // given
+        Map<String, String> params1 = LineAcceptanceTest.of("2호선", "green");
+        Map<String, String> params2 = LineAcceptanceTest.of("3호선", "orange");
+        ExtractableResponse<Response> response1 = createLine(params1);
+        ExtractableResponse<Response> response2 = createLine(params2);
+
+        assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        // when
+        List<String> lineNames =
+                RestAssured.given().log().all()
+                        .when().get("/lines")
+                        .then().log().all()
+                        .extract().jsonPath().getList("name", String.class);
+        // then
+        assertThat(lineNames).hasSize(2);
 
     }
     /**
@@ -86,7 +93,18 @@ class LineAcceptanceTest {
     @DisplayName("지하철 특정 노선 조회.")
     @Test
     void retrieveTheLine() {
-
+        // given
+        Map<String, String> params = LineAcceptanceTest.of("2호선", "green");
+        ExtractableResponse<Response> response = createLine(params);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        // when
+        ExtractableResponse<Response> retrieveResponse =
+                RestAssured.given().log().all()
+                        .when().get("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
+                        .then().log().all()
+                        .extract();
+        // then
+        assertThat(retrieveResponse.body().jsonPath().getString("name")).contains("2호선");
     }
     /**
      * Given 지하철 노선을 생성하고
@@ -95,8 +113,30 @@ class LineAcceptanceTest {
      */
     @DisplayName("지하철 특정 노선 수정.")
     @Test
-    void updateTheLine() {
-
+    void modifyTheLine() {
+        // given
+        Map<String, String> params = LineAcceptanceTest.of("2호선", "green");
+        ExtractableResponse<Response> response = createLine(params);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        // when
+        Map<String, String> modifyParams = LineAcceptanceTest.of("3호선", "orange");
+        ExtractableResponse<Response> modifyResponse =
+                RestAssured.given().log().all()
+                        .body(modifyParams)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().put("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
+                        .then().log().all()
+                        .extract();
+        assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        System.out.println("====== name: " + modifyResponse.body().jsonPath().getString("name") + " id:"
+            + modifyResponse.body().jsonPath().getLong("id"));
+        // then
+        ExtractableResponse<Response> retrieveResponse =
+                RestAssured.given().log().all()
+                        .when().get("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
+                        .then().log().all()
+                        .extract();
+        assertThat(retrieveResponse.body().jsonPath().getString("name")).contains("3호선");
     }
     /**
      * Given 지하철 노선을 생성하고
@@ -107,5 +147,14 @@ class LineAcceptanceTest {
     @Test
     void deleteTheLine() {
 
+    }
+
+    ExtractableResponse<Response> createLine(Map<String, String> params) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/lines")
+                .then().log().all()
+                .extract();
     }
 }
