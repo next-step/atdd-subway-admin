@@ -52,7 +52,7 @@ public class LineController {
 
     @GetMapping("/lines/{lineId}/sections")
     public ResponseEntity<SectionsResponse> createSection(@PathVariable Long lineId) {
-        SectionsResponse sectionsResponse = lineService.findSectionByLine(lineId);
+        SectionsResponse sectionsResponse = lineService.findSectionsByLine(lineId);
         return ResponseEntity.ok(sectionsResponse);
     }
 

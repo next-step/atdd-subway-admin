@@ -62,7 +62,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    public SectionsResponse findSectionByLine(Long lineId) {
+    public SectionsResponse findSectionsByLine(Long lineId) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLine(lineId));
         return SectionsResponse.of(line);
     }
