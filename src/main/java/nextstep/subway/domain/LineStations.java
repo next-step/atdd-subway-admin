@@ -4,6 +4,7 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class LineStations {
@@ -17,6 +18,18 @@ public class LineStations {
     public void addLineStation(LineStation lineStation) {
         validateLineStation(lineStation);
         lineStations.add(lineStation);
+    }
+
+    public void addBetweenSection(LineStation lineStation) {
+        Optional<LineStation> first = lineStations.stream()
+                .filter(ls -> ls.getCurrentStation().isSame(lineStation.getCurrentStation()))
+                .findFirst();
+        if (first.isPresent()) {
+            LineStation preLineStation = first.get();
+            LineStation newLineStation = preLineStation.changeBetweenSection(lineStation);// 3 -> 2 : 6
+            int preIndex = lineStations.indexOf(preLineStation);
+            lineStations.add(preIndex + 1, newLineStation);
+        }
     }
 
     public List<LineStation> values() {

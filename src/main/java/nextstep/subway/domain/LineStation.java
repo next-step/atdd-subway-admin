@@ -56,6 +56,13 @@ public class LineStation extends BaseEntity {
         return distance;
     }
 
+    public LineStation changeBetweenSection(LineStation lineStation) {
+        LineStation newLineStation = new LineStation(line, lineStation.nextStation, nextStation, distance - lineStation.distance);
+        this.nextStation = lineStation.nextStation;
+        this.distance = lineStation.distance;
+        return newLineStation;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

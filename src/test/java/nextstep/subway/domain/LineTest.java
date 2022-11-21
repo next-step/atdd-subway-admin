@@ -27,13 +27,16 @@ public class LineTest {
     private DatabaseCleanup databaseCleanup;
     private Station upStation;
     private Station downStation;
+    private Station newStation;
 
     @BeforeEach
     void setUp() {
         databaseCleanup.execute();
-        upStation = new Station("신사역");
-        downStation = new Station("광교(경기대)역");
-        stationRepository.saveAll(Arrays.asList(upStation, downStation));
+        upStation = new Station("판교역");
+        downStation = new Station("경기광주역");
+        newStation = new Station("이매역");
+
+        stationRepository.saveAll(Arrays.asList(upStation, downStation, newStation));
         flushAndClear();
     }
 
@@ -87,6 +90,28 @@ public class LineTest {
         Optional<Line> getLine = lineRepository.findById(1L);
         assertThat(getLine).isPresent();
         assertThat(getLine.get().getLineStations()).containsAll(Arrays.asList(firstLineStation, secondLineStation));
+    }
+
+    @DisplayName("역 사이에 새로운 역을 등록하는 경우")
+    @Test
+    void 라인생성_addBetweenSection테스트() {
+        // given : 라인과 station을 생성하고, LineStation도 생성
+        Line line = new Line("신분당선", "빨강");
+        LineStation firstLineStation = new LineStation(line, upStation, downStation, 100);
+        LineStation secondLineStation = new LineStation(line, downStation, null, 0);
+        LineStation midLineStation = new LineStation(line, upStation, newStation, 40);
+
+        // when : 라인에 linestation을 추가 후 중간에 midLineStation을 추가
+        line.addLineStation(firstLineStation);
+        line.addLineStation(secondLineStation);
+        line.addBetweenSection(midLineStation);
+        lineRepository.save(line);
+        flushAndClear();
+
+        // then : line의 linestations에 잘 들어갔는 지 확인
+        Optional<Line> getLine = lineRepository.findById(1L);
+        assertThat(getLine).isPresent();
+        assertThat(getLine.get().getLineStations()).containsAll(Arrays.asList(firstLineStation, midLineStation, secondLineStation));
     }
 
     private void flushAndClear() {

@@ -11,6 +11,15 @@ public class RestAssuredRequestBuilder {
     public RestAssuredRequestBuilder() {
     }
 
+    public static ExtractableResponse<Response> postWithPathValue(Map params, String path, String pathValue, String mediaType) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(mediaType)
+                .when().post(path, pathValue)
+                .then().log().all()
+                .extract();
+    }
+
     public static ExtractableResponse<Response> post(Map params, String path, String mediaType) {
         return RestAssured.given().log().all()
                 .body(params)
