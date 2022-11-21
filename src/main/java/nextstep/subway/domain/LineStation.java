@@ -67,6 +67,10 @@ public class LineStation extends BaseEntity {
         }
     }
 
+    public boolean isSame(LineStation that) {
+        return this.equals(that);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

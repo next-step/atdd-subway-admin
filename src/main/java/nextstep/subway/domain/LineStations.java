@@ -44,6 +44,8 @@ public class LineStations {
     }
 
     public void addLineStation(LineStation lineStation) {
+        validateLineStation(lineStation);
+
         updateWhenAddablePre(lineStation);
         updateWhenAddablePost(lineStation);
         checkContinuable(lineStation);

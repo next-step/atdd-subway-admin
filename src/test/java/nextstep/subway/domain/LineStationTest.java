@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @Import(DatabaseCleanup.class)
@@ -149,6 +150,36 @@ public class LineStationTest {
         assertThat(getLine.get().getLineStations()).hasSize(3);
     }
 
+    @DisplayName("새로운 구간 길이가 기존 길이보다 긴 경우 예외")
+    @Test
+    void 구간길이_초과_예외() {
+        // line과 station 기반으로 lineStation 생성
+        Line 경강선 = lineRepository.getById(1L);
+        Station 판교역 = stationRepository.getById(1L);
+        Station 경기광주역 = stationRepository.getById(3L);
+        경강선.addLineStation(new LineStation(null, 판교역, 0));
+        경강선.addLineStation(new LineStation(판교역, 경기광주역, 100));
+
+        // when
+        Station 이매역 = stationRepository.getById(2L);
+        assertThatThrownBy(() -> 경강선.addSection(new LineStation(이매역, 경기광주역, 100)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("상행 하행 이미 노선에 모두 등록되어 있는 경우 예외")
+    @Test
+    void 상행하행_기등록_예외() {
+        // line과 station 기반으로 lineStation 생성
+        Line 경강선 = lineRepository.getById(1L);
+        Station 판교역 = stationRepository.getById(1L);
+        Station 경기광주역 = stationRepository.getById(3L);
+        경강선.addLineStation(new LineStation(null, 판교역, 0));
+        경강선.addLineStation(new LineStation(판교역, 경기광주역, 100));
+
+        // when
+        assertThatThrownBy(() -> 경강선.addSection(new LineStation(판교역, 경기광주역, 50)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 
     private void flushAndClear() {
         entityManager.flush();
