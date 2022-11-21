@@ -19,9 +19,6 @@ public class LineResponse {
     public String color;
     public List<StationResponse> stations;
     public int totalDistance;
-    public List<Section> sections;
-
-
 
     public static List<LineResponse> of(List<Line> lines) {
         return lines.stream()
@@ -39,36 +36,13 @@ public class LineResponse {
         color = line.getColor();
         stations = line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
         totalDistance = line.getSections().stream().mapToInt(s -> s.getDistance()).sum();
-        sections = line.getSections().stream().map(LineResponse.Section::of).collect(Collectors.toList());
     }
 
     @Data
-    public static class Section implements Comparable<Section> {
+    public static class Section {
         private Long id;
         private Long upStationId;
         private Long downStationId;
         private int distance;
-
-        protected Section() {
-        }
-
-        private Section(Long id, Long upStationId, Long downStationId, int distance) {
-            this.id = id;
-            this.upStationId = upStationId;
-            this.downStationId = downStationId;
-            this.distance = distance;
-        }
-
-
-        public static Section of(nextstep.subway.domain.Section section) {
-            return new Section(section.getId(), section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
-        }
-
-        @Override
-        public int compareTo(Section s) {
-            if (this.downStationId.equals(s.getUpStationId())) return -1;
-            else if (this.upStationId.equals(s.getDownStationId())) return 1;
-            return 0;
-        }
     }
 }

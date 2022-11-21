@@ -2,9 +2,13 @@ package nextstep.subway.domain;
 
 import com.google.common.collect.Lists;
 
-import javax.persistence.*;
-import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
+import javax.persistence.CascadeType;
+import javax.persistence.Embeddable;
+import javax.persistence.OneToMany;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.constant.Message.*;
