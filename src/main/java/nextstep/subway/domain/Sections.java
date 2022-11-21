@@ -77,22 +77,20 @@ public class Sections {
 
 
         // 역으로 타켓 구간 찾기
-        AtomicReference<Section> tt = new AtomicReference<>(new Section());
-        for (Section s : sections) {
-            Station target = station;
-            Station temp = s.getDownStation();
+//        AtomicReference<Section> tt = new AtomicReference<>(new Section());
+//        for (Section s : sections) {
+//            Station target = station;
+//            Station temp = s.getDownStation();
+//
+//            boolean wh = target.equals(temp);
+//
+//        }
 
-            boolean wh = target.equals(temp);
-
-        }
-
-
-        Section targetSection = sections.stream()
-                .filter(s -> s.getDownStation().equals(station))
-                .findFirst()
-//                .orElseThrow()
-                .get();
-
+//        Section targetSection = sections.stream()
+//                .filter(s -> s.getDownStation().equals(station))
+//                .findAny()
+//                .get();
+//
 
         if (!isLastStation(firstSection, lastSection, station)) {
             // 중간 구간 삭제
@@ -104,14 +102,16 @@ public class Sections {
     }
 
 
-    private void changeSectionsAndRemove(Station station, Section section) {
-        Section upSection = sections.stream()
+    private void changeSectionsAndRemove(Station station, Section deleteSection) {
+        Section downSection = sections.stream()
                 .filter(u -> u.getUpStation().equals(station))
                 .findFirst().get();
-        section.changeDownStation(upSection);
+        downSection.changeDownStation(deleteSection);
+//        deleteSection.changeDownStation(downSection);
 
-        //
-        sections.remove(upSection);
+        // section-line 매핑 끊기
+        deleteSection.removeFromLine();
+        sections.remove(deleteSection);
     }
 
 

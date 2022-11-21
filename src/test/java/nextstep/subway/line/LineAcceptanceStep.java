@@ -125,9 +125,9 @@ public class LineAcceptanceStep extends CommonMethodFixture {
     }
 
     public static void 상행_구간_삭졔_확인(int lineId) {
-        LineResponse temp = 특정_노선을_조회한다(lineId).as(LineResponse.class);
+        LineResponse savedLine = 특정_노선을_조회한다(lineId).as(LineResponse.class);
 
-        List<String> allNames = temp.getStations().stream()
+        List<String> allNames = savedLine.getStations().stream()
                 .map(s -> s.getName()).collect(Collectors.toList());
 
         assertAll(
@@ -137,14 +137,27 @@ public class LineAcceptanceStep extends CommonMethodFixture {
     }
 
     public static void 하행_구간_삭졔_확인(int lineId) {
-        LineResponse temp = 특정_노선을_조회한다(lineId).as(LineResponse.class);
+        LineResponse savedLine = 특정_노선을_조회한다(lineId).as(LineResponse.class);
 
-        List<String> allNames = temp.getStations().stream()
+        List<String> allNames = savedLine.getStations().stream()
                 .map(s -> s.getName()).collect(Collectors.toList());
 
         assertAll(
                 () -> assertThat(allNames).hasSize(2),
                 () -> assertThat(allNames).containsExactly("강남역" ,"역삼역"));
+
+    }
+
+    public static void 중간_구간_삭졔_확인(int lineId) {
+        LineResponse savedLine = 특정_노선을_조회한다(lineId).as(LineResponse.class);
+
+        List<String> allNames = savedLine.getStations().stream()
+                .map(s -> s.getName()).collect(Collectors.toList());
+
+        assertAll(
+                () -> assertThat(allNames).hasSize(2),
+                () -> assertThat(allNames).containsExactly("강남역" ,"선릉역"),
+                () -> assertThat(savedLine.getTotalDistance()).isEqualTo(7));
 
     }
 

@@ -111,8 +111,8 @@ public class Section implements Comparable<Section> {
     }
 
     public void changeDownStation(Section section) {
-        validateStationIsNotNull(section.downStation);
-        this.downStation = section.downStation;
+        validateStationIsNotNull(section.upStation);
+        this.upStation = section.upStation;
         this.distance = sumDistance(section.getDistance());
     }
 

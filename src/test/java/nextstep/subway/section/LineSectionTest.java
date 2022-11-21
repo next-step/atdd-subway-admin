@@ -183,4 +183,40 @@ public class LineSectionTest {
         // then
         하행_구간_삭졔_확인(lineId);
     }
+
+    /**
+     * Given 3개 이상의 지하철 역이 등록되어 있다
+     * When 증간 구간이 제거된 경우
+     * Then 처음과 끝 역이 재배체 되고
+     * Then 두 구간 거리는 합쳐진다
+     */
+    @DisplayName("중간 종점을 제거할 수 있다")
+    @Test
+    void 중간_구간_제거() {
+        // given -> beforeEach
+        구간_생성_요청(lineId, 1L, 3L, 4);
+
+        // when
+        ExtractableResponse<Response> response = 구간_삭제_호출(lineId, 3);
+
+        // then
+        중간_구간_삭졔_확인(lineId);
+    }
+
+    /**
+     * Given 2개의 지하철 역이 노선으로 등록되어 있다
+     * When 구간을 제거할 경우
+     * Then 구간이 하나인 노선에서 마지막 노선을 제거할 수 없다
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 노선을 제거할 수 없다")
+    @Test
+    void 구간이_하나인_노선_노선_제거_에러() {
+        // given -> beforeEach
+
+        // when
+        ExtractableResponse<Response> response = 구간_삭제_호출(lineId, 1);
+
+        // then
+        구간_삭제_실패(response);
+    }
 }

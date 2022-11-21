@@ -62,6 +62,11 @@ public class LineSectionStep extends CommonMethodFixture{
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    public static void 구간_삭제_실패(ExtractableResponse<Response> response) {
+        // 500
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     private static void 구간_등록_결과_검증(ExtractableResponse<Response> response, int totalDistance, int count) {
         // List<JSONObject> stations = jsonPath.getList("stations"); 가능
         JsonPath jsonPath = response.body().jsonPath();
