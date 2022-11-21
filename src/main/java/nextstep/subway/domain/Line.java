@@ -52,6 +52,14 @@ public class Line extends BaseEntity {
         this.sections.removeSectionByStation(station);
     }
 
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isSameColor(String color) {
+        return this.color.equals(color);
+    }
+
     public Long getId() {
         return id;
     }
@@ -82,4 +90,5 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(getId());
     }
+
 }

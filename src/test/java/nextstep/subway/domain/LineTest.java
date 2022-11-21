@@ -35,10 +35,10 @@ class LineTest {
         line.update(LINE_5, "bg-red-600");
 
         assertAll(
-            () -> assertThat(line.getName()).isEqualTo(LINE_5),
-            () -> assertThat(line.getName()).isNotEqualTo(LINE_2),
-            () -> assertThat(line.getColor()).isEqualTo("bg-red-600"),
-            () -> assertThat(line.getColor()).isNotEqualTo("bg-green-600")
+            () -> assertThat(line.isSameName(LINE_5)).isTrue(),
+            () -> assertThat(line.isSameName(LINE_2)).isFalse(),
+            () -> assertThat(line.isSameColor("bg-red-600")).isTrue(),
+            () -> assertThat(line.isSameColor("bg-green-600")).isFalse()
         );
     }
 }

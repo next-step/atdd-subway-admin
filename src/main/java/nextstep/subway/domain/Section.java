@@ -103,12 +103,20 @@ public class Section {
         return new Section(this.line, this.upStation, other.downStation, this.distance.sum(other.distance));
     }
 
-    public Long getId() {
-        return id;
+    public boolean isSameUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
     }
 
-    public Line getLine() {
-        return line;
+    public boolean isSameDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
+    }
+
+    public boolean isSameDistance(Distance distance) {
+        return this.distance.equals(distance);
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public Station getUpStation() {

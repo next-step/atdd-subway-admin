@@ -37,9 +37,9 @@ class SectionTest {
 
         section.modify(newSection);
         assertAll(
-            () -> assertThat(section.getUpStation()).isEqualTo(SANGWANGSIPLI),
-            () -> assertThat(section.getDownStation()).isEqualTo(DDP),
-            () -> assertThat(section.getDistance()).isEqualTo(Distance.of(5L))
+            () -> assertThat(section.isSameUpStation(SANGWANGSIPLI)).isTrue(),
+            () -> assertThat(section.isSameDownStation(DDP)).isTrue(),
+            () -> assertThat(section.isSameDistance(Distance.of(5L))).isTrue()
         );
     }
 
@@ -51,9 +51,9 @@ class SectionTest {
 
         section.modify(newSection);
         assertAll(
-            () -> assertThat(section.getUpStation()).isEqualTo(WANGSIPLI),
-            () -> assertThat(section.getDownStation()).isEqualTo(SINDANG),
-            () -> assertThat(section.getDistance()).isEqualTo(Distance.of(5L))
+            () -> assertThat(section.isSameUpStation(WANGSIPLI)).isTrue(),
+            () -> assertThat(section.isSameDownStation(SINDANG)).isTrue(),
+            () -> assertThat(section.isSameDistance(Distance.of(5L))).isTrue()
         );
     }
 
@@ -65,9 +65,9 @@ class SectionTest {
 
         section.modify(newSection);
         assertAll(
-            () -> assertThat(section.getUpStation()).isEqualTo(WANGSIPLI),
-            () -> assertThat(section.getDownStation()).isEqualTo(SANGWANGSIPLI),
-            () -> assertThat(section.getDistance()).isEqualTo(Distance.of(10L))
+            () -> assertThat(section.isSameUpStation(WANGSIPLI)).isTrue(),
+            () -> assertThat(section.isSameDownStation(SANGWANGSIPLI)).isTrue(),
+            () -> assertThat(section.isSameDistance(Distance.of(10L))).isTrue()
         );
     }
 
@@ -87,11 +87,11 @@ class SectionTest {
         Section upSection = new Section(WANGSIPLI, SANGWANGSIPLI, 10L);
         Section downSection = new Section(SANGWANGSIPLI, SINDANG, 10L);
 
-        Section combine = upSection.merge(downSection);
+        Section merge = upSection.merge(downSection);
         assertAll(
-            () -> assertThat(combine.getUpStation()).isEqualTo(WANGSIPLI),
-            () -> assertThat(combine.getDownStation()).isEqualTo(SINDANG),
-            () -> assertThat(combine.getDistance()).isEqualTo(Distance.of(20L))
+            () -> assertThat(merge.isSameUpStation(WANGSIPLI)).isTrue(),
+            () -> assertThat(merge.isSameDownStation(SINDANG)).isTrue(),
+            () -> assertThat(merge.isSameDistance(Distance.of(20L))).isTrue()
         );
     }
 }
