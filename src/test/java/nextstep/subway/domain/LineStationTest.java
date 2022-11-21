@@ -86,16 +86,16 @@ public class LineStationTest {
     @Test
     void 새로운역_상행_종점_등록() {
         // line과 station 기반으로 lineStation 생성
-        Line 신분당선 = lineRepository.getById(1L);
+        Line 경강선 = lineRepository.getById(1L);
         Station 이매역 = stationRepository.getById(2L);
         Station 경기광주역 = stationRepository.getById(3L);
-        신분당선.addLineStation(new LineStation(null, 이매역, 0));
-        신분당선.addLineStation(new LineStation(이매역, 경기광주역, 100));
+        경강선.addLineStation(new LineStation(null, 이매역, 0));
+        경강선.addLineStation(new LineStation(이매역, 경기광주역, 100));
 
         // when
         Station 판교역 = stationRepository.getById(1L);
-        신분당선.addSection(new LineStation(판교역, 이매역, 40));
-        lineRepository.save(신분당선);
+        경강선.addSection(new LineStation(판교역, 이매역, 40));
+        lineRepository.save(경강선);
         flushAndClear();
 
         // then : line의 linestations에 잘 들어갔는 지 확인
@@ -108,16 +108,16 @@ public class LineStationTest {
     @Test
     void 새로운역_하행_종점으로_등록() {
         // line과 station 기반으로 lineStation 생성
-        Line 신분당선 = lineRepository.getById(1L);
+        Line 경강선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 이매역 = stationRepository.getById(2L);
-        신분당선.addLineStation(new LineStation(null, 판교역, 0));
-        신분당선.addLineStation(new LineStation(판교역, 이매역, 100));
+        경강선.addLineStation(new LineStation(null, 판교역, 0));
+        경강선.addLineStation(new LineStation(판교역, 이매역, 100));
 
         Station 경기광주역 = stationRepository.getById(3L);
         // when
-        신분당선.addSection(new LineStation(이매역, 경기광주역, 40));
-        lineRepository.save(신분당선);
+        경강선.addSection(new LineStation(이매역, 경기광주역, 40));
+        lineRepository.save(경강선);
         flushAndClear();
 
         // then : line의 linestations에 잘 들어갔는 지 확인

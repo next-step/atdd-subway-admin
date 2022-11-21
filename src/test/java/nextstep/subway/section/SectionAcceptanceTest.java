@@ -26,10 +26,10 @@ public class SectionAcceptanceTest {
     int port;
     @Autowired
     private DatabaseCleanup databaseCleanup;
-    private String upStationId;
-    private String downStationId;
-    private String newStationId;
-    private String lineId;
+    private String 판교역;
+    private String 경기광주역;
+    private String 이매역;
+    private String 경강선;
 
     @BeforeEach
     void setUp() {
@@ -37,14 +37,11 @@ public class SectionAcceptanceTest {
             RestAssured.port = port;
         }
         databaseCleanup.execute();
-        upStationId = StationAcceptanceTestUtil.createStation("판교역")
+        판교역 = StationAcceptanceTestUtil.createStation("판교역")
                 .jsonPath().getString("id");
-        downStationId = StationAcceptanceTestUtil.createStation("경기광주역")
+        경기광주역 = StationAcceptanceTestUtil.createStation("경기광주역")
                 .jsonPath().getString("id");
-        newStationId = StationAcceptanceTestUtil.createStation("이매역")
-                .jsonPath().getString("id");
-
-        lineId = LineAcceptanceTestUtil.createLine("신분당선", "bg-blue-600", upStationId, downStationId, "10")
+        이매역 = StationAcceptanceTestUtil.createStation("이매역")
                 .jsonPath().getString("id");
     }
 
@@ -56,8 +53,12 @@ public class SectionAcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우, 새로운 길이를 뺀 나머지를 새롭게 추가된 역과의 길이로 설정")
     @Test
     void 역사이에_새로운역_등록_성공() {
-        // given / when
-        ExtractableResponse<Response> response = createSection(upStationId, newStationId, "4", lineId);
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("신분당선", "bg-blue-600", 판교역, 경기광주역, "10")
+                .jsonPath().getString("id");
+
+        // when
+        ExtractableResponse<Response> response = createSection(판교역, 이매역, "4", 경강선);
         List<String> stations = LineAcceptanceTestUtil.getLines(1L).jsonPath().getList("stations.name", String.class);
 
         // then
@@ -73,10 +74,37 @@ public class SectionAcceptanceTest {
     @DisplayName("새로운 역을 상행 종점으로 생성하고, 등록한다")
     @Test
     void 새로운_상행_등록_성공() {
-        // given / when
-        ExtractableResponse<Response> response = createSection(newStationId, upStationId, "4", lineId);
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("신분당선", "bg-blue-600", 이매역, 경기광주역, "10")
+                .jsonPath().getString("id");
+
+        // when
+        ExtractableResponse<Response> response = createSection(판교역, 이매역, "4", 경강선);
+        List<String> stations = LineAcceptanceTestUtil.getLines(1L).jsonPath().getList("stations.name", String.class);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(stations).hasSize(3);
+    }
+
+    /**
+     * Given : 새로운 역을 하행 종점으로 하는 구간을 생성한다
+     * When : 새로운 구간을 등록하면,
+     * Then : 구간이 등록된다.
+     */
+    @DisplayName("새로운 역을 하행 종점으로 생성하고, 등록한다")
+    @Test
+    void 새로운_하행_등록_성공() {
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("신분당선", "bg-blue-600", 판교역, 이매역, "10")
+                .jsonPath().getString("id");
+
+        // when
+        ExtractableResponse<Response> response = createSection(이매역, 경기광주역, "4", 경강선);
+        List<String> stations = LineAcceptanceTestUtil.getLines(1L).jsonPath().getList("stations.name", String.class);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(stations).hasSize(3);
     }
 }
