@@ -19,8 +19,8 @@ public class LineSectionStep extends CommonMethodFixture{
 
 
     public static ExtractableResponse<Response> 역_3개와_노선을_생성한다() {
-        Long upLastStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
-        Long downLastStationId = 지하철역을_생성한다("선릉역").jsonPath().get("id");
+        Long upLastStationId = 지하철역을_생성한다("강남역").jsonPath().getLong("id");
+        Long downLastStationId = 지하철역을_생성한다("선릉역").jsonPath().getLong("id");
         지하철역을_생성한다("역삼역");
 
         return 노선_한개_생성한다(upLastStationId, downLastStationId);
