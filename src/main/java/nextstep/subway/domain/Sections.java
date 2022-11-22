@@ -7,9 +7,9 @@ import java.util.*;
 public class Sections {
     private static final String EXCEPTION_MESSAGE_FOR_INVALID_STATION = "유효하지 않은 역입니다.";
     private static final String EXCEPTION_MESSAGE_FOR_DUPLICATE_STATIONS = "이미 등록되어 있는 구간입니다.";
-    private static final String EXCEPTION_MESSAGE_FOR_NOT_FOUND_PRE_STATION = "이전 구간이 없습니다.";
     private static final String EXCEPTION_MESSAGE_FOR_NOT_FOUND_NEXT_STATION = "다음 구간이 없습니다.";
     private static final String EXCEPTION_MESSAGE_FOR_NOT_FOUND_FIRST_STATION = "첫번째 역을 찾을 수 없습니다";
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_of_line"))
     private List<Section> sections = new ArrayList<>();

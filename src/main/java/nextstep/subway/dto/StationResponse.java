@@ -3,8 +3,6 @@ package nextstep.subway.dto;
 import nextstep.subway.domain.Station;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 
 public class StationResponse {
     private final Long id;
@@ -37,12 +35,5 @@ public class StationResponse {
 
     public LocalDateTime getModifiedDate() {
         return modifiedDate;
-    }
-
-    public Map<String, Object> toLineResponseOfStations() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("id", id);
-        response.put("name", name);
-        return response;
     }
 }
