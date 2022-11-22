@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import static nextstep.subway.util.LineAcceptanceUtils.*;
+import static nextstep.subway.util.ResponseExtractUtils.*;
 import static nextstep.subway.util.SectionAcceptanceUtils.*;
 import static nextstep.subway.util.StationAcceptanceUtils.*;
 import static org.assertj.core.api.Assertions.*;
@@ -18,7 +19,6 @@ import io.restassured.response.Response;
 import nextstep.subway.config.BaseAcceptanceTest;
 import nextstep.subway.dto.line.LineResponse;
 import nextstep.subway.dto.line.section.SectionCreateRequest;
-import nextstep.subway.dto.stations.StationNameResponse;
 
 @DisplayName("지하철 구간 추가 기능")
 class SectionAddAcceptanceTest extends BaseAcceptanceTest {
@@ -47,8 +47,8 @@ class SectionAddAcceptanceTest extends BaseAcceptanceTest {
 	@Test
 	void addSectionBetweenExistingStationsWithSameUpStation() {
 		// given
-		Long 역삼역 = 지하철역_생성_요청("역삼역").as(StationNameResponse.class).getId();
-		SectionCreateRequest request = new SectionCreateRequest(강남역, 역삼역, 10);
+		Long 역삼역 = id(지하철역_생성_요청("역삼역"));
+		SectionCreateRequest request = new SectionCreateRequest(강남역, 역삼역, 5);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_구간_등록_요청(이호선, request);
@@ -72,8 +72,8 @@ class SectionAddAcceptanceTest extends BaseAcceptanceTest {
 	@Test
 	void addSectionBetweenExistingStationsWithSameDownStations() {
 		// given
-		Long 역삼역 = 지하철역_생성_요청("역삼역").as(StationNameResponse.class).getId();
-		SectionCreateRequest request = new SectionCreateRequest(역삼역, 선릉역, 10);
+		Long 역삼역 = id(지하철역_생성_요청("역삼역"));
+		SectionCreateRequest request = new SectionCreateRequest(역삼역, 선릉역, 5);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_구간_등록_요청(이호선, request);
@@ -96,7 +96,7 @@ class SectionAddAcceptanceTest extends BaseAcceptanceTest {
 	@Test
 	void addSectionWithNewUpStation() {
 		// given
-		Long 삼성역 = 지하철역_생성_요청("삼성역").as(StationNameResponse.class).getId();
+		Long 삼성역 = id(지하철역_생성_요청("삼성역"));
 		SectionCreateRequest request = new SectionCreateRequest(삼성역, 강남역, 10);
 
 		// when
@@ -120,7 +120,7 @@ class SectionAddAcceptanceTest extends BaseAcceptanceTest {
 	@Test
 	void addSectionWithNewDownStation() {
 		// given
-		Long 잠실역 = 지하철역_생성_요청("잠실역").as(StationNameResponse.class).getId();
+		Long 잠실역 = id(지하철역_생성_요청("잠실역"));
 		SectionCreateRequest request = new SectionCreateRequest(선릉역, 잠실역, 10);
 
 		// when
@@ -150,7 +150,7 @@ class SectionAddAcceptanceTest extends BaseAcceptanceTest {
 		ExtractableResponse<Response> response = 지하철_구간_등록_요청(이호선, new SectionCreateRequest(강남역, 선릉역, 5));
 
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
 	/**
@@ -162,15 +162,15 @@ class SectionAddAcceptanceTest extends BaseAcceptanceTest {
 	@Test
 	void addSectionBothStationNotExist() {
 		// given
-		Long 삼성역 = 지하철역_생성_요청("삼성역").as(StationNameResponse.class).getId();
-		Long 잠실역 = 지하철역_생성_요청("잠실역").as(StationNameResponse.class).getId();
+		Long 삼성역 = id(지하철역_생성_요청("삼성역"));
+		Long 잠실역 = id(지하철역_생성_요청("잠실역"));
 		SectionCreateRequest request = new SectionCreateRequest(삼성역, 잠실역, 10);
 
 		// when
 		ExtractableResponse<Response> response = 지하철_구간_등록_요청(이호선, request);
 
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 
 	/**
@@ -189,12 +189,15 @@ class SectionAddAcceptanceTest extends BaseAcceptanceTest {
 		// given
 		SectionCreateRequest request = new SectionCreateRequest(강남역, 선릉역, 100);
 		지하철_구간_등록_요청(이호선, request);
-		Long 잠실역 = 지하철역_생성_요청("잠실역").as(StationNameResponse.class).getId();
+		Long 역삼역 = id(지하철역_생성_요청("역삼역"));
+		SectionCreateRequest newRequest = new SectionCreateRequest(역삼역, 선릉역, 50);
+		지하철_구간_등록_요청(이호선, newRequest);
 
 		// when
+		Long 잠실역 = id(지하철역_생성_요청("잠실역"));
 		ExtractableResponse<Response> response = 지하철_구간_등록_요청(이호선, new SectionCreateRequest(강남역, 잠실역, distance));
 
 		// then
-		assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+		assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 	}
 }

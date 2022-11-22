@@ -15,6 +15,6 @@ public class SectionAcceptanceUtils {
 	}
 
 	public static ExtractableResponse<Response> 지하철_구간_등록_요청(Long lineId, SectionCreateRequest request) {
-		return RestAssuredUtils.post(LINE_URL + lineId + SECTION_URL, request).extract();
+		return RestAssuredUtils.post(LINE_URL + "/" +lineId + SECTION_URL, request).extract();
 	}
 }
