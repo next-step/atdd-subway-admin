@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.Objects;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -23,7 +24,8 @@ public class Section {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     private int sortNo = 1000;
 
@@ -40,14 +42,14 @@ public class Section {
 
     public Section(Line line, int distance, Station upStation, Station downStation) {
         this.line = line;
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.upStation = upStation;
         this.downStation = downStation;
     }
 
     public Section(Line line, int distance, int sortNo, Station upStation, Station downStation) {
         this.line = line;
-        this.distance = distance;
+        this.distance = new Distance(distance);
         this.sortNo = sortNo;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -66,7 +68,7 @@ public class Section {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 
     public Station getUpStation() {
@@ -119,7 +121,7 @@ public class Section {
     }
 
     public void validateLength(int distance) {
-        if (this.distance <= distance) {
+        if (this.distance.isGreaterEqual(distance)) {
             throw new IllegalArgumentException("기존역 사이에 크거나 같은 길이의 역을 등록할 수 없습니다.");
         }
     }
@@ -153,5 +155,9 @@ public class Section {
         if (this.sortNo < sortNo) {
             this.sortNo--;
         }
+    }
+
+    public int getMinusDistance(int distance) {
+        return this.distance.getMinusDistance(distance);
     }
 }

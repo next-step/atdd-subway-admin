@@ -141,7 +141,7 @@ public class Sections {
             section.validateLength(distance);
             isGreaterThanThenPlusSortNo(section.getSortNo());
             sections.add(section.createNewSection(distance, section.getSortNo(), upStation, downStation));
-            sections.add(section.createNewSection(Math.abs(section.getDistance() - distance), section.getSortNo() + 1,
+            sections.add(section.createNewSection(section.getMinusDistance(distance), section.getSortNo() + 1,
                     downStation, section.getDownStation()));
             removeSection(section);
         });
@@ -157,7 +157,7 @@ public class Sections {
             section.validateLength(distance);
             isGreaterThanThenPlusSortNo(section.getSortNo());
             sections.add(section.createNewSection(distance, section.getSortNo(), section.getUpStation(), upStation));
-            sections.add(section.createNewSection(Math.abs(section.getDistance() - distance), section.getSortNo() + 1,
+            sections.add(section.createNewSection(section.getMinusDistance(distance), section.getSortNo() + 1,
                     upStation, downStation));
             removeSection(section);
         });
