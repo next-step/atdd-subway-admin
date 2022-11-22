@@ -53,8 +53,7 @@ public class SectionTest {
         Section secondSection = new Section(upStation, downStation, 100);
 
         // when
-        line.registerSection(firstSection);
-        line.registerSection(secondSection);
+        line.connect(upStation, downStation, 100);
         lineRepository.save(line);
         flushAndClear();
 
@@ -71,8 +70,7 @@ public class SectionTest {
         Line 신분당선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 경기광주역 = stationRepository.getById(3L);
-        신분당선.registerSection(new Section(null, 판교역, 0));
-        신분당선.registerSection(new Section(판교역, 경기광주역, 100));
+        신분당선.connect(판교역, 경기광주역, 100);
 
         // when
         Station 이매역 = stationRepository.getById(2L);
@@ -93,8 +91,7 @@ public class SectionTest {
         Line 경강선 = lineRepository.getById(1L);
         Station 이매역 = stationRepository.getById(2L);
         Station 경기광주역 = stationRepository.getById(3L);
-        경강선.registerSection(new Section(null, 이매역, 0));
-        경강선.registerSection(new Section(이매역, 경기광주역, 100));
+        경강선.connect(이매역, 경기광주역, 100);
 
         // when
         Station 판교역 = stationRepository.getById(1L);
@@ -115,11 +112,10 @@ public class SectionTest {
         Line 경강선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 이매역 = stationRepository.getById(2L);
-        경강선.registerSection(new Section(null, 판교역, 0));
-        경강선.registerSection(new Section(판교역, 이매역, 100));
+        경강선.connect(판교역, 이매역, 100);
 
-        Station 경기광주역 = stationRepository.getById(3L);
         // when
+        Station 경기광주역 = stationRepository.getById(3L);
         경강선.registerSection(new Section(이매역, 경기광주역, 40));
         lineRepository.save(경강선);
         flushAndClear();
@@ -137,8 +133,7 @@ public class SectionTest {
         Line 경강선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 경기광주역 = stationRepository.getById(3L);
-        경강선.registerSection(new Section(null, 판교역, 0));
-        경강선.registerSection(new Section(판교역, 경기광주역, 100));
+        경강선.connect(판교역, 경기광주역, 100);
 
         // when
         Station 이매역 = stationRepository.getById(2L);
@@ -159,8 +154,7 @@ public class SectionTest {
         Line 경강선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 경기광주역 = stationRepository.getById(3L);
-        경강선.registerSection(new Section(null, 판교역, 0));
-        경강선.registerSection(new Section(판교역, 경기광주역, 100));
+        경강선.connect(판교역, 경기광주역, 100);
 
         // when
         Station 이매역 = stationRepository.getById(2L);
@@ -175,8 +169,7 @@ public class SectionTest {
         Line 경강선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 경기광주역 = stationRepository.getById(3L);
-        경강선.registerSection(new Section(null, 판교역, 0));
-        경강선.registerSection(new Section(판교역, 경기광주역, 100));
+        경강선.connect(판교역, 경기광주역, 100);
 
         // when
         assertThatThrownBy(() -> 경강선.registerSection(new Section(판교역, 경기광주역, 50)))
@@ -191,8 +184,7 @@ public class SectionTest {
         Station 판교역 = stationRepository.getById(1L);
         Station 경기광주역 = stationRepository.getById(3L);
         Station 여주역 = stationRepository.getById(5L);
-        경강선.registerSection(new Section(null, 판교역, 0));
-        경강선.registerSection(new Section(판교역, 경기광주역, 100));
+        경강선.connect(판교역, 경기광주역, 100);
         경강선.registerSection(new Section(경기광주역, 여주역, 500));
 
         // when
@@ -212,8 +204,7 @@ public class SectionTest {
         Station 경기광주역 = stationRepository.getById(3L);
         Station 부발역 = stationRepository.getById(4L);
         Station 여주역 = stationRepository.getById(5L);
-        경강선.registerSection(new Section(null, 판교역, 0));
-        경강선.registerSection(new Section(판교역, 이매역, 100));
+        경강선.connect(판교역, 이매역, 100);
         경강선.registerSection(new Section(이매역, 경기광주역, 500));
         경강선.registerSection(new Section(경기광주역, 부발역, 500));
         경강선.registerSection(new Section(부발역, 여주역, 500));

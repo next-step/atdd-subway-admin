@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Entity
+@Table(name = "line")
 public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,6 +28,11 @@ public class Line extends BaseEntity {
     public void update(Line line) {
         this.name = line.name;
         this.color = line.color;
+    }
+
+    public void connect(Station upStation, Station downStation, Integer distance) {
+        this.sections.add(new Section(null, upStation, 0));
+        this.sections.add(new Section(upStation, downStation, distance));
     }
 
     public void registerSection(Section section) {
