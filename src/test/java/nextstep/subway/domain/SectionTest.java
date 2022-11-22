@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 import org.junit.jupiter.api.DisplayName;
@@ -33,5 +34,32 @@ class SectionTest {
     @Test
     void validateNotExistsStation() {
         assertThatIllegalArgumentException().isThrownBy(() -> section.validateNotExistsStation(station3, station4));
+    }
+
+    @DisplayName("새로운 구간을 생성한다")
+    @Test
+    void createNewSection() {
+        Section newSection = section.createNewSection(10, 1000, station1, station2);
+
+        assertThat(newSection.isEqualsUpStation(station1)).isTrue();
+        assertThat(newSection.isEqualsDownStation(station2)).isTrue();
+    }
+
+    @DisplayName("기존 구간의 하행역에 또다른 하행역을 이어붙인다")
+    @Test
+    void createNewAppendDownStation() {
+        Section newSection = section.createNewAppendDownStation(10, 1000, station3);
+
+        assertThat(newSection.isEqualsUpStation(station2)).isTrue();
+        assertThat(newSection.isEqualsDownStation(station3)).isTrue();
+    }
+
+    @DisplayName("기존 구간의 상행역을 또다른 상행역을 이어붙인다")
+    @Test
+    void createNewPrependUpStation() {
+        Section newSection = section.createNewPrependUpStation(10, 1000, station3);
+
+        assertThat(newSection.isEqualsUpStation(station3)).isTrue();
+        assertThat(newSection.isEqualsDownStation(station1)).isTrue();
     }
 }

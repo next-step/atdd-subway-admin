@@ -55,4 +55,9 @@ class LineTest {
 
         assertThat(line.getSectionList()).hasSize(2);
     }
+
+    @Test
+    void 구간이_하나인_노선은_제거_불가능() {
+        assertThatIllegalArgumentException().isThrownBy(() -> line.deleteSectionByStation(upStation));
+    }
 }
