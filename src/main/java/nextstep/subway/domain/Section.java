@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.ErrorStatus;
-import nextstep.subway.exception.IllegalRequestBody;
+import nextstep.subway.exception.IllegalRequestBodyException;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -89,7 +89,7 @@ public class Section extends BaseEntity {
 
     private void validateDistance(Section newSection) {
         if (this.distance <= newSection.distance) {
-            throw new IllegalRequestBody(ErrorStatus.DISTANCE_LENGTH.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.DISTANCE_LENGTH.getMessage());
         }
     }
 

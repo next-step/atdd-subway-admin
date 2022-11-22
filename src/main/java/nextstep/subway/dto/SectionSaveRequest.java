@@ -1,7 +1,7 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.exception.ErrorStatus;
-import nextstep.subway.exception.IllegalRequestBody;
+import nextstep.subway.exception.IllegalRequestBodyException;
 
 public class SectionSaveRequest {
     private static final Long MINIMUM_DISTANCE = 0L;
@@ -20,13 +20,13 @@ public class SectionSaveRequest {
 
     private void validateStaionId(Long upStationId, Long downStationId) {
         if (upStationId <= MINIMUM_STATION_ID || downStationId <= MINIMUM_STATION_ID) {
-            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_STATION_ID.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.BAD_REQUEST_STATION_ID.getMessage());
         }
     }
 
     private void validateDistance(Long distance) {
         if (distance <= MINIMUM_DISTANCE) {
-            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_DISTANCE.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.BAD_REQUEST_DISTANCE.getMessage());
         }
     }
 

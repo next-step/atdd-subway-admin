@@ -4,7 +4,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.*;
-import nextstep.subway.exception.NotFoundLine;
+import nextstep.subway.exception.NotFoundLineException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,25 +37,25 @@ public class LineService {
     }
 
     public LineResponse findById(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLine(id));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
         return LineResponse.of(line);
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLine(id));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
         line.update(lineUpdateRequest);
     }
 
     @Transactional
     public void deleteLine(Long id) {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLine(id));
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(id));
         lineRepository.delete(line);
     }
 
     @Transactional
     public LineResponse createSection(Long lineId, SectionSaveRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLine(lineId));
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLineException(lineId));
         Station upStation = stationService.findStation(sectionRequest.getUpStationId());
         Station downStation = stationService.findStation(sectionRequest.getDownStationId());
         line.addStations(upStation, downStation, sectionRequest.getDistance());
@@ -63,13 +63,13 @@ public class LineService {
     }
 
     public SectionsResponse findSectionsByLine(Long lineId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLine(lineId));
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLineException(lineId));
         return SectionsResponse.of(line);
     }
 
     @Transactional
     public void deleteSection(Long lineId, Long deleteStationId) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLine(lineId));
+        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NotFoundLineException(lineId));
         Station deleteStation = stationService.findStation(deleteStationId);
         line.deleteSection(deleteStation);
     }

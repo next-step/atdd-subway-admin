@@ -42,7 +42,7 @@ public class Sections {
     private void validateDuplicate(Section section) {
         boolean isDuplicate = this.values.stream().anyMatch(v -> v.isDuplicateSection(section));
         if (isDuplicate) {
-            throw new IllegalRequestBody(ErrorStatus.DUPLICATE_SECTION.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.DUPLICATE_SECTION.getMessage());
         }
     }
 
@@ -71,7 +71,7 @@ public class Sections {
     private void validateStationIncludeSection(Section section) {
         boolean isNotIncludeSection = this.values.stream().noneMatch(v -> v.anyMatch(section));
         if (isNotIncludeSection) {
-            throw new IllegalRequestBody(ErrorStatus.SECTION_STATION_ERROR.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.SECTION_STATION_ERROR.getMessage());
         }
     }
 
@@ -130,7 +130,7 @@ public class Sections {
     private Station findUpStationTerminus() {
         Set<Station> downStations = values.stream().map(Section::getDownStation).collect(Collectors.toSet());
         return values.stream().map(Section::getUpStation)
-                .filter(v -> !downStations.contains(v)).findFirst().orElseThrow(NotFoundStation::new);
+                .filter(v -> !downStations.contains(v)).findFirst().orElseThrow(NotFoundStationException::new);
     }
 
     private List<Station> createStations(Station upStationTerminus) {
@@ -157,7 +157,7 @@ public class Sections {
 
     private List<Section> createSections(Station upStationTerminus) {
         Section firstSection = values.stream().filter(v -> v.getUpStation().equals(upStationTerminus))
-                .findFirst().orElseThrow(() -> new NotFoundSection(upStationTerminus.getId()));
+                .findFirst().orElseThrow(() -> new NotFoundSectionException(upStationTerminus.getId()));
 
         Map<Station, Section> allSection = values.stream().collect(Collectors.toMap(Section::getUpStation, Function.identity()));
 
@@ -182,11 +182,11 @@ public class Sections {
     private void deleteMiddle(LinkedList<Section> sections, Station deleteStation) {
         Section upStationSection = sections.stream().filter(v -> v.getDownStation().equals(deleteStation))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundSection(deleteStation.getId()));
+                .orElseThrow(() -> new NotFoundSectionException(deleteStation.getId()));
 
         Section downStationSection = sections.stream().filter(v -> v.getUpStation().equals(deleteStation))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundSection(deleteStation.getId()));
+                .orElseThrow(() -> new NotFoundSectionException(deleteStation.getId()));
 
         mergeAndDeleteSection(upStationSection, downStationSection);
     }
@@ -214,14 +214,14 @@ public class Sections {
 
     private void validateSectionsDefaultSize() {
         if (this.values.size() == DEFAULT_SECTIONS_SIZE) {
-            throw new DeleteSection(SECTION_DEFAULT_SIZE.getMessage());
+            throw new DeleteSectionFailedException(SECTION_DEFAULT_SIZE.getMessage());
         }
     }
 
     private void validateIncludeStation(Station deleteStation) {
         boolean isNotIncludeStation = this.values.stream().noneMatch(v -> v.inCludeStationInSection(deleteStation));
         if (isNotIncludeStation) {
-            throw new NotFoundSection(deleteStation.getId());
+            throw new NotFoundSectionException(deleteStation.getId());
         }
     }
 }
