@@ -233,9 +233,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("중간 구간을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간- 구의 존재)")
-    @ParameterizedTest
-    @MethodSource("deleteManySectionCase")
-    void deleteMiddleSectionManyCase(List<Long> expectDistance) {
+    @Test
+    void deleteMiddleSectionManyCase() {
         //given
         createSection(line.getId(), seungSuStation.getId(), hongDaeStation.getId(), 1L);
         ExtractableResponse<Response> saveResponse = createSection(line.getId(), hongDaeStation.getId(), guiStation.getId(), 1L);
@@ -247,7 +246,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
-        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(expectDistance);
+        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(Arrays.asList(10L,2L));
     }
 
     private ExtractableResponse<Response> deleteSection(Long id, Station hongDaeStation) {
@@ -305,11 +304,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     private static Stream<Arguments> createExpectDistance() {
         List<Long> distances = Arrays.asList(1L, 6L, 3L, 1L);
-        return Stream.of(Arguments.of(distances));
-    }
-
-    private static Stream<Arguments> deleteManySectionCase() {
-        List<Long> distances = Arrays.asList(10L,2L);
         return Stream.of(Arguments.of(distances));
     }
 }
