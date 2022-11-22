@@ -9,6 +9,8 @@ import java.util.Objects;
 @Entity
 @Table(name = "line_station")
 public class Section extends BaseEntity {
+    private static final String EXCEPTION_MESSAGE_FOR_OVER_DISTANCE = "기존 역 사이 길이보다 새로운 역의 구간 길이가 깁니다!";
+    private static final int DISTANCE_LIMIT = 0;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -62,8 +64,8 @@ public class Section extends BaseEntity {
     }
 
     private void validateDistance(Section newSection) {
-        if (this.distance - newSection.distance <= 0) {
-            throw new IllegalArgumentException("기존 역 사이 길이보다 새로운 역의 구간 길이가 깁니다!");
+        if (this.distance - newSection.distance <= DISTANCE_LIMIT) {
+            throw new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_OVER_DISTANCE);
         }
     }
 

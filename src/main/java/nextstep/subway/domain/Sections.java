@@ -8,6 +8,8 @@ import java.util.Optional;
 
 @Embeddable
 public class Sections {
+    private static final String EXCEPTION_MESSAGE_FOR_INVALID_STATION = "유효하지 않은 역입니다.";
+    private static final String EXCEPTION_MESSAGE_FOR_DUPLICATE_STATIONS = "이미 등록되어 있는 구간입니다.";
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_of_line"))
     private List<Section> sections = new ArrayList<>();
@@ -73,11 +75,11 @@ public class Sections {
     }
 
     private void validateSection(Section section) {
-        if (section.getStation() == null) {
-            throw new IllegalArgumentException("유효하지 않은 역입니다.");
+        if (Objects.isNull(section.getStation())) {
+            throw new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_INVALID_STATION);
         }
         if (sections.contains(section)) {
-            throw new IllegalArgumentException("이미 등록되어 있는 구간입니다.");
+            throw new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_DUPLICATE_STATIONS);
         }
     }
 }

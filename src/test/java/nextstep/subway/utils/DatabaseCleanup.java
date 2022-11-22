@@ -23,7 +23,6 @@ public class DatabaseCleanup implements InitializingBean {
     public void afterPropertiesSet() {
         tableNames = entityManager.getMetamodel().getEntities().stream()
                 .filter(e -> e.getJavaType().getAnnotations() != null)
-//                .map(e -> CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, e.getName()))
                 .map(e -> e.getJavaType().getAnnotation(Table.class).name())
                 .collect(Collectors.toList());
     }
