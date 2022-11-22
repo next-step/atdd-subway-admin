@@ -210,8 +210,8 @@ public class SectionTest {
         경강선.registerSection(new Section(부발역, 여주역, 500));
 
         // when
-        List<String> stationsNames = 경강선.getOrderedSections().stream()
-                .map(it -> it.getStation().getName())
+        List<String> stationsNames = 경강선.getOrderedStations().stream()
+                .map(it -> it.getName())
                 .collect(Collectors.toList());
 
         // then

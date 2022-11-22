@@ -55,8 +55,8 @@ public class Line extends BaseEntity {
         return sections.values();
     }
 
-    public List<Section> getOrderedSections() {
-        return sections.getOrderedSections();
+    public List<Station> getOrderedStations() {
+        return sections.stationValues();
     }
 
     @Override

@@ -339,7 +339,7 @@ host: localhost:52165
 - [x] connect 같은 의미있는 메서드로 추출
   - [x] 이참에 `LineStation`이란 명명도 조금 더 의미있는 `Section`이란 이름으로 변경해보자. 
 - [x] 에러메시지 Enum 혹은 상수로 관리
-- [ ] `getOrderedLineStations()` 메소드 내에서 Optional 값을 재할당 하는 과정에서 버그가 생길 경우 무한루프로 빠질 수 있는 위험한 코드.
+- [x] `getOrderedLineStations()` 메소드 내에서 Optional 값을 재할당 하는 과정에서 버그가 생길 경우 무한루프로 빠질 수 있는 위험한 코드.
   - Optional을 사용하지 않는다면?
   - 구간의 순서는 어떻게 찾을 지 고민..
 - [x] 제너릭형에 타입 명시!
