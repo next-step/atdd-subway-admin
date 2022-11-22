@@ -2,7 +2,6 @@ package nextstep.subway.line.application;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import nextstep.subway.line.infra.LineRepository;
 import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
@@ -13,6 +12,7 @@ import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.dto.UpdateLineRequest;
 import nextstep.subway.line.exception.NoLineException;
 import nextstep.subway.line.exception.NoStationException;
+import nextstep.subway.line.infra.LineRepository;
 import nextstep.subway.station.domain.Station;
 import nextstep.subway.station.infra.StationRepository;
 import org.springframework.stereotype.Service;
@@ -67,6 +67,12 @@ public class LineService {
         Section section = new Section(findStation(request.getUpStationId()),
             findStation(request.getDownStationId()), request.getDistance());
         line.addSection(section);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(final Long lineId, final Long stationId) {
+        Line line = findLine(lineId);
+        line.removeStation(findStation(stationId));
     }
 
     private Line findLine(Long id) {

@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -71,6 +72,14 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.getSections(id));
     }
 
+    @DeleteMapping("/lines/{id}/sections")
+    public ResponseEntity<Void> removeLineStation(
+        @PathVariable Long id,
+        @RequestParam Long stationId) {
+        lineService.removeSectionByStationId(id, stationId);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(IllegalDistanceException.class)
     public ResponseEntity<String> illegalDistanceExceptionHandler(
         final IllegalDistanceException exception) {
@@ -91,4 +100,5 @@ public class LineController {
         return ResponseEntity.badRequest()
             .body(exception.getMessage());
     }
+
 }
