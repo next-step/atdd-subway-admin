@@ -31,12 +31,20 @@ public class Sections {
     public void deleteSection(Station deleteStation) {
         validateContainsStation(deleteStation);
         validateSectionsDefaultSize();
+        delete(deleteStation);
+    }
 
+    private void delete(Station deleteStation) {
         LinkedList<Section> sections = new LinkedList<>(allSortedSections());
-        deleteUpStationTerminus(sections, deleteStation);
-        deleteDownStationTerminus(sections, deleteStation);
+        if (isUpStationTerminus(deleteStation, sections)) {
+            deleteUpStationTerminus(sections, deleteStation);
+            return;
+        }
+        if (isDownStationTerminus(deleteStation, sections)) {
+            deleteDownStationTerminus(sections, deleteStation);
+            return;
+        }
         deleteMiddle(sections, deleteStation);
-
     }
 
     private void validateDuplicate(Section section) {
@@ -57,11 +65,11 @@ public class Sections {
 
     private void add(Section section) {
         LinkedList<Section> sections = new LinkedList<>(allSortedSections());
-        if (isAddUpStationTerminus(section, sections)) {
+        if (isUpStationTerminus(section.getDownStation(), sections)) {
             values.add(section);
             return;
         }
-        if (isAddDownStationTerminus(section, sections)) {
+        if (isDownStationTerminus(section.getUpStation(), sections)) {
             values.add(section);
             return;
         }
@@ -75,14 +83,14 @@ public class Sections {
         }
     }
 
-    private boolean isAddUpStationTerminus(Section section, LinkedList<Section> sections) {
+    private boolean isUpStationTerminus(Station station, LinkedList<Section> sections) {
         Section firstSection = sections.getFirst();
-        return firstSection.getUpStation().equals(section.getDownStation());
+        return firstSection.getUpStation().equals(station);
     }
 
-    private boolean isAddDownStationTerminus(Section section, LinkedList<Section> sections) {
+    private boolean isDownStationTerminus(Station station, LinkedList<Section> sections) {
         Section lastSections = sections.getLast();
-        return lastSections.getDownStation().equals(section.getUpStation());
+        return lastSections.getDownStation().equals(station);
     }
 
     private void addMiddle(Section newSection) {
