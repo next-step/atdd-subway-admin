@@ -1,9 +1,9 @@
 package nextstep.subway.domain;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Objects;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,8 +14,6 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Section {
-    private static final String DISTANCE_OVER_ERROR_MESSAGE = "추가할 구간의 거리가 기존 역 사이 거리보다 길 수는 없습니다.";
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,12 +30,13 @@ public class Section {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private Long distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Long id, Line line, Station upStation, Station downStation, Long distance) {
+    public Section(Long id, Line line, Station upStation, Station downStation, Distance distance) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
@@ -45,16 +44,20 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Long id, Station upStation, Station downStation, Long distance) {
-        this(id, null, upStation, downStation, distance);
+    public Section(Long id, Station upStation, Station downStation, long distance) {
+        this(id, null, upStation, downStation, Distance.of(distance));
     }
 
-    public Section(Line line, Station upStation, Station downStation, Long distance) {
+    public Section(Line line, Station upStation, Station downStation, long distance) {
+        this(null, line, upStation, downStation, Distance.of(distance));
+    }
+
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this(null, line, upStation, downStation, distance);
     }
 
-    public Section(Station upStation, Station downStation, Long distance) {
-        this(null, null, upStation, downStation, distance);
+    public Section(Station upStation, Station downStation, long distance) {
+        this(null, null, upStation, downStation, Distance.of(distance));
     }
 
     public void modify(Section section) {
@@ -67,7 +70,7 @@ public class Section {
             return;
         }
         this.upStation = section.downStation;
-        modifyDistance(section.distance);
+        this.distance = this.distance.sub(section.distance);
     }
 
     private void modifyDownStation(Section section) {
@@ -75,30 +78,45 @@ public class Section {
             return;
         }
         this.downStation = section.upStation;
-        modifyDistance(section.distance);
+        this.distance = this.distance.sub(section.distance);
     }
 
-    private void modifyDistance(Long distance) {
-        validateDistanceOver(distance);
-        this.distance = this.distance - distance;
+    public Stations getStations() {
+        return Stations.of(
+            Arrays.asList(this.upStation, this.downStation)
+        );
     }
 
-    private void validateDistanceOver(Long distance) {
-        if (distance >= this.distance) {
-            throw new IllegalArgumentException(DISTANCE_OVER_ERROR_MESSAGE);
-        }
+    public boolean notContainsAny(Stations stations) {
+        return this.getStations().noneMatch(stations);
     }
 
-    public List<Station> getStations() {
-        return Arrays.asList(this.upStation, this.downStation);
+    public boolean hasUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public Section merge(Section other) {
+        return new Section(this.line, this.upStation, other.downStation, this.distance.sum(other.distance));
+    }
+
+    public boolean isSameUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
+    }
+
+    public boolean isSameDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
+    }
+
+    public boolean isSameDistance(Distance distance) {
+        return this.distance.equals(distance);
     }
 
     public Long getId() {
         return id;
-    }
-
-    public Line getLine() {
-        return line;
     }
 
     public Station getUpStation() {
@@ -109,7 +127,7 @@ public class Section {
         return downStation;
     }
 
-    public Long getDistance() {
+    public Distance getDistance() {
         return distance;
     }
 
@@ -117,7 +135,7 @@ public class Section {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (!(o instanceof Section))
             return false;
         Section section = (Section)o;
         return Objects.equals(getId(), section.getId());

@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import java.util.List;
 import java.util.Objects;
 
 import javax.persistence.Column;
@@ -12,19 +11,22 @@ import javax.persistence.Id;
 
 @Entity
 public class Line extends BaseEntity {
-    @Embedded
-    private final Sections sections = new Sections();
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     private String color;
+
+    @Embedded
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(Long id, String name, String color, Station upStation, Station downStation, Long distance) {
+    public Line(Long id, String name, String color, Station upStation, Station downStation, long distance) {
         this.id = id;
         this.name = name;
         this.color = color;
@@ -33,12 +35,8 @@ public class Line extends BaseEntity {
         );
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, Long distance) {
+    public Line(String name, String color, Station upStation, Station downStation, long distance) {
         this(null, name, color, upStation, downStation, distance);
-    }
-
-    public Line(Long id, String name, String color) {
-        this(id, name, color, null, null, null);
     }
 
     public void update(String name, String color) {
@@ -48,6 +46,18 @@ public class Line extends BaseEntity {
 
     public void saveSection(Section section) {
         this.sections.addSection(section);
+    }
+
+    public void removeSectionByStation(Station station) {
+        this.sections.removeSectionByStation(station);
+    }
+
+    public boolean isSameName(String name) {
+        return this.name.equals(name);
+    }
+
+    public boolean isSameColor(String color) {
+        return this.color.equals(color);
     }
 
     public Long getId() {
@@ -62,15 +72,15 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return sections.getStations();
+    public Stations getStations() {
+        return sections.allStations();
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (!(o instanceof Line))
             return false;
         Line line = (Line)o;
         return Objects.equals(getId(), line.getId());
@@ -80,4 +90,5 @@ public class Line extends BaseEntity {
     public int hashCode() {
         return Objects.hash(getId());
     }
+
 }

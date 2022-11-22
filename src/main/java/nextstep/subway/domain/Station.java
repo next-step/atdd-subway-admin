@@ -41,7 +41,7 @@ public class Station extends BaseEntity {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (o == null || getClass() != o.getClass())
+        if (!(o instanceof Station))
             return false;
         Station station = (Station)o;
         return Objects.equals(getId(), station.getId());

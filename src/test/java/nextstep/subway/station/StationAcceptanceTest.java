@@ -1,6 +1,7 @@
 package nextstep.subway.station;
 
 import static nextstep.subway.station.StationAcceptanceTestFixture.*;
+import static nextstep.subway.station.StationNameTestFixture.*;
 import static nextstep.subway.utils.JsonPathUtils.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,11 +18,6 @@ import nextstep.subway.AcceptanceTest;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
-    public static final String GANGNAM = "강남역";
-    public static final String WANGSIPLI = "왕십리역";
-    public static final String JUKJUN = "죽전역";
-    public static final String BUNDANG = "분당역";
-
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다

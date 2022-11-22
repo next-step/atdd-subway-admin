@@ -1,52 +1,75 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
-    private static final String ALREADY_CONTAIONS_ERROR_MESSAGE = "상행역과 하행역이 이미 노선에 모두 등록되어 있어 추가할 수 없습니다.";
-    private static final String NOT_CONTAIONS_ANY_ERROR_MESSAGE = "상행역과 하행역 둘 중 하나도 포함되어있지 않아 추가할 수 없습니다.";
-
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private final List<Section> sections = new ArrayList<>();
+    @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
 
-    public List<Station> getStations() {
+    public Stations allStations() {
         return sections.stream()
-            .flatMap(section -> section.getStations().stream())
-            .distinct()
-            .collect(Collectors.toList());
+            .map(Section::getStations)
+            .reduce(Stations::concatDistinct)
+            .orElseGet(Stations::empty);
     }
 
     public void addSection(Section newSection) {
-        validateAlreadyContainsAll(newSection);
-        validateNotContainsAny(newSection);
+        Stations stations = this.allStations();
+        SectionsValidator.validateAlreadyContainsAll(stations, newSection);
+        SectionsValidator.validateNotContainsAny(stations, newSection);
         this.sections.forEach(section -> section.modify(newSection));
         this.sections.add(newSection);
     }
 
-    private void validateNotContainsAny(Section section) {
-        List<Station> stations = this.getStations();
-        if (stations.isEmpty()) {
-            return;
-        }
-        if (section.getStations().stream().noneMatch(stations::contains)) {
-            throw new IllegalArgumentException(NOT_CONTAIONS_ANY_ERROR_MESSAGE);
-        }
+    public void removeSectionByStation(Station station) {
+        SectionsValidator.validateNotContainsStation(this.allStations(), station);
+        SectionsValidator.validateOnlySection(this.sections);
+
+        Section removedUpSection = removeUpSection(station).orElse(null);
+        Section removedDownSection = removeDownSection(station).orElse(null);
+
+        addMergeSection(removedUpSection, removedDownSection);
     }
 
-    private void validateAlreadyContainsAll(Section section) {
-        if (getStations().containsAll(section.getStations())) {
-            throw new IllegalArgumentException(ALREADY_CONTAIONS_ERROR_MESSAGE);
+    private Optional<Section> removeUpSection(Station station) {
+        Optional<Section> upSection = this.sections.stream()
+            .filter(section -> section.hasDownStation(station))
+            .findAny();
+        upSection.ifPresent(section -> this.sections.remove(section));
+        return upSection;
+    }
+
+    private Optional<Section> removeDownSection(Station station) {
+        Optional<Section> downSection = this.sections.stream()
+            .filter(section -> section.hasUpStation(station))
+            .findAny();
+        downSection.ifPresent(section -> this.sections.remove(section));
+        return downSection;
+    }
+
+    private void addMergeSection(Section upSection, Section downSection) {
+        if (Objects.isNull(upSection)) {
+            return;
         }
+        if (Objects.isNull(downSection)) {
+            return;
+        }
+        addSection(upSection.merge(downSection));
+    }
+
+    public List<Section> getList() {
+        return Collections.unmodifiableList(this.sections);
     }
 }
