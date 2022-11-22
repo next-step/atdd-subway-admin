@@ -206,7 +206,7 @@ public class Sections {
     }
 
     private void deleteDownStationTerminus(LinkedList<Section> sections, Station deleteStation) {
-        Section downStationTerminus = sections.getFirst();
+        Section downStationTerminus = sections.getLast();
         if (downStationTerminus.getDownStation().equals(deleteStation)) {
             this.values.remove(downStationTerminus);
         }

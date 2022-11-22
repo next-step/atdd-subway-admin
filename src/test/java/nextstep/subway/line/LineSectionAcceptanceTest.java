@@ -197,6 +197,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
+        assertThat(sections).hasSize(1);
         assertThat(sections.get(0).getDistance()).isEqualTo(1L);
     }
 
@@ -213,6 +214,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
+        assertThat(sections).hasSize(1);
         assertThat(sections.get(0).getDistance()).isEqualTo(10L);
     }
 
@@ -246,7 +248,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
-        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(Arrays.asList(10L,2L));
+        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(Arrays.asList(10L, 2L));
     }
 
     private ExtractableResponse<Response> deleteSection(Long id, Station hongDaeStation) {
