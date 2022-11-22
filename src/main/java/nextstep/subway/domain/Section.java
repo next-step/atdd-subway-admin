@@ -71,7 +71,7 @@ public class Section extends BaseEntity {
         return this.upStation.equals(section.getUpStation());
     }
 
-    public boolean inCludeStationInSection(Station deleteStation) {
+    public boolean containsStation(Station deleteStation) {
         return this.upStation.equals(deleteStation) || this.downStation.equals(deleteStation);
     }
 

@@ -29,7 +29,7 @@ public class Sections {
     }
 
     public void deleteSection(Station deleteStation) {
-        validateIncludeStation(deleteStation);
+        validateContainsStation(deleteStation);
         validateSectionsDefaultSize();
 
         LinkedList<Section> sections = new LinkedList<>(allSortedSections());
@@ -51,7 +51,7 @@ public class Sections {
             values.add(section);
             return;
         }
-        validateStationIncludeSection(section);
+        validateContains(section);
         add(section);
     }
 
@@ -68,13 +68,12 @@ public class Sections {
         addMiddle(section);
     }
 
-    private void validateStationIncludeSection(Section section) {
-        boolean isNotIncludeSection = this.values.stream().noneMatch(v -> v.anyMatch(section));
-        if (isNotIncludeSection) {
+    private void validateContains(Section section) {
+        boolean hasNotContains = this.values.stream().noneMatch(v -> v.anyMatch(section));
+        if (hasNotContains) {
             throw new IllegalRequestBodyException(ErrorStatus.SECTION_STATION_ERROR.getMessage());
         }
     }
-
 
     private boolean isAddUpStationTerminus(Section section, LinkedList<Section> sections) {
         Section firstSection = sections.getFirst();
@@ -218,9 +217,9 @@ public class Sections {
         }
     }
 
-    private void validateIncludeStation(Station deleteStation) {
-        boolean isNotIncludeStation = this.values.stream().noneMatch(v -> v.inCludeStationInSection(deleteStation));
-        if (isNotIncludeStation) {
+    private void validateContainsStation(Station deleteStation) {
+        boolean hasNotContains = this.values.stream().noneMatch(v -> v.containsStation(deleteStation));
+        if (hasNotContains) {
             throw new NotFoundSectionException(deleteStation.getId());
         }
     }
