@@ -59,9 +59,15 @@ public class SectionAcceptanceTest {
     void addSection() {
         // when
         ExtractableResponse<Response> response =
-                SectionTestFixture.requestAddSection(신분당선.getId().toString(), 강남역.getId(), 역삼역.getId(), 10);
+                SectionTestFixture.requestAddSection(신분당선.getId().toString(), 강남역.getId(), 역삼역.getId(), 9);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        LineResponse lineResponse =
+                LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class);
+
+        assertThat(lineResponse.getStations()).hasSize(3);
+
+
     }
 
     /**
@@ -102,6 +108,20 @@ public class SectionAcceptanceTest {
                 .stream()
                 .anyMatch(x->x.getName().equals(하행신설역.getName()))
         ).isTrue();
+    }
+
+    /**
+     * When 기존 역 사이에 새로운 역을 기존길이보다 길게 등록한다.
+     * Then BAD_REQUEST 를 응답한다.
+     */
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
+    @Test
+    void checkDistanceValidation() {
+        // when
+        ExtractableResponse<Response> response =
+                SectionTestFixture.requestAddSection(신분당선.getId().toString(), 강남역.getId(), 역삼역.getId(), 10);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
 
