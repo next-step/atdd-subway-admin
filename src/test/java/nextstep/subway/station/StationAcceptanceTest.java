@@ -101,6 +101,36 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        Map<String, String> StationsParam = new HashMap<>();
+        StationsParam.put("name", "강남역");
+
+        RestAssured.given().log().all()
+                .body(StationsParam)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all();
+
+        Map<String, String> StationParams = new HashMap<>();
+        StationParams.put("name", "양재역");
+
+        RestAssured.given().log().all()
+                .body(StationParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all();
+
+        // when
+        List<String> stationNames =
+                RestAssured.given().log().all()
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract().jsonPath().getList("name", String.class);
+
+
+        // then
+        assertThat(stationNames.size()).isEqualTo(2);
+        assertThat(stationNames).contains("강남역","양재역");
     }
 
     /**
