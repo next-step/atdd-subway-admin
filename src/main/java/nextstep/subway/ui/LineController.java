@@ -33,17 +33,20 @@ public class LineController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        return ResponseEntity.ok().body(lineService.findAllLines());
+        return ResponseEntity.ok()
+                .body(lineService.findAllLines());
     }
 
     @GetMapping("/{lineId}/sections")
     public ResponseEntity<SectionResponse> showSections(@PathVariable("lineId") Long lineId) {
-        return ResponseEntity.ok().body(lineService.findSectionResponsesByLineId(lineId));
+        return ResponseEntity.ok()
+                .body(lineService.findSectionResponsesByLineId(lineId));
     }
 
     @GetMapping(value = "/{lineId}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLineById(@PathVariable("lineId") Long lineId) {
-        return ResponseEntity.ok().body(lineService.findResponseById(lineId));
+        return ResponseEntity.ok()
+                .body(lineService.findResponseById(lineId));
     }
 
     @PostMapping
@@ -51,7 +54,8 @@ public class LineController {
         Long id = lineService.saveLine(lineRequest);
         LineResponse lineResponse = new LineResponse();
         lineResponse.setId(id);
-        return ResponseEntity.created(URI.create("/lines/" + id)).body(lineResponse);
+        return ResponseEntity.created(URI.create("/lines/" + id))
+                .body(lineResponse);
     }
 
     @PostMapping("/{lineId}/sections")

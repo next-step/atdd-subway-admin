@@ -5,17 +5,25 @@ import static nextstep.subway.fixtures.StationTestFixture.경기광주역ID;
 import static nextstep.subway.fixtures.StationTestFixture.모란역ID;
 import static nextstep.subway.fixtures.StationTestFixture.미금역ID;
 import static nextstep.subway.fixtures.StationTestFixture.중앙역ID;
-import static nextstep.subway.section.AddSectionTestFixtures.기존_구간_뒤에_하행_종점으로_등록한_중앙역_구간이_함께_조회됨;
-import static nextstep.subway.section.AddSectionTestFixtures.기존_구간_앞에_상행_종점으로_등록한_모란역_구간이_함께_조회됨;
-import static nextstep.subway.section.AddSectionTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
-import static nextstep.subway.section.AddSectionTestFixtures.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
-import static nextstep.subway.section.AddSectionTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
-import static nextstep.subway.section.AddSectionTestFixtures.등록이_불가하다;
-import static nextstep.subway.section.AddSectionTestFixtures.새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정;
-import static nextstep.subway.section.AddSectionTestFixtures.새로운_역_상행_종점으로_등록;
-import static nextstep.subway.section.AddSectionTestFixtures.새로운_역_하행_종점으로_등록;
-import static nextstep.subway.section.AddSectionTestFixtures.역_사이_새로운역_등록;
-import static nextstep.subway.section.AddSectionTestFixtures.지하철_노선_등록되어_있음;
+import static nextstep.subway.section.SectionTestFixtures.경기광주역_모란역_구간만_조회된다;
+import static nextstep.subway.section.SectionTestFixtures.경기광주역_미금역_구간만_등록되어_있다;
+import static nextstep.subway.section.SectionTestFixtures.경기광주역_중앙역_구간으로_합쳐지며_길이도_합쳐진다;
+import static nextstep.subway.section.SectionTestFixtures.기존_구간_뒤에_하행_종점으로_등록한_중앙역_구간이_함께_조회됨;
+import static nextstep.subway.section.SectionTestFixtures.기존_구간_앞에_상행_종점으로_등록한_모란역_구간이_함께_조회됨;
+import static nextstep.subway.section.SectionTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
+import static nextstep.subway.section.SectionTestFixtures.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
+import static nextstep.subway.section.SectionTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
+import static nextstep.subway.section.SectionTestFixtures.노선이_경기광주역_모란역_중앙역_순서로_등록되어_있다;
+import static nextstep.subway.section.SectionTestFixtures.등록이_불가하다;
+import static nextstep.subway.section.SectionTestFixtures.모란역을_제거한다;
+import static nextstep.subway.section.SectionTestFixtures.미금역을_제거하려_하면;
+import static nextstep.subway.section.SectionTestFixtures.새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정;
+import static nextstep.subway.section.SectionTestFixtures.새로운_역_상행_종점으로_등록;
+import static nextstep.subway.section.SectionTestFixtures.새로운_역_하행_종점으로_등록;
+import static nextstep.subway.section.SectionTestFixtures.역_사이_새로운역_등록;
+import static nextstep.subway.section.SectionTestFixtures.제거할_수_없다;
+import static nextstep.subway.section.SectionTestFixtures.중앙역을_제거한다;
+import static nextstep.subway.section.SectionTestFixtures.지하철_노선_등록되어_있음;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -27,7 +35,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("구간 추가 관련 기능")
-class AddSectionAcceptanceTest extends TestFixtures {
+class SectionAcceptanceTest extends TestFixtures {
 
     @Autowired
     StationRepository stationRepository;
@@ -155,5 +163,85 @@ class AddSectionAcceptanceTest extends TestFixtures {
 
         //then
         등록이_불가하다(response);
+    }
+
+    /**
+     * Given 한 노선에 두개의 구간이 등록되어 있다.
+     * <p>
+     * When 두 구간에서 가장 마지막 역을 제거하면
+     * <p>
+     * Then 한 구간 만 조회된다.
+     */
+    @DisplayName("한 노선에 두개의 구간이 등록 된 상태에서 가장 마지막역을 제거하는 경우")
+    @Test
+    void deleteLastSectionsAndDownStation() {
+        //given
+        String lineId = 노선이_경기광주역_모란역_중앙역_순서로_등록되어_있다();
+
+        //when
+        중앙역을_제거한다(lineId);
+
+        //then
+        경기광주역_모란역_구간만_조회된다(lineId);
+    }
+
+    /**
+     * Given 한 노선에 두개의 구간이 등록되어 있다.
+     * <p>
+     * When 앞 구간의 하행역이며 뒷 구간의 상행역에 해당하는 가운데 역을 제거하면
+     * <p>
+     * Then 앞 구간의 상행역과 뒷 구간의 하행역이 한 구간으로 합쳐지며 구간의 길이도 합쳐진다.
+     */
+    @DisplayName("한 노선에 두개의 구간이 등록 된 상태에서 가운데 역을 제거하는 경우")
+    @Test
+    void deleteBetweenStationOfSections() {
+        //given
+        String lineId = 노선이_경기광주역_모란역_중앙역_순서로_등록되어_있다();
+
+        //when
+        모란역을_제거한다(lineId);
+
+        //then
+        경기광주역_중앙역_구간으로_합쳐지며_길이도_합쳐진다(lineId);
+    }
+
+    /**
+     * Given 한 노선에 두개의 구간이 등록되어 있다.
+     * <p>
+     * When 어느 구간에도 속하지 않은 역을 제거하려고 시도하면
+     * <p>
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("노선에 등록되어있지 않은 역을 제거하려 하는 경우 제거할_수_없다.")
+    @Test
+    void deleteNotExistsStationOfSections() {
+        //given
+        String lineId = 노선이_경기광주역_모란역_중앙역_순서로_등록되어_있다();
+
+        //when
+        ExtractableResponse<Response> response = 미금역을_제거하려_하면(lineId);
+
+        //then
+        제거할_수_없다(response);
+    }
+
+    /**
+     * Given 구간이 하나인 노선이 등록되어 있다.
+     * <p>
+     * When 해당 노선의 상행 혹은 하행에 해당하는 역을 제거하려고 시도하면
+     * <p>
+     * Then 제거할 수 없다.
+     */
+    @DisplayName("구간이 하나인 노선의 상행 혹은 하행에 해당하는 역을 제거하려 하면 제거할 수 없다.")
+    @Test
+    void deleteStationOfOneSectionThenThrow() {
+        //given
+        String lineId = 경기광주역_미금역_구간만_등록되어_있다();
+
+        //when
+        ExtractableResponse<Response> response = 미금역을_제거하려_하면(lineId);
+
+        //then
+        제거할_수_없다(response);
     }
 }
