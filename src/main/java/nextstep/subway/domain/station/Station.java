@@ -1,19 +1,24 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.station;
+
+import nextstep.subway.domain.BaseEntity;
 
 import javax.persistence.*;
 
 @Entity
+@Table(name = "station")
 public class Station extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
-    private String name;
+
+    @Embedded
+    private StationName name;
 
     public Station() {
     }
 
-    public Station(String name) {
+    public Station(StationName name) {
         this.name = name;
     }
 
@@ -21,7 +26,7 @@ public class Station extends BaseEntity {
         return id;
     }
 
-    public String getName() {
+    public StationName getName() {
         return name;
     }
 }
