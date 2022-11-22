@@ -128,8 +128,6 @@ class LineAcceptanceTest {
                         .then().log().all()
                         .extract();
         assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        System.out.println("====== name: " + modifyResponse.body().jsonPath().getString("name") + " id:"
-            + modifyResponse.body().jsonPath().getLong("id"));
         // then
         ExtractableResponse<Response> retrieveResponse =
                 RestAssured.given().log().all()
@@ -146,7 +144,26 @@ class LineAcceptanceTest {
     @DisplayName("지하철 특정 노선 삭제.")
     @Test
     void deleteTheLine() {
-
+        // given
+        Map<String, String> params = LineAcceptanceTest.of("2호선", "green");
+        ExtractableResponse<Response> response = createLine(params);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        // when
+        ExtractableResponse<Response> modifyResponse =
+                RestAssured.given().log().all()
+                        .body(params)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().delete("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
+                        .then().log().all()
+                        .extract();
+        assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        // then
+        ExtractableResponse<Response> retrieveResponse =
+                RestAssured.given().log().all()
+                        .when().get("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
+                        .then().log().all()
+                        .extract();
+        assertThat(retrieveResponse.body().jsonPath().getString("name")).isNull();
     }
 
     ExtractableResponse<Response> createLine(Map<String, String> params) {
