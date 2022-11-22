@@ -1,9 +1,11 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Embeddable
 public class Line extends BaseEntity{
 
     @Id
@@ -14,7 +16,9 @@ public class Line extends BaseEntity{
     @Column(unique = true)
     private String color;
     @Embedded
-    Stations stations = new Stations();
+    private Stations stations = new Stations();
+    @OneToMany(mappedBy = "line")
+    private List<Section> sections = new ArrayList<>();
 
     protected Line() {
     }
@@ -22,6 +26,16 @@ public class Line extends BaseEntity{
     public Line(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public Line(String name, String color, Section section) {
+        this.name = name;
+        this.color = color;
+        addSection(section);
+    }
+
+    private void addSection(Section section) {
+        this.sections.add(section);
     }
 
     public Long getId() {
@@ -36,11 +50,11 @@ public class Line extends BaseEntity{
         return this.color;
     }
 
-    public void setName(String name) {
+    private void setName(String name) {
         this.name = name;
     }
 
-    public void setColor(String color) {
+    private void setColor(String color) {
         this.color = color;
     }
 

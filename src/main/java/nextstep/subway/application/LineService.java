@@ -1,9 +1,7 @@
 package nextstep.subway.application;
 
 import nextstep.subway.constants.ErrorCode;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Lines;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -16,14 +14,18 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class LineService {
     private LineRepository lineRepository;
+    private StationRepository stationRepository;
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        return LineResponse.of(lineRepository.save(lineRequest.toLine()));
+        Station upStation = stationRepository.getById(lineRequest.getUpStationId());
+        Station downStation = stationRepository.getById(lineRequest.getDownStationId());
+        return LineResponse.of(lineRepository.save(lineRequest.toLine(upStation, downStation)));
     }
 
     public List<LineResponse> findAllLines() {

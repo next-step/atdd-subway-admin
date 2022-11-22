@@ -28,6 +28,16 @@ class LineAcceptanceTest {
         return map;
     }
 
+    private static void creatStation(String name) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post("/stations")
+                .then().log().all();
+    }
+
     @LocalServerPort
     int port;
 
@@ -39,6 +49,8 @@ class LineAcceptanceTest {
             RestAssured.port = port;
         }
         params = LineAcceptanceTest.of("2호선", "green");
+        creatStation("강남역");
+        creatStation("서초역");
     }
 
     /**
