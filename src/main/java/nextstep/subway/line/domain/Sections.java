@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -24,7 +25,7 @@ public class Sections {
     }
 
     public Sections(final Section... sections) {
-        this(Arrays.asList(sections));
+        this(new ArrayList<>(Arrays.asList(sections)));
     }
 
     public Sections(final List<Section> sections) {
@@ -49,6 +50,28 @@ public class Sections {
         sections.add(newSection);
     }
 
+    public void removeStation(final Station station) {
+        Optional<Section> upSection = getUpSection(station);
+        Optional<Section> downSection = getDownSection(station);
+
+        if (upSection.isPresent() && downSection.isPresent()) {
+            upSection.ifPresent(section -> section.merge(downSection.get()));
+            sections.remove(downSection.get());
+        }
+    }
+
+    private Optional<Section> getDownSection(final Station station) {
+        return sections.stream()
+            .filter(section -> section.isUpStation(station))
+            .findAny();
+    }
+
+    private Optional<Section> getUpSection(final Station station) {
+        return sections.stream()
+            .filter(section -> section.isDownStation(station))
+            .findAny();
+    }
+
     private void validateNewSection(Section newSection) {
         if (sections.stream()
             .noneMatch(section -> section.hasRelation(newSection))) {
@@ -63,4 +86,5 @@ public class Sections {
     public List<Section> getSections() {
         return sections;
     }
+
 }

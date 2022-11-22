@@ -62,4 +62,14 @@ class SectionsTest {
         assertThat(sections.stations())
             .hasSize(0);
     }
+
+    @Test
+    void 사이역_제거() {
+        Sections sections = new Sections(제1구간, 제2구간);
+        sections.removeStation(역삼역);
+        assertThat(sections.getSections())
+            .hasSize(1)
+            .containsExactly(new Section(강남역, 블루보틀역, 14));
+    }
+
 }
