@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import java.util.List;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.line.LineTestFixture;
@@ -61,10 +62,10 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response =
                 SectionTestFixture.requestAddSection(신분당선.getId().toString(), 강남역.getId(), 역삼역.getId(), 9);
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         LineResponse lineResponse =
                 LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class);
 
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(lineResponse.getStations()).hasSize(3);
 
 
@@ -83,11 +84,7 @@ public class SectionAcceptanceTest {
         LineResponse lineResponse =
                 LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class);
 
-        assertThat(lineResponse
-                .getStations()
-                .stream()
-                .anyMatch(x->x.getName().equals(상행신설역.getName()))
-        ).isTrue();
+        assertThat(lineResponse.getStations().get(0).getName()).isEqualTo(상행신설역.getName());
     }
 
     /**
@@ -100,14 +97,10 @@ public class SectionAcceptanceTest {
         // when
         SectionTestFixture.requestAddSection(신분당선.getId().toString(), 강남역.getId(), 하행신설역.getId(), 10);
         // then
-        LineResponse lineResponse =
-                LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class);
+        List<StationResponse> stations =
+                LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class).getStations();
 
-        assertThat(lineResponse
-                .getStations()
-                .stream()
-                .anyMatch(x->x.getName().equals(하행신설역.getName()))
-        ).isTrue();
+        assertThat(stations.get(stations.size() - 1).getName()).isEqualTo(하행신설역.getName());
     }
 
     /**
