@@ -63,6 +63,9 @@ public class Sections {
             sections.remove(upStationSection.get());
         }
 
+        if (downStationSection.isPresent() && !upStationSection.isPresent()) {
+            sections.remove(downStationSection.get());
+        }
     }
 
     private Optional<Section> upStationSection(final Station station) {
