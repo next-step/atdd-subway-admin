@@ -23,30 +23,6 @@ public class Sections {
         addSection(section);
     }
 
-    public List<Section> allSortedSections() {
-        Station upStationTerminus = findUpStationTerminus();
-        return createSections(upStationTerminus);
-    }
-
-    public void deleteSection(Station deleteStation) {
-        validateContainsStation(deleteStation);
-        validateSectionsDefaultSize();
-        delete(deleteStation);
-    }
-
-    private void delete(Station deleteStation) {
-        LinkedList<Section> sections = new LinkedList<>(allSortedSections());
-        if (isUpStationTerminus(deleteStation, sections)) {
-            deleteUpStationTerminus(sections, deleteStation);
-            return;
-        }
-        if (isDownStationTerminus(deleteStation, sections)) {
-            deleteDownStationTerminus(sections, deleteStation);
-            return;
-        }
-        deleteMiddle(sections, deleteStation);
-    }
-
     private void validateDuplicate(Section section) {
         boolean isDuplicate = this.values.stream().anyMatch(v -> v.isDuplicateSection(section));
         if (isDuplicate) {
@@ -63,6 +39,13 @@ public class Sections {
         add(section);
     }
 
+    private void validateContains(Section section) {
+        boolean hasNotContains = this.values.stream().noneMatch(v -> v.anyMatch(section));
+        if (hasNotContains) {
+            throw new IllegalRequestBodyException(ErrorStatus.SECTION_STATION_ERROR.getMessage());
+        }
+    }
+
     private void add(Section section) {
         LinkedList<Section> sections = new LinkedList<>(allSortedSections());
         if (isUpStationTerminus(section.getDownStation(), sections)) {
@@ -74,13 +57,6 @@ public class Sections {
             return;
         }
         addMiddle(section);
-    }
-
-    private void validateContains(Section section) {
-        boolean hasNotContains = this.values.stream().noneMatch(v -> v.anyMatch(section));
-        if (hasNotContains) {
-            throw new IllegalRequestBodyException(ErrorStatus.SECTION_STATION_ERROR.getMessage());
-        }
     }
 
     private boolean isUpStationTerminus(Station station, LinkedList<Section> sections) {
@@ -129,9 +105,74 @@ public class Sections {
         existSection.updateDownStation(newSection);
     }
 
-    public List<Station> allSortedStations() {
+    public void deleteSection(Station deleteStation) {
+        validateContainsStation(deleteStation);
+        validateSectionsDefaultSize();
+        delete(deleteStation);
+    }
+
+    private void validateContainsStation(Station deleteStation) {
+        boolean hasNotContains = this.values.stream().noneMatch(v -> v.containsStation(deleteStation));
+        if (hasNotContains) {
+            throw new NotFoundSectionException(deleteStation.getId());
+        }
+    }
+
+    private void validateSectionsDefaultSize() {
+        if (this.values.size() == DEFAULT_SECTIONS_SIZE) {
+            throw new DeleteSectionFailedException(SECTION_DEFAULT_SIZE.getMessage());
+        }
+    }
+
+    private void delete(Station deleteStation) {
+        LinkedList<Section> sections = new LinkedList<>(allSortedSections());
+        if (isUpStationTerminus(deleteStation, sections)) {
+            deleteUpStationTerminus(sections, deleteStation);
+            return;
+        }
+        if (isDownStationTerminus(deleteStation, sections)) {
+            deleteDownStationTerminus(sections, deleteStation);
+            return;
+        }
+        deleteMiddle(sections, deleteStation);
+    }
+
+    private void deleteUpStationTerminus(LinkedList<Section> sections, Station deleteStation) {
+        Section upStationTerminus = sections.getFirst();
+        if (upStationTerminus.getUpStation().equals(deleteStation)) {
+            this.values.remove(upStationTerminus);
+        }
+    }
+
+    private void deleteDownStationTerminus(LinkedList<Section> sections, Station deleteStation) {
+        Section downStationTerminus = sections.getLast();
+        if (downStationTerminus.getDownStation().equals(deleteStation)) {
+            this.values.remove(downStationTerminus);
+        }
+    }
+
+    private void deleteMiddle(LinkedList<Section> sections, Station deleteStation) {
+        Section upStationSection = sections.stream().filter(v -> v.getDownStation().equals(deleteStation))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundSectionException(deleteStation.getId()));
+
+        Section downStationSection = sections.stream().filter(v -> v.getUpStation().equals(deleteStation))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundSectionException(deleteStation.getId()));
+
+        mergeAndDeleteSection(upStationSection, downStationSection);
+    }
+
+    private void mergeAndDeleteSection(Section upStationSection, Section downStationSection) {
+        Section section = upStationSection.merge(downStationSection);
+        this.values.add(section);
+        this.values.remove(upStationSection);
+        this.values.remove(downStationSection);
+    }
+
+    public List<Section> allSortedSections() {
         Station upStationTerminus = findUpStationTerminus();
-        return Collections.unmodifiableList(new ArrayList<>(createStations(upStationTerminus)));
+        return createSections(upStationTerminus);
     }
 
     private Station findUpStationTerminus() {
@@ -139,28 +180,6 @@ public class Sections {
         return values.stream().map(Section::getUpStation)
                 .filter(v -> !downStations.contains(v)).findFirst().orElseThrow(NotFoundStationException::new);
     }
-
-    private List<Station> createStations(Station upStationTerminus) {
-        Map<Station, Station> allStation = values.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
-
-        List<Station> stations = findStationRecursive(upStationTerminus, allStation);
-
-        return Collections.unmodifiableList(new ArrayList<>(stations));
-    }
-
-    private List<Station> findStationRecursive(Station upStationTerminus, Map<Station, Station> allStation) {
-        List<Station> stations = new ArrayList<>();
-        stations.add(upStationTerminus);
-
-        Station downStation = allStation.get(upStationTerminus);
-        while (downStation != null) {
-            stations.add(downStation);
-            downStation = allStation.get(downStation);
-        }
-
-        return stations;
-    }
-
 
     private List<Section> createSections(Station upStationTerminus) {
         Section firstSection = values.stream().filter(v -> v.getUpStation().equals(upStationTerminus))
@@ -185,50 +204,30 @@ public class Sections {
         return sections;
     }
 
-
-    private void deleteMiddle(LinkedList<Section> sections, Station deleteStation) {
-        Section upStationSection = sections.stream().filter(v -> v.getDownStation().equals(deleteStation))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundSectionException(deleteStation.getId()));
-
-        Section downStationSection = sections.stream().filter(v -> v.getUpStation().equals(deleteStation))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundSectionException(deleteStation.getId()));
-
-        mergeAndDeleteSection(upStationSection, downStationSection);
+    public List<Station> allSortedStations() {
+        Station upStationTerminus = findUpStationTerminus();
+        return Collections.unmodifiableList(new ArrayList<>(createStations(upStationTerminus)));
     }
 
-    private void mergeAndDeleteSection(Section upStationSection, Section downStationSection) {
-        Section section = upStationSection.merge(downStationSection);
-        this.values.add(section);
-        this.values.remove(upStationSection);
-        this.values.remove(downStationSection);
+    private List<Station> createStations(Station upStationTerminus) {
+        Map<Station, Station> allStation = values.stream().collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
+
+        List<Station> stations = findStationRecursive(upStationTerminus, allStation);
+
+        return Collections.unmodifiableList(new ArrayList<>(stations));
     }
 
-    private void deleteDownStationTerminus(LinkedList<Section> sections, Station deleteStation) {
-        Section downStationTerminus = sections.getLast();
-        if (downStationTerminus.getDownStation().equals(deleteStation)) {
-            this.values.remove(downStationTerminus);
+    private List<Station> findStationRecursive(Station upStationTerminus, Map<Station, Station> allStation) {
+        List<Station> stations = new ArrayList<>();
+        stations.add(upStationTerminus);
+
+        Station downStation = allStation.get(upStationTerminus);
+        while (downStation != null) {
+            stations.add(downStation);
+            downStation = allStation.get(downStation);
         }
+
+        return stations;
     }
 
-    private void deleteUpStationTerminus(LinkedList<Section> sections, Station deleteStation) {
-        Section upStationTerminus = sections.getFirst();
-        if (upStationTerminus.getUpStation().equals(deleteStation)) {
-            this.values.remove(upStationTerminus);
-        }
-    }
-
-    private void validateSectionsDefaultSize() {
-        if (this.values.size() == DEFAULT_SECTIONS_SIZE) {
-            throw new DeleteSectionFailedException(SECTION_DEFAULT_SIZE.getMessage());
-        }
-    }
-
-    private void validateContainsStation(Station deleteStation) {
-        boolean hasNotContains = this.values.stream().noneMatch(v -> v.containsStation(deleteStation));
-        if (hasNotContains) {
-            throw new NotFoundSectionException(deleteStation.getId());
-        }
-    }
 }
