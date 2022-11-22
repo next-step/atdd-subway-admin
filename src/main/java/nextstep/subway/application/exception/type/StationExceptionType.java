@@ -1,4 +1,4 @@
-package nextstep.subway.common.type;
+package nextstep.subway.application.exception.type;
 
 public enum StationExceptionType {
     NOT_FOUND_STATION("존재하지 않는 역이에요");

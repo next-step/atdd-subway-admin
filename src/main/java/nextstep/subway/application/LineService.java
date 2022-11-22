@@ -1,19 +1,18 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.UpdateLineRequest;
-import nextstep.subway.common.exception.NotFoundDataException;
+import nextstep.subway.application.exception.exception.NotFoundDataException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.common.type.LineExceptionType.NOT_FOUND_LINE;
+import static nextstep.subway.application.exception.type.LineExceptionType.NOT_FOUND_LINE;
 
 @Service
 public class LineService {
@@ -29,10 +28,7 @@ public class LineService {
     public LineResponse saveLine(LineRequest request) {
         Station upStation = stationService.findStation(request.getUpStationId());
         Station downStation = stationService.findStation(request.getDownStationId());
-
-        Line saveLine = lineRepository.save(
-                Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance())
-        );
+        Line saveLine = lineRepository.save(Line.of(request.getName(), request.getColor(), upStation, downStation, request.getDistance()));
 
         return LineResponse.of(saveLine);
     }
@@ -49,7 +45,6 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLine(Long lineId) {
         Line line = findByLineId(lineId);
-
         return LineResponse.of(line);
     }
 
@@ -67,5 +62,16 @@ public class LineService {
     @Transactional
     public void deleteLine(Long lineId) {
         lineRepository.deleteById(lineId);
+    }
+
+    @Transactional
+    public LineResponse addLineStation(Long lineId, SectionRequest sectionRequest) {
+        Line line = findByLineId(lineId);
+
+        Station upStation = stationService.findStation(sectionRequest.getUpStationId());
+        Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+        line.addLineStation(LineStation.of(upStation, downStation, sectionRequest.getDistance()));
+
+        return LineResponse.of(line);
     }
 }

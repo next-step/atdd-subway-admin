@@ -1,11 +1,15 @@
 package nextstep.subway.domain;
 
 
-import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import nextstep.subway.application.exception.exception.NotValidDataException;
 import org.springframework.util.StringUtils;
+
+import javax.persistence.*;
+import java.util.List;
+import java.util.Objects;
+
+import static nextstep.subway.application.exception.type.ValidExceptionType.NOT_VALID_COLOR;
+import static nextstep.subway.application.exception.type.ValidExceptionType.NOT_VALID_NAME;
 
 
 @Entity
@@ -19,56 +23,40 @@ public class Line extends BaseEntity {
     @Column(unique = true, nullable = false)
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
-
-    @Column(nullable = false)
-    private int distance;
-
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
 
     private Line(String name, String color, Station upStation, Station downStation, int distance) {
+        checkValidNamePresent(name);
+        checkValidColorPresent(color);
+
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        addLineStation(LineStation.of(upStation, downStation, distance));
+    }
+
+    private void checkValidColorPresent(String color) {
+        if (Objects.isNull(color)) {
+            throw new NotValidDataException(NOT_VALID_COLOR.getMessage());
+        }
+    }
+
+    private void checkValidNamePresent(String name) {
+        if (Objects.isNull(name)) {
+            throw new NotValidDataException(NOT_VALID_NAME.getMessage());
+        }
+    }
+
+    public void addLineStation(LineStation station) {
+        lineStations.addLineStation(station);
+        station.addLine(this);
     }
 
     public static Line of(String name, String color, Station upStation, Station downStation, int distance) {
         return new Line(name, color, upStation, downStation, distance);
-    }
-
-    public Line(String name) {
-        this.name = name;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-
-    public String getColor() {
-        return color;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public List<Station> getRelationStation() {
-        return Arrays.asList(this.upStation, this.downStation);
     }
 
     public void updateNameAndColor(String name, String color) {
@@ -79,5 +67,21 @@ public class Line extends BaseEntity {
         if (StringUtils.hasText(color)) {
             this.color = color;
         }
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<Station> getLineStations() {
+        return lineStations.getStations();
     }
 }
