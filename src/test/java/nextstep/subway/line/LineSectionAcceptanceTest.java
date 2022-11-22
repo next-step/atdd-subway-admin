@@ -14,18 +14,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -66,6 +60,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findResponse.jsonPath());
         assertThat(isSameSectionCount(sections.size(), 2)).isTrue();
+        assertThat(convertStationName(sections)).containsExactly("강남역", "성수역", "구의역");
 
     }
 
@@ -126,9 +121,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("이미 여러 구간이 존재하는 구간 사이에 새로운 구간을 등록 할 수 있다.(현재 구간 강남역-화곡역-성수역-온수역 )")
-    @ParameterizedTest
-    @MethodSource("createExpectDistance")
-    void addSectionMiddleExistManySection(List<Long> expectDistance) {
+    @Test
+    void addSectionMiddleExistManySection() {
         //given
         createManySection();
 
@@ -139,7 +133,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findResponse.jsonPath());
-        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(expectDistance);
+        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(Arrays.asList(1L, 6L, 3L, 1L));
 
     }
 
@@ -199,6 +193,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
         assertThat(sections).hasSize(1);
         assertThat(sections.get(0).getDistance()).isEqualTo(1L);
+        assertThat(convertStationName(sections)).containsExactly("성수역", "홍대역");
     }
 
     @DisplayName("하행 종점을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간 존재)")
@@ -216,6 +211,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
         assertThat(sections).hasSize(1);
         assertThat(sections.get(0).getDistance()).isEqualTo(10L);
+        assertThat(convertStationName(sections)).containsExactly("강남역", "성수역");
     }
 
     @DisplayName("중간 구간을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간 존재)")
@@ -232,6 +228,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
         assertThat(sections.get(0).getDistance()).isEqualTo(11L);
+        assertThat(convertStationName(sections)).containsExactly("강남역", "홍대역");
     }
 
     @DisplayName("중간 구간을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간- 구의 존재)")
@@ -249,6 +246,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
         assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(Arrays.asList(10L, 2L));
+        assertThat(convertStationName(sections)).containsExactly("강남역", "성수역", "구의역");
     }
 
     private ExtractableResponse<Response> deleteSection(Long id, Station hongDaeStation) {
@@ -259,7 +257,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
                 .then().log().all()
                 .extract();
     }
-
 
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
         Map<String, Object> params = new HashMap<>();
@@ -304,8 +301,12 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         createSection(line.getId(), seungSuStation.getId(), otherStation.getId(), 1L);
     }
 
-    private static Stream<Arguments> createExpectDistance() {
-        List<Long> distances = Arrays.asList(1L, 6L, 3L, 1L);
-        return Stream.of(Arguments.of(distances));
+    private List<String> convertStationName(List<SectionResponse> responses) {
+        LinkedHashSet<String> names = new LinkedHashSet<>();
+        responses.forEach(v -> {
+            names.add(v.getUpStationName());
+            names.add(v.getDownStationName());
+        });
+        return new ArrayList<>(names);
     }
 }
