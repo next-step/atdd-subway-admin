@@ -332,3 +332,14 @@ host: localhost:52165
 4. List<Station>을 별도 일급 컬렉션으로 묶어 사용
    - [LineStations 예시 코드](https://github.com/next-step/atdd-subway-map/blob/boorownie/src/main/java/nextstep/subway/line/domain/LineStations.java)
    - [JPA @Embedded And @Embeddable 활용](https://www.baeldung.com/jpa-embedded-embeddable)
+
+### 3단계 피드백
+- [ ] Entity find 시 `RuntimeException` 외에 의미있는 Exception으로 대체해 볼 것
+  - RuntimeException -> PersistenceException -> EntityExcistsException 의 구조로 된 Exception 등등..
+- [x] connect 같은 의미있는 메서드로 추출
+  - [ ] 이참에 `LineStation`이란 명명도 조금 더 의미있는 `Section`이란 이름으로 변경해보자. 
+- [ ] 에러메시지 Enum 혹은 상수로 관리
+- [ ] `getOrderedLineStations()` 메소드 내에서 Optional 값을 재할당 하는 과정에서 버그가 생길 경우 무한루프로 빠질 수 있는 위험한 코드.
+  - Optional을 사용하지 않는다면?
+  - 구간의 순서는 어떻게 찾을 지 고민..
+- [x] 제너릭형에 타입 명시!
