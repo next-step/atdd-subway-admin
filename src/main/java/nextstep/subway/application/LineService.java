@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import nextstep.subway.constants.ErrorCode;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Lines;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,15 +35,26 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Optional<Line> retrieveLine = lineRepository.findById(id);
-        return LineResponse.of(retrieveLine.get());
+        Line line = lineRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
+        return LineResponse.of(line);
     }
 
     @Transactional
     public LineResponse modifyLine(Long id, LineRequest lineRequest) {
-        Optional<Line> retrieveLine = lineRepository.findById(id);
-        Line line = retrieveLine.get();
+        Line line = lineRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
         line.modify(lineRequest.getName(), lineRequest.getColor());
         return LineResponse.of(lineRepository.save(line));
+    }
+
+    @Transactional
+    public void deleteLine(Long id) {
+        Line line = lineRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
+        lineRepository.delete(line);
     }
 }
