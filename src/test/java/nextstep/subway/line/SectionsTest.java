@@ -7,6 +7,7 @@ import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.exception.NoRelationStationException;
 import nextstep.subway.line.exception.SameStationException;
+import nextstep.subway.line.exception.SingleSectionException;
 import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,6 +89,14 @@ class SectionsTest {
         assertThat(sections.getSections())
             .hasSize(1)
             .containsExactly(new Section(강남역, 블루보틀역, 7));
+    }
+
+    @Test
+    void 마지막_구간_제거_오류() {
+        Sections sections = new Sections(제1구간);
+        assertThatThrownBy(() -> sections.removeStation(강남역))
+            .isInstanceOf(SingleSectionException.class)
+            .hasMessage("단일구간 노선의 마지막 역은 제거할 수 없습니다.");
     }
 
 }

@@ -12,6 +12,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.SectionResponse;
 import nextstep.subway.line.exception.NoStationException;
+import nextstep.subway.line.exception.SingleSectionException;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

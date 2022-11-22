@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import nextstep.subway.line.exception.NoRelationStationException;
 import nextstep.subway.line.exception.SameStationException;
+import nextstep.subway.line.exception.SingleSectionException;
 import nextstep.subway.station.domain.Station;
 
 @Embeddable
@@ -65,6 +66,10 @@ public class Sections {
 
         if (downStationSection.isPresent() && !upStationSection.isPresent()) {
             sections.remove(downStationSection.get());
+        }
+
+        if (sections.size() == 0) {
+            throw new SingleSectionException();
         }
     }
 
