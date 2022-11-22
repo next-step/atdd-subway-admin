@@ -37,12 +37,4 @@ public class LineResponse {
         stations = line.getStations().stream().map(StationResponse::of).collect(Collectors.toList());
         totalDistance = line.getSections().stream().mapToInt(s -> s.getDistance()).sum();
     }
-
-    @Data
-    public static class Section {
-        private Long id;
-        private Long upStationId;
-        private Long downStationId;
-        private int distance;
-    }
 }
