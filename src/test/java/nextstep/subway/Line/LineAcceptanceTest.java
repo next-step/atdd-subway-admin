@@ -31,11 +31,14 @@ class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    private Map<String, String> params;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        params = LineAcceptanceTest.of("2호선", "green");
     }
 
     /**
@@ -46,7 +49,6 @@ class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        Map<String, String> params = LineAcceptanceTest.of("2호선", "green");
         ExtractableResponse<Response> response = createLine(params);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -94,7 +96,6 @@ class LineAcceptanceTest {
     @Test
     void retrieveTheLine() {
         // given
-        Map<String, String> params = LineAcceptanceTest.of("2호선", "green");
         ExtractableResponse<Response> response = createLine(params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // when
@@ -115,7 +116,6 @@ class LineAcceptanceTest {
     @Test
     void modifyTheLine() {
         // given
-        Map<String, String> params = LineAcceptanceTest.of("2호선", "green");
         ExtractableResponse<Response> response = createLine(params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // when
@@ -145,7 +145,6 @@ class LineAcceptanceTest {
     @Test
     void deleteTheLine() {
         // given
-        Map<String, String> params = LineAcceptanceTest.of("2호선", "green");
         ExtractableResponse<Response> response = createLine(params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // when
