@@ -25,8 +25,7 @@ public class LineService {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(RuntimeException::new);
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(RuntimeException::new);
         Line line = lineRequest.toLine();
-        line.addLineStation(new LineStation(null, upStation, 0));
-        line.addLineStation(new LineStation(upStation, downStation, lineRequest.getDistance()));
+        line.connect(upStation, downStation);
 
         return lineRepository.save(line);
     }
