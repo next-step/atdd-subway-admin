@@ -11,11 +11,21 @@ import java.util.List;
 @Embeddable
 public class Sections {
 
+    public static final String SECTION_DUPLIDATE_EXCEPTION_MESSAGE = "상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.";
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
+        if (size() > 1) {
+            validateSection(section);
+        }
         this.sections.add(section);
+    }
+
+    private void validateSection(Section section) {
+        if (getStations().contains(section.getUpStation()) && getStations().contains(section.getDownStation())) {
+            throw new IllegalArgumentException(SECTION_DUPLIDATE_EXCEPTION_MESSAGE);
+        }
     }
 
     public int size() {
