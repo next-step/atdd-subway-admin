@@ -5,10 +5,11 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.utils.CommonMethodFixture;
+import org.assertj.core.api.Assertions;
 import org.springframework.http.HttpStatus;
 
 import static nextstep.subway.line.LineAcceptanceStep.*;
-import static nextstep.subway.station.StationAcceptanceStep.*;
+import static nextstep.subway.station.StationAcceptanceStep.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
@@ -59,12 +60,11 @@ public class LineSectionStep extends CommonMethodFixture{
 
     public static void 구간_등록_실패(ExtractableResponse<Response> response) {
         // 500
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     public static void 구간_삭제_실패(ExtractableResponse<Response> response) {
-        // 500
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private static void 구간_등록_결과_검증(ExtractableResponse<Response> response, int totalDistance, int count) {

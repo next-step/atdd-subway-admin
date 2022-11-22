@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import com.google.common.collect.Lists;
+import javassist.tools.web.BadHttpRequest;
+import nextstep.subway.exception.DataRemoveException;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -126,7 +128,7 @@ public class Sections {
 
     private void validateOnlyOneSection() {
         if (sections.size() == SECTIONS_MIN_SIZE) {
-            throw new IllegalArgumentException(NOT_VALID_REMOVE_ONLY_ONE_SECTION);
+            throw new DataRemoveException(NOT_VALID_REMOVE_ONLY_ONE_SECTION);
         }
     }
 
