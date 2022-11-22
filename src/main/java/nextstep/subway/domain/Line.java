@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineRequest;
-
 import javax.persistence.*;
 
 @Entity
@@ -11,34 +9,31 @@ public class Line {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "upStationId")
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "downStationId")
-    private Station downStation;
-
     private String name;
     private String color;
-    private int distance;
+
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {}
 
-    public Line(String name, String color, int distance,
-                Station upStation, Station downStation) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
-
     }
 
-    public Line updateInfo(LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+    public Line update(Line line) {
+        this.name = line.getName();
+        this.color = line.getColor();
         return this;
+    }
+
+    public void addSections(Sections sections) {
+        this.sections = sections;
+    }
+
+    public void infixSection(Section section) {
+        sections.infix(section);
     }
 
     public Long getId() {
@@ -53,11 +48,8 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Sections getSections() {
+        return sections;
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
 }

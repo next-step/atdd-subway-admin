@@ -1,17 +1,19 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.EntityNotFoundException;
 import nextstep.subway.repository.LineRepository;
+import nextstep.subway.repository.SectionRepository;
 import nextstep.subway.repository.StationRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 
@@ -20,11 +22,15 @@ public class LineService {
 
     private LineRepository lineRepository;
 
+    private SectionRepository sectionRepository;
+
     private StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository,
+                       SectionRepository sectionRepository,
                        StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.sectionRepository = sectionRepository;
         this.stationRepository = stationRepository;
     }
 
@@ -32,8 +38,14 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
-        Line line = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(line);
+
+        Line line = lineRequest.toLine();
+
+        Sections sections = new Sections();
+        sections.add(new Section(upStation, downStation, line, lineRequest.getDistance()));
+        line.addSections(sections);
+
+        return LineResponse.of(lineRepository.save(line));
     }
 
     @Transactional(readOnly = true)
@@ -52,33 +64,22 @@ public class LineService {
     @Transactional
     public LineResponse updateById(Long id, LineRequest lineRequest) {
         Line line = getLine(id);
-        return LineResponse.of(line.updateInfo(lineRequest));
+        return LineResponse.of(line.update(lineRequest.toLine()));
     }
 
     @Transactional
     public void deleteById(Long id) {
-        checkExistLine(lineRepository.findById(id), id);
-        lineRepository.deleteById(id);
+        lineRepository.delete(getLine(id));
     }
 
-    private Line getLine(Long id) {
-        Optional<Line> line = lineRepository.findById(id);
-        checkExistLine(line, id);
-        return line.get();
-    }
-
-    private void checkExistLine(Optional<Line> line, Long id) {
-        line.orElseThrow(() -> new EntityNotFoundException("Line", id));
+    public Line getLine(Long id) {
+        return lineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Line", id));
     }
 
     private Station getStation(Long id) {
-        Optional<Station> station = stationRepository.findById(id);
-        checkExistStation(station, id);
-        return station.get();
-    }
-
-    private void checkExistStation(Optional<Station> station, Long id) {
-        station.orElseThrow(() -> new EntityNotFoundException("Station", id));
+        return stationRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Station", id));
     }
 
 }

@@ -18,6 +18,13 @@ public class Station extends BaseEntity {
         this.name = name;
     }
 
+    public boolean equalsById(Station station) {
+        if (id == null) {
+            return false;
+        }
+        return id.equals(station.getId());
+    }
+
     public Long getId() {
         return id;
     }
@@ -25,5 +32,4 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
-
 }
