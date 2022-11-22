@@ -75,14 +75,16 @@ public class Sections {
     private void changeSectionsAndRemove(Station station, Section deleteSection) {
         Section downSection = sections.stream()
                 .filter(u -> u.getUpStation().equals(station))
-                .findFirst().get();
+                .findFirst()
+                .get();
         downSection.changeDownStation(deleteSection);
 
         // section-line 매핑 끊기
         deleteSection.removeFromLine();
         sections.remove(deleteSection);
-    }
 
+    }
+    
 
     public List<Station> getAllStations() {
         return sections.stream()
@@ -171,7 +173,7 @@ public class Sections {
     }
 
     private void changeSections(Section newSection) {
-        // upStaion change
+        // upStation change
         sections.stream()
                 .filter(s -> s.getUpStation().equals(newSection.getUpStation()))
                 .findAny()
