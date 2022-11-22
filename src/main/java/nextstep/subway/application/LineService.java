@@ -84,8 +84,8 @@ public class LineService {
     }
 
     private Section toSectionWithLine(LineRequest lineRequest) {
-        Station upStation = findStationById(Long.valueOf(lineRequest.getUpLastStationId()));
-        Station downStation = findStationById(Long.valueOf(lineRequest.getDownLastStationId()));
+        Station upStation = findStationById(lineRequest.getUpLastStationId());
+        Station downStation = findStationById(lineRequest.getDownLastStationId());
         return Section.of(upStation, downStation, lineRequest.getDistance());
     }
 

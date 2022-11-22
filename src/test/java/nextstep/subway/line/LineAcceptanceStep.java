@@ -18,7 +18,7 @@ public class LineAcceptanceStep extends CommonMethodFixture {
     public static final String SLASH = "/";
     public static final String LINE_PATH = "/lines";
 
-    public static ExtractableResponse<Response> 노선_한개_생성한다(int upLastStationId, int downLastStationId) {
+    public static ExtractableResponse<Response> 노선_한개_생성한다(Long upLastStationId, Long downLastStationId) {
         LineRequest request = LineRequest.builder()
                 .name("2호선")
                 .color("green darken-2")
@@ -67,7 +67,7 @@ public class LineAcceptanceStep extends CommonMethodFixture {
         assertThat(allLineNames).containsAnyOf(lineName);
     }
 
-    public static void 노선_2개_생성(int upLastStationId, int downLastStationId) {
+    public static void 노선_2개_생성(Long upLastStationId, Long downLastStationId) {
         LineRequest request1 = LineRequest.builder()
                 .name("2호선")
                 .color("red darken-2")

@@ -26,8 +26,8 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
-    private int upLastStationId;
-    private int downLastStationId;
+    private Long upLastStationId;
+    private Long downLastStationId;
 
 
     @BeforeEach

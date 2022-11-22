@@ -19,8 +19,8 @@ public class LineSectionStep extends CommonMethodFixture{
 
 
     public static ExtractableResponse<Response> 역_3개와_노선을_생성한다() {
-        int upLastStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
-        int downLastStationId = 지하철역을_생성한다("선릉역").jsonPath().get("id");
+        Long upLastStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
+        Long downLastStationId = 지하철역을_생성한다("선릉역").jsonPath().get("id");
         지하철역을_생성한다("역삼역");
 
         return 노선_한개_생성한다(upLastStationId, downLastStationId);
@@ -65,6 +65,8 @@ public class LineSectionStep extends CommonMethodFixture{
 
     public static void 구간_삭제_실패(ExtractableResponse<Response> response) {
         Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
+        // 메세지 확인은?
     }
 
     private static void 구간_등록_결과_검증(ExtractableResponse<Response> response, int totalDistance, int count) {
