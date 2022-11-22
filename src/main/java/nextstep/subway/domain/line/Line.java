@@ -3,6 +3,7 @@ package nextstep.subway.domain.line;
 import nextstep.subway.domain.station.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "line")
@@ -76,5 +77,23 @@ public class Line {
     public void delete() {
         this.upStation = null;
         this.downStation = null;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Line line = (Line) o;
+
+        if (!Objects.equals(id, line.id)) return false;
+        return Objects.equals(name, line.name);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = id != null ? id.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
     }
 }
