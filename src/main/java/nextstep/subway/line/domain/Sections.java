@@ -51,22 +51,27 @@ public class Sections {
     }
 
     public void removeStation(final Station station) {
-        Optional<Section> upSection = getUpSection(station);
-        Optional<Section> downSection = getDownSection(station);
+        Optional<Section> downStationSection = downStationSection(station);
+        Optional<Section> upStationSection = upStationSection(station);
 
-        if (upSection.isPresent() && downSection.isPresent()) {
-            upSection.ifPresent(section -> section.merge(downSection.get()));
-            sections.remove(downSection.get());
+        if (downStationSection.isPresent() && upStationSection.isPresent()) {
+            downStationSection.ifPresent(section -> section.merge(upStationSection.get()));
+            sections.remove(upStationSection.get());
         }
+
+        if (upStationSection.isPresent() && !downStationSection.isPresent()) {
+            sections.remove(upStationSection.get());
+        }
+
     }
 
-    private Optional<Section> getDownSection(final Station station) {
+    private Optional<Section> upStationSection(final Station station) {
         return sections.stream()
             .filter(section -> section.isUpStation(station))
             .findAny();
     }
 
-    private Optional<Section> getUpSection(final Station station) {
+    private Optional<Section> downStationSection(final Station station) {
         return sections.stream()
             .filter(section -> section.isDownStation(station))
             .findAny();

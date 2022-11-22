@@ -72,4 +72,13 @@ class SectionsTest {
             .containsExactly(new Section(강남역, 블루보틀역, 14));
     }
 
+    @Test
+    void 상행_종점_제거() {
+        Sections sections = new Sections(제1구간, 제2구간);
+        sections.removeStation(강남역);
+        assertThat(sections.getSections())
+            .hasSize(1)
+            .containsExactly(new Section(역삼역, 블루보틀역, 7));
+    }
+
 }
