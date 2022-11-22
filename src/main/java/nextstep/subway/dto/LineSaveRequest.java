@@ -2,7 +2,7 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.exception.ErrorStatus;
-import nextstep.subway.exception.IllegalRequestBody;
+import nextstep.subway.exception.IllegalRequestBodyException;
 
 public class LineSaveRequest {
     private static final Long MIN_DISTANCE = 0L;
@@ -53,25 +53,25 @@ public class LineSaveRequest {
 
     private void validateName(String name) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_NAME.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.BAD_REQUEST_NAME.getMessage());
         }
     }
 
     private void validateColor(String color) {
         if (color == null || color.isEmpty()) {
-            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_COLOR.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.BAD_REQUEST_COLOR.getMessage());
         }
     }
 
     private void validateDistance(Long distance) {
         if (distance <= MIN_DISTANCE) {
-            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_DISTANCE.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.BAD_REQUEST_DISTANCE.getMessage());
         }
     }
 
     private void validateStationId(Long upStationId) {
         if (upStationId < MIN_STATION_ID) {
-            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_STATION_ID.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.BAD_REQUEST_STATION_ID.getMessage());
         }
     }
 }

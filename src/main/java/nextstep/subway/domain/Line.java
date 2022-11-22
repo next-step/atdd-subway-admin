@@ -45,6 +45,9 @@ public class Line extends BaseEntity {
     public Sections getSections() {
         return sections;
     }
+    public void deleteSection(Station deleteStation) {
+        this.sections.deleteSection(deleteStation);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -67,4 +70,5 @@ public class Line extends BaseEntity {
         this.name = lineUpdateRequest.getName();
         this.color = lineUpdateRequest.getColor();
     }
+
 }

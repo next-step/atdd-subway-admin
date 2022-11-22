@@ -1,7 +1,7 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.exception.ErrorStatus;
-import nextstep.subway.exception.IllegalRequestBody;
+import nextstep.subway.exception.IllegalRequestBodyException;
 
 public class LineUpdateRequest {
     private String name;
@@ -24,13 +24,13 @@ public class LineUpdateRequest {
 
     private void validateName(String name) {
         if (name == null || name.isEmpty()) {
-            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_NAME.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.BAD_REQUEST_NAME.getMessage());
         }
     }
 
     private void validateColor(String color) {
         if (color == null || color.isEmpty()) {
-            throw new IllegalRequestBody(ErrorStatus.BAD_REQUEST_COLOR.getMessage());
+            throw new IllegalRequestBodyException(ErrorStatus.BAD_REQUEST_COLOR.getMessage());
         }
     }
 }

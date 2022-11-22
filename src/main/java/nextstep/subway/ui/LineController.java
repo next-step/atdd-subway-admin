@@ -52,7 +52,13 @@ public class LineController {
 
     @GetMapping("/lines/{lineId}/sections")
     public ResponseEntity<SectionsResponse> createSection(@PathVariable Long lineId) {
-        SectionsResponse sectionsResponse = lineService.findSectionByLine(lineId);
+        SectionsResponse sectionsResponse = lineService.findSectionsByLine(lineId);
         return ResponseEntity.ok(sectionsResponse);
+    }
+
+    @DeleteMapping("/lines/{lineId}/sections")
+    public ResponseEntity<SectionsResponse> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.deleteSection(lineId, stationId);
+        return ResponseEntity.ok().build();
     }
 }

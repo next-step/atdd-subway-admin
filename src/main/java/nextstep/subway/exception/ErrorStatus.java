@@ -7,7 +7,8 @@ public enum ErrorStatus {
     BAD_REQUEST_STATION_ID("[station id] must over than 1"),
     DUPLICATE_SECTION("[section] upStation and downStation do not duplicate"),
     DISTANCE_LENGTH("[distance] new Section distance must small exist section distance"),
-    SECTION_STATION_ERROR("[section station] 상행 및 하행 역은 반드시 기존에 있는 노선에 하나라도 포함되어야 한다.");
+    SECTION_STATION_ERROR("[section station] 상행 및 하행 역은 반드시 기존에 있는 노선에 하나라도 포함되어야 한다."),
+    SECTION_DEFAULT_SIZE("[section] 구간이 하나이기 때문에 삭제 할 수 없습니다.");
     private String message;
 
     ErrorStatus(String message) {

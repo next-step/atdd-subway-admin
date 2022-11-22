@@ -1,7 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.ErrorStatus;
-import nextstep.subway.exception.IllegalRequestBody;
+import nextstep.subway.exception.IllegalRequestBodyException;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -46,10 +46,6 @@ public class Section extends BaseEntity {
         return this.getUpStation().equals(section.downStation) && this.getDownStation().equals(section.upStation);
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public void updateUpStation(Section newSection) {
         validateDistance(newSection);
         this.upStation = newSection.getDownStation();
@@ -60,12 +56,6 @@ public class Section extends BaseEntity {
         validateDistance(newSection);
         this.downStation = newSection.getUpStation();
         this.distance -= newSection.distance;
-    }
-
-    private void validateDistance(Section newSection) {
-        if (this.distance <= newSection.distance) {
-            throw new IllegalRequestBody(ErrorStatus.DISTANCE_LENGTH.getMessage());
-        }
     }
 
     public boolean anyMatch(Section section) {
@@ -81,8 +71,26 @@ public class Section extends BaseEntity {
         return this.upStation.equals(section.getUpStation());
     }
 
+    public boolean containsStation(Station deleteStation) {
+        return this.upStation.equals(deleteStation) || this.downStation.equals(deleteStation);
+    }
+
+    public Section merge(Section downStationSection) {
+        return new Section(this.line, this.upStation, downStationSection.downStation, this.distance + downStationSection.distance);
+    }
+
     public Long getDistance() {
         return distance;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    private void validateDistance(Section newSection) {
+        if (this.distance <= newSection.distance) {
+            throw new IllegalRequestBodyException(ErrorStatus.DISTANCE_LENGTH.getMessage());
+        }
     }
 
     @Override

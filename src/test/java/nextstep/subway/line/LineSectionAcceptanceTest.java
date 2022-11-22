@@ -14,18 +14,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -33,6 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class LineSectionAcceptanceTest extends AcceptanceTest {
     private static final String SECTIONS = "sections";
     private static final String SECTION_MAIN_PATH = LineConstant.LINE_MAIN_PATH + "/%d" + "/sections";
+    private static final String STATION_ID = "stationId";
     @Autowired
     private LineRepository lineRepository;
     @Autowired
@@ -42,7 +37,6 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     private Station seungSuStation;
     private Station hongDaeStation;
     private Station guiStation;
-
 
     @BeforeEach
     void init() {
@@ -66,6 +60,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findResponse.jsonPath());
         assertThat(isSameSectionCount(sections.size(), 2)).isTrue();
+        assertThat(convertStationName(sections)).containsExactly("강남역", "성수역", "구의역");
 
     }
 
@@ -126,9 +121,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     }
 
     @DisplayName("이미 여러 구간이 존재하는 구간 사이에 새로운 구간을 등록 할 수 있다.(현재 구간 강남역-화곡역-성수역-온수역 )")
-    @ParameterizedTest
-    @MethodSource("createExpectDistance")
-    void addSectionMiddleExistManySection(List<Long> expectDistance) {
+    @Test
+    void addSectionMiddleExistManySection() {
         //given
         createManySection();
 
@@ -139,7 +133,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         ExtractableResponse<Response> findResponse = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findResponse.jsonPath());
-        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(expectDistance);
+        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(Arrays.asList(1L, 6L, 3L, 1L));
 
     }
 
@@ -156,12 +150,112 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("새로운 구간을 저장하려고 하나 기존 구간에 부합하는 upStation ,downStation이 존재 하지 않는다.")
     @Test
-    void addSectionMiddleNotExsitUpAndDownStation() {
+    void addSectionMiddleNotExistUpAndDownStation() {
         //when
         ExtractableResponse<Response> saveResponse = createSection(line.getId(), hongDaeStation.getId(), guiStation.getId(), 11L);
 
         //then
         assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("삭제하고자 하는 역이 구간에 존재 하지 않아서 삭제 할 수 없다.(기본 강남 - 성수역 구간만 존재)")
+    @Test
+    void deleteSectionFailedStationNotInclude() {
+        //when
+        ExtractableResponse<Response> deleteResonse = deleteSection(line.getId(), hongDaeStation);
+
+        //then
+        assertThat(deleteResonse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("구간이 하나인 경우에는 삭제 할 수 없다.(기본 강남 - 성수역 구간만 존재)")
+    @Test
+    void deleteSectionFailedHasOneSection() {
+        //when
+        ExtractableResponse<Response> deleteResonse = deleteSection(line.getId(), gangNamStation);
+
+        //then
+        assertThat(deleteResonse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    @DisplayName("상행 종점을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간 존재)")
+    @Test
+    void deleteUpStationTerminus() {
+        //given
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), seungSuStation.getId(), hongDaeStation.getId(), 1L);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = deleteSection(line.getId(), gangNamStation);
+
+        //then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findSection.jsonPath());
+        assertThat(sections).hasSize(1);
+        assertDistance(sections, Collections.singletonList(1L));
+        assertStationName(sections, Arrays.asList("성수역", "홍대역"));
+    }
+
+    @DisplayName("하행 종점을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간 존재)")
+    @Test
+    void deleteDownStationTerminus() {
+        //given
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), seungSuStation.getId(), hongDaeStation.getId(), 1L);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = deleteSection(line.getId(), hongDaeStation);
+
+        //then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findSection.jsonPath());
+        assertThat(sections).hasSize(1);
+        assertDistance(sections, Collections.singletonList(10L));
+        assertStationName(sections, Arrays.asList("강남역", "성수역"));
+    }
+
+    @DisplayName("중간 구간을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간 존재)")
+    @Test
+    void deleteMiddleSection() {
+        //given
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), seungSuStation.getId(), hongDaeStation.getId(), 1L);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = deleteSection(line.getId(), seungSuStation);
+
+        //then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findSection.jsonPath());
+        assertDistance(sections, Collections.singletonList(11L));
+        assertStationName(sections, Arrays.asList("강남역", "홍대역"));
+    }
+
+    @DisplayName("중간 구간을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간- 구의 존재)")
+    @Test
+    void deleteMiddleSectionManyCase() {
+        //given
+        createSection(line.getId(), seungSuStation.getId(), hongDaeStation.getId(), 1L);
+        ExtractableResponse<Response> saveResponse = createSection(line.getId(), hongDaeStation.getId(), guiStation.getId(), 1L);
+
+        //when
+        ExtractableResponse<Response> deleteResponse = deleteSection(line.getId(), hongDaeStation);
+
+        //then
+        assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
+        List<SectionResponse> sections = convertSection(findSection.jsonPath());
+        assertDistance(sections, Arrays.asList(10L, 2L));
+        assertStationName(sections, Arrays.asList("강남역", "성수역", "구의역"));
+    }
+
+    private ExtractableResponse<Response> deleteSection(Long id, Station hongDaeStation) {
+        return RestAssured.given().log().all()
+                .param(STATION_ID, hongDaeStation.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(String.format(SECTION_MAIN_PATH, id))
+                .then().log().all()
+                .extract();
     }
 
     private ExtractableResponse<Response> createSection(Long lineId, Long upStationId, Long downStationId, Long distance) {
@@ -207,8 +301,21 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         createSection(line.getId(), seungSuStation.getId(), otherStation.getId(), 1L);
     }
 
-    private static Stream<Arguments> createExpectDistance() {
-        List<Long> distances = Arrays.asList(1L, 6L, 3L, 1L);
-        return Stream.of(Arguments.of(distances));
+    private List<String> convertStationName(List<SectionResponse> responses) {
+        LinkedHashSet<String> names = new LinkedHashSet<>();
+        responses.forEach(v -> {
+            names.add(v.getUpStationName());
+            names.add(v.getDownStationName());
+        });
+        return new ArrayList<>(names);
+    }
+
+    private void assertDistance(List<SectionResponse> sections, List<Long> distance) {
+        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(distance);
+    }
+
+    private void assertStationName(List<SectionResponse> sections, List<String> expectNames) {
+        List<String> stationNames = convertStationName(sections);
+        assertThat(stationNames).containsExactlyElementsOf(expectNames);
     }
 }
