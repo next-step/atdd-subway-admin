@@ -87,4 +87,61 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         응답코드가_일치한다(구간_생성_응답.statusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 새로운 역을 상행 종점으로 등록할 경우
+     * Then 새로운 역이 상행 종점으로 변경된다.
+     */
+    @DisplayName("새로운 역을 상행 종점으로 등록할 경우")
+    @Test
+    void createUpStation() {
+        // given
+        StationResponse 신사역 = 지하철역_생성("신사역").as(StationResponse.class);
+
+        // when
+        SectionRequest 기존_구간이_포함되지_않는_구간 = new SectionRequest(신사역.getId(), 강남역.getId(), 10);
+        ExtractableResponse<Response> 구간_생성_응답 = 구간_생성(신분당선.getId(), 기존_구간이_포함되지_않는_구간);
+
+        // then
+        응답코드가_일치한다(구간_생성_응답.statusCode(), HttpStatus.OK);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 새로운 역을 하행 종점으로 등록할 경우
+     * Then 새로운 역이 하행 종점으로 변경된다.
+     */
+    @DisplayName("새로운 역을 하행 종점으로 등록할 경우")
+    @Test
+    void createDownStation() {
+        // given
+        StationResponse 수원역 = 지하철역_생성("수원역").as(StationResponse.class);
+
+        // when
+        SectionRequest 기존_구간이_포함되지_않는_구간 = new SectionRequest(광교역.getId(), 수원역.getId(), 15);
+        ExtractableResponse<Response> 구간_생성_응답 = 구간_생성(신분당선.getId(), 기존_구간이_포함되지_않는_구간);
+
+        // then
+        응답코드가_일치한다(구간_생성_응답.statusCode(), HttpStatus.OK);
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 새로운 역을 하행 종점으로 등록할 경우
+     * Then 새로운 역이 하행 종점으로 변경된다.
+     */
+    @DisplayName("역 사이에 새로운 역을 등록할 경우 - 하행선 동일, 상행선 변경")
+    @Test
+    void createBetweenUpStation() {
+        // given
+        StationResponse 수원역 = 지하철역_생성("수원역").as(StationResponse.class);
+
+        // when
+        SectionRequest 기존_구간이_포함되지_않는_구간 = new SectionRequest(수원역.getId(), 광교역.getId(), 15);
+        ExtractableResponse<Response> 구간_생성_응답 = 구간_생성(신분당선.getId(), 기존_구간이_포함되지_않는_구간);
+
+        // then
+        응답코드가_일치한다(구간_생성_응답.statusCode(), HttpStatus.OK);
+    }
 }

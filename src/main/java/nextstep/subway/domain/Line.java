@@ -59,14 +59,60 @@ public class Line extends BaseEntity {
     public void addSection(Section section) {
         section.addLine(this);
 
-        // 상행선 동일 -> 하행선 추가
-        if (Objects.equals(upStation, section.getUpStation())) {
-            sections.addBetweenSection(section);
-            lineStations.add(LineStation.of(this, section.getDownStation()));
+        if (divideUpSection(section)) {
+            return;
+        }
+        if (divideDownSection(section)) {
+            return;
+        }
+        if (addUpSection(section)) {
+            return;
+        }
+        if (addDownSection(section)) {
             return;
         }
 
         throw new IllegalArgumentException(NOT_ALLOW_ADD_SECTION.getMessage());
+    }
+
+    private boolean addDownSection(Section section) {
+        if (Objects.equals(this.downStation, section.getUpStation())) {
+            this.downStation = section.getDownStation();
+            this.lineStations.add(LineStation.of(this, this.downStation));
+            this.sections.add(section);
+            this.distance.add(section.getDistance().value());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean addUpSection(Section section) {
+        if (Objects.equals(this.upStation, section.getDownStation())) {
+            this.upStation = section.getUpStation();
+            this.lineStations.add(LineStation.of(this, this.upStation));
+            this.sections.add(section);
+            this.distance.add(section.getDistance().value());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean divideDownSection(Section section) {
+        if (Objects.equals(this.downStation, section.getDownStation())) {
+            sections.addBetweenSection(section);
+            lineStations.add(LineStation.of(this, section.getUpStation()));
+            return true;
+        }
+        return false;
+    }
+
+    private boolean divideUpSection(Section section) {
+        if (Objects.equals(this.upStation, section.getUpStation())) {
+            this.sections.addBetweenSection(section);
+            this.lineStations.add(LineStation.of(this, section.getDownStation()));
+            return true;
+        }
+        return false;
     }
 
     public void update(String name, String color) {
