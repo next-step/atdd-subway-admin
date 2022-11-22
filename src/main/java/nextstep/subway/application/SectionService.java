@@ -1,9 +1,14 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.NoResultException;
 
 @Service
 @Transactional(readOnly = true)
@@ -18,9 +23,9 @@ public class LineStationService {
 
     @Transactional
     public void addLineStation(Long lineId, SectionRequest sectionRequest) {
-        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(RuntimeException::new);
-        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(RuntimeException::new);
-        Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
+        Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(NoResultException::new);
+        Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(NoResultException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(NoResultException::new);
         line.addLineStation(sectionRequest.toLineStation(upStation, downStation));
     }
 }

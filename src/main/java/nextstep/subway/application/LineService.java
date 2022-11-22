@@ -1,11 +1,15 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,8 +26,8 @@ public class LineService {
 
     @Transactional
     public Line saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(RuntimeException::new);
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(RuntimeException::new);
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NoResultException::new);
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NoResultException::new);
         Line line = lineRequest.toLine();
         line.connect(upStation, downStation);
 
@@ -38,12 +42,12 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long lineId) {
-        return LineResponse.of(lineRepository.findById(lineId).orElseThrow(RuntimeException::new));
+        return LineResponse.of(lineRepository.findById(lineId).orElseThrow(NoResultException::new));
     }
 
     @Transactional
     public void updateLine(Long lineId, LineRequest lineRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(RuntimeException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(NoResultException::new);
         line.update(lineRequest.toLine());
     }
 

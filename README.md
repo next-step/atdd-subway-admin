@@ -334,8 +334,8 @@ host: localhost:52165
    - [JPA @Embedded And @Embeddable 활용](https://www.baeldung.com/jpa-embedded-embeddable)
 
 ### 3단계 피드백
-- [ ] Entity find 시 `RuntimeException` 외에 의미있는 Exception으로 대체해 볼 것
-  - RuntimeException -> PersistenceException -> EntityExcistsException 의 구조로 된 Exception 등등..
+- [x] Entity find 시 `RuntimeException` 외에 의미있는 Exception으로 대체해 볼 것
+  - javax.persistence.NoResultException 으로 변경
 - [x] connect 같은 의미있는 메서드로 추출
   - [ ] 이참에 `LineStation`이란 명명도 조금 더 의미있는 `Section`이란 이름으로 변경해보자. 
 - [ ] 에러메시지 Enum 혹은 상수로 관리

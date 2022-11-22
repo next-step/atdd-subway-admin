@@ -9,6 +9,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.context.annotation.Import;
 
+import javax.persistence.NoResultException;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -63,7 +64,7 @@ public class LineTest {
         flushAndClear();
 
         // when
-        Line newLine = lineRepository.findById(1L).orElseThrow(RuntimeException::new);
+        Line newLine = lineRepository.findById(1L).orElseThrow(NoResultException::new);
         newLine.update(new Line("경기광주선", "bg-blue-100"));
         flushAndClear();
 
