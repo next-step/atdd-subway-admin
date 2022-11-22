@@ -56,23 +56,21 @@ public class Sections {
         Optional<Section> downStationSection = downStationSection(station);
         Optional<Section> upStationSection = upStationSection(station);
 
-        if (downStationSection.isPresent() && upStationSection.isPresent()) {
-            downStationSection.ifPresent(section -> section.merge(upStationSection.get()));
-            sections.remove(upStationSection.get());
-        }
-
-        if (upStationSection.isPresent() && !downStationSection.isPresent()) {
-            sections.remove(upStationSection.get());
-        }
-
-        if (downStationSection.isPresent() && !upStationSection.isPresent()) {
-            sections.remove(downStationSection.get());
-        }
-
         if (!upStationSection.isPresent() && !downStationSection.isPresent()) {
             throw new StationNotExistException();
         }
 
+        if (upStationSection.isPresent()) {
+            downStationSection.ifPresent(downSection -> downSection.merge(upStationSection.get()));
+            removeSection(upStationSection.get());
+            return;
+        }
+
+        downStationSection.ifPresent(this::removeSection);
+    }
+
+    public void removeSection(Section section) {
+        sections.remove(section);
         if (sections.size() == 0) {
             throw new SingleSectionException();
         }
