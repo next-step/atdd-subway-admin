@@ -11,6 +11,8 @@ import nextstep.subway.line.dto.UpdateLineRequest;
 import nextstep.subway.line.exception.IllegalDistanceException;
 import nextstep.subway.line.exception.NoRelationStationException;
 import nextstep.subway.line.exception.SameStationException;
+import nextstep.subway.line.exception.SingleSectionException;
+import nextstep.subway.line.exception.StationNotExistException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -101,4 +103,17 @@ public class LineController {
             .body(exception.getMessage());
     }
 
+    @ExceptionHandler(SingleSectionException.class)
+    public ResponseEntity<String> singleSectionExceptionHandler(
+        final SingleSectionException exception) {
+        return ResponseEntity.badRequest()
+            .body(exception.getMessage());
+    }
+
+    @ExceptionHandler(StationNotExistException.class)
+    public ResponseEntity<String> stationNotExistExceptionHandler(
+        final StationNotExistException exception) {
+        return ResponseEntity.badRequest()
+            .body(exception.getMessage());
+    }
 }

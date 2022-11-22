@@ -5,14 +5,11 @@ import static nextstep.subway.section.SectionFixture.구간_등록;
 import static nextstep.subway.section.SectionFixture.구간_제거;
 import static nextstep.subway.station.StationFixture.지하철역_생성후_아이디_반환;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.SectionResponse;
-import nextstep.subway.line.exception.NoStationException;
-import nextstep.subway.line.exception.SingleSectionException;
 import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -166,9 +163,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_등록(이호선, 강남역, 블루보틀역, 4);
 
         //when
-        assertThatThrownBy(() -> 구간_제거(이호선, 스타벅스역))
-            .isInstanceOf(NoStationException.class)
-            .hasMessage("지하철역 정보가 없습니다.");
+        ExtractableResponse<Response> response = 구간_제거(이호선, 스타벅스역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /*
@@ -180,9 +178,10 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @DisplayName("노선 단일구간 역 제거")
     void deleteStationSingleSection() {
         //when
-        assertThatThrownBy(() -> 구간_제거(이호선, 강남역))
-            .isInstanceOf(SingleSectionException.class)
-            .hasMessage("단일구간 노선의 마지막 역은 제거할 수 없습니다.");
+        ExtractableResponse<Response> response = 구간_제거(이호선, 강남역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test
