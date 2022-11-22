@@ -14,7 +14,7 @@ public class Line extends BaseEntity {
     @Column(unique = true)
     private String color;
     @Embedded
-    private final LineStations lineStations = new LineStations();
+    private final Sections sections = new Sections();
 
     protected Line() {
     }
@@ -29,8 +29,8 @@ public class Line extends BaseEntity {
         this.color = line.color;
     }
 
-    public void addLineStation(LineStation lineStation) {
-        this.lineStations.add(lineStation);
+    public void registerSection(Section section) {
+        this.sections.add(section);
     }
 
     public Long getId() {
@@ -45,12 +45,12 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<LineStation> getLineStations() {
-        return lineStations.values();
+    public List<Section> getSections() {
+        return sections.values();
     }
 
-    public List<LineStation> getOrderedLineStations() {
-        return lineStations.getOrderdLineStations();
+    public List<Section> getOrderedSections() {
+        return sections.getOrderedSections();
     }
 
     @Override

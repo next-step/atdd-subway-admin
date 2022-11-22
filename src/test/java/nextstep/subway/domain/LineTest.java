@@ -59,7 +59,7 @@ public class LineTest {
     void 라인수정_성공() {
         // given
         Line line = new Line("신분당선", "bg-red-600");
-        line.addLineStation(new LineStation(upStation, downStation, 100));
+        line.registerSection(new Section(upStation, downStation, 100));
         lineRepository.save(line);
         flushAndClear();
 

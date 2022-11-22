@@ -19,7 +19,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DataJpaTest
 @Import(DatabaseCleanup.class)
-public class LineStationTest {
+public class SectionTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
     @Autowired
@@ -42,163 +42,163 @@ public class LineStationTest {
         lineRepository.save(new Line("경강선", "bg-blue-600"));
     }
 
-    @DisplayName("라인을 생성하고, station을 linestation으로 추가한다.")
+    @DisplayName("라인을 생성하고, station을 section으로 추가한다.")
     @Test
-    void 라인생성_addLineStation테스트() {
-        // given : 라인과 station을 생성하고, LineStation도 생성
+    void 라인생성_테스트() {
+        // given
         Line line = lineRepository.getById(1L);
         Station upStation = stationRepository.getById(1L);
         Station downStation = stationRepository.getById(2L);
-        LineStation firstLineStation = new LineStation(null, upStation, 0);
-        LineStation secondLineStation = new LineStation(upStation, downStation, 100);
+        Section firstSection = new Section(null, upStation, 0);
+        Section secondSection = new Section(upStation, downStation, 100);
 
         // when
-        line.addLineStation(firstLineStation);
-        line.addLineStation(secondLineStation);
+        line.registerSection(firstSection);
+        line.registerSection(secondSection);
         lineRepository.save(line);
         flushAndClear();
 
-        // then : line의 linestations에 잘 들어갔는 지 확인
+        // then
         Optional<Line> getLine = lineRepository.findById(1L);
         assertThat(getLine).isPresent();
-        assertThat(getLine.get().getLineStations()).containsAll(Arrays.asList(firstLineStation, secondLineStation));
+        assertThat(getLine.get().getSections()).containsAll(Arrays.asList(firstSection, secondSection));
     }
 
     @DisplayName("역 사이에 새로운 역을 등록하는 경우")
     @Test
     void 역_사이에_새로운역_등록() {
-        // line과 station 기반으로 lineStation 생성
+        // given
         Line 신분당선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 경기광주역 = stationRepository.getById(3L);
-        신분당선.addLineStation(new LineStation(null, 판교역, 0));
-        신분당선.addLineStation(new LineStation(판교역, 경기광주역, 100));
+        신분당선.registerSection(new Section(null, 판교역, 0));
+        신분당선.registerSection(new Section(판교역, 경기광주역, 100));
 
-        // when : 라인에 linestation을 추가 후 중간에 midLineStation을 추가
+        // when
         Station 이매역 = stationRepository.getById(2L);
-        신분당선.addLineStation(new LineStation(판교역, 이매역, 40));
+        신분당선.registerSection(new Section(판교역, 이매역, 40));
         lineRepository.save(신분당선);
         flushAndClear();
 
-        // then : line의 linestations에 잘 들어갔는 지 확인
+        // then
         Optional<Line> getLine = lineRepository.findById(1L);
         assertThat(getLine).isPresent();
-        assertThat(getLine.get().getLineStations()).hasSize(3);
+        assertThat(getLine.get().getSections()).hasSize(3);
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록")
     @Test
     void 새로운역_상행_종점_등록() {
-        // line과 station 기반으로 lineStation 생성
+        // given
         Line 경강선 = lineRepository.getById(1L);
         Station 이매역 = stationRepository.getById(2L);
         Station 경기광주역 = stationRepository.getById(3L);
-        경강선.addLineStation(new LineStation(null, 이매역, 0));
-        경강선.addLineStation(new LineStation(이매역, 경기광주역, 100));
+        경강선.registerSection(new Section(null, 이매역, 0));
+        경강선.registerSection(new Section(이매역, 경기광주역, 100));
 
         // when
         Station 판교역 = stationRepository.getById(1L);
-        경강선.addLineStation(new LineStation(판교역, 이매역, 40));
+        경강선.registerSection(new Section(판교역, 이매역, 40));
         lineRepository.save(경강선);
         flushAndClear();
 
-        // then : line의 linestations에 잘 들어갔는 지 확인
+        // then
         Optional<Line> getLine = lineRepository.findById(1L);
         assertThat(getLine).isPresent();
-        assertThat(getLine.get().getLineStations()).hasSize(3);
+        assertThat(getLine.get().getSections()).hasSize(3);
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록")
     @Test
     void 새로운역_하행_종점으로_등록() {
-        // line과 station 기반으로 lineStation 생성
+        // given
         Line 경강선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 이매역 = stationRepository.getById(2L);
-        경강선.addLineStation(new LineStation(null, 판교역, 0));
-        경강선.addLineStation(new LineStation(판교역, 이매역, 100));
+        경강선.registerSection(new Section(null, 판교역, 0));
+        경강선.registerSection(new Section(판교역, 이매역, 100));
 
         Station 경기광주역 = stationRepository.getById(3L);
         // when
-        경강선.addLineStation(new LineStation(이매역, 경기광주역, 40));
+        경강선.registerSection(new Section(이매역, 경기광주역, 40));
         lineRepository.save(경강선);
         flushAndClear();
 
-        // then : line의 linestations에 잘 들어갔는 지 확인
+        // then
         Optional<Line> getLine = lineRepository.findById(1L);
         assertThat(getLine).isPresent();
-        assertThat(getLine.get().getLineStations()).hasSize(3);
+        assertThat(getLine.get().getSections()).hasSize(3);
     }
 
     @DisplayName("여러개역이 있을 때 상행쪽으로 구간 등록")
     @Test
     void 여러개_역이_있을때_상행쪽으로_등록() {
-        // line과 station 기반으로 lineStation 생성
+        // given
         Line 경강선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 경기광주역 = stationRepository.getById(3L);
-        경강선.addLineStation(new LineStation(null, 판교역, 0));
-        경강선.addLineStation(new LineStation(판교역, 경기광주역, 100));
+        경강선.registerSection(new Section(null, 판교역, 0));
+        경강선.registerSection(new Section(판교역, 경기광주역, 100));
 
         // when
         Station 이매역 = stationRepository.getById(2L);
-        경강선.addLineStation(new LineStation(이매역, 경기광주역, 50));
+        경강선.registerSection(new Section(이매역, 경기광주역, 50));
         lineRepository.save(경강선);
         flushAndClear();
 
-        // then : line의 linestations에 잘 들어갔는 지 확인
+        // then
         Optional<Line> getLine = lineRepository.findById(1L);
         assertThat(getLine).isPresent();
-        assertThat(getLine.get().getLineStations()).hasSize(3);
+        assertThat(getLine.get().getSections()).hasSize(3);
     }
 
     @DisplayName("새로운 구간 길이가 기존 길이보다 긴 경우 예외")
     @Test
     void 구간길이_초과_예외() {
-        // line과 station 기반으로 lineStation 생성
+        // given
         Line 경강선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 경기광주역 = stationRepository.getById(3L);
-        경강선.addLineStation(new LineStation(null, 판교역, 0));
-        경강선.addLineStation(new LineStation(판교역, 경기광주역, 100));
+        경강선.registerSection(new Section(null, 판교역, 0));
+        경강선.registerSection(new Section(판교역, 경기광주역, 100));
 
         // when
         Station 이매역 = stationRepository.getById(2L);
-        assertThatThrownBy(() -> 경강선.addLineStation(new LineStation(이매역, 경기광주역, 100)))
+        assertThatThrownBy(() -> 경강선.registerSection(new Section(이매역, 경기광주역, 100)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("상행 하행 이미 노선에 모두 등록되어 있는 경우 예외")
     @Test
     void 상행하행_기등록_예외() {
-        // line과 station 기반으로 lineStation 생성
+        // given
         Line 경강선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 경기광주역 = stationRepository.getById(3L);
-        경강선.addLineStation(new LineStation(null, 판교역, 0));
-        경강선.addLineStation(new LineStation(판교역, 경기광주역, 100));
+        경강선.registerSection(new Section(null, 판교역, 0));
+        경강선.registerSection(new Section(판교역, 경기광주역, 100));
 
         // when
-        assertThatThrownBy(() -> 경강선.addLineStation(new LineStation(판교역, 경기광주역, 50)))
+        assertThatThrownBy(() -> 경강선.registerSection(new Section(판교역, 경기광주역, 50)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("상행 하행이 노선에 모두 없는 경우 예외")
     @Test
     void 등록되지않은_상하행_예외() {
-        // line과 station 기반으로 lineStation 생성
+        // given
         Line 경강선 = lineRepository.getById(1L);
         Station 판교역 = stationRepository.getById(1L);
         Station 경기광주역 = stationRepository.getById(3L);
         Station 여주역 = stationRepository.getById(5L);
-        경강선.addLineStation(new LineStation(null, 판교역, 0));
-        경강선.addLineStation(new LineStation(판교역, 경기광주역, 100));
-        경강선.addLineStation(new LineStation(경기광주역, 여주역, 500));
+        경강선.registerSection(new Section(null, 판교역, 0));
+        경강선.registerSection(new Section(판교역, 경기광주역, 100));
+        경강선.registerSection(new Section(경기광주역, 여주역, 500));
 
         // when
         Station 이매역 = stationRepository.getById(2L);
         Station 부발역 = stationRepository.getById(4L);
-        assertThatThrownBy(() -> 경강선.addLineStation(new LineStation(이매역, 부발역, 200)))
+        assertThatThrownBy(() -> 경강선.registerSection(new Section(이매역, 부발역, 200)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -212,14 +212,14 @@ public class LineStationTest {
         Station 경기광주역 = stationRepository.getById(3L);
         Station 부발역 = stationRepository.getById(4L);
         Station 여주역 = stationRepository.getById(5L);
-        경강선.addLineStation(new LineStation(null, 판교역, 0));
-        경강선.addLineStation(new LineStation(판교역, 이매역, 100));
-        경강선.addLineStation(new LineStation(이매역, 경기광주역, 500));
-        경강선.addLineStation(new LineStation(경기광주역, 부발역, 500));
-        경강선.addLineStation(new LineStation(부발역, 여주역, 500));
+        경강선.registerSection(new Section(null, 판교역, 0));
+        경강선.registerSection(new Section(판교역, 이매역, 100));
+        경강선.registerSection(new Section(이매역, 경기광주역, 500));
+        경강선.registerSection(new Section(경기광주역, 부발역, 500));
+        경강선.registerSection(new Section(부발역, 여주역, 500));
 
         // when
-        List<String> stationsNames = 경강선.getOrderedLineStations().stream()
+        List<String> stationsNames = 경강선.getOrderedSections().stream()
                 .map(it -> it.getStation().getName())
                 .collect(Collectors.toList());
 

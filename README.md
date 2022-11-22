@@ -337,7 +337,7 @@ host: localhost:52165
 - [x] Entity find 시 `RuntimeException` 외에 의미있는 Exception으로 대체해 볼 것
   - javax.persistence.NoResultException 으로 변경
 - [x] connect 같은 의미있는 메서드로 추출
-  - [ ] 이참에 `LineStation`이란 명명도 조금 더 의미있는 `Section`이란 이름으로 변경해보자. 
+  - [x] 이참에 `LineStation`이란 명명도 조금 더 의미있는 `Section`이란 이름으로 변경해보자. 
 - [ ] 에러메시지 Enum 혹은 상수로 관리
 - [ ] `getOrderedLineStations()` 메소드 내에서 Optional 값을 재할당 하는 과정에서 버그가 생길 경우 무한루프로 빠질 수 있는 위험한 코드.
   - Optional을 사용하지 않는다면?

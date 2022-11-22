@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "line_station")
-public class LineStation extends BaseEntity {
+public class Section extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,10 +22,10 @@ public class LineStation extends BaseEntity {
     private Station station;
     private Integer distance;
 
-    protected LineStation() {
+    protected Section() {
     }
 
-    public LineStation(Station preStation, Station station, Integer distance) {
+    public Section(Station preStation, Station station, Integer distance) {
         this.preStation = preStation;
         this.station = station;
         this.distance = distance;
@@ -47,35 +47,35 @@ public class LineStation extends BaseEntity {
         return distance;
     }
 
-    public void updateLineStation(LineStation newLineStation) {
-        validateDistance(newLineStation);
-        this.preStation = newLineStation.station;
-        this.distance = this.distance - newLineStation.distance;
+    public void updateSection(Section newSection) {
+        validateDistance(newSection);
+        this.preStation = newSection.station;
+        this.distance = this.distance - newSection.distance;
     }
 
-    public void updatePreLineStation(LineStation newLineStation) {
+    public void updatePreSection(Section newSection) {
         if (this.preStation != null) {
-            validateDistance(newLineStation);
-            this.distance = this.distance - newLineStation.distance;
+            validateDistance(newSection);
+            this.distance = this.distance - newSection.distance;
         }
-        this.station = newLineStation.preStation;
+        this.station = newSection.preStation;
     }
 
-    private void validateDistance(LineStation newLineStation) {
-        if (this.distance - newLineStation.distance <= 0) {
+    private void validateDistance(Section newSection) {
+        if (this.distance - newSection.distance <= 0) {
             throw new IllegalArgumentException("기존 역 사이 길이보다 새로운 역의 구간 길이가 깁니다!");
         }
     }
 
-    public boolean isSame(LineStation that) {
+    public boolean isSame(Section that) {
         return this.equals(that);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof LineStation)) return false;
-        LineStation that = (LineStation) o;
+        if (!(o instanceof Section)) return false;
+        Section that = (Section) o;
         return Objects.equals(station, that.station) && Objects.equals(preStation, that.preStation);
     }
 
