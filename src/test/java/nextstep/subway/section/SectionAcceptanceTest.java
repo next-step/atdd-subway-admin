@@ -1,29 +1,31 @@
 package nextstep.subway.section;
 
 import static nextstep.subway.fixtures.StationTestFixture.setStations;
+import static nextstep.subway.fixtures.StationTestFixture.경기광주역;
 import static nextstep.subway.fixtures.StationTestFixture.경기광주역ID;
+import static nextstep.subway.fixtures.StationTestFixture.모란역;
 import static nextstep.subway.fixtures.StationTestFixture.모란역ID;
 import static nextstep.subway.fixtures.StationTestFixture.미금역ID;
+import static nextstep.subway.fixtures.StationTestFixture.중앙역;
 import static nextstep.subway.fixtures.StationTestFixture.중앙역ID;
-import static nextstep.subway.section.SectionTestFixtures.경기광주역_모란역_구간만_조회된다;
-import static nextstep.subway.section.SectionTestFixtures.경기광주역_미금역_구간만_등록되어_있다;
-import static nextstep.subway.section.SectionTestFixtures.경기광주역_중앙역_구간으로_합쳐지며_길이도_합쳐진다;
 import static nextstep.subway.section.SectionTestFixtures.기존_구간_뒤에_하행_종점으로_등록한_중앙역_구간이_함께_조회됨;
 import static nextstep.subway.section.SectionTestFixtures.기존_구간_앞에_상행_종점으로_등록한_모란역_구간이_함께_조회됨;
 import static nextstep.subway.section.SectionTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
 import static nextstep.subway.section.SectionTestFixtures.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
 import static nextstep.subway.section.SectionTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
-import static nextstep.subway.section.SectionTestFixtures.노선이_경기광주역_모란역_중앙역_순서로_등록되어_있다;
+import static nextstep.subway.section.SectionTestFixtures.노선이_순서대로_등록되어_있다;
 import static nextstep.subway.section.SectionTestFixtures.등록이_불가하다;
-import static nextstep.subway.section.SectionTestFixtures.모란역을_제거한다;
-import static nextstep.subway.section.SectionTestFixtures.미금역을_제거하려_하면;
 import static nextstep.subway.section.SectionTestFixtures.새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정;
 import static nextstep.subway.section.SectionTestFixtures.새로운_역_상행_종점으로_등록;
 import static nextstep.subway.section.SectionTestFixtures.새로운_역_하행_종점으로_등록;
 import static nextstep.subway.section.SectionTestFixtures.역_사이_새로운역_등록;
+import static nextstep.subway.section.SectionTestFixtures.역을_제거하려_하면;
 import static nextstep.subway.section.SectionTestFixtures.제거할_수_없다;
-import static nextstep.subway.section.SectionTestFixtures.중앙역을_제거한다;
 import static nextstep.subway.section.SectionTestFixtures.지하철_노선_등록되어_있음;
+import static nextstep.subway.section.SectionTestFixtures.해당_구간만_등록되어_있다;
+import static nextstep.subway.section.SectionTestFixtures.해당_구간만_조회된다;
+import static nextstep.subway.section.SectionTestFixtures.해당_구간으로_합쳐지며_길이도_합쳐진다;
+import static nextstep.subway.section.SectionTestFixtures.해당역을_제거한다;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -176,13 +178,13 @@ class SectionAcceptanceTest extends TestFixtures {
     @Test
     void deleteLastSectionsAndDownStation() {
         //given
-        String lineId = 노선이_경기광주역_모란역_중앙역_순서로_등록되어_있다();
+        String lineId = 노선이_순서대로_등록되어_있다(경기광주역ID, 모란역ID, 중앙역ID);
 
         //when
-        중앙역을_제거한다(lineId);
+        해당역을_제거한다(lineId, 중앙역ID);
 
         //then
-        경기광주역_모란역_구간만_조회된다(lineId);
+        해당_구간만_조회된다(lineId, 경기광주역, 모란역);
     }
 
     /**
@@ -196,13 +198,13 @@ class SectionAcceptanceTest extends TestFixtures {
     @Test
     void deleteBetweenStationOfSections() {
         //given
-        String lineId = 노선이_경기광주역_모란역_중앙역_순서로_등록되어_있다();
+        String lineId = 노선이_순서대로_등록되어_있다(경기광주역ID, 모란역ID, 중앙역ID);
 
         //when
-        모란역을_제거한다(lineId);
+        해당역을_제거한다(lineId, 모란역ID);
 
         //then
-        경기광주역_중앙역_구간으로_합쳐지며_길이도_합쳐진다(lineId);
+        해당_구간으로_합쳐지며_길이도_합쳐진다(lineId, 경기광주역, 중앙역);
     }
 
     /**
@@ -216,10 +218,10 @@ class SectionAcceptanceTest extends TestFixtures {
     @Test
     void deleteNotExistsStationOfSections() {
         //given
-        String lineId = 노선이_경기광주역_모란역_중앙역_순서로_등록되어_있다();
+        String lineId = 노선이_순서대로_등록되어_있다(경기광주역ID, 모란역ID, 중앙역ID);
 
         //when
-        ExtractableResponse<Response> response = 미금역을_제거하려_하면(lineId);
+        ExtractableResponse<Response> response = 역을_제거하려_하면(lineId, 미금역ID);
 
         //then
         제거할_수_없다(response);
@@ -236,10 +238,10 @@ class SectionAcceptanceTest extends TestFixtures {
     @Test
     void deleteStationOfOneSectionThenThrow() {
         //given
-        String lineId = 경기광주역_미금역_구간만_등록되어_있다();
+        String lineId = 해당_구간만_등록되어_있다(경기광주역ID, 미금역ID);
 
         //when
-        ExtractableResponse<Response> response = 미금역을_제거하려_하면(lineId);
+        ExtractableResponse<Response> response = 역을_제거하려_하면(lineId, 미금역ID);
 
         //then
         제거할_수_없다(response);
