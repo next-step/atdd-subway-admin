@@ -1,6 +1,5 @@
 package nextstep.subway.domain.line;
 
-import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,10 +49,28 @@ public class Sections {
 	}
 
 	public List<Station> allStations() {
-		LinkedHashSet<Station> stations = new LinkedHashSet<>();
-		stations.addAll(allUpStations());
-		stations.addAll(allDownStations());
-		return new LinkedList<>(stations);
+		List<Station> stations = new LinkedList<>();
+		stations.add(firstUpStation());
+
+		for (int i = 0; i < sections.size(); i++) {
+			Station nextStation = sectionByUpStation(stations.get(i)).getDownStation();
+			stations.add(nextStation);
+		}
+		return stations;
+	}
+
+	private Section sectionByUpStation(Station station) {
+		return this.sections.stream()
+			.filter(section -> section.getUpStation().getName().equals(station.getName()))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("Section not exist"));
+	}
+
+	private Section sectionByDownStation(Station station) {
+		return this.sections.stream()
+			.filter(section -> section.getDownStation().getName().equals(station.getName()))
+			.findFirst()
+			.orElseThrow(() -> new IllegalArgumentException("Section not exist"));
 	}
 
 	public Station firstUpStation() {
@@ -70,8 +87,27 @@ public class Sections {
 
 	public void add(Section section) {
 		validateAddSection(section);
-		sections.forEach(it -> it.rearrange(section));
+		rearrange(section);
 		sections.add(section);
+	}
+
+	private void rearrange(Section section) {
+		if (sameUpStation(section.getUpStation())) {
+			Section upSection = sectionByUpStation(section.getUpStation());
+			upSection.updateUpStation(section.getDownStation(), section.getDistance());
+		}
+		if (sameDownStation(section.getDownStation())) {
+			Section downSection = sectionByDownStation(section.getDownStation());
+			downSection.updateDownStation(section.getUpStation(), section.getDistance());
+		}
+	}
+
+	private boolean sameUpStation(Station upStation) {
+		return allUpStations().contains(upStation);
+	}
+
+	private boolean sameDownStation(Station downStation) {
+		return allDownStations().contains(downStation);
 	}
 
 	private void validateAddSection(Section section) {

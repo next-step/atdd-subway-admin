@@ -136,7 +136,7 @@ class SectionsTest {
 		// then
 		assertAll(
 			() -> assertThat(sections.getSections()).hasSize(2),
-			() -> assertThat(sections.allStations()).contains(강남역, 선릉역, 역삼역),
+			() -> assertThat(sections.allStations()).containsExactly(강남역, 선릉역, 역삼역),
 			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(5),
 			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(선릉역),
 			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(역삼역),
@@ -162,7 +162,7 @@ class SectionsTest {
 		// then
 		assertAll(
 			() -> assertThat(sections.getSections()).hasSize(2),
-			() -> assertThat(sections.allStations()).contains(강남역, 선릉역, 역삼역),
+			() -> assertThat(sections.allStations()).containsExactly(강남역, 선릉역, 역삼역),
 			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(5),
 			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(강남역),
 			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(선릉역),
@@ -187,7 +187,7 @@ class SectionsTest {
 		// then
 		assertAll(
 			() -> assertThat(sections.getSections()).hasSize(2),
-			() -> assertThat(sections.allStations()).contains(강남역, 선릉역, 역삼역),
+			() -> assertThat(sections.allStations()).containsExactly(선릉역, 강남역, 역삼역),
 			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(10),
 			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(강남역),
 			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(역삼역),
@@ -213,7 +213,7 @@ class SectionsTest {
 		// then
 		assertAll(
 			() -> assertThat(sections.getSections()).hasSize(2),
-			() -> assertThat(sections.allStations()).contains(강남역, 선릉역, 역삼역),
+			() -> assertThat(sections.allStations()).containsExactly(강남역, 역삼역, 선릉역),
 			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(10),
 			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(강남역),
 			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(역삼역),

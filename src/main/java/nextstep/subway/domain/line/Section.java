@@ -75,17 +75,6 @@ public class Section {
 		return station.equals(newStation);
 	}
 
-	public void rearrange(Section newSection) {
-		if (isSameUpStation(newSection)) {
-			this.upStation = newSection.downStation;
-			this.distance = this.distance.subtract(newSection.distance);
-		}
-		if (isSameDownStation(newSection)) {
-			this.downStation = newSection.upStation;
-			this.distance = this.distance.subtract(newSection.distance);
-		}
-	}
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -103,4 +92,13 @@ public class Section {
 		return Objects.hashCode(id);
 	}
 
+	public void updateUpStation(Station downStation, Integer distance) {
+		this.upStation = downStation;
+		this.distance = this.distance.subtract(distance);
+	}
+
+	public void updateDownStation(Station upStation, Integer distance) {
+		this.downStation = upStation;
+		this.distance = this.distance.subtract(distance);
+	}
 }
