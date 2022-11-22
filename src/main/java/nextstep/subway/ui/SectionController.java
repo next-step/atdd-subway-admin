@@ -24,7 +24,7 @@ public class SectionController {
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})
-    public ResponseEntity handleIllegalArgsException() {
+    public ResponseEntity<Void> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
 }
