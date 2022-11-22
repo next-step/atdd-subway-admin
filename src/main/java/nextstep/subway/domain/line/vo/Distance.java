@@ -21,7 +21,7 @@ public class Distance {
 	protected Distance() {
 	}
 
-	private static void validate(int value) {
+	private void validate(int value) {
 		if (value <= MINIMUM_DISTANCE) {
 			throw new IllegalArgumentException(INVALID_DISTANCE_ERROR_MESSAGE);
 		}
@@ -48,8 +48,8 @@ public class Distance {
 		return Objects.hash(value);
 	}
 
-	public Distance subtract(Distance distance) {
-		return new Distance(this.value - distance.value);
+	public Distance subtract(Integer distance) {
+		return new Distance(this.value - distance);
 	}
 }
 

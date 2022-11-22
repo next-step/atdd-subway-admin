@@ -64,4 +64,8 @@ public class Line {
 	public List<Station> allStations() {
 		return sections.allStations();
 	}
+
+	public void addSection(Section section) {
+		sections.add(section);
+	}
 }

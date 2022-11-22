@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.Lists;
+
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.stations.StationRequest;
@@ -44,5 +46,9 @@ public class StationService {
 	public Station findById(Long id) {
 		return stationRepository.findById(id)
 			.orElseThrow(() -> new StationNotFoundException(STATION_NOT_FOUND_MESSAGE + id));
+	}
+
+	public List<Station> findAllById(Long upStationId, Long downStationId) {
+		return stationRepository.findAllById(Lists.asList(upStationId, downStationId, new Long[]{}));
 	}
 }

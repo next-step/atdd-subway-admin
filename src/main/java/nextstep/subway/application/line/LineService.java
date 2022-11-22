@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import nextstep.subway.application.stations.StationService;
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.line.Section;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.line.LineCreateRequest;
 import nextstep.subway.dto.line.LineResponse;
+import nextstep.subway.dto.line.section.SectionCreateRequest;
 import nextstep.subway.dto.stations.StationNameResponse;
 import nextstep.subway.exception.LineNotFoundException;
 
@@ -78,5 +80,24 @@ public class LineService {
 		return line.allStations().stream()
 			.map(station -> new StationNameResponse(station.getId(), station.getName()))
 			.collect(Collectors.toList());
+	}
+
+	public LineResponse addSection(Long lineId, SectionCreateRequest request) {
+		Line line = findById(lineId);
+
+		Station upStation = upStation(request.getUpStationId());
+		Station downStation = downStation(request.getDownStationId());
+
+		Section section = new Section(line, upStation , downStation, request.getDistance());
+		line.addSection(section);
+		return lineResponse(line);
+	}
+
+	private Station upStation(Long upStationId) {
+		return stationService.findById(upStationId);
+	}
+
+	private Station downStation(Long downStationId) {
+		return stationService.findById(downStationId);
 	}
 }

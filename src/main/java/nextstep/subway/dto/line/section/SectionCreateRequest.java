@@ -22,4 +22,8 @@ public class SectionCreateRequest {
 	public Long getDownStationId() {
 		return downStationId;
 	}
+
+	public int getDistance() {
+		return distance;
+	}
 }
