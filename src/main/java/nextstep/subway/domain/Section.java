@@ -13,7 +13,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Section extends BaseEntity{
+public class Section extends BaseEntity {
 
     protected Section() {
     }
@@ -48,7 +48,7 @@ public class Section extends BaseEntity{
         this.line = line;
     }
 
-    public List<Station> getStations(){
+    public List<Station> getStations() {
         return Arrays.asList(upStation, downStation);
     }
 
@@ -83,16 +83,24 @@ public class Section extends BaseEntity{
 
     public void updateDownStation(Section section) {
         this.downStation = section.getUpStation();
-        this.distance = this.distance.subtract(section.getDistance());
+        this.distance = section.subtractDistance(distance);
     }
 
     public void updateUpStation(Section section) {
         this.upStation = section.getDownStation();
-        this.distance = this.distance.subtract(section.getDistance());
+        this.distance = section.subtractDistance(distance);
     }
 
     public void updateSectionInDelete(Section section) {
         this.downStation = section.getDownStation();
-        this.distance = this.distance.add(section.getDistance());
+        this.distance = section.addDistance(distance);
+    }
+
+    private Distance subtractDistance(Distance distance) {
+        return distance.subtract(this.distance);
+    }
+
+    private Distance addDistance(Distance distance) {
+        return distance.add(this.distance);
     }
 }

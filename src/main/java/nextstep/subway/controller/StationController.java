@@ -15,6 +15,7 @@ import java.util.List;
 
 @RestController
 public class StationController {
+
     private StationService stationService;
 
     public StationController(StationService stationService) {

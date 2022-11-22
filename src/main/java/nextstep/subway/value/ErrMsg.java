@@ -1,9 +1,11 @@
 package nextstep.subway.value;
 
 public class ErrMsg {
+
     ErrMsg() {
         throw new AssertionError();
     }
+
     private static final String CANNOT_FIND_LINE = "번 노선을 찾을 수 없습니다.";
     private static final String CANNOT_FIND_STATION = "번 역을 찾을 수 없습니다.";
     private static final String CANNOT_FIND_SECTION = "번 구간을 찾을 수 없습니다.";
@@ -15,13 +17,14 @@ public class ErrMsg {
     public static final String INAPPROPRIATE_DISTANCE = "구간의 길이는 양수여야 합니다.";
 
     public static String notFoundLine(Long id) {
-        return id+CANNOT_FIND_LINE;
+        return id + CANNOT_FIND_LINE;
     }
 
     public static String notFoundStation(Long id) {
-        return id+CANNOT_FIND_STATION;
+        return id + CANNOT_FIND_STATION;
     }
+
     public static String notFoundSection(Long id) {
-        return id+CANNOT_FIND_SECTION;
+        return id + CANNOT_FIND_SECTION;
     }
 }

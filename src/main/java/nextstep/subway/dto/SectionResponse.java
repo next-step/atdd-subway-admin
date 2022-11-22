@@ -26,7 +26,8 @@ public class SectionResponse {
     }
 
     public static SectionResponse of(Section section) {
-        return new SectionResponse(section.getId(), section.getUpStationId(), section.getDownStationId(), section.getDistance(), section.getLineId(), section.getCreatedDate(), section.getModifiedDate());
+        return new SectionResponse(section.getId(), section.getUpStationId(), section.getDownStationId(),
+                section.getDistance(), section.getLineId(), section.getCreatedDate(), section.getModifiedDate());
     }
 
 

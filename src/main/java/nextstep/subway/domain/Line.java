@@ -29,7 +29,8 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections;
 
-    protected Line(){ }
+    protected Line() {
+    }
 
     public Line(String name, String color) {
         this.name = name;
@@ -49,33 +50,14 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public void update(LineRequest lineRequest){
+    public void update(LineRequest lineRequest) {
         this.name = lineRequest.getName();
         this.color = lineRequest.getColor();
     }
 
-    public void addSection(Section section){
+    public void addSection(Section section) {
         section.addLine(this);
         sections.add(section);
-    }
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Line)) {
-            return false;
-        }
-        Line line = (Line) o;
-        return Objects.equals(getId(), line.getId()) && Objects.equals(getName(), line.getName())
-                && Objects.equals(getColor(), line.getColor());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getId(), getName(), getColor());
     }
 
     public List<Station> getOrderedStations() {

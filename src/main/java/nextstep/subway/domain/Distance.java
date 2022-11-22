@@ -11,9 +11,10 @@ import nextstep.subway.value.ErrMsg;
 @Embeddable
 public class Distance {
 
+    private static final int MIN_DISTANCE = 0;
     @Column(name = "distance", nullable = false)
     private int value;
-    private static final int MIN_DISTANCE = 0;
+
     private Distance(final int value) {
         validateDistance(value);
         this.value = value;
@@ -23,23 +24,30 @@ public class Distance {
 
     }
 
-    public static Distance from(int distance){
+    public static Distance from(int distance) {
         return new Distance(distance);
     }
 
-    private void validateDistance(final int distance){
-        if(distance<=MIN_DISTANCE){
-            throw new IllegalArgumentException(ErrMsg.INAPPROPRIATE_DISTANCE);
-        }
-    }
 
+    public int value() {
+        return this.value;
+    }
 
     public Distance subtract(Distance distance) {
         return new Distance(this.value -= distance.value);
     }
+
     public Distance add(Distance distance) {
         return new Distance(this.value += distance.value);
     }
+
+
+    private void validateDistance(final int distance) {
+        if (distance <= MIN_DISTANCE) {
+            throw new IllegalArgumentException(ErrMsg.INAPPROPRIATE_DISTANCE);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -49,11 +57,7 @@ public class Distance {
             return false;
         }
         Distance distance = (Distance) o;
-        return this.value == distance.getValue();
-    }
-
-    public int getValue() {
-        return this.value;
+        return this.value == distance.value();
     }
 
     @Override

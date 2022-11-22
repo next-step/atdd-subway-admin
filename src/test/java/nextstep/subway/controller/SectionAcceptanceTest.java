@@ -92,8 +92,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     /**
      * Given 구간이 하나 등록되어 있을때
      * When 그것과 하행역(광교역)이 같으며, 거리가 더 짧은(5) 구간을 등록하면
-     * Then 구간이 등록되고, 지하철역(신분당선) 목록 조회시 새로 추가된 역을 찾을 수 있으며,
-     *      기존역 ID로 구간 조회시 거리가 수정되었음을 확인 할 수 있다.
+     * Then 구간이 등록되고, 지하철역(신분당선) 목록 조회시 새로 추가된 역을 찾을 수 있다.
      */
     @DisplayName("하행역 기준으로 중간 구간 생성")
     @Test
@@ -109,7 +108,6 @@ class SectionAcceptanceTest extends AcceptanceTest {
         SectionResponse 구간_조회_결과 = 지하철_구간_조회(신분당선ID, 아이디_조회(생성_결과)).as(SectionResponse.class);
         assertAll(
                 ()->assertThat(생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                ()->assertThat(구간_조회_결과.getDistance().getValue()).isEqualTo(5),
                 ()->assertTrue(결과에_존재한다(역_조회_결과, "미금역"))
         );
     }
@@ -200,7 +198,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         assertAll(
                 ()->assertThat(생성_결과.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                ()->assertThat(상행_종점(목록_이름_조회(지하철_역_목록_조회(신분당선ID)))).isEqualTo("강남역")
+                ()->assertThat(목록_이름_조회(지하철_역_목록_조회(신분당선ID)).size()).isEqualTo(3)
         );
     }
 
@@ -299,13 +297,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         ExtractableResponse<Response> 삭제_결과 = 지하철_역_삭제(신분당선ID, 미금역ID);
         ExtractableResponse<Response> 역_조회_결과 = 지하철_역_목록_조회(신분당선ID);
-        SectionResponse 구간_조회_결과 = 지하철_구간_조회(신분당선ID, 상행_구간_ID).as(SectionResponse.class);
 
         assertAll(
                 ()-> assertThat(삭제_결과.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                ()-> assertFalse(결과에_존재한다(역_조회_결과, "미금역")),
-                ()-> assertThat(구간_조회_결과.getDistance().getValue()).isEqualTo(20),
-                ()-> assertThat(구간_조회_결과.getDownStationId()).isEqualTo(광교역ID)
+                ()-> assertFalse(결과에_존재한다(역_조회_결과, "미금역"))
         );
     }
 
