@@ -192,8 +192,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
         assertThat(sections).hasSize(1);
-        assertThat(sections.get(0).getDistance()).isEqualTo(1L);
-        assertThat(convertStationName(sections)).containsExactly("성수역", "홍대역");
+        assertDistance(sections, Collections.singletonList(1L));
+        assertStationName(sections, Arrays.asList("성수역", "홍대역"));
     }
 
     @DisplayName("하행 종점을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간 존재)")
@@ -210,8 +210,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
         assertThat(sections).hasSize(1);
-        assertThat(sections.get(0).getDistance()).isEqualTo(10L);
-        assertThat(convertStationName(sections)).containsExactly("강남역", "성수역");
+        assertDistance(sections, Collections.singletonList(10L));
+        assertStationName(sections, Arrays.asList("강남역", "성수역"));
     }
 
     @DisplayName("중간 구간을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간 존재)")
@@ -227,8 +227,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
-        assertThat(sections.get(0).getDistance()).isEqualTo(11L);
-        assertThat(convertStationName(sections)).containsExactly("강남역", "홍대역");
+        assertDistance(sections, Collections.singletonList(11L));
+        assertStationName(sections, Arrays.asList("강남역", "홍대역"));
     }
 
     @DisplayName("중간 구간을 삭제 할 수 있다. (강남 - 성수역 - 홍대구간- 구의 존재)")
@@ -245,8 +245,8 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> findSection = findSectionByLine(convertLineId(saveResponse.jsonPath()));
         List<SectionResponse> sections = convertSection(findSection.jsonPath());
-        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(Arrays.asList(10L, 2L));
-        assertThat(convertStationName(sections)).containsExactly("강남역", "성수역", "구의역");
+        assertDistance(sections, Arrays.asList(10L, 2L));
+        assertStationName(sections, Arrays.asList("강남역", "성수역", "구의역"));
     }
 
     private ExtractableResponse<Response> deleteSection(Long id, Station hongDaeStation) {
@@ -308,5 +308,14 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
             names.add(v.getDownStationName());
         });
         return new ArrayList<>(names);
+    }
+
+    private void assertDistance(List<SectionResponse> sections, List<Long> distance) {
+        assertThat(sections.stream().map(SectionResponse::getDistance)).containsExactlyElementsOf(distance);
+    }
+
+    private void assertStationName(List<SectionResponse> sections, List<String> expectNames) {
+        List<String> stationNames = convertStationName(sections);
+        assertThat(stationNames).containsExactlyElementsOf(expectNames);
     }
 }
