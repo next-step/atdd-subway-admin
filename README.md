@@ -343,3 +343,44 @@ host: localhost:52165
   - Optional을 사용하지 않는다면?
   - 구간의 순서는 어떻게 찾을 지 고민..
 - [x] 제너릭형에 타입 명시!
+
+## 4단계 - 구간 제거 기능
+> - `요구사항 설명`에서 제공되는 요구사항을 기반으로 `지하철 구간 제거 기능`을 구현
+> - 요구사항을 정의한 **_인수 조건을 도출 할 것_**
+> - 인수 조건을 검증하는 **_인수 테스트를 작성 할 것_**
+> - 예외 케이스에 대한 검증도 포함
+
+### 기능 목록
+- [ ] 종점을 제거하는 경우
+  - 종점이 제거될 경우 다음으로 오던 역이 종점이 됨
+- [ ] 가운데 역을 제거하는 경우
+  - 중간역이 제거될 경우 재배치를 함
+  - A - B - C 연결되어 있을 때, B를 제거하면 A - C 로 재배치 됨
+  - 거리는 두 구간의 거리의 합으로 정함
+
+#### 예외 케이스
+- [ ] 구간이 하나인 노선에서 역을 제거하는 경우
+- [ ] 노선에 없는 역을 역을 제거하는 경우
+
+
+### API 명세
+```http request
+DELETE /lines/1/sections?stationId=2 HTTP/1.1
+accept: */*
+host: localhost:52165
+```
+
+### 힌트
+#### 구간 제거 요청 처리
+```java
+@DeleteMapping("/{lineId}/sections")
+public ResponseEntity removeLineStation(
+        @PathVariable Long lineId, 
+        @RequestParam Long stationId) {
+    lineService.removeSectionByStationId(lineId, stationId);
+    return ResponseEntity.ok().build();
+}
+```
+
+#### 프론트엔드
+- 브라우저 개발자 도구에서 네트워크 확인해 볼 것
