@@ -17,7 +17,6 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.web.servlet.tags.ArgumentTag;
 
 import java.util.Arrays;
 import java.util.stream.Stream;
@@ -34,9 +33,9 @@ public class SectionDeleteAcceptanceTest {
 
     @Autowired
     private DatabaseCleaner databaseCleaner;
-    private static StationResponse 상행역;
-    private static StationResponse 하행역;
-    private LineResponse 기본노선정보;
+    private static StationResponse 상행역 = StationResponse.of(1L, "상행역");
+    private static StationResponse 하행역 = StationResponse.of(2L, "하행역");;
+    private static LineResponse 기본노선정보 = LineResponse.of(1L,"노선", "색상", 10L, Arrays.asList(상행역, 하행역));
 
     private static final String deleteStationInSectionUrl = "/lines/%d/sections?stationId=%d";
 
@@ -58,7 +57,7 @@ public class SectionDeleteAcceptanceTest {
      */
     @ParameterizedTest
     @MethodSource("provideStationsInLine")
-    void 노선에_구간이_하나인_경우_삭제할_수_없음(Station station) {
+    void 노선에_구간이_하나인_경우_삭제할_수_없음(StationResponse station) {
 
         ExtractableResponse<Response> response =  구간에_포함된_역을_삭제함(기본노선정보.getId(),station);
 
@@ -72,16 +71,16 @@ public class SectionDeleteAcceptanceTest {
     @Test
     void 노선에_포함되지_않은_역은_삭제할_수_없음() {
 
-        ExtractableResponse<Response> response =  노선에서_역을_삭제함(기본노선정보.getId(),new Station(100L,"없음"));
+        ExtractableResponse<Response> response =  노선에서_역을_삭제함(기본노선정보.getId(),StationResponse.of(100L,"없음"));
 
         요청이_실패한다(response);
     }
 
-    private ExtractableResponse<Response> 노선에서_역을_삭제함(Long lineId, Station station) {
+    private ExtractableResponse<Response> 노선에서_역을_삭제함(Long lineId, StationResponse station) {
         return RequestUtil.deleteRequest(String.format(deleteStationInSectionUrl, lineId, station.getId()));
     }
 
-    private ExtractableResponse<Response> 구간에_포함된_역을_삭제함(Long lineId, Station station) {
+    private ExtractableResponse<Response> 구간에_포함된_역을_삭제함(Long lineId, StationResponse station) {
         return 노선에서_역을_삭제함(lineId,station);
     }
 

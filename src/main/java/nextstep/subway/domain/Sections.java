@@ -68,4 +68,12 @@ public class Sections {
     public int hashCode() {
         return Objects.hash(sections);
     }
+
+    public boolean hasMoreThanLine() {
+        return this.sections.size() > 1;
+    }
+
+    public void delete(Station station) {
+
+    }
 }

@@ -1,11 +1,8 @@
 package nextstep.subway.domain;
 
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -170,5 +167,13 @@ public class Line extends BaseEntity {
 
     public boolean insert(Station upStation, Station downStation, Long distance) {
         return this.sections.insert(upStation,downStation,distance);
+    }
+
+    public void delete(Station station) {
+        if(this.sections.hasMoreThanLine()){
+            this.sections.delete(station);
+            return;
+        }
+        throw new IllegalArgumentException("노선과 구간이 일치할 때는 삭제할 수 없습니다");
     }
 }

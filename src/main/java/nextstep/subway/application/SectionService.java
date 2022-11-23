@@ -44,6 +44,8 @@ public class SectionService {
     }
 
     public void deleteStation(Long lineId, Long stationId) {
-
+        Line line = lineService.findLineOrThrowException(lineId);
+        Station station = stationRepository.findById(stationId).orElseThrow(() -> new IllegalArgumentException("존재하지 않은 지하철역 입니다"));
+        line.delete(station);
     }
 }
