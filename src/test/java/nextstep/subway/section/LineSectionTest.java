@@ -205,15 +205,33 @@ public class LineSectionTest {
     /**
      * Given 2개의 지하철 역이 노선으로 등록되어 있다
      * When 구간을 제거할 경우
-     * Then 구간이 하나인 노선에서 마지막 노선을 제거할 수 없다
+     * Then 구간이 하나인 노선은 제거할 수 없다
      */
-    @DisplayName("구간이 하나인 노선에서 마지막 노선을 제거할 수 없다")
+    @DisplayName("구간이 하나인 노선은 제거할 수 없다")
     @Test
-    void 구간이_하나인_노선_노선_제거_에러() {
+    void 구간이_하나인_노선_제거_에러() {
         // given -> beforeEach
 
         // when
         ExtractableResponse<Response> response = 구간_삭제_호출(lineId, 1);
+
+        // then
+        구간_삭제_실패(response);
+    }
+
+    /**
+     * Given 2개의 지하철 역이 노선으로 등록되어 있다
+     * When 구간에 포함되지 않은 역을 삭제할 경우
+     * Then 제거할 수 없다
+     */
+    @DisplayName("구간에 포함되지 않은 역을 삭제할 수 없다")
+    @Test
+    void 구간이에_포함되지_않은_역_제거_에러() {
+        // given -> beforeEach
+        추가_역을_3개_생성한다();
+
+        // when
+        ExtractableResponse<Response> response = 구간_삭제_호출(lineId, 5);
 
         // then
         구간_삭제_실패(response);

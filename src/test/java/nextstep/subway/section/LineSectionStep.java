@@ -15,7 +15,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class LineSectionStep extends CommonMethodFixture{
-    private static String[] errorMessages = new String[]{NOT_VALID_ANY_STATION, NOT_VALID_DUPLICATED_SECTION_STATIONS, NOT_VALID_SECTION_DISTANCE};
+    private static String[] saveErrorMessages = new String[]{NOT_VALID_ANY_STATION, NOT_VALID_DUPLICATED_SECTION_STATIONS, NOT_VALID_SECTION_DISTANCE};
+    private static String[] removeErrorMessages = new String[]{NOT_VALID_REMOVE_ONLY_ONE_SECTION, NOT_CONTAIN_STATION_IN_LINE};
     private static final String SECTION_PATH = "/sections";
     private static final String REQUEST_PARAM_STATION_ID = "?stationId=";
 
@@ -66,7 +67,7 @@ public class LineSectionStep extends CommonMethodFixture{
         // 400
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(errorMessages).contains(response.body().jsonPath().getString("message"))
+                () -> assertThat(saveErrorMessages).contains(response.body().jsonPath().getString("message"))
         );
     }
 
@@ -74,7 +75,7 @@ public class LineSectionStep extends CommonMethodFixture{
         // 400
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(response.body().jsonPath().getString("message")).contains(NOT_VALID_REMOVE_ONLY_ONE_SECTION)
+                () -> assertThat(removeErrorMessages).contains(response.body().jsonPath().getString("message"))
         );
     }
 
