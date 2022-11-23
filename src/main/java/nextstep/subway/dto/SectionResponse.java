@@ -9,8 +9,10 @@ public class SectionResponse {
     private int distance;
 
     public static SectionResponse of(Section section) {
-        return new SectionResponse(section.getId(), StationResponse.of(section.getUpStation()),
-                StationResponse.of(section.getDownStation()), section.getDistance());
+        return new SectionResponse(section.getId(),
+                section.getUpStation() == null ? null : StationResponse.of(section.getUpStation()),
+                section.getDownStation() == null ? null : StationResponse.of(section.getDownStation()),
+                section.getDistance());
     }
 
     public SectionResponse(Long id, StationResponse upStation, StationResponse downStation, int distance) {

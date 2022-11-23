@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleaner;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.line.LineAcceptanceTest;
@@ -57,20 +56,44 @@ public class SectionAcceptanceTest {
     }
 
     @Test
-    @DisplayName("노선에 구간을 등록한다.")
-    void addSection() {
+    @DisplayName("노선에 구간을 등록한다. 상위역을 새로운역으로 등록")
+    void addSectionUpStation() {
         //given
+        Long newStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("양재역"));
+
         //when
         final ExtractableResponse<Response> apiResponse = createSection(lineId,
-                new SectionRequest(upStationId, downStationId, 1));
+                new SectionRequest(newStationId, downStationId, 1));
 
         //then
         assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        assertThat(apiResponse.jsonPath().getObject("downStation", Station.class)
-                .getId())
-                .isEqualTo(downStationId);
+        assertThat(apiResponse.jsonPath().getList("sectionResponses.upStation.id",Long.class))
+                .containsExactly(upStationId,newStationId);
+        assertThat(apiResponse.jsonPath().getList("sectionResponses.downStation.id",Long.class))
+                .containsExactly(newStationId,downStationId);
     }
 
+    @Test
+    @DisplayName("노선에 구간을 등록한다. 하위역을 새로운역으로 등록")
+    void addSectionDownStation() {
+        //given
+        Long newStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("양재역"));
+
+        //when
+        final ExtractableResponse<Response> apiResponse = createSection(lineId,
+                new SectionRequest(upStationId, newStationId, 1));
+
+        //then
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(apiResponse.jsonPath().getList("sectionResponses.upStation.id",Long.class))
+                .containsExactly(upStationId,newStationId);
+        assertThat(apiResponse.jsonPath().getList("sectionResponses.downStation.id",Long.class))
+                .containsExactly(newStationId,downStationId);
+    }
+
+    /**
+     * 구간생성 api 호출
+     * */
     ExtractableResponse<Response> createSection(String lineId, SectionRequest sectionRequest) {
         final Map param = new HashMap();
         param.put("upStationId", sectionRequest.getUpStationId());

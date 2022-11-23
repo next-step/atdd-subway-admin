@@ -16,20 +16,17 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private LineRepository lineRepository;
-    private StationService stationService;
-    private LineStationService lineStationService;
+    private SectionStationService sectionStationService;
 
-    public LineService(LineRepository lineRepository, StationService stationService,
-                       LineStationService lineStationService) {
+    public LineService(LineRepository lineRepository, SectionStationService sectionStationService) {
         this.lineRepository = lineRepository;
-        this.stationService = stationService;
-        this.lineStationService = lineStationService;
+        this.sectionStationService = sectionStationService;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequestToLine(lineRequest));
-        lineStationService.saveLineStation(new LineStation(persistLine, persistLine.getDownStation()));
-        lineStationService.saveLineStation(new LineStation(persistLine, persistLine.getUpStation()));
+        sectionStationService.initLineSectionAndAddSections(persistLine, lineRequest);
+        lineRepository.save(persistLine);
         return LineResponse.of(persistLine);
     }
 
@@ -55,15 +52,12 @@ public class LineService {
     }
 
     public void deleteLineById(Long id) {
-        lineStationService.deleteLineStationByLineId(id);
+        sectionStationService.deleteSectionsByLine(getLineById(id));
         lineRepository.deleteById(id);
     }
 
     private Line lineRequestToLine(LineRequest lineRequest) {
-        return new Line(lineRequest.getName(), lineRequest.getColor(),
-                stationService.getStationById(lineRequest.getUpStationId()),
-                stationService.getStationById(lineRequest.getDownStationId()),
-                lineRequest.getDistance());
+        return new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance());
     }
 
 }
