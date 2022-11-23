@@ -1,4 +1,4 @@
-package nextstep.subway.fixture;
+package nextstep.subway.rest;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -8,12 +8,11 @@ import org.springframework.http.MediaType;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StationRequestTestFixture {
+public class StationRestAssured {
 
-    public static ExtractableResponse<Response> createStationByName(String name) {
+    public static ExtractableResponse<Response> 지하철_역_생성(String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
-
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -22,7 +21,7 @@ public class StationRequestTestFixture {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> findAllStations() {
+    public static ExtractableResponse<Response> 지하철_역_목록_조회() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/stations")
@@ -30,10 +29,10 @@ public class StationRequestTestFixture {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> deleteStationById(long stationId) {
+    public static ExtractableResponse<Response> 지하철_역_삭제(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations/{id}", stationId)
+                .when().delete("/stations/{id}", id)
                 .then().log().all()
                 .extract();
     }
