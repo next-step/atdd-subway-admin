@@ -20,6 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+    public static final String STATION_URL = "/stations";
+    public static final String STATION_KEY_NAME = "name";
     @LocalServerPort
     int port;
 
@@ -39,28 +41,22 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createStationRest("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames =
+        ExtractableResponse<Response> stationNamesResponse =
                 RestAssured.given().log().all()
-                        .when().get("/stations")
+                        .when().get(STATION_URL)
                         .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
-        assertThat(stationNames).containsAnyOf("강남역");
+                        .extract();
+        assertThat(stationNamesResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(stationNamesResponse.jsonPath().getList(STATION_KEY_NAME, String.class)).containsAnyOf("강남역");
     }
+
+
 
     /**
      * Given 지하철역을 생성하고
@@ -71,25 +67,12 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = new HashMap<>();
-        params.put("name", "강남역");
-
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
+        createStationRest("강남역");
 
         // when
-        ExtractableResponse<Response> response =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().post("/stations")
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> response = createStationRest("강남역");
 
-        // then
+                // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
@@ -101,7 +84,20 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        createStationRest("잠실역");
+        createStationRest("양재역");
+
+        // when
+        List<String> stationNames = stationsNamesList(stationsNamesGet());
+
+        // then
+        assertThat(stationNames.size()).isEqualTo(2);
+        assertThat(stationNames).contains("잠실역","양재역");
     }
+
+
+
 
     /**
      * Given 지하철역을 생성하고
@@ -111,5 +107,44 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        ExtractableResponse<Response> response = createStationRest("강남역");
+
+        // when
+        Long id = response.jsonPath().getLong("id");
+        deleteStationDelete(id);
+
+        // then
+        assertThat(stationsNamesList(stationsNamesGet())).doesNotContain("강남역");
+    }
+
+
+
+    private ExtractableResponse<Response> createStationRest(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put(STATION_KEY_NAME, stationName);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(STATION_URL)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> stationsNamesGet() {
+        return RestAssured.given().log().all()
+                .when().get(STATION_URL)
+                .then().log().all()
+                .extract();
+    }
+
+    private void deleteStationDelete(Long id) {
+        RestAssured.given().log().all()
+                .when().delete(STATION_URL+"/{id}",id)
+                .then().log().all();
+    }
+
+    private List<String> stationsNamesList(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList(STATION_KEY_NAME, String.class);
     }
 }
