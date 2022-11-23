@@ -9,14 +9,15 @@ import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.NoResultException;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class LineService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -24,12 +25,13 @@ public class LineService {
     }
 
     @Transactional
-    public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).get();
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).get();
+    public Line saveLine(LineRequest lineRequest) {
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(NoResultException::new);
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(NoResultException::new);
+        Line line = lineRequest.toLine();
+        line.connect(upStation, downStation, lineRequest.getDistance());
 
-        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        return lineRepository.save(line);
     }
 
     public List<LineResponse> findAllLines() {
@@ -40,16 +42,13 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long lineId) {
-        return LineResponse.of(lineRepository.findById(lineId).get());
+        return LineResponse.of(lineRepository.findById(lineId).orElseThrow(NoResultException::new));
     }
 
     @Transactional
     public void updateLine(Long lineId, LineRequest lineRequest) {
-        Line line = lineRepository.findById(lineId).get();
-        line.setName(lineRequest.getName());
-        line.setColor(lineRequest.getColor());
-
-        lineRepository.save(line);
+        Line line = lineRepository.findById(lineId).orElseThrow(NoResultException::new);
+        line.update(lineRequest.toLine());
     }
 
     @Transactional

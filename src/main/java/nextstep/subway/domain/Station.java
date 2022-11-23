@@ -27,6 +27,10 @@ public class Station extends BaseEntity {
         return name;
     }
 
+    public boolean isSame(Station compare) {
+        return this.equals(compare);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

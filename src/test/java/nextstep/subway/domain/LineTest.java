@@ -1,20 +1,21 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.context.annotation.Import;
 
+import javax.persistence.NoResultException;
 import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DataJpaTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Import(DatabaseCleanup.class)
 public class LineTest {
     @Autowired
     private LineRepository lineRepository;
@@ -22,14 +23,20 @@ public class LineTest {
     private StationRepository stationRepository;
     @Autowired
     private TestEntityManager entityManager;
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
     private Station upStation;
     private Station downStation;
+    private Station newStation;
 
     @BeforeEach
     void setUp() {
-        upStation = new Station("신사역");
-        downStation = new Station("광교(경기대)역");
-        stationRepository.saveAll(Arrays.asList(upStation, downStation));
+        databaseCleanup.execute();
+        upStation = new Station("판교역");
+        downStation = new Station("경기광주역");
+        newStation = new Station("이매역");
+
+        stationRepository.saveAll(Arrays.asList(upStation, downStation, newStation));
         flushAndClear();
     }
 
@@ -37,38 +44,32 @@ public class LineTest {
     @Test
     void 생성() {
         // given
-        Line shinbundang = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
+        Line shinbundang = new Line("신분당선", "bg-red-600");
 
         // when
         lineRepository.save(shinbundang);
         flushAndClear();
-        Line line = lineRepository.findById(1L).get();
 
         // then
-        assertThat(line).isEqualTo(shinbundang);
+        assertThat(lineRepository.findById(1L)).get().isEqualTo(shinbundang);
     }
 
-    @DisplayName("라인을 생성하고 addStation 메소드 테스트")
+    @DisplayName("라인을 생성한 후, 수정된 값으로 업데이트 한다")
     @Test
-    void 라인생성_성공_addStation테스트() {
+    void 라인수정_성공() {
         // given
-        Station gangNam = new Station("강남역");
-        Station seongSoo = new Station("성수역");
-        stationRepository.saveAll(Arrays.asList(gangNam, seongSoo));
-
-        // when
-        Line line = new Line("신분당선", "bg-red-600", upStation, downStation, 10);
-        line.setUpStation(gangNam);
-        line.setDownStation(seongSoo);
+        Line line = new Line("신분당선", "bg-red-600");
+        line.connect(upStation, downStation, 100);
         lineRepository.save(line);
         flushAndClear();
 
+        // when
+        Line newLine = lineRepository.findById(1L).orElseThrow(NoResultException::new);
+        newLine.update(new Line("경기광주선", "bg-blue-100"));
+        flushAndClear();
+
         // then
-        Line responseLine = lineRepository.findById(1L).get();
-        assertAll(
-                () -> assertThat(responseLine.getUpStation()).isEqualTo(gangNam),
-                () -> assertThat(responseLine.getDownStation()).isEqualTo(seongSoo)
-        );
+        assertThat(newLine.getName()).isEqualTo("경기광주선");
     }
 
     private void flushAndClear() {
