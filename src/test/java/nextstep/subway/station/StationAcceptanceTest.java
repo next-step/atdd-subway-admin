@@ -96,11 +96,34 @@ public class StationAcceptanceTest {
     /**
      * Given 2개의 지하철역을 생성하고
      * When 지하철역 목록을 조회하면
-     * Then 2개의 지하철역을 응답 받는다
+     * Then 지하철역 목록을 응답 받는다
+     * Then 생성한 지하철역 2개가 응답받은 지하철역 목록에 존재한다
      */
     @DisplayName("지하철역을 조회한다.")
     @Test
     void getStations() {
+        // given
+        String[] createStations = new String[] {"강남역", "교대역"};
+        for (String createStation : createStations) {
+            createStationForTest(createStation);
+        }
+
+        // when
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        List<String> stationsNames = response.jsonPath().getList("name", String.class);
+        for (String createStation : createStations) {
+            assertThat(stationsNames.contains(createStation)).isTrue();
+        }
     }
 
     /**
