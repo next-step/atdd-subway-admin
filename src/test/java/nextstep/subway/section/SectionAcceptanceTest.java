@@ -91,7 +91,41 @@ public class SectionAcceptanceTest {
                 .containsExactly(newStationId,downStationId);
     }
 
+    @Test
+    @DisplayName("새로운 역을 상행 종점으로 등록")
+    void addNewStationFirstUpStation() {
+        //given
+        Long newStationId = StationAcceptanceTest.createStationAndGetId("새로운상행종점");
 
+        //when
+        final ExtractableResponse<Response> apiResponse = createSection(lineId,
+                new SectionRequest(newStationId, upStationId, 1));
+
+        //then
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(apiResponse.jsonPath().getList("sectionResponses.upStation.id",Long.class))
+                .containsExactly(newStationId);
+        assertThat(apiResponse.jsonPath().getList("sectionResponses.downStation.id",Long.class))
+                .containsExactly(newStationId,upStationId);
+    }
+
+    @Test
+    @DisplayName("새로운 역을 하행 종점으로 등록")
+    void addNewStationLastDownStation() {
+        //given
+        Long newStationId = StationAcceptanceTest.createStationAndGetId("새로운하행종점");
+
+        //when
+        final ExtractableResponse<Response> apiResponse = createSection(lineId,
+                new SectionRequest(downStationId, newStationId, 1));
+
+        //then
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(apiResponse.jsonPath().getList("sectionResponses.upStation.id",Long.class))
+                .containsExactly(downStationId, newStationId);
+        assertThat(apiResponse.jsonPath().getList("sectionResponses.downStation.id",Long.class))
+                .containsExactly(newStationId);
+    }
 
     /**
      * 구간생성 api 호출
