@@ -15,8 +15,8 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<Void> handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<IllegalArgumentException> handleIllegalArgsException(Exception e) {
+        return new ResponseEntity<>(new IllegalArgumentException(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataRemoveException.class)

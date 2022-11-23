@@ -8,12 +8,14 @@ import nextstep.subway.utils.CommonMethodFixture;
 import org.assertj.core.api.Assertions;
 import org.springframework.http.HttpStatus;
 
+import static nextstep.subway.constant.Message.*;
 import static nextstep.subway.line.LineAcceptanceStep.*;
 import static nextstep.subway.station.StationAcceptanceStep.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 public class LineSectionStep extends CommonMethodFixture{
+    private static String[] errorMessages = new String[]{NOT_VALID_ANY_STATION, NOT_VALID_DUPLICATED_SECTION_STATIONS, NOT_VALID_SECTION_DISTANCE};
     private static final String SECTION_PATH = "/sections";
     private static final String REQUEST_PARAM_STATION_ID = "?stationId=";
 
@@ -59,14 +61,21 @@ public class LineSectionStep extends CommonMethodFixture{
     }
 
     public static void 구간_등록_실패(ExtractableResponse<Response> response) {
-        // 500
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        JsonPath path = response.body().jsonPath();
+
+        // 400
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(errorMessages).contains(response.body().jsonPath().getString("message"))
+        );
     }
 
     public static void 구간_삭제_실패(ExtractableResponse<Response> response) {
-        Assertions.assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
-        // 메세지 확인은?
+        // 400
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.body().jsonPath().getString("message")).contains(NOT_VALID_REMOVE_ONLY_ONE_SECTION)
+        );
     }
 
     private static void 구간_등록_결과_검증(ExtractableResponse<Response> response, int totalDistance, int count) {
