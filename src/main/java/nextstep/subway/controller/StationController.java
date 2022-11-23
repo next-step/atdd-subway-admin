@@ -1,5 +1,7 @@
 package nextstep.subway.controller;
 
+
+import nextstep.subway.dto.ErrorResponse;
 import nextstep.subway.service.StationService;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
@@ -13,6 +15,7 @@ import java.util.List;
 
 @RestController
 public class StationController {
+
     private StationService stationService;
 
     public StationController(StationService stationService) {
@@ -37,7 +40,7 @@ public class StationController {
     }
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
+    public ResponseEntity<ErrorResponse> handleIllegalArgsException(Exception ex) {
+        return ResponseEntity.badRequest().body(new ErrorResponse("BAD_REQUEST", 400, ex.getMessage()));
     }
 }

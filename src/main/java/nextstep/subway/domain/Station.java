@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 @Entity
 public class Station extends BaseEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

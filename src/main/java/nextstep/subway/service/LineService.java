@@ -98,4 +98,10 @@ public class LineService {
                 ()-> new NotFoundException(ErrMsg.notFoundSection(sectionId))
         ));
     }
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) throws NotFoundException {
+        Line line = findLineById(lineId);
+        Station station = findStationById(stationId);
+        line.removeStation(station);
+    }
 }

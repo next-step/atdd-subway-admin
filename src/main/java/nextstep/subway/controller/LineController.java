@@ -21,11 +21,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/lines")
 @RestController
 public class LineController {
+
     private LineService lineService;
 
     public LineController(LineService lineService) {
@@ -49,7 +51,8 @@ public class LineController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<LineResponse> update(@PathVariable Long id, @RequestBody LineRequest lineRequest) throws NotFoundException {
+    public ResponseEntity<LineResponse> update(@PathVariable Long id, @RequestBody LineRequest lineRequest)
+            throws NotFoundException {
         LineResponse line = lineService.updateLine(id, lineRequest);
         return ResponseEntity.ok().body(line);
     }
@@ -61,9 +64,11 @@ public class LineController {
     }
 
     @PostMapping(value = "/{id}/sections")
-    public ResponseEntity<SectionResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) throws NotFoundException {
+    public ResponseEntity<SectionResponse> addSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest)
+            throws NotFoundException {
         SectionResponse section = lineService.addSection(id, sectionRequest);
-        return ResponseEntity.created(URI.create(String.format("/lines/%d/sections/", id) + section.getId())).body(section);
+        return ResponseEntity.created(URI.create(String.format("/lines/%d/sections/", id) + section.getId()))
+                .body(section);
     }
 
     @GetMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -72,7 +77,8 @@ public class LineController {
     }
 
     @GetMapping(value = "/{lineId}/sections/{sectionId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SectionResponse> getLineSection(@PathVariable Long lineId, @PathVariable Long sectionId) throws NotFoundException {
+    public ResponseEntity<SectionResponse> getLineSection(@PathVariable Long lineId, @PathVariable Long sectionId)
+            throws NotFoundException {
         return ResponseEntity.ok().body(lineService.findLineSection(lineId, sectionId));
     }
 
@@ -81,13 +87,22 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findLineStations(id));
     }
 
-    @ExceptionHandler(value = {DataIntegrityViolationException.class, IllegalArgumentException.class })
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity removeLineStation(
+            @PathVariable Long lineId,
+            @RequestParam Long stationId) throws NotFoundException {
+        lineService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
+
+    @ExceptionHandler(value = {DataIntegrityViolationException.class, IllegalArgumentException.class,
+            IllegalStateException.class})
     public ResponseEntity<ErrorResponse> handleIllegalArgsException(Exception ex) {
         return ResponseEntity.badRequest().body(new ErrorResponse("BAD_REQUEST", 400, ex.getMessage()));
     }
 
     @ExceptionHandler(value = {NotFoundException.class})
-    public ResponseEntity<ErrorResponse> handleNotFoundExceptionException(Exception ex) {
+    public ResponseEntity<ErrorResponse> handleNotFoundExceptionException() {
         return ResponseEntity.notFound().build();
     }
 
