@@ -63,10 +63,7 @@ public class SectionLineStationService {
         boolean isContainUpStation = line.isContainStation(upStation);
         boolean isContainDownStation = line.isContainStation(downStation);
         if(isContainUpStation && isContainDownStation) {
-            throw new IllegalArgumentException("");
-        }
-        if(isContainUpStation && isContainDownStation) {
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException(ErrorMessage.ALREADY_EXIST_SECTION.getMessage());
         }
         return isContainUpStation ? downStation : upStation;
     }

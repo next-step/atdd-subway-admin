@@ -57,7 +57,7 @@ public class SectionAcceptanceTest {
 
     @Test
     @DisplayName("노선에 구간을 등록한다. 상위역을 새로운역으로 등록")
-    void addSectionUpStation() {
+    void addSectionUpStationTest() {
         //given
         Long newStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("양재역"));
 
@@ -75,7 +75,7 @@ public class SectionAcceptanceTest {
 
     @Test
     @DisplayName("노선에 구간을 등록한다. 하위역을 새로운역으로 등록")
-    void addSectionDownStation() {
+    void addSectionDownStationTest() {
         //given
         Long newStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("양재역"));
 
@@ -90,6 +90,8 @@ public class SectionAcceptanceTest {
         assertThat(apiResponse.jsonPath().getList("sectionResponses.downStation.id",Long.class))
                 .containsExactly(newStationId,downStationId);
     }
+
+
 
     /**
      * 구간생성 api 호출
