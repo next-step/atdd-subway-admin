@@ -42,4 +42,8 @@ public class SectionService {
         }
         throw new IllegalArgumentException(MESSAGE_CAN_NOT_ADD_SECTION);
     }
+
+    public void deleteStation(Long lineId, Long stationId) {
+
+    }
 }

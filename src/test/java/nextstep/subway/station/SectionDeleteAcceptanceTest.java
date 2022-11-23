@@ -65,8 +65,24 @@ public class SectionDeleteAcceptanceTest {
         요청이_실패한다(response);
     }
 
-    private ExtractableResponse<Response> 구간에_포함된_역을_삭제함(Long lineId, Station station) {
+    /**
+     * When 노선에 포함되지 않은 역을 삭제하려고 하면
+     * Then 실패함.
+     */
+    @Test
+    void 노선에_포함되지_않은_역은_삭제할_수_없음() {
+
+        ExtractableResponse<Response> response =  노선에서_역을_삭제함(기본노선정보.getId(),new Station(100L,"없음"));
+
+        요청이_실패한다(response);
+    }
+
+    private ExtractableResponse<Response> 노선에서_역을_삭제함(Long lineId, Station station) {
         return RequestUtil.deleteRequest(String.format(deleteStationInSectionUrl, lineId, station.getId()));
+    }
+
+    private ExtractableResponse<Response> 구간에_포함된_역을_삭제함(Long lineId, Station station) {
+        return 노선에서_역을_삭제함(lineId,station);
     }
 
     private static Stream<Arguments> provideStationsInLine(){

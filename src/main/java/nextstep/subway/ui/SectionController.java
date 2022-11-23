@@ -22,6 +22,12 @@ public class SectionController {
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).build();
     }
 
+    @DeleteMapping("/lines/{lineId}/sections")
+    public ResponseEntity<Void> deleteStationInSection(@PathVariable("lineId") Long lineId, @RequestParam("stationId") Long stationId) {
+        sectionService.deleteStation(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity IllegalArgumentException() {return ResponseEntity.badRequest().build();}
 
