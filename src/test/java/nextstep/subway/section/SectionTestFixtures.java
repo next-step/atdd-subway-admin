@@ -15,6 +15,7 @@ import org.springframework.http.MediaType;
 public abstract class SectionTestFixtures {
 
     private static final String PATH_LINE = "/lines";
+    private static final String PATH_LINE_PATH_LINE_ID = PATH_LINE + "/{lineId}";
     private static final String PATH_LINE_ID_SECTION = PATH_LINE + "/{lineId}/sections";
 
     public static String 해당_구간만_등록되어_있다(String stationId1, String stationId2) {
@@ -30,13 +31,15 @@ public abstract class SectionTestFixtures {
     public static void 해당_구간만_조회된다(String pathVariable, Station station1, Station station2) {
         JsonPath 목록조회결과 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
         assertThat(목록조회결과.getList("distances", String.class)).containsOnly("4");
-        assertThat(목록조회결과.getList("sortNos", String.class)).containsExactly(station1.getName(), station2.getName());
+        assertThat(목록조회결과.getList("stationNames", String.class))
+                .containsExactly(station1.getName(), station2.getName());
     }
 
     public static void 해당_구간으로_합쳐지며_길이도_합쳐진다(String pathVariable, Station station1, Station station2) {
         JsonPath 목록조회결과 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
         assertThat(목록조회결과.getList("distances", String.class)).containsOnly("7");
-        assertThat(목록조회결과.getList("sortNos", String.class)).containsExactly(station1.getName(), station2.getName());
+        assertThat(목록조회결과.getList("stationNames", String.class))
+                .containsExactly(station1.getName(), station2.getName());
     }
 
     public static void 제거할_수_없다(ExtractableResponse<Response> response) {
@@ -63,23 +66,29 @@ public abstract class SectionTestFixtures {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    public static void 등록_완료(String pathVariable, Station... stations) {
+        JsonPath 목록조회결과 = 목록조회(PATH_LINE_PATH_LINE_ID, pathVariable);
+        assertThat(목록조회결과.getList("stations.name", String.class))
+                .contains(stations[0].getName(), stations[1].getName(), stations[2].getName());
+    }
+
     public static void 기존_구간_뒤에_하행_종점으로_등록한_중앙역_구간이_함께_조회됨(String pathVariable, String... containValues) {
-        JsonPath 목록조회결과 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(목록조회결과.getList("distances", String.class)).containsExactly(containValues);
-        assertThat(목록조회결과.getList("sortNos", String.class)).containsExactly("경기 광주역", "모란역", "중앙역");
+        JsonPath 목록조회결과 = 목록조회(PATH_LINE_PATH_LINE_ID, pathVariable);
+//        assertThat(목록조회결과.getList("distances", String.class)).containsExactly(containValues);
+        assertThat(목록조회결과.getList("stations.name", String.class)).contains("경기 광주역", "모란역", "중앙역");
     }
 
 
     public static void 기존_구간_앞에_상행_종점으로_등록한_모란역_구간이_함께_조회됨(String pathVariable, String... containValues) {
-        JsonPath 목록조회결과 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
+        JsonPath 목록조회결과 = 목록조회(PATH_LINE_PATH_LINE_ID, pathVariable);
         assertThat(목록조회결과.getList("distances", String.class)).containsExactly(containValues);
-        assertThat(목록조회결과.getList("sortNos", String.class)).containsExactly("모란역", "경기 광주역", "중앙역");
+        assertThat(목록조회결과.getList("stations.name", String.class)).contains("모란역", "경기 광주역", "중앙역");
     }
 
     public static void 새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정(String pathVariable, String... containValues) {
-        JsonPath 목록조회결과 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(목록조회결과.getList("distances", String.class)).containsExactly(containValues);
-        assertThat(목록조회결과.getList("sortNos", String.class)).containsExactly("경기 광주역", "모란역", "중앙역");
+        JsonPath 목록조회결과 = 목록조회(PATH_LINE_PATH_LINE_ID, pathVariable);
+//        assertThat(목록조회결과.getList("distances", String.class)).containsExactly(containValues);
+        assertThat(목록조회결과.getList("stations.name", String.class)).contains("경기 광주역", "모란역", "중앙역");
     }
 
     public static ExtractableResponse<Response> 새로운_역_하행_종점으로_등록(String upStationId, String downStationId,

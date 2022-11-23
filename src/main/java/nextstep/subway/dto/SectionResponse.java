@@ -6,18 +6,18 @@ import java.util.Set;
 public class SectionResponse {
 
     private List<Integer> distances;
-    private Set<String> sortNos;
+    private Set<String> stationNames;
 
-    public SectionResponse(List<Integer> distance, Set<String> sortNo) {
+    public SectionResponse(List<Integer> distance, Set<String> stationNames) {
         this.distances = distance;
-        this.sortNos = sortNo;
+        this.stationNames = stationNames;
     }
 
     public List<Integer> getDistances() {
         return distances;
     }
 
-    public Set<String> getSortNos() {
-        return sortNos;
+    public Set<String> getStationNames() {
+        return stationNames;
     }
 }

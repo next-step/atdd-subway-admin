@@ -52,11 +52,13 @@ public class StationController {
     @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class, PersistenceException.class})
     public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+                .build();
     }
 }

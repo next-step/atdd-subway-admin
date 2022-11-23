@@ -37,7 +37,7 @@ public class LineService {
     }
 
     public SectionResponse findSectionResponsesByLineId(Long lineId) {
-        Line line = lineRepository.findWithSectionsByIdOrderBySortNoAsc(lineId)
+        Line line = lineRepository.findWithSectionsById(lineId)
                 .orElseThrow(EntityNotFoundException::new);
 
         return new SectionResponse(line.getDistances(), line.getStationNames());
@@ -60,7 +60,7 @@ public class LineService {
 
     @Transactional
     public void addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findWithSectionsByIdOrderBySortNoAsc(lineId)
+        Line line = lineRepository.findWithSectionsById(lineId)
                 .orElseThrow(EntityNotFoundException::new);
         Station upStation = stationService.findEntityById(sectionRequest.getUpStationId());
         Station downStation = stationService.findEntityById(sectionRequest.getDownStationId());
@@ -83,7 +83,7 @@ public class LineService {
 
     @Transactional
     public void deleteSectionByStationId(Long lineId, Long stationId) {
-        Line line = lineRepository.findWithSectionsByIdOrderBySortNoAsc(lineId)
+        Line line = lineRepository.findWithSectionsById(lineId)
                 .orElseThrow(EntityNotFoundException::new);
         Station station = stationService.findEntityById(stationId);
 

@@ -62,29 +62,34 @@ public class LineController {
     public ResponseEntity addSection(@PathVariable("lineId") Long lineId,
                                      @RequestBody SectionRequest sectionRequest) {
         lineService.addSection(lineId, sectionRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .build();
     }
 
     @PutMapping(value = "/{name}")
     public ResponseEntity modifyLine(@PathVariable("name") String name, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(name, lineRequest);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .build();
     }
 
     @DeleteMapping("/{lineId}")
     public ResponseEntity deleteLine(@PathVariable("lineId") Long lineId) {
         lineService.deleteLineById(lineId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 
     @DeleteMapping("/{lineId}/sections")
     public ResponseEntity removeLineStation(@PathVariable("lineId") Long lineId, @RequestParam Long stationId) {
         lineService.deleteSectionByStationId(lineId, stationId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok()
+                .build();
     }
 
     @ExceptionHandler({PersistenceException.class, IllegalArgumentException.class})
     public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+                .build();
     }
 }

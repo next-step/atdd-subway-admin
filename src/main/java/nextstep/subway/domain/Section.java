@@ -1,6 +1,9 @@
 package nextstep.subway.domain;
 
+import java.util.List;
 import java.util.Objects;
+import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,7 +30,12 @@ public class Section {
     @Embedded
     private Distance distance;
 
-    private int sortNo = 1000;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "pre_section_id")
+    private Section preSection;
+
+    @OneToOne(mappedBy = "preSection", cascade = CascadeType.PERSIST)
+    private Section nextSection;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "upStationId")
@@ -47,10 +55,12 @@ public class Section {
         this.downStation = downStation;
     }
 
-    public Section(Line line, int distance, int sortNo, Station upStation, Station downStation) {
+    public Section(Line line, int distance, Section preSection, Section nextSection,
+                   Station upStation, Station downStation) {
         this.line = line;
         this.distance = new Distance(distance);
-        this.sortNo = sortNo;
+        this.preSection = preSection;
+        this.nextSection = nextSection;
         this.upStation = upStation;
         this.downStation = downStation;
     }
@@ -79,10 +89,6 @@ public class Section {
         return downStation;
     }
 
-    public int getSortNo() {
-        return this.sortNo;
-    }
-
     public boolean isEqualsUpStation(Station upStation) {
         return this.upStation.equals(upStation);
     }
@@ -108,16 +114,13 @@ public class Section {
         return Objects.hash(getId());
     }
 
-    public Section createNewSection(int distance, int sortNo, Station upStation, Station downStation) {
-        return new Section(line, distance, sortNo, upStation, downStation);
-    }
-
-    public Section createNewAppendDownStation(int distance, int sortNo, Station downStation) {
-        return new Section(line, distance, sortNo, this.downStation, downStation);
-    }
-
-    public Section createNewPrependUpStation(int distance, int sortNo, Station upStation) {
-        return new Section(line, distance, sortNo, upStation, this.upStation);
+    public void removeSection() {
+        if (!isFirstSection()) {
+            preSection.removeNextSection();
+        }
+        if (!isLastSection()) {
+            nextSection.removePreSection();
+        }
     }
 
     public void validateLength(int distance) {
@@ -132,32 +135,83 @@ public class Section {
         }
     }
 
-    public void validateNotExistsStation(Station upStation, Station downStation) {
-        if (!this.upStation.equals(upStation) && !this.downStation.equals(downStation) && !this.upStation
-                .equals(downStation) && !this.downStation.equals(upStation)) {
-            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없습니다.");
+    public Section createBetweenSectionByUpStation(int distance, Station upStation, Station downStation) {
+        Section preSection = new Section(line, distance, upStation, downStation);
+        this.upStation = downStation;
+        this.distance.setMinusDistance(distance);
+        preSection.setNextSection(this);
+        return preSection;
+    }
+
+    public Section createBetweenSectionByDownStation(int distance, Station upStation, Station downStation) {
+        Section nextSection = new Section(line, distance, upStation, downStation);
+        this.downStation = upStation;
+        this.distance.setMinusDistance(distance);
+        setNextSection(nextSection);
+        return nextSection;
+    }
+
+    public Section createPrependSection(int distance, Station upStation, Station downStation) {
+        Section preSection = new Section(line, distance, upStation, downStation);
+        preSection.setNextSection(this);
+        return preSection;
+    }
+
+    public Section createAppendSection(int distance, Station upStation, Station downStation) {
+        Section nextSection = new Section(line, distance, upStation, downStation);
+        setNextSection(nextSection);
+        return nextSection;
+    }
+
+    public void ifExistPreSectionThenSetNextSection(Section newSection) {
+        if (preSection != null) {
+            preSection.setNextSection(newSection);
         }
     }
 
-    public void ifGreaterThanThenPlusSortNo(int sortNo) {
-        if (this.sortNo > sortNo) {
-            this.sortNo++;
+    public void ifExistNextSectionThenSetPreSection(Section newSection) {
+        if (nextSection != null) {
+            nextSection.setPreSection(newSection);
         }
     }
 
-    public void ifGreaterThanThenMinusSortNo(int sortNo) {
-        if (this.sortNo > sortNo) {
-            this.sortNo--;
+    public boolean isFirstSection() {
+        return preSection == null;
+    }
+
+    public boolean isLastSection() {
+        return nextSection == null;
+    }
+
+    public void ifExistNextSectionThenAddStationNames(Set<String> stationNames) {
+        if (nextSection != null) {
+            stationNames.add(nextSection.getUpStation().getName());
+            stationNames.add(nextSection.getDownStation().getName());
+            nextSection.ifExistNextSectionThenAddStationNames(stationNames);
         }
     }
 
-    public void ifLessThanThenPlusSortNo(int sortNo) {
-        if (this.sortNo < sortNo) {
-            this.sortNo--;
+    public void ifExistNextSectionThenAddDistances(List<Integer> distances) {
+        if (nextSection != null) {
+            distances.add(nextSection.getDistance());
+            nextSection.ifExistNextSectionThenAddDistances(distances);
         }
     }
 
-    public int getMinusDistance(int distance) {
-        return this.distance.getMinusDistance(distance);
+    private void removePreSection() {
+        this.preSection = null;
+    }
+
+    private void removeNextSection() {
+        this.nextSection = null;
+    }
+
+    private void setPreSection(Section preSection) {
+        this.preSection = preSection;
+    }
+
+    private void setNextSection(Section nextSection) {
+        this.nextSection = nextSection;
+        nextSection.setPreSection(this);
     }
 }

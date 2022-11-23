@@ -29,10 +29,10 @@ class SectionsTest {
 
     @Test
     void 구간_길이_목록을_가져온다() {
-        sections.addDefaultSection(null, 9, upStation, downStation);
+        sections.addSection(4, new Station(3L, "판교역"), downStation);
 
         assertThat(sections.getDistances()).hasSize(2);
-        assertThat(sections.getDistances()).contains(9, 10);
+        assertThat(sections.getDistances()).contains(6, 4);
     }
 
     @Test
@@ -57,12 +57,6 @@ class SectionsTest {
     void 구간이_하나인_노선은_제거할_수_없다() {
         assertThatIllegalArgumentException()
                 .isThrownBy(() -> sections.deleteSectionByStation(null, upStation));
-    }
-
-    @DisplayName("처음 노선 등록시 함께 생성되는 구간의 기본 정렬값은 1000이다")
-    @Test
-    void addDefaultSection() {
-        assertThat(sections.getSections().get(0).getSortNo()).isEqualTo(1000);
     }
 
     @DisplayName("기존 노선에 구간 추가시 상행 하행역이 모두 동일하거나 둘다 다를 경우 EX 발생")

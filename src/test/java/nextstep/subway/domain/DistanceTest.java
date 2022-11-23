@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 class DistanceTest {
@@ -14,6 +13,7 @@ class DistanceTest {
     @ValueSource(ints = {0, -1, -2})
     void 구간_길이는_0보다_커야한다(int distance) {
         assertThatIllegalArgumentException().isThrownBy(() -> new Distance(distance));
+        assertThatIllegalArgumentException().isThrownBy(() -> new Distance(1).validateLength(distance));
     }
 
     @Test
@@ -23,9 +23,12 @@ class DistanceTest {
         assertThat(new Distance(10).isGreaterEqual(9)).isFalse();
     }
 
-    @ParameterizedTest
-    @CsvSource(value = {"11:1", "12:2", "5:5"}, delimiter = ':')
-    void 구간_길이를_뺀_값의_절대값을_반환한다(int distance, int expected) {
-        assertThat(new Distance(10).getMinusDistance(distance)).isEqualTo(expected);
+    @Test
+    void 구간_길이의_차이는_양수로_계산된다() {
+        Distance distance = new Distance(10);
+
+        distance.setMinusDistance(15);
+
+        assertThat(distance.getDistance()).isEqualTo(5);
     }
 }

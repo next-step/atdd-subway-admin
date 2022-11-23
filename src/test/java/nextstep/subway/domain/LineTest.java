@@ -18,12 +18,6 @@ class LineTest {
         line.addDefaultSection(10, upStation, downStation);
     }
 
-    @DisplayName("처음 노선 등록시 함께 생성되는 구간의 기본 정렬값은 1000이다")
-    @Test
-    void addDefaultSection() {
-        assertThat(line.getSectionList().get(0).getSortNo()).isEqualTo(1000);
-    }
-
     @DisplayName("기존 노선에 구간 추가시 상행 하행역이 모두 동일하거나 둘다 다를 경우 EX 발생")
     @Test
     void addSection() {

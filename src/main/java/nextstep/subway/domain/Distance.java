@@ -29,7 +29,11 @@ public class Distance {
         return distance;
     }
 
-    public int getMinusDistance(int distance) {
+    public void setMinusDistance(int distance) {
+        this.distance = getMinusDistance(distance);
+    }
+
+    private int getMinusDistance(int distance) {
         return Math.abs(this.distance - distance);
     }
 }
