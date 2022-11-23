@@ -146,7 +146,6 @@ public class LineSectionTest {
         구간_추가_등록_결과_확인(response, 3, 17);
     }
 
-
     /**
      * Given 3개 이상의 지하철 역이 등록되어 있다
      * When 상행 종점이 제거 될 경우
@@ -177,7 +176,7 @@ public class LineSectionTest {
         구간_생성_요청(lineId, 1L, 3L, 4);
 
         // when
-        ExtractableResponse<Response> response = 구간_삭제_호출(lineId, 2);
+        구간_삭제_호출(lineId, 2);
 
         // then
         하행_구간_삭졔_확인(lineId);
@@ -226,7 +225,7 @@ public class LineSectionTest {
      */
     @DisplayName("구간에 포함되지 않은 역을 삭제할 수 없다")
     @Test
-    void 구간이에_포함되지_않은_역_제거_에러() {
+    void 구간에_포함되지_않은_역_제거_에러() {
         // given -> beforeEach
         추가_역을_3개_생성한다();
 

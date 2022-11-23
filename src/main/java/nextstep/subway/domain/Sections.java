@@ -71,7 +71,6 @@ public class Sections {
         removeNotLastSection(station);
     }
 
-
     private void changeSectionsAndRemove(Station station, Section deleteSection) {
         Section downSection = sections.stream()
                 .filter(u -> u.getUpStation().equals(station))
@@ -84,10 +83,10 @@ public class Sections {
         sections.remove(deleteSection);
 
     }
-    
 
     public List<Station> getAllStations() {
-        return sections.stream()
+        List<Section> sortedSections = sortSections();
+        return sortedSections.stream()
                 .flatMap(Section::stations)// Stream<Station> return
                 .distinct()
                 .collect(Collectors.toList());
