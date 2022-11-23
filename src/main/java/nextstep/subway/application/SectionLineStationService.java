@@ -51,11 +51,11 @@ public class SectionLineStationService {
     }
 
     private void checkDistance(Line line, int distance) {
-        if(distance <= 0) {
-            throw new IllegalArgumentException("");
-        }
         if(line.compareToDistance(distance) <= 0) {
-            throw new IllegalArgumentException("");
+            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
+        }
+        if(distance <= 0) {
+            throw new IllegalArgumentException(ErrorMessage.EXCEED_SECTION_DISTANCE.getMessage());
         }
     }
 
