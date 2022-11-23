@@ -16,11 +16,16 @@ public class Distance {
     }
 
     public Distance(int distance) {
-        validate(distance);
+
         this.distance = distance;
     }
 
-    private void validate(int distance) {
+    public static Distance from(int distance) {
+        validate(distance);
+        return new Distance(distance);
+    }
+
+    private static void validate(int distance) {
         if (distance <= 0) {
             throw new IllegalArgumentException(NOT_VALID_UNDER_ZERO_DISTANCE);
         }
@@ -32,5 +37,9 @@ public class Distance {
 
     public Distance subtract(int distance) {
         return new Distance(this.distance - distance);
+    }
+
+    public Distance sumDistance(int distance) {
+        return new Distance(this.distance + distance);
     }
 }

@@ -1,27 +1,29 @@
 package nextstep.subway.section;
 
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.SectionRequest;
-import org.json.JSONObject;
+import nextstep.subway.utils.CommonMethodFixture;
+import org.assertj.core.api.Assertions;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-import java.util.List;
-
-import static nextstep.subway.line.LineAcceptanceStep.노선_한개_생성한다;
-import static nextstep.subway.line.LineAcceptanceStep.특정_노선을_조회한다;
-import static nextstep.subway.station.StationAcceptanceTest.지하철역을_생성한다;
+import static nextstep.subway.constant.Message.*;
+import static nextstep.subway.line.LineAcceptanceStep.*;
+import static nextstep.subway.station.StationAcceptanceStep.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-public class LineSectionStep {
+public class LineSectionStep extends CommonMethodFixture{
+    private static String[] saveErrorMessages = new String[]{NOT_VALID_ANY_STATION, NOT_VALID_DUPLICATED_SECTION_STATIONS, NOT_VALID_SECTION_DISTANCE};
+    private static String[] removeErrorMessages = new String[]{NOT_VALID_REMOVE_ONLY_ONE_SECTION, NOT_CONTAIN_STATION_IN_LINE};
+    private static final String SECTION_PATH = "/sections";
+    private static final String REQUEST_PARAM_STATION_ID = "?stationId=";
+
 
     public static ExtractableResponse<Response> 역_3개와_노선을_생성한다() {
-        int upLastStationId = 지하철역을_생성한다("강남역").jsonPath().get("id");
-        int downLastStationId = 지하철역을_생성한다("선릉역").jsonPath().get("id");
+        Long upLastStationId = 지하철역을_생성한다("강남역").jsonPath().getLong("id");
+        Long downLastStationId = 지하철역을_생성한다("선릉역").jsonPath().getLong("id");
         지하철역을_생성한다("역삼역");
 
         return 노선_한개_생성한다(upLastStationId, downLastStationId);
@@ -33,18 +35,13 @@ public class LineSectionStep {
                 .downStationId(downStationId)
                 .distance(distance)
                 .build();
-        return 구간_생성_호출(lineId, request);
+        String path = LINE_PATH + SLASH + lineId + SECTION_PATH;
+        return post(path, request);
     }
 
-
-    public static ExtractableResponse<Response> 구간_생성_호출(int lineId, SectionRequest request) {
-        return RestAssured.given()
-                .body(request).log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines/" + lineId + "/sections")
-                .then()
-                .log().all()
-                .extract();
+    public static ExtractableResponse<Response> 구간_삭제_호출(int lineId, int stationId) {
+        String path = LINE_PATH + SLASH + lineId + SECTION_PATH + REQUEST_PARAM_STATION_ID + stationId;
+        return delete(path);
     }
 
     public static void 추가_역을_3개_생성한다() {
@@ -65,8 +62,21 @@ public class LineSectionStep {
     }
 
     public static void 구간_등록_실패(ExtractableResponse<Response> response) {
-        // 500
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        JsonPath path = response.body().jsonPath();
+
+        // 400
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(saveErrorMessages).contains(response.body().jsonPath().getString("message"))
+        );
+    }
+
+    public static void 구간_삭제_실패(ExtractableResponse<Response> response) {
+        // 400
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(removeErrorMessages).contains(response.body().jsonPath().getString("message"))
+        );
     }
 
     private static void 구간_등록_결과_검증(ExtractableResponse<Response> response, int totalDistance, int count) {
@@ -78,12 +88,4 @@ public class LineSectionStep {
                 () -> assertThat(jsonPath.getList("stations")).hasSize(count)
         );
     }
-
-
-    public static void 구간_등록_결과_검증(int lineId, int count, String target) {
-        List<JSONObject> jsonObjects = 특정_노선을_조회한다(lineId).jsonPath().getList(target);
-        assertThat(jsonObjects).hasSize(count);
-    }
-
-
 }

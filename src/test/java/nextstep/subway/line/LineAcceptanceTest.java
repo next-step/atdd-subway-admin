@@ -14,7 +14,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import java.util.List;
 
 import static nextstep.subway.line.LineAcceptanceStep.*;
-import static nextstep.subway.station.StationAcceptanceTest.지하철역을_생성한다;
+import static nextstep.subway.station.StationAcceptanceStep.지하철역을_생성한다;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -26,8 +26,8 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
-    private int upLastStationId;
-    private int downLastStationId;
+    private Long upLastStationId;
+    private Long downLastStationId;
 
 
     @BeforeEach

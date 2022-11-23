@@ -20,11 +20,11 @@ public class LineResponse {
     public List<StationResponse> stations;
     public int totalDistance;
 
-   public static List<LineResponse> of(List<Line> lines) {
-       return lines.stream()
-               .map(line -> LineResponse.from(line))
-               .collect(Collectors.toList());
-   }
+    public static List<LineResponse> of(List<Line> lines) {
+        return lines.stream()
+                .map(line -> LineResponse.from(line))
+                .collect(Collectors.toList());
+    }
 
     public static LineResponse from(Line persistLine) {
         return new LineResponse(persistLine);

@@ -5,12 +5,13 @@ import lombok.Builder;
 import nextstep.subway.domain.raw.Color;
 import nextstep.subway.domain.raw.Name;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.StationResponse;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
-import static nextstep.subway.constant.Message.NOT_FOUND_SECTION_ERR;
+import static nextstep.subway.constant.Message.*;
 
 @Entity
 @Builder
@@ -36,7 +37,24 @@ public class Line extends BaseEntity {
         this.name = new Name(name);
         this.color = new Color(color);
         // Line과 매핑하기 위해 this를 넘겨줌
+        Section section = new Section(upStation, downStation, this, distance);
         this.sections = new Sections(new Section(upStation, downStation, this, distance));
+    }
+
+    private Line(Long id, Name name, Color color, Section section) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = Sections.from(section);
+        section.addTo(this);
+    }
+
+    public static Line of(String name, String color, Section sectionTemp) {
+        return of(null, name, color, sectionTemp);
+    }
+
+    public static Line of(Long id, String name, String color, Section section) {
+        return new Line(id, Name.fromName(name), Color.fromColor(color), section);
     }
 
     public Long getId() {
@@ -77,6 +95,10 @@ public class Line extends BaseEntity {
 
     }
 
+    public void removeSection(Station station) {
+        sections.removeSection(station);
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -100,4 +122,6 @@ public class Line extends BaseEntity {
                 ", sections=" + sections +
                 '}';
     }
+
+
 }

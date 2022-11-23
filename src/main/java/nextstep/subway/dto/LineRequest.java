@@ -21,9 +21,9 @@ public class LineRequest {
     private String color;
     private int distance;
     @Builder.Default
-    private int upLastStationId = 0;
+    private Long upLastStationId = 0L;
     @Builder.Default
-    private int downLastStationId = 0;
+    private Long downLastStationId = 0L;
 
     public Line toLine(Station upStation, Station downStation) {
         return new Line(name, color, upStation, downStation, distance);

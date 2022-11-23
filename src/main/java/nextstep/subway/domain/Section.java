@@ -10,20 +10,21 @@ import java.util.stream.Stream;
 import static nextstep.subway.constant.Message.STATION_IS_NOT_NULL;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station_to_station"))
+//    @ManyToOne(fetch = FetchType.LAZY)        // LAZY 하면 저장 후 제다로 section정보가 Line에 반영되지 않음
+    @ManyToOne
+    @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station_to_station"), nullable = false)
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station_to_station"))
+    @ManyToOne
+    @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station_to_station"), nullable = false)
     private Station downStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
@@ -40,18 +41,17 @@ public class Section extends BaseEntity {
         this.distance = new Distance(distance);
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = distance;
     }
 
     public static Section of(Station upStation, Station downStation, int distance) {
         validateStationIsNotNull(upStation);
         validateStationIsNotNull(downStation);
-        return new Section(upStation, downStation, distance);
+        return new Section(upStation, downStation, Distance.from(distance));
     }
-
 
     public Long getId() {
         return id;
@@ -81,7 +81,7 @@ public class Section extends BaseEntity {
         return isUpStation(section.upStation) && isDownStation(section.downStation);
     }
 
-    public boolean isContainAnyStation(Section section) {
+    public boolean isContainAnyStaion(Section section) {
         if (Objects.isNull(section)) {
             return false;
         }
@@ -98,7 +98,7 @@ public class Section extends BaseEntity {
     }
 
     public void changeUpStation(Section newSection) {
-        validateStationIsNotNull(newSection.getUpStation());
+        validateStationIsNotNull(newSection.upStation);
         this.upStation = newSection.downStation;
         this.distance = subtractDistance(newSection.getDistance());
     }
@@ -109,11 +109,10 @@ public class Section extends BaseEntity {
         return firstStation.equals(upStation) || lastStation.equals(downStation);
     }
 
-    public void updateLine(Line line) {
-        if (line.equals(this.line)) {
-            return;
-        }
-        this.line = line;
+    public void changeDownStation(Section section) {
+        validateStationIsNotNull(section.upStation);
+        this.upStation = section.upStation;
+        this.distance = sumDistance(section.getDistance());
     }
 
     private Distance subtractDistance(int distance) {
@@ -129,6 +128,22 @@ public class Section extends BaseEntity {
             throw new IllegalArgumentException(STATION_IS_NOT_NULL);
         }
     }
+
+
+    private Distance sumDistance(int distance) {
+        return this.distance.sumDistance(distance);
+    }
+
+    public void updateLine(Line line) {
+        if (line.equals(this.line)) {
+            return;
+        }
+        this.line = line;
+    }
+
+
+
+
 
     @Override
     public int hashCode() {
@@ -152,5 +167,28 @@ public class Section extends BaseEntity {
         if (o == null || getClass() != o.getClass()) return false;
         Section section = (Section) o;
         return distance == section.distance && Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line);
+    }
+
+    @Override
+    public int compareTo(Section s) {
+        if (this.downStation.getId().equals(s.getUpStation().getId())) return -1;
+        else if (this.upStation.getId().equals(s.getDownStation().getId())) return 1;
+        return 0;
+    }
+
+
+    public void addTo(Line line) {
+        if (line.equals(this.line)) {
+            return;
+        }
+        this.line = line;
+    }
+
+    public void removeFromLine() {
+        this.line = null;
+    }
+
+    public boolean isIncludedSection(Station targetStation) {
+        return downStation.equals(targetStation) || upStation.equals(targetStation);
     }
 }

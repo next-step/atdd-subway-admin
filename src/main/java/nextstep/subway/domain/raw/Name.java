@@ -19,11 +19,15 @@ public class Name {
         this.name = name;
     }
 
+    public static Name fromName(String name) {
+        return new Name(name);
+    }
+
     public String getName() {
         return name;
     }
 
-    public Name from(LineRequest updateRequest) {
+    public static Name from(LineRequest updateRequest) {
         if (updateRequest.getName().isEmpty() || updateRequest.getName() == "") {
             throw new IllegalArgumentException(NOT_VALID_EMPTY);
         }
