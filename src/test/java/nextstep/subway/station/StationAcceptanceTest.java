@@ -129,10 +129,52 @@ public class StationAcceptanceTest {
     /**
      * Given 지하철역을 생성하고
      * When 그 지하철역을 삭제하면
+     * Then 지하철역이 삭제된다
      * Then 그 지하철역 목록 조회 시 생성한 역을 찾을 수 없다
      */
     @DisplayName("지하철역을 제거한다.")
     @Test
     void deleteStation() {
+        // given
+        String stationId = createStationForTest("강남역");
+
+        // when
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().delete("/stations/"+stationId)
+                        .then().log().all()
+                        .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+
+        // then
+        List<String> stationNamesAfterDelete =
+                RestAssured.given().log().all()
+                        .when().get("/stations")
+                        .then().log().all()
+                        .extract().jsonPath().getList("name", String.class);
+        assertThat(stationNamesAfterDelete.contains("강남역")).isFalse();
+    }
+
+    /**
+     * 테스트를 위해 지하철역을 생성
+     * @param stationName 생성할 지하철역 이름
+     * @return 생성된 지하철역 id
+     */
+    String createStationForTest(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", stationName);
+
+        ExtractableResponse<Response> response =
+            RestAssured.given().log().all()
+                    .body(params)
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .when().post("/stations")
+                    .then().log().all()
+                    .extract();
+
+        return Integer.toString(response.jsonPath().get("id"));
     }
 }
