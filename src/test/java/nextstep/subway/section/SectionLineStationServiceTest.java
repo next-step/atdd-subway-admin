@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import nextstep.subway.DatabaseCleaner;
 import nextstep.subway.application.LineService;
 import nextstep.subway.application.SectionLineStationService;
-import nextstep.subway.application.SectionStationService;
 import nextstep.subway.application.StationService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.SectionRequest;
@@ -15,20 +14,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SectionServiceTest {
+public class SectionLineStationServiceTest {
 
     @LocalServerPort
     private int port;
-
-    @Autowired
-    SectionStationService sectionStationService;
 
     @Autowired
     SectionLineStationService sectionLineStationService;
@@ -52,8 +47,8 @@ public class SectionServiceTest {
             RestAssured.port = port;
         }
 
-        upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("강남역"));
-        downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("광교역"));
+        upStationId = StationAcceptanceTest.createStationAndGetId("강남역");
+        downStationId = StationAcceptanceTest.createStationAndGetId("광교역");
 
         lineId = Long.parseLong(LineAcceptanceTest.createLineAndGetId(
                 new LineRequest("신분당선","bg-red-600",upStationId,downStationId,100)));
@@ -80,4 +75,15 @@ public class SectionServiceTest {
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
+    @Test
+    void upStationDownStationNotExist() {
+        //given
+        Long newUpStationId = StationAcceptanceTest.createStationAndGetId("새로운역");
+        Long newDownStationId = StationAcceptanceTest.createStationAndGetId("또다른새역");
+        //when
+        //then
+        assertThatThrownBy(() -> sectionLineStationService
+                .addSection(lineId, new SectionRequest(newUpStationId, newDownStationId, 5)))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

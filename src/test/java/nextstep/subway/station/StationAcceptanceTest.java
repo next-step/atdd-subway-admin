@@ -109,7 +109,7 @@ public class StationAcceptanceTest {
     void deleteStationTest() {
         //given
         String stationName = "강남역";
-        String id = createStationAndGetId(stationName);
+        Long id = createStationAndGetId(stationName);
 
         //when
         deleteStation(id);
@@ -147,8 +147,8 @@ public class StationAcceptanceTest {
     /**
      * 주어진 이름으로 지하철역을 생성 후 id를 조회한다.
      */
-    public static String createStationAndGetId(String stationName) {
-        return createStation(stationName).jsonPath().get("id").toString();
+    public static Long createStationAndGetId(String stationName) {
+        return Long.parseLong(createStation(stationName).jsonPath().get("id").toString());
     }
     /**
      * 주어진 이름으로 지하철역을 생성 후 상태코드를 조회한다.
@@ -172,7 +172,7 @@ public class StationAcceptanceTest {
     /**
      * 주어진id로 지하철역을 삭제한다.
      */
-    void deleteStation(String id) {
+    void deleteStation(Long id) {
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/stations/" + id)

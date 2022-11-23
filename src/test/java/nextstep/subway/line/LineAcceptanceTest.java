@@ -50,8 +50,8 @@ public class LineAcceptanceTest {
     void createLineTest() {
         //given
         String lineName = "신분당선";
-        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
-        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
+        Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
 
         //when
         final ExtractableResponse<Response> apiResponse =
@@ -69,9 +69,9 @@ public class LineAcceptanceTest {
         //given
         String lineName1 = "신분당선";
         String lineName2 = "분당선";
-        Long stationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
-        Long newStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
-        Long anotherStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("또다른지하철역"));
+        Long stationId = StationAcceptanceTest.createStationAndGetId("지하철역");
+        Long newStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
+        Long anotherStationId = StationAcceptanceTest.createStationAndGetId("또다른지하철역");
         createLine(new LineRequest(lineName1, "bg-red-600", stationId, newStationId, 10));
         createLine(new LineRequest(lineName2, "bg-red-600", stationId, anotherStationId, 10));
 
@@ -87,8 +87,8 @@ public class LineAcceptanceTest {
     void retrieveOneLineTest() {
         //given
         String lineName = "신분당선";
-        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
-        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
+        Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
         String lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
@@ -104,8 +104,8 @@ public class LineAcceptanceTest {
     void updateLineTest() {
         //given
         String lineName = "신분당선";
-        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
-        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
+        Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
         String lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
@@ -125,8 +125,8 @@ public class LineAcceptanceTest {
     void deleteLineTest() {
         //given
         String lineName = "신분당선";
-        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
-        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
+        Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
         String lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 

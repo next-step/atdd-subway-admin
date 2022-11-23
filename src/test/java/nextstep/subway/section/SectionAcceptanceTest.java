@@ -43,8 +43,8 @@ public class SectionAcceptanceTest {
             RestAssured.port = port;
         }
 
-        upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("강남역"));
-        downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("광교역"));
+        upStationId = StationAcceptanceTest.createStationAndGetId("강남역");
+        downStationId = StationAcceptanceTest.createStationAndGetId("광교역");
 
         lineId = LineAcceptanceTest.createLineAndGetId(
                 new LineRequest("신분당선","bg-red-600",upStationId,downStationId,10));
@@ -59,7 +59,7 @@ public class SectionAcceptanceTest {
     @DisplayName("노선에 구간을 등록한다. 상위역을 새로운역으로 등록")
     void addSectionUpStationTest() {
         //given
-        Long newStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("양재역"));
+        Long newStationId = StationAcceptanceTest.createStationAndGetId("양재역");
 
         //when
         final ExtractableResponse<Response> apiResponse = createSection(lineId,
@@ -77,7 +77,7 @@ public class SectionAcceptanceTest {
     @DisplayName("노선에 구간을 등록한다. 하위역을 새로운역으로 등록")
     void addSectionDownStationTest() {
         //given
-        Long newStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("양재역"));
+        Long newStationId = StationAcceptanceTest.createStationAndGetId("양재역");
 
         //when
         final ExtractableResponse<Response> apiResponse = createSection(lineId,

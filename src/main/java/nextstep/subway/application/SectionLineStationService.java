@@ -65,6 +65,9 @@ public class SectionLineStationService {
         if(isContainUpStation && isContainDownStation) {
             throw new IllegalArgumentException(ErrorMessage.ALREADY_EXIST_SECTION.getMessage());
         }
+        if(!isContainUpStation && !isContainDownStation) {
+            throw new IllegalArgumentException(ErrorMessage.NO_EXIST_STATIONS.getMessage());
+        }
         return isContainUpStation ? downStation : upStation;
     }
 
