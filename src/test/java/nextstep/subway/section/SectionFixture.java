@@ -24,6 +24,17 @@ public class SectionFixture {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 구간_제거(final Long lineId, final Long stationId) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("stationId", stationId);
+        return RestAssured.given().log().all()
+            .params(params)
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().delete("/lines/" + lineId + "/sections")
+            .then().log().all()
+            .extract();
+    }
+
     public static ExtractableResponse<Response> 구간_목록_조회(final Long lineId) {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)

@@ -2,6 +2,7 @@ package nextstep.subway.section;
 
 import static nextstep.subway.line.LineFixture.지하철_노선_생성후_아이디_반환;
 import static nextstep.subway.section.SectionFixture.구간_등록;
+import static nextstep.subway.section.SectionFixture.구간_제거;
 import static nextstep.subway.station.StationFixture.지하철역_생성후_아이디_반환;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -9,7 +10,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.SectionResponse;
-import nextstep.subway.station.StationResponse;
+import nextstep.subway.station.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -106,6 +107,81 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             .extracting(SectionResponse::getDownStation)
             .extracting(StationResponse::getName)
             .contains("역삼역", "블루보틀역");
+    }
+
+    /*
+    GIVEN 강남역 블루보틀역 역삼역 구간이 있는 이호선
+    WHEN 역삼역 제거
+    THEN 강남역과 블루보틀역 구간이 있는 이호선
+     */
+    @Test
+    @DisplayName("하행 종착역 제거")
+    void deleteLastStation() {
+        //given
+        구간_등록(이호선, 강남역, 블루보틀역, 4);
+
+        //when
+        구간_제거(이호선, 역삼역);
+
+        //then
+        assertThat(SectionFixture.구간_목록_조회(이호선).jsonPath().getList(".", SectionResponse.class))
+            .hasSize(1)
+            .extracting(SectionResponse::getDistance)
+            .containsExactly(4);
+    }
+
+    /*
+    GIVEN 강남역 블루보틀역 역삼역 구간이 있는 이호선
+    WHEN 블루보틀역 제거
+    THEN 강남역과 역삼역 구간 재배치
+     */
+    @Test
+    @DisplayName("중간역 재배치")
+    void deleteCenterStation() {
+        //given
+        구간_등록(이호선, 강남역, 블루보틀역, 4);
+
+        //when
+        구간_제거(이호선, 블루보틀역);
+
+        //then
+        assertThat(SectionFixture.구간_목록_조회(이호선).jsonPath().getList(".", SectionResponse.class))
+            .hasSize(1)
+            .extracting(SectionResponse::getDistance)
+            .containsExactly(7);
+    }
+
+    /*
+    GIVEN 강남역 블루보틀역 역삼역 구간이 있는 이호선
+    WHEN 노선에 없는 스타벅스역 제거
+    THEN 예외 발생
+     */
+    @Test
+    @DisplayName("노선에 없는 역 제거")
+    void deleteInvalidStation() {
+        //given
+        구간_등록(이호선, 강남역, 블루보틀역, 4);
+
+        //when
+        ExtractableResponse<Response> response = 구간_제거(이호선, 스타벅스역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /*
+    GIVEN 강남역 역삼역 구간이 있는 이호선
+    WHEN 강남역 제거
+    THEN 예외 발생
+     */
+    @Test
+    @DisplayName("노선 단일구간 역 제거")
+    void deleteStationSingleSection() {
+        //when
+        ExtractableResponse<Response> response = 구간_제거(이호선, 강남역);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @Test

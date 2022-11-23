@@ -3,9 +3,13 @@ package nextstep.subway.line;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.Sections;
 import nextstep.subway.line.exception.NoRelationStationException;
 import nextstep.subway.line.exception.SameStationException;
-import nextstep.subway.station.Station;
+import nextstep.subway.line.exception.SingleSectionException;
+import nextstep.subway.line.exception.StationNotExistException;
+import nextstep.subway.station.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -60,4 +64,48 @@ class SectionsTest {
         assertThat(sections.stations())
             .hasSize(0);
     }
+
+    @Test
+    void 사이역_제거() {
+        Sections sections = new Sections(제1구간, 제2구간);
+        sections.removeStation(역삼역);
+        assertThat(sections.getSections())
+            .hasSize(1)
+            .containsExactly(new Section(강남역, 블루보틀역, 14));
+    }
+
+    @Test
+    void 상행_종점_제거() {
+        Sections sections = new Sections(제1구간, 제2구간);
+        sections.removeStation(강남역);
+        assertThat(sections.getSections())
+            .hasSize(1)
+            .containsExactly(new Section(역삼역, 블루보틀역, 7));
+    }
+
+    @Test
+    void 하행_종점_제거() {
+        Sections sections = new Sections(제1구간, 제2구간);
+        sections.removeStation(역삼역);
+        assertThat(sections.getSections())
+            .hasSize(1)
+            .containsExactly(new Section(강남역, 블루보틀역, 7));
+    }
+
+    @Test
+    void 마지막_구간_제거_오류() {
+        Sections sections = new Sections(제1구간);
+        assertThatThrownBy(() -> sections.removeStation(강남역))
+            .isInstanceOf(SingleSectionException.class)
+            .hasMessage("단일구간 노선의 마지막 역은 제거할 수 없습니다.");
+    }
+
+    @Test
+    void 노선에_없는_구간_제거_오류() {
+        Sections sections = new Sections(제1구간);
+        assertThatThrownBy(() -> sections.removeStation(스타벅스역))
+            .isInstanceOf(StationNotExistException.class)
+            .hasMessage("노선에 등록되어 있지 않은 역 입니다.");
+    }
+
 }

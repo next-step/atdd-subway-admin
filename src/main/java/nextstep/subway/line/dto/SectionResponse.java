@@ -1,7 +1,7 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.station.StationResponse;
-import nextstep.subway.line.Section;
+import nextstep.subway.station.dto.StationResponse;
+import nextstep.subway.line.domain.Section;
 
 public class SectionResponse {
 

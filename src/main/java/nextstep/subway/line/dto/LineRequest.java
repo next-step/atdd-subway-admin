@@ -1,9 +1,9 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.station.Station;
-import nextstep.subway.line.Line;
-import nextstep.subway.line.Section;
-import nextstep.subway.line.Sections;
+import nextstep.subway.station.domain.Station;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.domain.Section;
+import nextstep.subway.line.domain.Sections;
 
 public class LineRequest {
 

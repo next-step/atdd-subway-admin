@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.line.domain;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import nextstep.subway.line.exception.IllegalDistanceException;
-import nextstep.subway.station.Station;
+import nextstep.subway.station.domain.Station;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -65,6 +65,11 @@ public class Section implements Comparable<Section> {
         this.distance -= newSection.distance;
     }
 
+    public void merge(Section downSection) {
+        this.downStation = downSection.downStation;
+        this.distance += downSection.distance;
+    }
+
     private void swapStation(Section newSection) {
         if (hasSameUpStation(newSection)) {
             this.upStation = newSection.downStation;
@@ -116,5 +121,13 @@ public class Section implements Comparable<Section> {
     @Override
     public int hashCode() {
         return Objects.hash(upStation, downStation);
+    }
+
+    public boolean isUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return this.downStation.equals(station);
     }
 }
