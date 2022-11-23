@@ -152,7 +152,7 @@ class LineAcceptanceTest {
         assertStatus(response,HttpStatus.NO_CONTENT);
     }
 
-    private void 요청이_실패한다(ExtractableResponse<Response> response) {
+    public static void 요청이_실패한다(ExtractableResponse<Response> response) {
         assertStatus(response,HttpStatus.BAD_REQUEST);
     }
 
