@@ -94,6 +94,16 @@ public class Section {
 		this.distance = this.distance.subtract(distance);
 	}
 
+	public void rearrange(Section section) {
+		if (isSameUpStation(section)) {
+			updateUpStation(section.downStation, section.distance);
+			return;
+		}
+		if (isSameDownStation(section)) {
+			updateDownStation(section.upStation, section.distance);
+		}
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
@@ -109,15 +119,5 @@ public class Section {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(id);
-	}
-
-	public void rearrange(Section section) {
-		if (isSameUpStation(section)) {
-			updateUpStation(section.downStation, section.distance);
-			return;
-		}
-		if (isSameDownStation(section)) {
-			updateDownStation(section.upStation, section.distance);
-		}
 	}
 }
