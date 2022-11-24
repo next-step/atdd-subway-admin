@@ -63,6 +63,11 @@ public class Section extends BaseEntity {
         this.station = newSection.preStation;
     }
 
+    public void removeSection(Section removeSection) {
+        this.preStation = removeSection.preStation;
+        this.distance = this.distance + removeSection.distance;
+    }
+
     private void validateDistance(Section newSection) {
         if (this.distance - newSection.distance <= DISTANCE_LIMIT) {
             throw new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_OVER_DISTANCE);

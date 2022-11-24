@@ -8,6 +8,7 @@ public class Sections {
     private static final String EXCEPTION_MESSAGE_FOR_INVALID_STATION = "유효하지 않은 역입니다.";
     private static final String EXCEPTION_MESSAGE_FOR_DUPLICATE_STATIONS = "이미 등록되어 있는 구간입니다.";
     private static final String EXCEPTION_MESSAGE_FOR_NOT_FOUND_NEXT_STATION = "다음 구간이 없습니다.";
+    private static final String EXCEPTION_MESSAGE_FOR_NOT_FOUND_PRE_STATION = "이전 구간이 없습니다.";
     private static final String EXCEPTION_MESSAGE_FOR_NOT_FOUND_FIRST_STATION = "첫번째 역을 찾을 수 없습니다";
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -32,9 +33,11 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        Section section = findSectionByStation(station);
+        // TODO validate station
+        Section section = findSection(station);
         if (isPresentNextStation(station)) {
-            // TODO 이전 다음 봉합시키기
+            Section nextSection = findNextSection(station);
+            nextSection.removeSection(section);
         }
         sections.remove(section);
     }
@@ -74,11 +77,11 @@ public class Sections {
 
     private List<Station> orderedBySection() {
         List<Station> stations = new ArrayList<>();
-        Station station = findFirstStation();
+        Station station = findFirstStation().getStation();
         stations.add(station);
 
         while (isPresentNextStation(station)) {
-            station = findNextStation(station);
+            station = findNextSection(station).getStation();
             stations.add(station);
         }
 
@@ -91,26 +94,24 @@ public class Sections {
                 .anyMatch(it -> it.getPreStation().isSame(station));
     }
 
-    private Station findNextStation(Station station) {
+    private Section findNextSection(Station station) {
         return sections.stream()
                 .filter(it -> !Objects.isNull(it.getPreStation()))
                 .filter(it -> it.getPreStation().isSame(station))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_NOT_FOUND_NEXT_STATION))
-                .getStation();
+                .orElseThrow(() -> new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_NOT_FOUND_NEXT_STATION));
     }
 
-    private Section findSectionByStation(Station station) {
+    private Section findSection(Station station) {
         return sections.stream()
                 .filter(it -> it.getStation().isSame(station))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_NOT_FOUND_NEXT_STATION));
     }
 
-    private Station findFirstStation() {
+    private Section findFirstStation() {
         return sections.stream()
                 .filter(it -> Objects.isNull(it.getPreStation()))
-                .map(it -> it.getStation())
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_NOT_FOUND_FIRST_STATION));
     }
 
