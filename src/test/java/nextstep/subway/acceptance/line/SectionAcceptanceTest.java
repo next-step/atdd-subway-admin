@@ -38,19 +38,24 @@ class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * When 2개의 지하철 역이 생성되어 있다.
-     * When 지하철 노선이 생성되어 있다.
-     * Then
+     * Given 지하철 노선이 생성되어 있다.
+     * When 상행역을 기준으로 구간을 추가한다.
+     * Then 구간이 추가된다.
      */
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("상행역을 기준으로 구간을 추가한다.")
     @Test
     void createStation() {
 
-        //when
-        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역_ID, 신논현역_ID, 논현역_신논현역_거리);
+        //given
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역_ID, 강남역_ID, 논현역_강남역_거리);
 
-        //then
-        지하철_노선_생성_검증(response);
+        //when
+        지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(논현역_ID, 신논현역_ID, 논현역_신논현역_거리));
+
+        // then
+        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(createLineResponse.header("location"));
+        assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역_ID, 신논현역_ID, 강남역_ID);
     }
 
     /**
@@ -58,7 +63,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      * When 기존 구간 사이에 지하철 노선 생성을 요청하면
      * Then 구간 추가에 실패한다.
      */
-    @DisplayName("지하철 노선을 생성한다.")
+    @DisplayName("상행역을 기준으로 구간을 추가한다. / 새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 등록을 할 수 없다.")
     @Test
     void addSection_distance() {
 
@@ -66,7 +71,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역_ID, 강남역_ID, 논현역_강남역_거리);
 
         //when
-        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(신논현역_ID, 강남역_ID, 신논현역_강남역_거리));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(신논현역_ID, 강남역_ID, 10));
 
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());

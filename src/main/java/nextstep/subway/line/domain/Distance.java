@@ -41,9 +41,9 @@ public class Distance implements Comparable<Distance> {
 
     @Override
     public int compareTo(Distance o) {
-        if (this.distance < o.distance) {
+        if (this.distance > o.distance) {
             return 1;
-        } else if (this.distance > o.distance) {
+        } else if (this.distance < o.distance) {
             return -1;
         }
         return 0;

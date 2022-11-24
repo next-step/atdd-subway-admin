@@ -1,9 +1,12 @@
 package nextstep.subway.line;
 
+import nextstep.subway.line.domain.Distance;
+import nextstep.subway.line.domain.Section;
 import nextstep.subway.line.domain.Sections;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static nextstep.subway.line.LineFixture.신분당선;
 import static nextstep.subway.line.SectionFixture.*;
 import static nextstep.subway.line.SectionTest.강남역_선릉역_거리;
 import static nextstep.subway.line.domain.Sections.*;
@@ -68,7 +71,7 @@ class SectionsTest {
     void downStationDistance() {
         Sections sections = new Sections();
         sections.add(논현역_강남역_구간());
-        assertThatThrownBy(() -> sections.add(신논현역_강남역_구간()))
+        assertThatThrownBy(() -> sections.add(new Section(1L, 신분당선(), 신논현역(), 강남역(), new Distance(10))))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessageContaining(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
     }

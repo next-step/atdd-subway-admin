@@ -17,35 +17,35 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    public void add(Section section) {
+    public void add(Section addSection) {
         if (size() >= 1) {
-            validateSection(section);
-            validateContainsSection(section);
-            if (isSameUpStation(section.getUpStation())) {
-                if (section.getDistance().equals(isSameUpStationDistance(section.getUpStation())) || section.getDistance().compareTo(isSameUpStationDistance(section.getUpStation())) < 0) {
+            validateSection(addSection);
+            validateContainsSection(addSection);
+            if (isSameUpStation(addSection.getUpStation())) {
+                if (existUpStationDistance(addSection.getUpStation()).compareTo(addSection.getDistance()) <= 0) {
                     throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
                 }
                 for (int i = 0; i < this.sections.size(); i++) {
-                    if (this.sections.get(i).getUpStation().equals(section.getUpStation())) {
-                        Section section1 = this.sections.get(i);
+                    if (this.sections.get(i).getUpStation().equals(addSection.getUpStation())) {
+                        Section existSection = this.sections.get(i);
                         this.sections.remove(this.sections.get(i));
-                        this.sections.add(new Section(section.getLine(), section.getDownStation(), section1.getDownStation(), new Distance(section1.getDistance().getDistance() - section.getDistance().getDistance())));
+                        this.sections.add(new Section(addSection.getLine(), addSection.getDownStation(), existSection.getDownStation(), new Distance(existSection.getDistance().getDistance() - addSection.getDistance().getDistance())));
                     }
                 }
-            } else if (isSameDownStation(section.getDownStation())) {
-                if (section.getDistance().equals(isSameDownStationDistance(section.getDownStation())) || section.getDistance().compareTo(isSameDownStationDistance(section.getDownStation())) < 0) {
+            } else if (isSameDownStation(addSection.getDownStation())) {
+                if (existDownStationDistance(addSection.getDownStation()).compareTo(addSection.getDistance()) <= 0) {
                     throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
                 }
                 for (int i = 0; i < this.sections.size(); i++) {
-                    if (this.sections.get(i).getDownStation().equals(section.getDownStation())) {
-                        Section section1 = this.sections.get(i);
+                    if (this.sections.get(i).getDownStation().equals(addSection.getDownStation())) {
+                        Section existSection = this.sections.get(i);
                         this.sections.remove(this.sections.get(i));
-                        this.sections.add(new Section(section.getLine(), section1.getUpStation(), section.getUpStation(), new Distance(section1.getDistance().getDistance() - section.getDistance().getDistance())));
+                        this.sections.add(new Section(addSection.getLine(), existSection.getUpStation(), addSection.getUpStation(), new Distance(existSection.getDistance().getDistance() - addSection.getDistance().getDistance())));
                     }
                 }
             }
         }
-        this.sections.add(section);
+        this.sections.add(addSection);
     }
 
     private void validateContainsSection(Section section) {
@@ -67,7 +67,7 @@ public class Sections {
                 .anyMatch(section -> section.isUpStation(upStation));
     }
 
-    private Distance isSameUpStationDistance(Station upStation) {
+    private Distance existUpStationDistance(Station upStation) {
         for (Section section : this.sections) {
             if (section.isUpStation(upStation)) {
                 return section.getDistance();
@@ -76,7 +76,7 @@ public class Sections {
         throw new IllegalArgumentException();
     }
 
-    private Distance isSameDownStationDistance(Station downStation) {
+    private Distance existDownStationDistance(Station downStation) {
         for (Section section : this.sections) {
             if (section.isDownStation(downStation)) {
                 return section.getDistance();
