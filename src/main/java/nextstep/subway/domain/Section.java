@@ -39,7 +39,6 @@ public class Section extends BaseEntity {
         if (upStation == null) {
             return null;
         }
-
         return upStation.getId();
     }
 
@@ -47,7 +46,22 @@ public class Section extends BaseEntity {
         if (downStation == null) {
             return null;
         }
-
         return downStation.getId();
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }
