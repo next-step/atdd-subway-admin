@@ -6,6 +6,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.exception.NotFoundLineException;
 import nextstep.subway.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,7 @@ import java.util.stream.Collectors;
 @Service
 public class LineService {
     private static final String NOT_FOUND_STATION_MESSAGE = "해당하는 역을 찾을 수 없습니다.";
+    private static final String NOT_FOUND_LINE_MESSAGE = "해당하는 노선을 찾을 수 없습니다.";
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
@@ -38,5 +40,11 @@ public class LineService {
                 .stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    public LineResponse findLine(Long id) {
+        return lineRepository.findById(id)
+                .map(LineResponse::of)
+                .orElseThrow(() -> new NotFoundLineException(NOT_FOUND_LINE_MESSAGE));
     }
 }

@@ -86,6 +86,29 @@ public class LineAcceptanceTest {
         assertThat(lines).contains("신분당선", "분당선");
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 조회하면
+     * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
+     */
+    @Test
+    void 지하철_노선_조회() {
+        // given
+        Station upStation = createStation("강남역");
+        Station downStation = createStation("논현역");
+        Section section = createSection(10, upStation, downStation);
+        Long id = createLine("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+
+        // when
+        String name = RestAssured.given().log().all()
+                .when().get("/lines/{id}", id)
+                .then().log().all()
+                .extract().path("name");
+
+        // then
+        assertThat(name).isEqualTo("신분당선");
+    }
+
     private Section createSection(int distance, Station upStation, Station downStation) {
         return sectionRepository.save(new Section(distance, upStation, downStation));
     }
@@ -94,14 +117,14 @@ public class LineAcceptanceTest {
         return stationRepository.save(new Station(name));
     }
 
-    private void createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
+    private Long createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
         LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
 
-        RestAssured.given().log().all()
+        return (long) (int) RestAssured.given().log().all()
                 .body(lineRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().statusCode(HttpStatus.CREATED.value()).log().all()
-                .extract();
+                .extract().path("id");
     }
 }
