@@ -73,4 +73,18 @@ public class LineSteps {
                 () -> assertThat(response.jsonPath().getString("name")).isEqualTo(name)
         );
     }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_생성_요청(Long lineId, Map<String, String> params) {
+        return given()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(params)
+                .when().post("/lines/{lineId}/sections", lineId)
+                .then().log().all().extract();
+    }
+
+    public static void 구간_추가_검증(ExtractableResponse<Response> createLineResponse, Long... id) {
+        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(createLineResponse.header("location"));
+        assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(id);
+    }
 }
