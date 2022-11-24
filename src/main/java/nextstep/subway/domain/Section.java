@@ -105,4 +105,9 @@ public class Section extends BaseEntity {
     public void setLine(Line line) {
         this.line = line;
     }
+
+    public static Section merge(Section upperSection, Section downSection){
+        return Section.of(upperSection.line,upperSection.getUpperStation(), downSection.getDownStation(),
+                upperSection.getDistance() + downSection.getDistance());
+    }
 }

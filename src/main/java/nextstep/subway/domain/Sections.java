@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -73,15 +72,16 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        Section upperSection = this.sections.stream()
-                .filter(section -> section.hasDownStation(station))
-                .findFirst().get();
-        Section downSection = this.sections.stream()
-                .filter(section -> section.hasUpStation(station))
-                .findFirst().get();
-        upperSection.merge(downSection);
-        this.sections.remove(downSection);
-        downSection.setLine(null);
+        Section upperSection = popDownStationIs(station);
+        Section downSection = popUpperStationIs(station);
+        this.sections.add(Section.merge(upperSection, downSection));
+        makeOrphan(downSection);
+        makeOrphan(upperSection);
+    }
+
+    private void makeOrphan(Section section) {
+        this.sections.remove(section);
+        section.setLine(null);
     }
 
     public Section popUpperStationIs(Station station) {
