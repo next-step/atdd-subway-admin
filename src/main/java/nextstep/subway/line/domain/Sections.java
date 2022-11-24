@@ -10,8 +10,8 @@ import java.util.List;
 
 @Embeddable
 public class Sections {
-
     public static final String SECTION_DUPLICATE_EXCEPTION_MESSAGE = "상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.";
+
     public static final String SECTION_CONTAINS_EXCEPTION_MESSAGE = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.";
     public static final String DISTANCE_MINIMUM_EXCEPTION_MESSAGE = "새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 등록을 할 수 없다.";
 
@@ -21,30 +21,9 @@ public class Sections {
     public void add(Section addSection) {
         validateStations(addSection);
         if (isAddBetweenSection(addSection)) {
-            addSplitSection(addSection, findRemoveSection(addSection));
+            addSplitSection(addSection, removeSection(addSection));
         }
         this.sections.add(addSection);
-    }
-
-    private boolean isAddBetweenSection(Section addSection) {
-        if (size() < 1) {
-            return false;
-        }
-        return isSameUpStation(addSection.getUpStation()) || isSameDownStation(addSection.getDownStation());
-    }
-
-    private Section findRemoveSection(Section section) {
-        if (isSameUpStation(section.getUpStation())) {
-            return findSameUpStationSection(section);
-        }
-        if (isSameDownStation(section.getDownStation())) {
-            return findSameDownStationSection(section.getDownStation());
-        }
-        throw new IllegalArgumentException();
-    }
-
-    private Section findSameUpStationSection(Section addSection) {
-        return addSection;
     }
 
     private void validateStations(Section addSection) {
@@ -55,44 +34,10 @@ public class Sections {
         validateNotExistsAllStations(addSection);
     }
 
-    private void addSplitSection(Section addSection, Section removeSection) {
-        if (removeSection == null) {
-            return;
+    private void validateExistsAllStations(Section section) {
+        if (getStations().contains(section.getUpStation()) && getStations().contains(section.getDownStation())) {
+            throw new IllegalArgumentException(SECTION_DUPLICATE_EXCEPTION_MESSAGE);
         }
-        if (isSameUpStation(addSection.getUpStation())) {
-            addDownSection(addSection);
-        }
-        if (isSameDownStation(addSection.getDownStation())) {
-            addUpSection(addSection);
-        }
-    }
-
-    private void addUpSection(Section addSection) {
-        if (existDownStationDistance(addSection.getDownStation()).compareTo(addSection.getDistance()) <= 0) {
-            throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
-        }
-        Section sameUpStationSection = findSameDownStationSection(addSection.getDownStation());
-        this.sections.remove(sameUpStationSection);
-        this.sections.add(new Section(addSection.getLine(), sameUpStationSection.getUpStation(), addSection.getUpStation(), sameUpStationSection.getDistance().getDistance() - addSection.getDistance().getDistance()));
-    }
-
-    private void addDownSection(Section addSection) {
-        if (existUpStationDistance(addSection.getUpStation()).compareTo(addSection.getDistance()) <= 0) {
-            throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
-        }
-        Section downSection = createDownSection(addSection);
-        this.sections.add(downSection);
-    }
-
-    private Section createDownSection(Section addSection) {
-        for (int i = 0; i < this.sections.size(); i++) {
-            if (this.sections.get(i).getUpStation().equals(addSection.getUpStation())) {
-                Section existSection = this.sections.get(i);
-                this.sections.remove(this.sections.get(i));
-                return new Section(addSection.getLine(), addSection.getDownStation(), existSection.getDownStation(), existSection.getDistance().getDistance() - addSection.getDistance().getDistance());
-            }
-        }
-        throw new IllegalArgumentException();
     }
 
     private void validateNotExistsAllStations(Section section) {
@@ -101,17 +46,44 @@ public class Sections {
         }
     }
 
-    private boolean isContainDownStation(Section section) {
-        return getStations().contains(section.getDownStation());
-    }
-
-    private boolean isContainUpStation(Section section) {
-        return getStations().contains(section.getUpStation());
+    private boolean isAddBetweenSection(Section addSection) {
+        if (size() < 1) {
+            return false;
+        }
+        return isSameUpStation(addSection.getUpStation()) || isSameDownStation(addSection.getDownStation());
     }
 
     private boolean isSameUpStation(Station upStation) {
         return this.sections.stream()
                 .anyMatch(section -> section.isUpStation(upStation));
+    }
+
+    private boolean isSameDownStation(Station downStation) {
+        return this.sections.stream()
+                .anyMatch(section -> section.isDownStation(downStation));
+    }
+
+    private Section removeSection(Section section) {
+        if (isSameUpStation(section.getUpStation())) {
+            Section removeSection = findSameUpStationSection(section);
+            this.sections.remove(removeSection);
+            return removeSection;
+        }
+        if (isSameDownStation(section.getDownStation())) {
+            Section removeSection = findSameDownStationSection(section.getDownStation());
+            this.sections.remove(removeSection);
+            return removeSection;
+        }
+        throw new IllegalArgumentException();
+    }
+
+    private Section findSameUpStationSection(Section addSection) {
+        for (Section section : this.sections) {
+            if (section.isUpStation(addSection.getUpStation())) {
+                return section;
+            }
+        }
+        throw new IllegalArgumentException();
     }
 
     private Section findSameDownStationSection(Station downStation) {
@@ -123,33 +95,35 @@ public class Sections {
         throw new IllegalArgumentException();
     }
 
-    private Distance existUpStationDistance(Station upStation) {
-        for (Section section : this.sections) {
-            if (section.isUpStation(upStation)) {
-                return section.getDistance();
-            }
+    private void addSplitSection(Section addSection, Section removeSection) {
+        if (addSection.isUpStation(removeSection.getUpStation())) {
+            addDownSection(addSection, removeSection);
         }
-        throw new IllegalArgumentException();
+        if (addSection.isDownStation(removeSection.getDownStation())) {
+            addUpSection(addSection, removeSection);
+        }
     }
 
-    private Distance existDownStationDistance(Station downStation) {
-        for (Section section : this.sections) {
-            if (section.isDownStation(downStation)) {
-                return section.getDistance();
-            }
+    private void addDownSection(Section addSection, Section removeSection) {
+        if (removeSection.getDistance().compareTo(addSection.getDistance()) <= 0) {
+            throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
         }
-        throw new IllegalArgumentException();
+        this.sections.add(new Section(addSection.getLine(), addSection.getDownStation(), removeSection.getDownStation(), removeSection.getDistance().getDistance() - addSection.getDistance().getDistance()));
     }
 
-    private boolean isSameDownStation(Station downStation) {
-        return this.sections.stream()
-                .anyMatch(section -> section.isDownStation(downStation));
+    private void addUpSection(Section addSection, Section removeSection) {
+        if (removeSection.getDistance().compareTo(addSection.getDistance()) <= 0) {
+            throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
+        }
+        this.sections.add(new Section(addSection.getLine(), removeSection.getUpStation(), addSection.getUpStation(), removeSection.getDistance().getDistance() - addSection.getDistance().getDistance()));
     }
 
-    private void validateExistsAllStations(Section section) {
-        if (getStations().contains(section.getUpStation()) && getStations().contains(section.getDownStation())) {
-            throw new IllegalArgumentException(SECTION_DUPLICATE_EXCEPTION_MESSAGE);
-        }
+    private boolean isContainDownStation(Section section) {
+        return getStations().contains(section.getDownStation());
+    }
+
+    private boolean isContainUpStation(Section section) {
+        return getStations().contains(section.getUpStation());
     }
 
     public int size() {
@@ -171,6 +145,19 @@ public class Sections {
         }
     }
 
+    private Station findDownStationByUpStation(Station upStation) {
+        Station downStation = upStation;
+        for (Section section : this.sections) {
+            downStation = findDownStationByUpStation(upStation, downStation, section);
+        }
+        return downStation;
+    }
+
+    private boolean isLastDownStation(Station upStation) {
+        return this.sections.stream()
+                .noneMatch(section -> section.isUpStation(upStation));
+    }
+
     private void addFirstSectionStations(List<Station> stations) {
         Station firstUpStation = findFirstUpStation();
         stations.add(firstUpStation);
@@ -183,19 +170,6 @@ public class Sections {
             firstUpStation = findUpStation(firstUpStation, section);
         }
         return firstUpStation;
-    }
-
-    private Station findDownStationByUpStation(Station upStation) {
-        Station downStation = upStation;
-        for (Section section : this.sections) {
-            downStation = findDownStationByUpStation(upStation, downStation, section);
-        }
-        return downStation;
-    }
-
-    private boolean isLastDownStation(Station upStation) {
-        return this.sections.stream()
-                .noneMatch(section -> section.isUpStation(upStation));
     }
 
     private static Station findDownStationByUpStation(Station upStation, Station downStation, Section section) {
@@ -222,10 +196,8 @@ public class Sections {
     }
 
     public int getDistance() {
-        int distance = 0;
-        for (Section section : this.sections) {
-            distance += section.getDistance().getDistance();
-        }
-        return distance;
+        return this.sections.stream()
+                .mapToInt(section -> section.getDistance().getDistance())
+                .sum();
     }
 }
