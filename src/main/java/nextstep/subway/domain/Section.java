@@ -24,4 +24,30 @@ public class Section extends BaseEntity {
     @Column(nullable = false)
     private int distance;
 
+    public Section(Line line, Station upStation, Station downStation, int distance) {
+        this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public Long getLineId() {
+        return line.getId();
+    }
+
+    public Long getUpStationId() {
+        if (upStation == null) {
+            return null;
+        }
+
+        return upStation.getId();
+    }
+
+    public Long getDownStationId() {
+        if (downStation == null) {
+            return null;
+        }
+
+        return downStation.getId();
+    }
 }
