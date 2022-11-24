@@ -1,15 +1,22 @@
 package nextstep.subway.line.dto;
 
-import nextstep.subway.line.domain.Color;
 import nextstep.subway.common.domain.Name;
+import nextstep.subway.line.domain.Color;
 import nextstep.subway.line.domain.Line;
+
+import javax.validation.constraints.NotNull;
 
 public class LineRequest {
 
+    @NotNull
     private String name;
+    @NotNull
     private String color;
+    @NotNull
     private Long upStationId;
+    @NotNull
     private Long downStationId;
+    @NotNull
     private int distance;
 
     public Long getUpStationId() {

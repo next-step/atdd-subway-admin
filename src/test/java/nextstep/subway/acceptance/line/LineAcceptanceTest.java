@@ -48,6 +48,16 @@ class LineAcceptanceTest extends AcceptanceTest {
         지하철_노선_생성_검증(response);
     }
 
+    @DisplayName("지하철 노선을 생성할 때 파라미터의 값이 null일 수 없다.")
+    @Test
+    void request_fail_notNull() {
+        //when
+        ExtractableResponse<Response> response = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, null, null, 논현역_신논현역_거리);
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     /**
      * When 지하철 역이 생성되어 있지 않다.
      * When 지하철 노선을 생성하면

@@ -9,6 +9,7 @@ import nextstep.subway.line.dto.LineUpdateRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class LineController {
     }
 
     @PostMapping()
-    public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
+    public ResponseEntity<LineResponse> createLine(final @Valid @RequestBody LineRequest lineRequest) {
         LineResponse line = lineService.saveStation(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }

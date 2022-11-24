@@ -1,9 +1,15 @@
 package nextstep.subway.line.dto;
 
+
+import javax.validation.constraints.NotNull;
+
 public class AddSectionRequest {
 
+    @NotNull
     private Long upStationId;
+    @NotNull
     private Long downStationId;
+    @NotNull
     private int distance;
 
     public Long getUpStationId() {
