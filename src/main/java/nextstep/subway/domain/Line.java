@@ -23,7 +23,7 @@ public class Line extends BaseEntity {
 
     private Long downStationId;
 
-    private Long distance;
+    private int distance;
 
     public Line() {
 
@@ -33,7 +33,7 @@ public class Line extends BaseEntity {
         this.name = name;
     }
 
-    public Line(String name, String color, Long upStationId, Long downStationId, Long distance) {
+    public Line(String name, String color, Long upStationId, Long downStationId, int distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;
