@@ -46,4 +46,8 @@ public class Section extends BaseEntity {
     public Line getLine() {
         return line;
     }
+
+    public void toLine(Line line) {
+        this.line = line;
+    }
 }

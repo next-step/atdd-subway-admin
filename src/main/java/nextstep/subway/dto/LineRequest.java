@@ -45,7 +45,8 @@ public class LineRequest {
     public Line toLine(Station upStation, Station downStation) {
         Section section = new Section(distance, upStation, downStation);
         Sections sections = new Sections(Collections.singletonList(section));
-
-        return new Line(name, color, sections);
+        Line line = new Line(name, color, sections);
+        section.toLine(line);
+        return line;
     }
 }

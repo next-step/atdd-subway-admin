@@ -9,6 +9,9 @@ import nextstep.subway.dto.LineResponse;
 import nextstep.subway.exception.NotFoundStationException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 public class LineService {
     private static final String NOT_FOUND_STATION_MESSAGE = "해당하는 역을 찾을 수 없습니다.";
@@ -28,5 +31,12 @@ public class LineService {
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
 
         return LineResponse.of(persistLine);
+    }
+
+    public List<LineResponse> findAllLines() {
+        return lineRepository.findAll()
+                .stream()
+                .map(LineResponse::of)
+                .collect(Collectors.toList());
     }
 }

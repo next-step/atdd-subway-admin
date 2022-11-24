@@ -25,6 +25,7 @@ public class LineResponse {
 
     public static LineResponse of(Line line) {
         List<StationResponse> stationResponses = line.getStationList().stream()
+                .sorted((o1, o2) -> (int)(o1.getId()-o2.getId()))
                 .map(StationResponse::of)
                 .collect(Collectors.toList());
 
@@ -33,5 +34,25 @@ public class LineResponse {
 
     public Long getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
+    }
+
+    public LocalDateTime getCreatedDate() {
+        return createdDate;
+    }
+
+    public LocalDateTime getModifiedDate() {
+        return modifiedDate;
     }
 }

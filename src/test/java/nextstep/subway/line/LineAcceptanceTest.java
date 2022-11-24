@@ -14,6 +14,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     @LocalServerPort
@@ -44,6 +48,42 @@ public class LineAcceptanceTest {
 
         // when
         createLine("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+
+        // then
+        List<String> lines = RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+        assertThat(lines).contains("신분당선");
+    }
+
+    /**
+     * Given 2개의 지하철 노선을 생성하고
+     * When 지하철 노선 목록을 조회하면
+     * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @Test
+    void 지하철_노선_목록_조회() {
+        // given
+        Station upStation = createStation("강남역");
+        Station downStation = createStation("논현역");
+        Section section = createSection(10, upStation, downStation);
+        createLine("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+
+        upStation = createStation("선정릉");
+        downStation = createStation("선릉");
+        section = createSection(10, upStation, downStation);
+        createLine("분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+
+        // when
+        List<String> lines = RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract()
+                .jsonPath().getList("name", String.class);
+
+        // then
+        assertThat(lines).contains("신분당선", "분당선");
     }
 
     private Section createSection(int distance, Station upStation, Station downStation) {
