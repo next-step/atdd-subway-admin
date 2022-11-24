@@ -7,11 +7,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
-    private static final String MESSAGE_SECTIONS_HAS_NOT_UPPER_STATION = "해당 역을 상행역으로 가지는 구간이 없습니다";
-    private static final String MESSAGE_SECTIONS_HAS_NOT_DOWN_STATION = "해당 역을 하행역으로 가지는 구간이 없습니다";
+    private static final String MESSAGE_SECTIONS_HAS_NOT_UPPER_STATION = "해당 역을 가지는 구간이 없습니다";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -75,11 +75,20 @@ public class Sections {
     }
 
     public void delete(Station station) {
-        Section upperSection = popDownStationIs(station);
-        Section downSection = popUpperStationIs(station);
+        Section upperSection = popSectionBy(section -> section.hasUpStation(station));
+        Section downSection = popSectionBy(section -> section.hasDownStation(station));
         this.sections.add(Section.merge(upperSection, downSection));
         makeOrphan(downSection);
         makeOrphan(upperSection);
+    }
+
+    private Section popSectionBy(Predicate<Section> sectionFilter) {
+        Section first = this.sections.stream()
+                .filter(sectionFilter)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_SECTIONS_HAS_NOT_UPPER_STATION));
+        this.sections.remove(first);
+        return first;
     }
 
     private void makeOrphan(Section section) {
@@ -88,22 +97,10 @@ public class Sections {
     }
 
     public Section popUpperStationIs(Station station) {
-        Section first = this.sections.stream()
-                .filter(section ->
-                        section.hasUpStation(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_SECTIONS_HAS_NOT_UPPER_STATION));
-        this.sections.remove(first);
-        return first;
+        return popSectionBy(section -> section.hasUpStation(station));
     }
 
     public Section popDownStationIs(Station station) {
-        Section first = this.sections.stream()
-                .filter(section ->
-                        section.hasDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_SECTIONS_HAS_NOT_DOWN_STATION));
-        this.sections.remove(first);
-        return first;
+        return popSectionBy(section -> section.hasDownStation(station));
     }
 }

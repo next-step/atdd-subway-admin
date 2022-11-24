@@ -11,6 +11,7 @@ public class Line extends BaseEntity {
     public static final String MESSAGE_STATION_SHOULD_NOT_EMPTY = "지하철역은 비어있을 수 없습니다";
     public static final String MESSAGE_STATION_SHOULD_HAS_ID = "지하철역은 식별자가 있어야 합니다.";
     public static final String MESSAGE_STATION_SHOULD_BE_DIFFERENT = "상/하행역은 같을 수 없습니다";
+    public static final String MESSAGE_STATION_CAN_NOT_BE_DELETED = "노선과 구간이 일치할 때는 삭제할 수 없습니다";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -198,7 +199,7 @@ public class Line extends BaseEntity {
 
     private void throwIfLineHasOnlyOneSection() {
         if(this.sections.hasOnlyOneSection()){
-            throw new IllegalArgumentException("노선과 구간이 일치할 때는 삭제할 수 없습니다");
+            throw new IllegalArgumentException(MESSAGE_STATION_CAN_NOT_BE_DELETED);
         }
     }
 }
