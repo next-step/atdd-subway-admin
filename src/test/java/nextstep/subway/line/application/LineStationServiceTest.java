@@ -58,8 +58,12 @@ public class LineStationServiceTest {
         Station newStation = stationRepository.save(new Station("사당역"));
         lineStationService.addSection(line.getId(), new SectionRequest(newStation.getId(), station1.getId(), 10));
 
-        // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getSections().getSections()).hasSize(3);
+        // then - 구간 2개 (역이 3개)
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).containsExactly(
+                "사당역","잠실역","교대역"
+        );
+        assertThat(line.getSections().getSections()).hasSize(2);
     }
 
     @Test
@@ -71,8 +75,12 @@ public class LineStationServiceTest {
         Station newStation = stationRepository.save(new Station("사당역"));
         lineStationService.addSection(line.getId(), new SectionRequest(station2.getId(), newStation.getId(), 10));
 
-        // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getSections().getSections()).hasSize(3);
+        // then - 구간 2개 (역이 3개)
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).containsExactly(
+                "잠실역","교대역","사당역"
+        );
+        assertThat(line.getSections().getSections()).hasSize(2);
     }
 
     @Test
@@ -84,8 +92,12 @@ public class LineStationServiceTest {
         Station newStation = stationRepository.save(new Station("사당역"));
         lineStationService.addSection(line.getId(), new SectionRequest(station1.getId(), newStation.getId(), 5));
 
-        // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getSections().getSections()).hasSize(3);
+        // then - 구간 2개 (역이 3개)
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).containsExactly(
+                "잠실역","사당역","교대역"
+        );
+        assertThat(line.getSections().getSections()).hasSize(2);
     }
 
     @Test
@@ -97,8 +109,12 @@ public class LineStationServiceTest {
         Station newStation = stationRepository.save(new Station("사당역"));
         lineStationService.addSection(line.getId(), new SectionRequest(newStation.getId(), station2.getId(), 5));
 
-        // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getSections().getSections()).hasSize(3);
+        // then - 구간 2개 (역이 3개)
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).containsExactly(
+                "잠실역","사당역","교대역"
+        );
+        assertThat(line.getSections().getSections()).hasSize(2);
     }
 
     @Test
@@ -156,7 +172,7 @@ public class LineStationServiceTest {
 
     @Test
     @DisplayName("상행종점을 제거한다.")
-    void deleteSectionFirstStation(){
+    void deleteSectionFirstStation() {
         // given - 역 2개 / 노선 1개 추가 : beforeEach 처리
         // 신규역 추가 and 구간 추가
         Station newStation = stationRepository.save(new Station("사당역"));
@@ -166,10 +182,7 @@ public class LineStationServiceTest {
         lineStationService.deleteSection(line.getId(), newStation.getId());
 
         // then
-        List<String> stationNames = line.getSections().getOrderStations()
-                .stream()
-                .map(section -> section.getStation().getName())
-                .collect(Collectors.toList());
+        List<String> stationNames = getStationNames(line);
         assertThat(stationNames).hasSize(2);
         assertThat(stationNames).containsExactly(
                 "잠실역", "교대역"
@@ -188,10 +201,7 @@ public class LineStationServiceTest {
         lineStationService.deleteSection(line.getId(), station2.getId());
 
         // then
-        List<String> stationNames = line.getSections().getOrderStations()
-                .stream()
-                .map(section -> section.getStation().getName())
-                .collect(Collectors.toList());
+        List<String> stationNames = getStationNames(line);
         assertThat(stationNames).hasSize(2);
         assertThat(stationNames).containsExactly(
                 "사당역", "잠실역"
@@ -210,13 +220,17 @@ public class LineStationServiceTest {
         lineStationService.deleteSection(line.getId(), station1.getId());
 
         // then
-        List<String> stationNames = line.getSections().getOrderStations()
-                .stream()
-                .map(section -> section.getStation().getName())
-                .collect(Collectors.toList());
+        List<String> stationNames = getStationNames(line);
         assertThat(stationNames).hasSize(2);
         assertThat(stationNames).containsExactly(
                 "사당역", "교대역"
         );
+    }
+
+    private List<String> getStationNames(Line line) {
+        return line.getSections().getOrderStations()
+                .stream()
+                .map(station -> station.getName())
+                .collect(Collectors.toList());
     }
 }

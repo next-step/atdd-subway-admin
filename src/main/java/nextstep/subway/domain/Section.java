@@ -72,7 +72,4 @@ public class Section extends BaseEntity {
         return station;
     }
 
-    public Integer getDistance() {
-        return distance;
-    }
 }

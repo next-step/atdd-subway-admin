@@ -13,7 +13,7 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
-    private static final int MIN_SECTION_COUNT = 2;
+    private static final int MIN_SECTION_COUNT = 1;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
@@ -27,30 +27,33 @@ public class Sections {
     }
 
     public void addSection(Station preStation, Station station, Integer distance) {
-        if(isNotExistsFirstStation()){
-            addFirstStation(preStation);
-        }
+        boolean isPresentPreStation = isExistsStation(preStation);
+        boolean isPresentStation = isExistsStation(station);
+        validateStation(isPresentPreStation, isPresentStation);
 
-        Map<Station, Section> sectionsMap = getSectionsToMap();
-        validateStation(preStation, station, sectionsMap);
-
-        if (sectionsMap.containsKey(preStation)) {
+        if (isPresentPreStation) {
             updateSectionForPreStation(preStation, station, distance);
         }
 
-        if (sectionsMap.containsKey(station)) {
+        if (isPresentStation) {
             updateSectionForStation(preStation, station, distance);
         }
 
         add(preStation, station, distance);
     }
 
-    private void addFirstStation(Station preStation) {
-        add(null, preStation, 0);
+    private void validateStation(boolean isPresentPreStation, boolean isPresentStation) {
+        if (isPresentPreStation && isPresentStation) {
+            throw new IllegalArgumentException("시작/도착 역이 이미 존재합니다.");
+        }
+
+        if (!isPresentPreStation && !isPresentStation) {
+            throw new IllegalArgumentException("시작/도착 역이 모두 존재하지 않습니다.");
+        }
     }
 
-    private boolean isNotExistsFirstStation() {
-        return sections.size() < MIN_SECTION_COUNT;
+    private boolean isExistsStation(Station station) {
+        return getSectionsToMap().containsKey(station) || getSectionsToMapByPreStation().containsKey(station);
     }
 
     public void deleteSectionByStation(Station station) {
@@ -66,14 +69,14 @@ public class Sections {
 
     private Section findSectionByStation(Station station) {
         Map<Station, Section> sectionsMap = getSectionsToMap();
-        validateNotIncludeSection(station, sectionsMap);
+        validateNotIncludeSection(station);
         validateLastSection();
-        return sectionsMap.get(station);
+        return sectionsMap.getOrDefault(station, getSectionsToMapByPreStation().get(station));
 
     }
 
-    private void validateNotIncludeSection(Station station, Map<Station, Section> toMap) {
-        if (!toMap.containsKey(station)) {
+    private void validateNotIncludeSection(Station station) {
+        if (!isExistsStation(station)) {
             throw new IllegalArgumentException("구간 내에 존재하지 않는 역입니다.");
         }
     }
@@ -98,54 +101,43 @@ public class Sections {
                 .ifPresent(section -> section.updateSection(station, section.getStation(), distance));
     }
 
-    private void validateStation(Station preStation, Station station, Map<Station, Section> toMap) {
-        validateAllIncludeStation(preStation, station, toMap);
-        validateNotIncludeStation(preStation, station, toMap);
+    public List<Station> getOrderStations() {
+        Map<Station, Section> sectionsMapByPreStation = getSectionsToMapByPreStation();
+        Section firstSection = findFirstSection().orElse(null);
+
+        List<Station> orders = new ArrayList<>();
+        orders.add(firstSection.getPreStation());
+        orders.addAll(getStations(sectionsMapByPreStation, firstSection));
+
+        return orders;
     }
 
-    private void validateAllIncludeStation(Station preStation, Station station, Map<Station, Section> toMap) {
-        if (toMap.containsKey(preStation) && toMap.containsKey(station)) {
-            throw new IllegalArgumentException("시작/도착 역이 이미 존재합니다.");
+    private List<Station> getStations(Map<Station, Section> sectionsMapByPreStation, Section firstSection) {
+        List<Station> orders = new ArrayList<>();
+        while (firstSection != null) {
+            Section tmp = firstSection;
+            orders.add(tmp.getStation());
+            firstSection = sectionsMapByPreStation.get(tmp.getStation());
         }
+        return new ArrayList<>(orders);
     }
 
-    private void validateNotIncludeStation(Station preStation, Station station, Map<Station, Section> toMap) {
-        if (!toMap.containsKey(preStation) && !toMap.containsKey(station)) {
-            throw new IllegalArgumentException("시작/도착 역이 모두 존재하지 않습니다.");
-        }
+    private Optional<Section> findFirstSection() {
+        Map<Station, Section> sectionsToMap = getSectionsToMap();
+        return this.sections.stream()
+                .filter(section -> !sectionsToMap.containsKey(section.getPreStation()))
+                .findAny();
     }
-
     private Map<Station, Section> getSectionsToMap() {
         return sections.stream().collect(Collectors.toMap(
                 Section::getStation, section -> section
         ));
     }
 
-
-    public List<Section> getOrderStations() {
-        Map<Station, Section> sectionsMapByPreStation = getSectionsToMapByPreStation();
-        Section firstSection = findFirstSection().orElse(null);
-
-        List<Section> orders = new ArrayList<>();
-        while (firstSection != null) {
-            Section tmp = firstSection;
-            orders.add(tmp);
-            firstSection = sectionsMapByPreStation.get(tmp.getStation());
-        }
-
-        return orders;
-    }
-
     private Map<Station, Section> getSectionsToMapByPreStation() {
         return sections.stream().collect(Collectors.toMap(
                 Section::getPreStation, section -> section
         ));
-    }
-
-    private Optional<Section> findFirstSection() {
-        return this.sections.stream()
-                .filter(section -> section.getPreStation() == null)
-                .findAny();
     }
 
     public List<Section> getSections() {

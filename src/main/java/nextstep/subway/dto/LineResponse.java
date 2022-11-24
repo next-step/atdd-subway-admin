@@ -27,7 +27,7 @@ public class LineResponse {
     public static LineResponse of(Line line){
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
                 line.getOrderStations().stream()
-                .map(lineStation -> StationResponse.of(lineStation.getStation()))
+                .map(StationResponse::of)
                 .collect(Collectors.toList()));
     }
 
