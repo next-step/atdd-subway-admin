@@ -85,7 +85,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("하행역을 기준으로 구간을 추가한다.")
     @Test
-    void addUpStationSection() {
+    void addDownStationSection() {
 
         //given
         ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역_ID, 강남역_ID, 논현역_강남역_거리);
@@ -97,6 +97,25 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(createLineResponse.header("location"));
         assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역_ID, 신논현역_ID, 강남역_ID);
+    }
+
+    /**
+     * Given 지하철 노선이 생성되어 있다.
+     * When 하행역을 기준으로 기존의 구간 사이의 거리와 같은 구간을 추가한다.
+     * Then 구간 추가에 실패한다.
+     */
+    @DisplayName("하행역을 기준으로 구간을 추가한다. / 새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 등록을 할 수 없다.")
+    @Test
+    void addDownStationSection_fail_distance() {
+
+        //given
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역_ID, 강남역_ID, 논현역_강남역_거리);
+
+        //when
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(신논현역_ID, 강남역_ID, 10));
+
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
