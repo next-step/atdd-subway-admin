@@ -57,4 +57,9 @@ public class LineService {
 
         return LineResponse.of(line);
     }
+
+    public void deleteLine(Long id) {
+        Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(NOT_FOUND_LINE_MESSAGE));
+        lineRepository.delete(line);
+    }
 }

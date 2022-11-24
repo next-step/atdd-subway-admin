@@ -143,6 +143,32 @@ public class LineAcceptanceTest {
         );
     }
 
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 삭제하면
+     * Then 해당 지하철 노선 정보는 삭제된다
+     */
+    @Test
+    void 지하철_노선_삭제() {
+        // given
+        Station upStation = createStation("강남역");
+        Station downStation = createStation("논현역");
+        Section section = createSection(10, upStation, downStation);
+        Long id = createLine("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+
+        // when
+        RestAssured.given().log().all()
+                .when().delete("/lines/{id}", id)
+                .then().log().all();
+
+        // then
+        List<String> names = RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+        assertThat(names).isEmpty();
+    }
+
     private Section createSection(int distance, Station upStation, Station downStation) {
         return sectionRepository.save(new Section(distance, upStation, downStation));
     }
