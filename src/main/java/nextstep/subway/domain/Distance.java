@@ -30,10 +30,6 @@ public class Distance {
     }
 
     public void setMinusDistance(int distance) {
-        this.distance = getMinusDistance(distance);
-    }
-
-    private int getMinusDistance(int distance) {
-        return Math.abs(this.distance - distance);
+        this.distance = Math.abs(this.distance - distance);
     }
 }

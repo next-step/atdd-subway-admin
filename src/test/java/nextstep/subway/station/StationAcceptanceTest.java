@@ -1,21 +1,21 @@
 package nextstep.subway.station;
 
-import static nextstep.subway.station.StationTestFixtures.지하철역_목록조회;
-import static nextstep.subway.station.StationTestFixtures.지하철역_삭제;
-import static nextstep.subway.station.StationTestFixtures.지하철역_생성;
-import static nextstep.subway.station.StationTestFixtures.지하철역_생성_값_리턴;
+import static nextstep.subway.station.StationAcceptanceTestActions.지하철역_목록조회;
+import static nextstep.subway.station.StationAcceptanceTestActions.지하철역_삭제;
+import static nextstep.subway.station.StationAcceptanceTestActions.지하철역_생성;
+import static nextstep.subway.station.StationAcceptanceTestActions.지하철역_생성_값_리턴;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import nextstep.subway.fixtures.TestFixtures;
+import nextstep.subway.domain.common.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철역 관련 기능")
-class StationAcceptanceTest extends TestFixtures {
+class StationAcceptanceTest extends AcceptanceTest {
 
     /**
      * When 지하철역을 생성하면

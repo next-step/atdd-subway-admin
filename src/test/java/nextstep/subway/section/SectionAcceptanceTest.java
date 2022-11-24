@@ -8,34 +8,34 @@ import static nextstep.subway.fixtures.StationTestFixture.모란역ID;
 import static nextstep.subway.fixtures.StationTestFixture.미금역ID;
 import static nextstep.subway.fixtures.StationTestFixture.중앙역;
 import static nextstep.subway.fixtures.StationTestFixture.중앙역ID;
-import static nextstep.subway.section.SectionTestFixtures.기존노선과_동일하게_상행_하행역을_등록;
-import static nextstep.subway.section.SectionTestFixtures.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
-import static nextstep.subway.section.SectionTestFixtures.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
-import static nextstep.subway.section.SectionTestFixtures.노선이_순서대로_등록되어_있다;
-import static nextstep.subway.section.SectionTestFixtures.등록_완료;
-import static nextstep.subway.section.SectionTestFixtures.등록이_불가하다;
-import static nextstep.subway.section.SectionTestFixtures.새로운_역_상행_종점으로_등록;
-import static nextstep.subway.section.SectionTestFixtures.새로운_역_하행_종점으로_등록;
-import static nextstep.subway.section.SectionTestFixtures.역_사이_새로운역_등록;
-import static nextstep.subway.section.SectionTestFixtures.역을_제거하려_하면;
-import static nextstep.subway.section.SectionTestFixtures.제거할_수_없다;
-import static nextstep.subway.section.SectionTestFixtures.지하철_노선_등록되어_있음;
-import static nextstep.subway.section.SectionTestFixtures.해당_구간만_등록되어_있다;
-import static nextstep.subway.section.SectionTestFixtures.해당_구간만_조회된다;
-import static nextstep.subway.section.SectionTestFixtures.해당_구간으로_합쳐지며_길이도_합쳐진다;
-import static nextstep.subway.section.SectionTestFixtures.해당역을_제거한다;
+import static nextstep.subway.section.SectionAcceptanceTestActions.기존노선과_동일하게_상행_하행역을_등록;
+import static nextstep.subway.section.SectionAcceptanceTestActions.기존노선의_상행_하행_역과_모두_일치하지_않게_등록;
+import static nextstep.subway.section.SectionAcceptanceTestActions.기존역_구간_길이보다_크거나_같은_역을_기존역_사이_등록;
+import static nextstep.subway.section.SectionAcceptanceTestActions.노선이_순서대로_등록되어_있다;
+import static nextstep.subway.section.SectionAcceptanceTestActions.등록_완료;
+import static nextstep.subway.section.SectionAcceptanceTestActions.등록이_불가하다;
+import static nextstep.subway.section.SectionAcceptanceTestActions.새로운_역_상행_종점으로_등록;
+import static nextstep.subway.section.SectionAcceptanceTestActions.새로운_역_하행_종점으로_등록;
+import static nextstep.subway.section.SectionAcceptanceTestActions.역_사이_새로운역_등록;
+import static nextstep.subway.section.SectionAcceptanceTestActions.역을_제거하려_하면;
+import static nextstep.subway.section.SectionAcceptanceTestActions.제거할_수_없다;
+import static nextstep.subway.section.SectionAcceptanceTestActions.지하철_노선_등록되어_있음;
+import static nextstep.subway.section.SectionAcceptanceTestActions.해당_구간만_등록되어_있다;
+import static nextstep.subway.section.SectionAcceptanceTestActions.해당_구간만_조회된다;
+import static nextstep.subway.section.SectionAcceptanceTestActions.해당_구간으로_합쳐지며_길이도_합쳐진다;
+import static nextstep.subway.section.SectionAcceptanceTestActions.해당역을_제거한다;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.common.AcceptanceTest;
 import nextstep.subway.domain.repository.StationRepository;
-import nextstep.subway.fixtures.TestFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @DisplayName("구간 추가 관련 기능")
-class SectionAcceptanceTest extends TestFixtures {
+class SectionAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     StationRepository stationRepository;

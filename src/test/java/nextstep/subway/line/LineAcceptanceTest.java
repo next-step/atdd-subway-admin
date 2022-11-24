@@ -4,19 +4,19 @@ import static nextstep.subway.fixtures.StationTestFixture.setStations;
 import static nextstep.subway.fixtures.StationTestFixture.경기광주역ID;
 import static nextstep.subway.fixtures.StationTestFixture.모란역ID;
 import static nextstep.subway.fixtures.StationTestFixture.중앙역ID;
-import static nextstep.subway.line.LineTestFixtures.노선_목록조회;
-import static nextstep.subway.line.LineTestFixtures.노선_삭제;
-import static nextstep.subway.line.LineTestFixtures.노선_생성;
-import static nextstep.subway.line.LineTestFixtures.노선_생성_값_리턴;
-import static nextstep.subway.line.LineTestFixtures.노선_수정;
-import static nextstep.subway.line.LineTestFixtures.노선_조회;
+import static nextstep.subway.line.LineAcceptanceTestActions.노선_목록조회;
+import static nextstep.subway.line.LineAcceptanceTestActions.노선_삭제;
+import static nextstep.subway.line.LineAcceptanceTestActions.노선_생성;
+import static nextstep.subway.line.LineAcceptanceTestActions.노선_생성_값_리턴;
+import static nextstep.subway.line.LineAcceptanceTestActions.노선_수정;
+import static nextstep.subway.line.LineAcceptanceTestActions.노선_조회;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import nextstep.subway.domain.common.AcceptanceTest;
 import nextstep.subway.domain.repository.StationRepository;
-import nextstep.subway.fixtures.TestFixtures;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 
 @DisplayName("지하철노선 관련 기능")
-class LineAcceptanceTest extends TestFixtures {
+class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
     StationRepository stationRepository;

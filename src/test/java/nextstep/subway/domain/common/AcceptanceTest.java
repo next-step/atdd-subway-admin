@@ -1,4 +1,4 @@
-package nextstep.subway.fixtures;
+package nextstep.subway.domain.common;
 
 import io.restassured.RestAssured;
 import nextstep.subway.DatabaseCleanup;
@@ -8,7 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public abstract class TestFixtures {
+public abstract class AcceptanceTest {
 
     @LocalServerPort
     int port;

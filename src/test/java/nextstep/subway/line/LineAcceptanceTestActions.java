@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.springframework.http.MediaType;
 
-public abstract class LineTestFixtures {
+public abstract class LineAcceptanceTestActions {
 
     private static final String PATH = "/lines";
 
