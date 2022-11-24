@@ -1,12 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -24,7 +19,7 @@ public class Line extends BaseEntity {
 
     private int distance;
 
-    public Line() {
+    protected Line() {
 
     }
 

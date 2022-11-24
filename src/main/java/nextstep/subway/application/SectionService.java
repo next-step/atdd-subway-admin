@@ -39,6 +39,11 @@ public class SectionService {
         return persistSections.stream().map(section -> SectionResponse.of(section)).collect(Collectors.toList());
     }
 
+    public List<SectionResponse> retrieveSectionsByLine(Long lineId) {
+        List<Section> sections = findLineById(lineId).getSections().getSectionList();
+        return sections.stream().map(section -> SectionResponse.of(section)).collect(Collectors.toList());
+    }
+
     public Line findLineById(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION));
     }
@@ -46,5 +51,4 @@ public class SectionService {
     public Station findStationById(Long stationId) {
         return stationRepository.findById(stationId).orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION));
     }
-
 }

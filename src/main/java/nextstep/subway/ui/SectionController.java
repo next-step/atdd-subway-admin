@@ -3,6 +3,7 @@ package nextstep.subway.ui;
 import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,4 +26,9 @@ public class SectionController {
         return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(sectionResponse);
     }
 
+    @GetMapping(value = "/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SectionResponse>> retrieveSectionsByLine(@PathVariable Long lineId) {
+        List<SectionResponse> sectionResponse = sectionService.retrieveSectionsByLine(lineId);
+        return ResponseEntity.ok().body(sectionResponse);
+    }
 }
