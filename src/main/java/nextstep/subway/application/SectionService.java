@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 @Transactional
@@ -47,5 +48,6 @@ public class SectionService {
         Line line = lineService.findLineOrThrowException(lineId);
         Station station = stationRepository.findById(stationId).orElseThrow(() -> new IllegalArgumentException("존재하지 않은 지하철역 입니다"));
         line.delete(station);
+        lineRepository.save(line);
     }
 }

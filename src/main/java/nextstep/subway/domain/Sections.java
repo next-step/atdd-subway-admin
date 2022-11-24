@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import org.springframework.util.CollectionUtils;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -9,13 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    protected Sections(){
+    protected Sections() {
     }
 
     public boolean insertInsideFromUpStation(Station upStation, Station newStation, long distance) {
@@ -69,11 +68,39 @@ public class Sections {
         return Objects.hash(sections);
     }
 
-    public boolean hasMoreThanLine() {
-        return this.sections.size() > 1;
+    public boolean hasOnlyOneSection() {
+        return this.sections.size() == 1;
     }
 
     public void delete(Station station) {
+        Section upperSection = this.sections.stream()
+                .filter(section -> section.hasDownStation(station))
+                .findFirst().get();
+        Section downSection = this.sections.stream()
+                .filter(section -> section.hasUpStation(station))
+                .findFirst().get();
+        upperSection.merge(downSection);
+        this.sections.remove(downSection);
+        downSection.setLine(null);
+    }
 
+    public Section popUpperStationIs(Station station) {
+        Section first = this.sections.stream()
+                .filter(section ->
+                        section.hasUpStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 역을 상행역으로 가지는 구간이 없습니다"));
+        this.sections.remove(first);
+        return first;
+    }
+
+    public Section popDownStationIs(Station station) {
+        Section first = this.sections.stream()
+                .filter(section ->
+                        section.hasDownStation(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 역을 하행역으로 가지는 구간이 없습니다"));
+        this.sections.remove(first);
+        return first;
     }
 }

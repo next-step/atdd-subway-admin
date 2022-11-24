@@ -112,9 +112,9 @@ public class SectionDeleteAcceptanceTest {
     }
 
     private void 중간역이_새로운_종점이_된다(ExtractableResponse<Response> response, StationResponse 신규상행종점, StationResponse 신규하행종점s) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> 노선 = LineAcceptanceTest.지하철_노선을_조회한다(기본노선정보.getId());
-        assertThat(노선.jsonPath().getList("stations.id")).containsExactly(신규상행종점.getId(), 신규하행종점s.getId());
+        assertThat(노선.jsonPath().getList("stations.id")).containsExactly(신규상행종점.getId().intValue(), 신규하행종점s.getId().intValue());
     }
 
     private ExtractableResponse<Response> 노선에서_역을_삭제한다(Long lineId, StationResponse station) {

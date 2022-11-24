@@ -170,10 +170,35 @@ public class Line extends BaseEntity {
     }
 
     public void delete(Station station) {
-        if(this.sections.hasMoreThanLine()){
-            this.sections.delete(station);
+        throwIfLineHasOnlyOneSection();
+        if(upStation.equals(station)){
+            deleteUpStation(station);
             return;
         }
-        throw new IllegalArgumentException("노선과 구간이 일치할 때는 삭제할 수 없습니다");
+        if(downStation.equals(station)){
+            deleteDownStation(station);
+            return;
+        }
+        this.sections.delete(station);
+    }
+
+    private void deleteDownStation(Station station) {
+        Section section = this.sections.popDownStationIs(station);
+        downStation = section.getUpperStation();
+        distance = distance.minus(section.getDistance());
+        section.setLine(null);
+    }
+
+    private void deleteUpStation(Station station) {
+        Section section = this.sections.popUpperStationIs(station);
+        upStation = section.getDownStation();
+        distance = distance.minus(section.getDistance());
+        section.setLine(null);
+    }
+
+    private void throwIfLineHasOnlyOneSection() {
+        if(this.sections.hasOnlyOneSection()){
+            throw new IllegalArgumentException("노선과 구간이 일치할 때는 삭제할 수 없습니다");
+        }
     }
 }
