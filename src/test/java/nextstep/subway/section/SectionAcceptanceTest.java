@@ -93,16 +93,13 @@ public class SectionAcceptanceTest {
         //given
         StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
         StationResponse 합정역 = StationAcceptanceTest.createStation("합정역").as(StationResponse.class);
-        StationResponse 홍대입구역 = StationAcceptanceTest.createStation("홍대입구역").as(StationResponse.class);
 
         LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 합정역.getId(), 10);
         ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
         LineResponse 이호선 = response.as(LineResponse.class);
 
         SectionRequest sectionRequest1 = new SectionRequest(당산역.getId(), 합정역.getId(), 10);
-        ExtractableResponse<Response> addSectionResponse1 = addSection(response.header("Location"), sectionRequest1);
-        SectionRequest sectionRequest2 = new SectionRequest(합정역.getId(), 홍대입구역.getId(), 7);
-        ExtractableResponse<Response> addSectionResponse2 = addSection(response.header("Location"), sectionRequest2);
+        ExtractableResponse<Response> addSectionResponse = addSection(response.header("Location"), sectionRequest1);
 
         // when
         ExtractableResponse<Response> responses = retrieveAllSectionByLine(response.header("Location"));
@@ -110,7 +107,7 @@ public class SectionAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(responses.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(responses.jsonPath().getList(".", SectionResponse.class)).hasSize(4)
+                () -> assertThat(responses.jsonPath().getList(".", SectionResponse.class)).hasSize(3)
         );
     }
 
