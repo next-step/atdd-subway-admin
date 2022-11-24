@@ -72,15 +72,15 @@ public class SectionAcceptanceTest {
     void createSectionUpStationInside() {
         // given
         Line line = createLine("1호선");
-        Section preSection = addedSections(line, upStation, mediumStation, 5);
         Section postSection = addedSections(line, mediumStation, downStation, 7);
+        Section preSection = addedSections(line, upStation, mediumStation, 5);
 
         // when
-        createSectionSuccess(line.getId(), upStation, newStation, LESS_THAN_DISTANCE);
+        createSectionSuccess(line.getId(), mediumStation, newStation, LESS_THAN_DISTANCE);
 
         // then
         checkSectionStationSize(line.getId(), LINE_STATION_SIZE);
-        checkSectionDistance(preSection.getId(), preSection.getDistance() - LESS_THAN_DISTANCE);
+        checkSectionDistance(postSection.getId(), postSection.getDistance() - LESS_THAN_DISTANCE);
     }
 
     /**
@@ -166,12 +166,15 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> responseCase1 = createSection(line.getId(), upStation, mediumStation, LESS_THAN_DISTANCE);
         ExtractableResponse<Response> responseCase2 = createSection(line.getId(), mediumStation, upStation, LESS_THAN_DISTANCE);
         ExtractableResponse<Response> responseCase3 = createSection(line.getId(), mediumStation, downStation, LESS_THAN_DISTANCE);
+        ExtractableResponse<Response> responseCase4 = createSection(line.getId(), upStation, downStation, LESS_THAN_DISTANCE);
+
 
         // then
         assertAll (
                 () -> assertThat(responseCase1.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
                 () -> assertThat(responseCase2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
-                () -> assertThat(responseCase3.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
+                () -> assertThat(responseCase3.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(responseCase4.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value())
         );
     }
 

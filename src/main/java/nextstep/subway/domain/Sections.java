@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.dto.StationResponse;
 import nextstep.subway.exception.InvalidParameterException;
 
 import javax.persistence.CascadeType;
@@ -7,7 +8,9 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Embeddable
 public class Sections {
@@ -27,11 +30,17 @@ public class Sections {
     }
 
     private void checkContainsAllSectionStation(Section infixSection) {
-        sections.stream().forEach(section -> {
-            if (section.containsAllStation(infixSection)) {
-                throw new InvalidParameterException("상행역과 하행역이 모두 노선에 등록되어 있는 경우 새롭게 등록할 수 없습니다.");
-            }
-        });
+        boolean containPreStation = false;
+        boolean containPostStation = false;
+
+        for (Section section : sections) {
+            containPreStation = section.isContainsPreStation(containPreStation, infixSection);
+            containPostStation = section.isContainsPostStation(containPostStation, infixSection);
+        }
+
+        if (containPreStation && containPostStation) {
+            throw new InvalidParameterException("상행역과 하행역이 모두 노선에 등록되어 있는 경우 새롭게 등록할 수 없습니다.");
+        }
     }
 
     public List<Section> getList() {
@@ -90,5 +99,58 @@ public class Sections {
     private boolean isNothingToChange(Section changedStationSection) {
         return changedStationSection == null;
     }
+
+    public Set<StationResponse> sortSections() {
+        Set<StationResponse> stationResponses = new LinkedHashSet<>();
+
+        Section firstSection = findFirstSection();
+        stationResponses.add(StationResponse.of(firstSection.getUpStation()));
+        for (int i = 0; i < sections.size(); i++) {
+            firstSection = addedNextSectionStations(firstSection, stationResponses);
+        }
+
+        return stationResponses;
+    }
+
+    private Section addedNextSectionStations(Section firstSection,
+                                          Set<StationResponse> stationResponses) {
+        for (Section section : sections) {
+            firstSection = resetNextSection(section, firstSection);
+            stationResponses.add(StationResponse.of(firstSection.getUpStation()));
+            stationResponses.add(StationResponse.of(firstSection.getDownStation()));
+        }
+        return firstSection;
+    }
+
+    private Section resetNextSection(Section section, Section firstSection) {
+        if (section.isPostStation(firstSection)) {
+            return section;
+        }
+        return firstSection;
+    }
+
+    private Section findFirstSection() {
+        Section firstSection = sections.get(0);
+        for (int i = 0; i < sections.size(); i++) {
+            firstSection = findPreSection(firstSection);
+        }
+        return firstSection;
+    }
+
+    private Section findPreSection(Section firstSection) {
+        for (Section section : sections) {
+            firstSection = resetFirstSection(section, firstSection);
+        }
+        return firstSection;
+    }
+
+    private Section resetFirstSection(Section section, Section firstSection) {
+        if (section.isPreStation(firstSection)) {
+            return section;
+        }
+        return firstSection;
+    }
+
+
 
 }

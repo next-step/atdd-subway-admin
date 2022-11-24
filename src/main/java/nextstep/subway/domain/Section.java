@@ -65,9 +65,6 @@ public class Section {
     }
 
     public boolean isPreStation(Section section) {
-        if (section == null) {
-            return true;
-        }
         return downStation.equalsById(section.getUpStation());
     }
 
@@ -93,9 +90,23 @@ public class Section {
         return downStation.equalsById(station);
     }
 
-    public boolean containsAllStation(Section infixSection) {
-        if ((upStation.equalsById(infixSection.upStation) && downStation.equalsById(infixSection.downStation))
-                || (upStation.equalsById(infixSection.downStation) && downStation.equalsById(infixSection.upStation))) {
+    public boolean isContainsPreStation(boolean isContains, Section infixSection) {
+        if (isContains) {
+            return true;
+        }
+        if (upStation.equalsById(infixSection.upStation) ||
+                downStation.equalsById(infixSection.upStation)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isContainsPostStation(boolean isContains, Section infixSection) {
+        if (isContains) {
+            return true;
+        }
+        if (upStation.equalsById(infixSection.downStation) ||
+                downStation.equalsById(infixSection.downStation)) {
             return true;
         }
         return false;
