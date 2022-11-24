@@ -160,6 +160,20 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역, 신논현역, 강남역);
     }
 
+    @DisplayName("새로운 역을 하행 종점으로 등록한다.")
+    void addDownStation_success() {
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역, 신논현역, 논현역_강남역_거리);
+
+        지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(신논현역, 강남역, 신논현역_강남역_거리));
+
+        지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(논현역, 신논현역, 논현역_신논현역_거리));
+
+        // then
+        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(createLineResponse.header("location"));
+        assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역, 신논현역, 강남역);
+    }
+
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
