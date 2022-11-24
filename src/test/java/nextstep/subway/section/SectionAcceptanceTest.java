@@ -90,7 +90,28 @@ public class SectionAcceptanceTest {
     @DisplayName("노선의 전체 구간을 조회한다.")
     @Test
     void 지하철_노선_전체_구간_조회_테스트() {
+        //given
+        StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
+        StationResponse 합정역 = StationAcceptanceTest.createStation("합정역").as(StationResponse.class);
+        StationResponse 홍대입구역 = StationAcceptanceTest.createStation("홍대입구역").as(StationResponse.class);
 
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 합정역.getId(), 10);
+        ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
+        LineResponse 이호선 = response.as(LineResponse.class);
+
+        SectionRequest sectionRequest1 = new SectionRequest(당산역.getId(), 합정역.getId(), 10);
+        ExtractableResponse<Response> addSectionResponse1 = addSection(response.header("Location"), sectionRequest1);
+        SectionRequest sectionRequest2 = new SectionRequest(합정역.getId(), 홍대입구역.getId(), 7);
+        ExtractableResponse<Response> addSectionResponse2 = addSection(response.header("Location"), sectionRequest2);
+
+        // when
+        ExtractableResponse<Response> responses = retrieveAllSectionByLine(response.header("Location"));
+
+        // then
+        assertAll(
+                () -> assertThat(responses.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(responses.jsonPath().getList(".", SectionResponse.class)).hasSize(4)
+        );
     }
 
     /**
@@ -149,12 +170,24 @@ public class SectionAcceptanceTest {
     }
 
     private ExtractableResponse<Response> addSection(String location, SectionRequest sectionRequest) {
-        
+
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
                         .body(sectionRequest)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().post(location + BASE_URL)
+                        .then().log().all()
+                        .extract();
+        
+        return response;
+    }
+
+    private ExtractableResponse<Response> retrieveAllSectionByLine(String location) {
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().get(location + BASE_URL)
                         .then().log().all()
                         .extract();
 
