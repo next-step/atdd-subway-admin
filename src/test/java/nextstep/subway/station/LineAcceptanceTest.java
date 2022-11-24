@@ -13,6 +13,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,8 +26,9 @@ import static org.springframework.http.HttpHeaders.LOCATION;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest {
 
-    private static final int OLD_SECTION_INDEX = 0;
-    private static final int NEW_SECTION_INDEX = 1;
+    private static final int FIRST_STATION_INDEX = 0;
+    private static final int SECOND_STATION_INDEX = 1;
+    private static final int THIRD_STATION_INDEX = 2;
 
     @LocalServerPort
     int port;
@@ -190,8 +192,7 @@ class LineAcceptanceTest {
     }
 
     /**
-     * given: 두 개의 지하철 역을 생성하고
-     * given: 생성한 두 개의 지하철 역을 각 상행 종점, 하행 종점으로 포함하는 노선을 생성하고
+     * given: 두 개의 구간을 갖는 노선을 생성하고
      * when:  새로운 상행 종점을 포함하는 구간을 노선에 등록하면
      * then:  노선의 새로운 상행 종점 구간이 등록 된다
      */
@@ -199,35 +200,40 @@ class LineAcceptanceTest {
     @Test
     void 상행_종점_등록_성공() {
         // given:
-        // 삼전역, 강남역 생성
-        long 상행_종점_id = 지하철역_생성("삼전역");
-        long 하행_종점_id = 지하철역_생성("강남역");
-        long 신규_상행_종점_id = 지하철역_생성("인천공항역");
+        // 삼전역, 강남역, 석촌고분역, 인천공항역 생성
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
+        long 석촌고분역_id = 지하철역_생성("석촌고분역");
+        long 인천공항역_id = 지하철역_생성("인천공항역");
+        int existDistance = 10;
+        int newDistance = 10;
 
         // 분당선 생성, 및 조회
-        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 상행_종점_id, 하행_종점_id);
+        // 삼전역 -> 강남역 -> 석촌고분역
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id, existDistance);
+        노선_구간_생성(lineId, 구간_생성(강남역_id, 석촌고분역_id, existDistance));
 
         // when:
         // 신규 상행 종점 등록
-        ExtractableResponse<Response> response = 노선_구간_생성(lineId, 구간_생성(신규_상행_종점_id, 상행_종점_id, 10));
+        // *인천공항역* -> 삼전역 -> 강남역 -> 석촌고분역
+        ExtractableResponse<Response> response = 노선_구간_생성(lineId, 구간_생성(인천공항역_id, 삼전역_id, newDistance));
         // 총 구간 길이
-        int totalDistance = getLineDistance(response);
-        // 초기 생성 구간
-        Map<String, Integer> oldSection = getResultSection(response, OLD_SECTION_INDEX);
+        int totalDistance = existDistance + existDistance + newDistance;
         // 신규 상행 종점 구간
-        Map<String, Integer> newSection = getResultSection(response, NEW_SECTION_INDEX);
+        Map<String, Integer> firstStation = getResultSection(response, FIRST_STATION_INDEX);
+        // 초기 생성 구간
+        Map<String, Integer> secondStation = getResultSection(response, SECOND_STATION_INDEX);
 
         // then:
-        assertThat(oldSection.get("preStationId")).isEqualTo(상행_종점_id);
-        assertThat(oldSection.get("nextStationId")).isEqualTo(하행_종점_id);
-        assertThat(newSection.get("preStationId")).isEqualTo(신규_상행_종점_id);
-        assertThat(newSection.get("nextStationId")).isEqualTo(상행_종점_id);
-        assertThat(totalDistance).isEqualTo(oldSection.get("distance") + newSection.get("distance"));
+        assertThat(firstStation.get("preStationId")).isEqualTo(인천공항역_id);
+        assertThat(firstStation.get("nextStationId")).isEqualTo(삼전역_id);
+        assertThat(secondStation.get("preStationId")).isEqualTo(삼전역_id);
+        assertThat(secondStation.get("nextStationId")).isEqualTo(강남역_id);
+        assertThat(totalDistance).isEqualTo(getLineDistance(response));
     }
 
     /**
-     * given: 두 개의 지하철 역을 생성하고
-     * given: 생성한 두 개의 지하철 역을 각 상행 종점, 하행 종점으로 포함하는 노선을 생성하고
+     * given: 두 개의 구간을 갖는 노선을 생성하고
      * when:  새로운 하행 종점을 포함하는 구간을 노선에 등록하면
      * then:  노선의 새로운 하행 종점 구간이 등록 된다
      */
@@ -235,35 +241,40 @@ class LineAcceptanceTest {
     @Test
     void 하행_종점_등록_성공() {
         // given:
-        // 삼전역, 강남역 생성
-        long 상행_종점_id = 지하철역_생성("삼전역");
-        long 하행_종점_id = 지하철역_생성("강남역");
-        long 신규_하행_종점_id = 지하철역_생성("인천공항역");
+        // 삼전역, 강남역, 석촌고분역, 인천공항역 생성
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
+        long 석촌고분역_id = 지하철역_생성("석촌고분역");
+        long 인천공항역_id = 지하철역_생성("인천공항역");
+        int existDistance = 10;
+        int newDistance = 10;
 
         // 분당선 생성, 및 조회
-        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 상행_종점_id, 하행_종점_id);
+        // 삼전역 -> 강남역 -> 석촌고분역
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id, existDistance);
+        노선_구간_생성(lineId, 구간_생성(강남역_id, 석촌고분역_id, existDistance));
 
         // when:
         // 신규 하행 종점 등록
-        ExtractableResponse<Response> response = 노선_구간_생성(lineId, 구간_생성(하행_종점_id, 신규_하행_종점_id, 10));
+        // 삼전역 -> 강남역 -> 석촌고분역 -> *인천공항역*
+        ExtractableResponse<Response> response = 노선_구간_생성(lineId, 구간_생성(석촌고분역_id, 인천공항역_id, newDistance));
         // 총 구간 길이
-        int totalDistance = getLineDistance(response);
-        // 초기 생성 구간
-        Map<String, Integer> oldSection = getResultSection(response, OLD_SECTION_INDEX);
-        // 신규 상행 종점 구간
-        Map<String, Integer> newSection = getResultSection(response, NEW_SECTION_INDEX);
+        int totalDistance = existDistance + existDistance + newDistance;
+        // 기존 하행 종점 구간
+        Map<String, Integer> secondSection = getResultSection(response, SECOND_STATION_INDEX);
+        // 하행 상행 종점 구간
+        Map<String, Integer> newSection = getResultSection(response, THIRD_STATION_INDEX);
 
         // then:
-        assertThat(oldSection.get("preStationId")).isEqualTo(상행_종점_id);
-        assertThat(oldSection.get("nextStationId")).isEqualTo(하행_종점_id);
-        assertThat(newSection.get("preStationId")).isEqualTo(하행_종점_id);
-        assertThat(newSection.get("nextStationId")).isEqualTo(신규_하행_종점_id);
-        assertThat(totalDistance).isEqualTo(oldSection.get("distance") + newSection.get("distance"));
+        assertThat(secondSection.get("preStationId")).isEqualTo(강남역_id);
+        assertThat(secondSection.get("nextStationId")).isEqualTo(석촌고분역_id);
+        assertThat(newSection.get("preStationId")).isEqualTo(석촌고분역_id);
+        assertThat(newSection.get("nextStationId")).isEqualTo(인천공항역_id);
+        assertThat(totalDistance).isEqualTo(getLineDistance(response));
     }
 
     /**
-     * given: 두 개의 지하철 역을 생성하고
-     * given: 생성한 두 개의 지하철 역을 각 상행 종점, 하행 종점으로 포함하는 노선을 생성하고
+     * given: 두 개의 구간을 갖는 노선을 생성하고
      * when:  기존 상행 종점을 기준으로 하는 노선 구간을 등록하면
      * then:  노선의 새로운 구간이 등록된다
      */
@@ -271,37 +282,41 @@ class LineAcceptanceTest {
     @Test
     void 상행_구간_등록_성공() {
         // given:
-        // 삼전역, 강남역 생성
-        long 상행_종점_id = 지하철역_생성("삼전역");
-        long 하행_종점_id = 지하철역_생성("강남역");
-        long 신규_상행_구간_id = 지하철역_생성("인천공항역");
+        // 삼전역, 강남역, 석촌고분역, 인천공항역 생성
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
+        long 석촌고분역_id = 지하철역_생성("석촌고분역");
+        long 인천공항역_id = 지하철역_생성("인천공항역");
+        int existDistance = 10;
         int 신규_구간_길이 = 7;
 
         // 분당선 생성, 및 조회
-        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 상행_종점_id, 하행_종점_id);
+        // 삼전역 -> 강남역 -> 석촌고분역
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id, existDistance);
+        노선_구간_생성(lineId, 구간_생성(강남역_id, 석촌고분역_id, existDistance));
 
         // when:
         // 신규 상행 구간 등록
-        ExtractableResponse<Response> response = 노선_구간_생성(lineId, 구간_생성(상행_종점_id, 신규_상행_구간_id, 신규_구간_길이));
+        // 삼전역 -> *인천공항역* -> 강남역 -> 석촌고분역
+        ExtractableResponse<Response> response = 노선_구간_생성(lineId, 구간_생성(삼전역_id, 인천공항역_id, 신규_구간_길이));
         // 총 구간 길이
         int totalDistance = getLineDistance(response);
-        // 초기 생성 구간
-        Map<String, Integer> oldSection = getResultSection(response, OLD_SECTION_INDEX);
-        // 신규 상행 종점 구간
-        Map<String, Integer> newSection = getResultSection(response, NEW_SECTION_INDEX);
+        // 신규 상행 구간
+        Map<String, Integer> firstSection = getResultSection(response, FIRST_STATION_INDEX);
+        // 기존 상행 구간
+        Map<String, Integer> secondSection = getResultSection(response, SECOND_STATION_INDEX);
 
         // then:
-        assertThat(oldSection.get("preStationId")).isEqualTo(신규_상행_구간_id);
-        assertThat(oldSection.get("nextStationId")).isEqualTo(하행_종점_id);
-        assertThat(oldSection.get("distance")).isEqualTo(totalDistance - 신규_구간_길이);
-        assertThat(newSection.get("preStationId")).isEqualTo(상행_종점_id);
-        assertThat(newSection.get("nextStationId")).isEqualTo(신규_상행_구간_id);
-        assertThat(newSection.get("distance")).isEqualTo(신규_구간_길이);
+        assertThat(firstSection.get("preStationId")).isEqualTo(삼전역_id);
+        assertThat(firstSection.get("nextStationId")).isEqualTo(인천공항역_id);
+        assertThat(secondSection.get("preStationId")).isEqualTo(인천공항역_id);
+        assertThat(secondSection.get("nextStationId")).isEqualTo(강남역_id);
+        assertThat(firstSection.get("distance")).isEqualTo(신규_구간_길이);
+        assertThat(secondSection.get("distance")).isEqualTo(totalDistance - existDistance - 신규_구간_길이);
     }
 
     /**
-     * given: 두 개의 지하철 역을 생성하고
-     * given: 생성한 두 개의 지하철 역을 각 상행 종점, 하행 종점으로 포함하는 노선을 생성하고
+     * given: 두 개의 구간을 갖는 노선을 생성하고
      * when:  기존 하행 종점을 기준으로 하는 노선 구간을 등록하면
      * then:  노선의 새로운 구간이 등록된다
      */
@@ -309,32 +324,37 @@ class LineAcceptanceTest {
     @Test
     void 하행_구간_등록_성공() {
         // given:
-        // 삼전역, 강남역 생성
-        long 상행_종점_id = 지하철역_생성("삼전역");
-        long 하행_종점_id = 지하철역_생성("강남역");
-        long 신규_하행_구간_id = 지하철역_생성("인천공항역");
+        // 삼전역, 강남역, 석촌고분역, 인천공항역 생성
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
+        long 석촌고분역_id = 지하철역_생성("석촌고분역");
+        long 인천공항역_id = 지하철역_생성("인천공항역");
+        int existDistance = 10;
         int 신규_구간_길이 = 7;
 
         // 분당선 생성, 및 조회
-        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 상행_종점_id, 하행_종점_id);
+        // 삼전역 -> 강남역 -> 석촌고분역
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id, existDistance);
+        노선_구간_생성(lineId, 구간_생성(강남역_id, 석촌고분역_id, existDistance));
 
         // when:
-        // 신규 상행 종점 등록
-        ExtractableResponse<Response> response = 노선_구간_생성(lineId, 구간_생성(신규_하행_구간_id, 하행_종점_id, 신규_구간_길이));
+        // 하행 구간 등록
+        // 삼전역 -> *인천공항역* -> 강남역 -> 석촌고분역
+        ExtractableResponse<Response> response = 노선_구간_생성(lineId, 구간_생성(인천공항역_id, 강남역_id, 신규_구간_길이));
         // 총 구간 길이
         int totalDistance = getLineDistance(response);
-        // 초기 생성 구간
-        Map<String, Integer> oldSection = getResultSection(response, OLD_SECTION_INDEX);
+        // 초기 하행 구간
+        Map<String, Integer> firstSection = getResultSection(response, FIRST_STATION_INDEX);
         // 신규 하행 구간
-        Map<String, Integer> newSection = getResultSection(response, NEW_SECTION_INDEX);
+        Map<String, Integer> secondSection = getResultSection(response, SECOND_STATION_INDEX);
 
         // then:
-        assertThat(oldSection.get("preStationId")).isEqualTo(상행_종점_id);
-        assertThat(oldSection.get("nextStationId")).isEqualTo(신규_하행_구간_id);
-        assertThat(oldSection.get("distance")).isEqualTo(totalDistance - 신규_구간_길이);
-        assertThat(newSection.get("preStationId")).isEqualTo(신규_하행_구간_id);
-        assertThat(newSection.get("nextStationId")).isEqualTo(하행_종점_id);
-        assertThat(newSection.get("distance")).isEqualTo(신규_구간_길이);
+        assertThat(firstSection.get("preStationId")).isEqualTo(삼전역_id);
+        assertThat(firstSection.get("nextStationId")).isEqualTo(인천공항역_id);
+        assertThat(secondSection.get("preStationId")).isEqualTo(인천공항역_id);
+        assertThat(secondSection.get("nextStationId")).isEqualTo(강남역_id);
+        assertThat(firstSection.get("distance")).isEqualTo(totalDistance - existDistance - 신규_구간_길이);
+        assertThat(secondSection.get("distance")).isEqualTo(신규_구간_길이);
     }
 
     /**
@@ -493,8 +513,9 @@ class LineAcceptanceTest {
         return params;
     }
 
-    int getLineDistance(ExtractableResponse<Response> response) {
-        return response.body().jsonPath().getInt("lineDistance");
+    Integer getLineDistance(ExtractableResponse<Response> response) {
+        ArrayList<Integer> distance = response.body().jsonPath().get("sectionResponseList.distance");
+        return distance.stream().mapToInt(num -> num).sum();
     }
 
     Map<String, Integer> getResultSection(ExtractableResponse<Response> response, int resultIndex) {
