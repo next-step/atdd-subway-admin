@@ -11,7 +11,7 @@ public class LineColor {
     private final String color;
 
     protected LineColor() {
-        this("");
+        this.color = null;
     }
 
     public LineColor(String color) {

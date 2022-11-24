@@ -14,7 +14,7 @@ public class StationName {
     private final String name;
 
     protected StationName() {
-        this("none");
+        this.name = null;
     }
 
     public StationName(String name) {

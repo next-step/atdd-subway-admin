@@ -14,7 +14,7 @@ public class LineName {
     private final String name;
 
     protected LineName() {
-        this("none");
+        this.name = null;
     }
 
     public LineName(String name) {

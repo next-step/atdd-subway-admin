@@ -9,13 +9,13 @@ import javax.persistence.Embeddable;
 public class Distance {
 
     @Column
-    private final int distance;
+    private final Integer distance;
 
     protected Distance() {
-        this(1);
+        this.distance = null;
     }
 
-    public Distance(int distance) {
+    public Distance(Integer distance) {
         validateDistance(distance);
         this.distance = distance;
     }
