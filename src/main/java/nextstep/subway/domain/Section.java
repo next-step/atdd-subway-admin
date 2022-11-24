@@ -49,7 +49,7 @@ public class Section extends BaseEntity {
         this.distance -= distance;
     }
 
-    public void linkPreSectionByDelete(Section targetSection){
+    public void linkPreSection(Section targetSection){
         this.preStation = targetSection.preStation;
         this.distance += targetSection.distance;
     }
@@ -72,4 +72,7 @@ public class Section extends BaseEntity {
         return station;
     }
 
+    public Integer getDistance() {
+        return distance;
+    }
 }

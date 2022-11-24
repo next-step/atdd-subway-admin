@@ -56,23 +56,32 @@ public class Sections {
         return getSectionsToMap().containsKey(station) || getSectionsToMapByPreStation().containsKey(station);
     }
 
-    public void deleteSectionByStation(Station station) {
-        Section findSection = findSectionByStation(station);
-
-        sections.stream()
-                .filter(section -> station.equals(section.getPreStation()))
+    private void updateSectionForStation(Station preStation, Station station, Integer distance) {
+        this.sections.stream()
+                .filter(section -> station.equals(section.getStation()))
                 .findFirst()
-                .ifPresent(section -> section.linkPreSectionByDelete(findSection));
-
-        sections.remove(findSection);
+                .ifPresent(section -> section.updateSection(section.getPreStation(), preStation, distance));
     }
 
-    private Section findSectionByStation(Station station) {
-        Map<Station, Section> sectionsMap = getSectionsToMap();
+    private void updateSectionForPreStation(Station preStation, Station station, Integer distance) {
+        this.sections.stream()
+                .filter(section -> preStation.equals(section.getPreStation()))
+                .findFirst()
+                .ifPresent(section -> section.updateSection(station, section.getStation(), distance));
+    }
+
+    public void deleteSectionByStation(Station station) {
         validateNotIncludeSection(station);
         validateLastSection();
-        return sectionsMap.getOrDefault(station, getSectionsToMapByPreStation().get(station));
+        Optional<Section> sectionByStation = Optional.ofNullable(getSectionsToMap().get(station));
+        Optional<Section> sectionByPreStation = Optional.ofNullable(getSectionsToMapByPreStation().get(station));
 
+        if(sectionByPreStation.isPresent() && sectionByStation.isPresent()){
+            createNewSection(sectionByStation.get(), sectionByPreStation.get());
+        }
+
+        sectionByStation.ifPresent(section -> sections.remove(section));
+        sectionByPreStation.ifPresent(section -> sections.remove(section));
     }
 
     private void validateNotIncludeSection(Station station) {
@@ -87,18 +96,12 @@ public class Sections {
         }
     }
 
-    private void updateSectionForStation(Station preStation, Station station, Integer distance) {
-        this.sections.stream()
-                .filter(section -> station.equals(section.getStation()))
-                .findFirst()
-                .ifPresent(section -> section.updateSection(section.getPreStation(), preStation, distance));
-    }
+    private void createNewSection(Section sectionByStation, Section sectionByPreStation) {
+        Station newPreStation = sectionByStation.getPreStation();
+        Station newStation = sectionByPreStation.getStation();
+        int newDistance = sectionByStation.getDistance() + sectionByPreStation.getDistance();
 
-    private void updateSectionForPreStation(Station preStation, Station station, Integer distance) {
-        this.sections.stream()
-                .filter(section -> preStation.equals(section.getPreStation()))
-                .findFirst()
-                .ifPresent(section -> section.updateSection(station, section.getStation(), distance));
+        add(newPreStation, newStation, newDistance);
     }
 
     public List<Station> getOrderStations() {
