@@ -38,12 +38,16 @@ public class Line extends BaseEntity {
         this.distance = distance;
     }
 
-    public Line of (LineRequest lineRequest) {
+    public Line of(LineRequest lineRequest) {
         this.name = lineRequest.getName();
         this.color = lineRequest.getColor();
         this.distance = lineRequest.getDistance();
 
         return this;
+    }
+
+    public Sections addSection(Section toSection) {
+        return sections;
     }
 
     public Long getId() {

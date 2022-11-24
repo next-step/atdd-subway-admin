@@ -11,4 +11,7 @@ public class Sections {
     @OneToMany(mappedBy = "line")
     List<Section> sections = new ArrayList<>();
 
+    public List<Section> getSectionList() {
+        return sections;
+    }
 }
