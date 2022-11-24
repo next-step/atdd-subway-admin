@@ -77,6 +77,28 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+
+    /**
+     * Given 지하철 노선이 생성되어 있다.
+     * When 하행역을 기준으로 구간을 추가한다.
+     * Then 구간이 추가된다.
+     */
+    @DisplayName("하행역을 기준으로 구간을 추가한다.")
+    @Test
+    void addUpStationSection() {
+
+        //given
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역_ID, 강남역_ID, 논현역_강남역_거리);
+
+        //when
+        지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(신논현역_ID, 강남역_ID, 신논현역_강남역_거리));
+
+        // then
+        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(createLineResponse.header("location"));
+        assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(논현역_ID, 신논현역_ID, 강남역_ID);
+    }
+
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
