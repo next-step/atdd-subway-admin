@@ -84,12 +84,12 @@ public class Section {
 		return station.equals(newStation);
 	}
 
-	public void updateUpStation(Station downStation, Integer distance) {
+	public void updateUpStation(Station downStation, Distance distance) {
 		this.upStation = downStation;
 		this.distance = this.distance.subtract(distance);
 	}
 
-	public void updateDownStation(Station upStation, Integer distance) {
+	public void updateDownStation(Station upStation, Distance distance) {
 		this.downStation = upStation;
 		this.distance = this.distance.subtract(distance);
 	}
@@ -111,4 +111,13 @@ public class Section {
 		return Objects.hashCode(id);
 	}
 
+	public void rearrange(Section section) {
+		if (isSameUpStation(section)) {
+			updateUpStation(section.downStation, section.distance);
+			return;
+		}
+		if (isSameDownStation(section)) {
+			updateDownStation(section.upStation, section.distance);
+		}
+	}
 }

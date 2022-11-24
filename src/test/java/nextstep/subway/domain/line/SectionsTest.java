@@ -3,6 +3,7 @@ package nextstep.subway.domain.line;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -66,7 +67,7 @@ class SectionsTest {
 		Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 10);
 
 		Sections sections = Sections.initialSections(구간);
-		sections.add(새로운_구간);
+		sections.connect(새로운_구간, Collections.singletonList(구간));
 
 		// when
 		Station firstUpStation = sections.firstUpStation();
@@ -83,7 +84,8 @@ class SectionsTest {
 		Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 10);
 
 		Sections sections = Sections.initialSections(구간);
-		sections.add(새로운_구간);
+		// sections.add(새로운_구간);
+		sections.connect(새로운_구간, Collections.singletonList(구간));
 
 		// when
 		Station lastDownStation = sections.lastDownStation();
@@ -102,7 +104,7 @@ class SectionsTest {
 		Sections sections = Sections.initialSections(구간);
 
 		// when, then
-		assertThatThrownBy(() -> sections.add(새로운_구간))
+		assertThatThrownBy(() -> sections.connect(새로운_구간, Collections.singletonList(구간)))
 			.isInstanceOf(InvalidSectionAddException.class);
 	}
 
@@ -117,7 +119,7 @@ class SectionsTest {
 		Sections sections = Sections.initialSections(구간);
 
 		// when, then
-		assertThatThrownBy(() -> sections.add(새로운_구간))
+		assertThatThrownBy(() -> sections.connect(새로운_구간, Collections.singletonList(구간)))
 			.isInstanceOf(InvalidSectionAddException.class);
 	}
 
@@ -131,7 +133,7 @@ class SectionsTest {
 		Sections sections = Sections.initialSections(구간);
 
 		// when
-		sections.add(새로운_구간);
+		sections.connect(새로운_구간, Collections.singletonList(구간));
 
 		// then
 		assertAll(
@@ -157,7 +159,7 @@ class SectionsTest {
 		Sections sections = Sections.initialSections(구간);
 
 		// when
-		sections.add(새로운_구간);
+		sections.connect(새로운_구간, Collections.singletonList(구간));
 
 		// then
 		assertAll(
@@ -182,7 +184,7 @@ class SectionsTest {
 		Sections sections = Sections.initialSections(구간);
 
 		// when
-		sections.add(새로운_구간);
+		sections.connect(새로운_구간, Collections.singletonList(구간));
 
 		// then
 		assertAll(
@@ -208,7 +210,7 @@ class SectionsTest {
 		Sections sections = Sections.initialSections(구간);
 
 		// when
-		sections.add(새로운_구간);
+		sections.connect(새로운_구간, Collections.singletonList(구간));
 
 		// then
 		assertAll(

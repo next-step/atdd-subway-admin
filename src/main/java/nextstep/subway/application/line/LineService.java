@@ -23,10 +23,16 @@ public class LineService {
 	private static final String LINE_NOT_FOUND_MESSAGE = "해당 노선을 찾을 수 없습니다 : ";
 	private final LineRepository lineRepository;
 	private final StationService stationService;
+	private final SectionService sectionService;
 
-	public LineService(LineRepository lineRepository, StationService stationService) {
+	public LineService(
+		LineRepository lineRepository,
+		StationService stationService,
+		SectionService sectionService
+	) {
 		this.lineRepository = lineRepository;
 		this.stationService = stationService;
+		this.sectionService = sectionService;
 	}
 
 	@Transactional
@@ -87,9 +93,11 @@ public class LineService {
 
 		Station upStation = findUpStation(request.getUpStationId());
 		Station downStation = findDownStation(request.getDownStationId());
+		List<Section> sectionsToUpdate = sectionService.findSectionsToUpdate(upStation, downStation);
 
 		Section section = new Section(line, upStation , downStation, request.getDistance());
-		line.addSection(section);
+		line.connectSection(section, sectionsToUpdate);
+
 		return lineResponse(line);
 	}
 

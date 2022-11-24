@@ -66,13 +66,6 @@ public class Sections {
 			.orElseThrow(() -> new IllegalArgumentException("Section not exist"));
 	}
 
-	private Section sectionByDownStation(Station station) {
-		return this.sections.stream()
-			.filter(section -> section.getDownStation().getName().equals(station.getName()))
-			.findFirst()
-			.orElseThrow(() -> new IllegalArgumentException("Section not exist"));
-	}
-
 	public Station firstUpStation() {
 		List<Station> stations = allUpStations();
 		stations.removeIf(station -> allDownStations().contains(station));
@@ -85,29 +78,17 @@ public class Sections {
 		return stations.get(0);
 	}
 
-	public void add(Section section) {
+	public void connect(Section section, List<Section> sectionsToRearrange) {
 		validateAddSection(section);
-		rearrange(section);
+		if (hasSectionsToRearrange(sectionsToRearrange)) {
+			sectionsToRearrange
+				.forEach(sectionToRearrange -> sectionToRearrange.rearrange(section));
+		}
 		sections.add(section);
 	}
 
-	private void rearrange(Section section) {
-		if (sameUpStation(section.getUpStation())) {
-			Section upSection = sectionByUpStation(section.getUpStation());
-			upSection.updateUpStation(section.getDownStation(), section.getDistance());
-		}
-		if (sameDownStation(section.getDownStation())) {
-			Section downSection = sectionByDownStation(section.getDownStation());
-			downSection.updateDownStation(section.getUpStation(), section.getDistance());
-		}
-	}
-
-	private boolean sameUpStation(Station upStation) {
-		return allUpStations().contains(upStation);
-	}
-
-	private boolean sameDownStation(Station downStation) {
-		return allDownStations().contains(downStation);
+	private boolean hasSectionsToRearrange(List<Section> sectionsToRearrange) {
+		return !sectionsToRearrange.isEmpty();
 	}
 
 	private void validateAddSection(Section section) {

@@ -48,8 +48,8 @@ public class Distance {
 		return Objects.hash(value);
 	}
 
-	public Distance subtract(Integer distance) {
-		return new Distance(this.value - distance);
+	public Distance subtract(Distance distance) {
+		return new Distance(this.value - distance.value);
 	}
 }
 

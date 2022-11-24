@@ -65,7 +65,7 @@ public class Line {
 		return sections.allStations();
 	}
 
-	public void addSection(Section section) {
-		sections.add(section);
+	public void connectSection(Section section, List<Section> sectionsToUpdate) {
+		sections.connect(section, sectionsToUpdate);
 	}
 }
