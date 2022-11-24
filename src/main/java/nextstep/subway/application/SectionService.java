@@ -11,7 +11,6 @@ import java.util.List;
 @Service
 @Transactional
 public class SectionService {
-
     private static final String MESSAGE_CAN_NOT_ADD_SECTION = "구간을 등록하지 못했습니다";
     private final LineService lineService;
     private final LineRepository lineRepository;
@@ -46,7 +45,7 @@ public class SectionService {
 
     public void deleteStation(Long lineId, Long stationId) {
         Line line = lineService.findLineOrThrowException(lineId);
-        Station station = stationRepository.findById(stationId).orElseThrow(() -> new IllegalArgumentException("존재하지 않은 지하철역 입니다"));
+        Station station = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
         line.delete(station);
         lineRepository.save(line);
     }

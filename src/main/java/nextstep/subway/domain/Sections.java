@@ -10,6 +10,9 @@ import java.util.Optional;
 
 @Embeddable
 public class Sections {
+    private static final String MESSAGE_SECTIONS_HAS_NOT_UPPER_STATION = "해당 역을 상행역으로 가지는 구간이 없습니다";
+    private static final String MESSAGE_SECTIONS_HAS_NOT_DOWN_STATION = "해당 역을 하행역으로 가지는 구간이 없습니다";
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -89,7 +92,7 @@ public class Sections {
                 .filter(section ->
                         section.hasUpStation(station))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 역을 상행역으로 가지는 구간이 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_SECTIONS_HAS_NOT_UPPER_STATION));
         this.sections.remove(first);
         return first;
     }
@@ -99,7 +102,7 @@ public class Sections {
                 .filter(section ->
                         section.hasDownStation(station))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("해당 역을 하행역으로 가지는 구간이 없습니다"));
+                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_SECTIONS_HAS_NOT_DOWN_STATION));
         this.sections.remove(first);
         return first;
     }
