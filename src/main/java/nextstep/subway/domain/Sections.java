@@ -15,7 +15,11 @@ import java.util.Set;
 @Embeddable
 public class Sections {
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(
+            fetch = FetchType.LAZY,
+            mappedBy = "line",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     public void add(Section section) {
@@ -27,6 +31,56 @@ public class Sections {
         Section needChangedStation = getNeedChangedStationSection(infixSection);
         needChangedStation.changed(infixSection);
         add(infixSection);
+    }
+
+    public void delete(Station station) {
+        if (isHaveOnlyOneSection()) {
+            throw new InvalidParameterException("단일 구간인 노선은 역을 제거할 수 없습니다.");
+        }
+        List<Section> sectionsContainStation = getSectionsContainStation(station);
+        deleteStation(sectionsContainStation, station);
+    }
+
+    private boolean isHaveOnlyOneSection() {
+        if (sections.size() < 2) {
+            return true;
+        }
+        return false;
+    }
+
+    private void deleteStation(List<Section> sectionsContainStation, Station station) {
+        if (sectionsContainStation.size() == 0) {
+            throw new InvalidParameterException("호선에 존재하지 않는 역은 제거할 수 없습니다.");
+        }
+
+        if (sectionsContainStation.size() == 2) {
+            sections.add(createDeleteSection(sectionsContainStation, station));
+            sections.remove(sectionsContainStation.get(1));
+        }
+        sections.remove(sectionsContainStation.get(0));
+    }
+
+    private Section createDeleteSection(List<Section> sectionsContainStation, Station station) {
+        return sectionsContainStation.get(0).delete(sectionsContainStation.get(1), station);
+    }
+
+    private List<Section> getSectionsContainStation(Station station) {
+        List<Section> sectionsContainStation = new ArrayList<>();
+        for (Section section : sections) {
+            sectionsContainStation.add(getSectionContainStation(section, station));
+            sectionsContainStation.remove(null);
+        }
+        return sectionsContainStation;
+    }
+
+    private Section getSectionContainStation(Section section, Station station) {
+        if (section.getUpStation().equalsById(station)) {
+            return section;
+        }
+        if (section.getDownStation().equalsById(station)) {
+            return section;
+        }
+        return null;
     }
 
     private void checkContainsAllSectionStation(Section infixSection) {
@@ -150,7 +204,5 @@ public class Sections {
         }
         return firstSection;
     }
-
-
 
 }

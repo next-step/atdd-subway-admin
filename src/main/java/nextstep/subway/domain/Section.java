@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.exception.InvalidParameterException;
 
 import javax.persistence.*;
@@ -110,6 +109,17 @@ public class Section {
             return true;
         }
         return false;
+    }
+
+    public Section delete(Section otherSection, Station station) {
+        if (upStation.equals(station)) {
+            upStation = otherSection.upStation;
+        }
+        if (downStation.equals(station)) {
+            downStation = otherSection.downStation;
+        }
+        distance = distance + otherSection.distance;
+        return this;
     }
 
     public Long getId() {
