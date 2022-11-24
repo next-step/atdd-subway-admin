@@ -16,7 +16,7 @@ public class StationRestAssured {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
+                .when().post(RestResource.지하철_역.uri())
                 .then().log().all()
                 .extract();
     }
@@ -24,7 +24,7 @@ public class StationRestAssured {
     public static ExtractableResponse<Response> 지하철_역_목록_조회() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/stations")
+                .when().get(RestResource.지하철_역.uri())
                 .then().log().all()
                 .extract();
     }
@@ -32,7 +32,7 @@ public class StationRestAssured {
     public static ExtractableResponse<Response> 지하철_역_삭제(Long id) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations/{id}", id)
+                .when().delete(RestResource.지하철_역.uri() + "/{id}", id)
                 .then().log().all()
                 .extract();
     }

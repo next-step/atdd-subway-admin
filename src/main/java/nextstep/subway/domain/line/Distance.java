@@ -9,10 +9,10 @@ import javax.persistence.Embeddable;
 public class Distance {
 
     @Column
-    private int distance;
+    private final int distance;
 
     protected Distance() {
-
+        this(1);
     }
 
     public Distance(int distance) {

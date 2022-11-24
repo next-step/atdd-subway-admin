@@ -11,10 +11,10 @@ import java.util.Objects;
 public class StationName {
 
     @Column(unique = true)
-    private String name;
+    private final String name;
 
     protected StationName() {
-
+        this("none");
     }
 
     public StationName(String name) {

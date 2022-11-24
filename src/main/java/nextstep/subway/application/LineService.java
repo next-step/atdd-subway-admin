@@ -28,10 +28,15 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineCreateRequest request) {
-        Line line = lineRepository.save(request.toLineEntity());
+        Line line = lineRepository.save(mapToLine(request));
+        return LineResponse.of(line);
+    }
+
+    private Line mapToLine(LineCreateRequest request) {
+        Line line = request.toLineEntity();
         line.toUpStation(stationService.findById(request.getUpStationId()));
         line.toDownStation(stationService.findById(request.getDownStationId()));
-        return LineResponse.of(line);
+        return line;
     }
 
     @Transactional

@@ -11,10 +11,10 @@ import java.util.Objects;
 public class LineName {
 
     @Column(length = 6, nullable = false, unique = true)
-    private String name;
+    private final String name;
 
     protected LineName() {
-
+        this("none");
     }
 
     public LineName(String name) {

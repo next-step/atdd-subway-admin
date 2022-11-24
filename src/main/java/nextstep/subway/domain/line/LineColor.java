@@ -8,10 +8,10 @@ import java.util.Objects;
 public class LineColor {
 
     @Column
-    private String color;
+    private final String color;
 
     protected LineColor() {
-
+        this("");
     }
 
     public LineColor(String color) {
