@@ -1,10 +1,13 @@
 package nextstep.subway.application;
 
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.SectionOrderComparator;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
+import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionCreateRequest;
@@ -26,6 +29,8 @@ public class LineService {
 
     private SectionRepository sectionRepository;
 
+    private SectionOrderComparator sectionOrderComparator = new SectionOrderComparator();
+
     public LineService(LineRepository lineRepository, StationService stationService,
             SectionRepository sectionRepository) {
         this.lineRepository = lineRepository;
@@ -34,24 +39,28 @@ public class LineService {
     }
 
     @Transactional(isolation = READ_COMMITTED)
-    public LineResponse create(Line line) {
-        line.initSectionLineUp(new Section(line));
+    public LineResponse create(LineCreateRequest request) {
+        Line line = request.toLine();
+        line.addSection(new Section(
+                request.getUpStationId(), request.getDownStationId(), new Distance(request.getDistance()), line));
         final Line resultLine = lineRepository.save(line);
-        List<Station> stations = findStations(line);
+        List<Station> stations = findStations(line.getStationIdsInOrder(sectionOrderComparator));
         return LineResponse.fromLineStations(resultLine, stations);
     }
 
     @Transactional(readOnly = true)
     public List<LineResponse> findList() {
         return lineRepository.findAll().stream()
-                .map(line -> LineResponse.fromLineStations(line, findStations(line)))
+                .map(line -> LineResponse.fromLineStations(line,
+                        findStations(line.getStationIdsInOrder(sectionOrderComparator))))
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public Optional<LineResponse> find(long id) {
         return lineRepository.findById(id)
-                .map(line -> LineResponse.fromLineStations(line, findStations(line)));
+                .map(line -> LineResponse.fromLineStations(line,
+                        findStations(line.getStationIdsInOrder(sectionOrderComparator))));
     }
 
     @Transactional(isolation = READ_COMMITTED)
@@ -62,22 +71,15 @@ public class LineService {
                 .updateColor(request.getColor());
     }
 
-    private List<Station> findStations(Line line) {
-        return stationService.findAllById(line.getStationIds());
-    }
-
     @Transactional(isolation = READ_COMMITTED)
     public SectionCreateResponse createSection(long id, SectionCreateRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("요청한 노선을 찾을 수 없습니다. 노선ID:" + id));
         line.addSection(request.toSection(line));
-        refreshDistance(line);
-        return SectionCreateResponse.of(line, line.getSectionList());
+        return SectionCreateResponse.of(line, line.getSectionList(sectionOrderComparator));
     }
 
-    private void refreshDistance(Line line) {
-        line.updateDistance(sectionRepository.findAllByLine(line).stream()
-                .mapToInt(Section::getDistanceIntValue)
-                .sum());
+    private List<Station> findStations(List<Long> stationIds) {
+        return stationService.findAllById(stationIds);
     }
 }
