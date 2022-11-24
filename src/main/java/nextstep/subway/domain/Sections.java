@@ -31,6 +31,14 @@ public class Sections {
         sections.add(section);
     }
 
+    public void remove(Station station) {
+        Section section = findSectionByStation(station);
+        if (isPresentNextStation(station)) {
+            // TODO 이전 다음 봉합시키기
+        }
+        sections.remove(section);
+    }
+
     public List<Station> stationValues() {
         if (sections.isEmpty()) {
             return Arrays.asList();
@@ -92,13 +100,19 @@ public class Sections {
                 .getStation();
     }
 
+    private Section findSectionByStation(Station station) {
+        return sections.stream()
+                .filter(it -> it.getStation().isSame(station))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_NOT_FOUND_NEXT_STATION));
+    }
+
     private Station findFirstStation() {
         return sections.stream()
                 .filter(it -> Objects.isNull(it.getPreStation()))
                 .map(it -> it.getStation())
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_NOT_FOUND_FIRST_STATION));
     }
-
 
     private void validateSection(Section section) {
         if (Objects.isNull(section.getStation())) {
