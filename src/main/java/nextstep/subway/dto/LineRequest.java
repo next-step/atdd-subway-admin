@@ -43,7 +43,7 @@ public class LineRequest {
     }
 
     public Line toLine() {
-        return new Line(name, color, upStationId, downStationId, distance);
+        return new Line(name, color, distance);
     }
 
     public void setName(String name) {
