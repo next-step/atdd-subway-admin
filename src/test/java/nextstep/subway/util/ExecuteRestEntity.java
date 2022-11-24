@@ -22,4 +22,9 @@ public class ExecuteRestEntity {
                 .then().log().all();
     }
 
+    public ValidatableResponse delete(String location) {
+        return RestAssured.given().log().all()
+                .when().delete(location)
+                .then().log().all();
+    }
 }

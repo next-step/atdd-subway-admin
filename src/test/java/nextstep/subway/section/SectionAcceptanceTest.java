@@ -198,6 +198,90 @@ public class SectionAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * Given 노선을 생성하고
+     * When 노선 내의 역을 제거하면
+     * Then 정상적으로 삭제되고
+     * Then 노선내 역의 개수가 한개 감소한다.
+     */
+    @DisplayName("종점을 제거한다.")
+    @Test
+    void deleteSideStation() {
+        // given
+        Line line = createLine("1호선");
+        addedSections(line, upStation, mediumStation, 5);
+        addedSections(line, mediumStation, downStation, 7);
+
+        // when
+        deleteSectionSuccess(line.getId(), upStation.getId());
+
+        // then
+        checkSectionStationSize(line.getId(), 2);
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When 노선 내의 역을 제거하면
+     * Then 정상적으로 삭제되고
+     * Then 노선내 역의 개수가 한개 감소하고
+     * Then 구간의 거리가 변경된다.
+     */
+    @DisplayName("가운데 역을 제거한다.")
+    @Test
+    void deleteInsideStation() {
+        // given
+        Line line = createLine("1호선");
+        Section preSection = addedSections(line, upStation, mediumStation, 5);
+        Section postSection = addedSections(line, mediumStation, downStation, 7);
+
+        // when
+        deleteSectionSuccess(line.getId(), mediumStation.getId());
+
+        // then
+        checkSectionStationSize(line.getId(), 2);
+        checkSectionDistance(preSection.getId(), preSection.getDistance() + postSection.getDistance());
+
+    }
+
+    /**
+     * Given 구간이 하나인 노선을 생성하고
+     * When 노선 내의 역을 제거하면
+     * Then 정상적으로 제거되지 않는다.
+     */
+    @DisplayName("구간이 하나인 노선에서 역을 제거할 수 없다.")
+    @Test
+    void deleteFailSingleStation() {
+        // given
+        Line line = createLine("1호선");
+        addedSections(line, upStation, downStation, 5);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), upStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 노선을 생성하고
+     * When 노선 내에 존재하지 않는 역을 제거하면
+     * Then 정상적으로 제거되지 않는다.
+     */
+    @DisplayName("노선에 존재하지 않는 역을 제거할 수 없다.")
+    @Test
+    void deleteFailNoneStation() {
+        // given
+        Line line = createLine("1호선");
+        addedSections(line, upStation, mediumStation, 5);
+        addedSections(line, mediumStation, downStation, 7);
+
+        // when
+        ExtractableResponse<Response> response = deleteSection(line.getId(), newStation.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private Line createLine(String name) {
         return initializationEntity.createLine(name);
     }
@@ -207,6 +291,11 @@ public class SectionAcceptanceTest {
                 "/lines/" + id + "/sections",
                 sectionExecuteRestEntity.generateSectionRequest(
                         upStation.getId(), downStation.getId(), distance));
+    }
+
+    private void deleteSectionSuccess(Long lineId, Long stationId) {
+        sectionExecuteRestEntity.deleteSectionSuccess(
+                "/lines/" + lineId + "/sections?stationId=" + stationId);
     }
 
     private Section addedSections(Line line, Station upStation, Station downStation, int distance) {
@@ -240,6 +329,11 @@ public class SectionAcceptanceTest {
                 .insert(sectionExecuteRestEntity.generateSectionRequest(
                         upStation.getId(), downStationId, distance),
                         "/lines/" + id + "/sections").extract();
+    }
+
+    private ExtractableResponse<Response> deleteSection(Long lineId, Long stationId) {
+        return executeRestEntity
+                .delete("/lines/" + lineId + "/sections?stationId=" + stationId).extract();
     }
 
 }

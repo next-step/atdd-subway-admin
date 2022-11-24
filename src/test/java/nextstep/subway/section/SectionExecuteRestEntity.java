@@ -31,4 +31,9 @@ public class SectionExecuteRestEntity {
         return new SectionRequest(upStationId, downStationId, distance);
     }
 
+    public ExtractableResponse<Response> deleteSectionSuccess(String location) {
+        ExtractableResponse<Response> response = executeRestEntity.delete(location).extract();
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        return response;
+    }
 }
