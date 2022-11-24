@@ -178,7 +178,7 @@ public class SectionAcceptanceTest {
         return 구간생성을_요청한다(lineId, 상행역_식별자, 하행역_식별자, 구간거리);
     }
 
-    private static ExtractableResponse<Response> 구간생성을_요청한다(Long lineId, Long 상행역_식별자, Long 하행역_식별자, long 구간거리) {
+    public static ExtractableResponse<Response> 구간생성을_요청한다(Long lineId, Long 상행역_식별자, Long 하행역_식별자, long 구간거리) {
         HashMap<Object, Object> params = new HashMap<>();
         params.put("downStationId", 하행역_식별자);
         params.put("upStationId", 상행역_식별자);
@@ -215,7 +215,7 @@ public class SectionAcceptanceTest {
         assertStatus(response, HttpStatus.CREATED);
     }
 
-    private ExtractableResponse<Response> 상행역에서_시작하는_구간을_추가한다(Long lineId, StationResponse 상행역, String 신규역, long distance) {
+    public static ExtractableResponse<Response> 상행역에서_시작하는_구간을_추가한다(Long lineId, StationResponse 상행역, String 신규역, long distance) {
         StationResponse response = 지하철역을_생성한다(신규역).as(StationResponse.class);
         return 구간생성을_요청한다(lineId, 상행역.getId(), response.getId(), distance);
     }
