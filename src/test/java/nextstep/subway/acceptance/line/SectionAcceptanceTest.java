@@ -135,6 +135,16 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다")
+    void dupicate_fail() {
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역_ID, 강남역_ID, 논현역_강남역_거리);
+
+        지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(신논현역_ID, 강남역_ID, 신논현역_강남역_거리));
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(논현역_ID, 신논현역_ID, 논현역_신논현역_거리));
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     private Map<String, String> createSectionCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");
