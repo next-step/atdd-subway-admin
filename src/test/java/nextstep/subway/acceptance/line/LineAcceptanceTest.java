@@ -24,7 +24,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     private Long 역삼역_ID;
 
     @BeforeEach
-    public void stationSetUp() {
+    public void setUp() {
+        super.setUp();
         논현역_ID = 지하철역_생성(NONHYUN_STATION).jsonPath().getLong("id");
         신논현역_ID = 지하철역_생성(SHINNONHYUN_STATION).jsonPath().getLong("id");
         강남역_ID = 지하철역_생성(GANGNAM_STATION).jsonPath().getLong("id");

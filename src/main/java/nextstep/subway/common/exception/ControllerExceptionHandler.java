@@ -13,4 +13,9 @@ public class ControllerExceptionHandler {
     public ResponseEntity<String> handleEntityNotFoundException() {
         return ResponseEntity.notFound().build();
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Void> handleIllegalArgsException(IllegalArgumentException e) {
+        return ResponseEntity.badRequest().build();
+    }
 }
