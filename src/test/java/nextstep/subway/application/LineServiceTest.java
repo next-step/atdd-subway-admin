@@ -15,6 +15,7 @@ import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.SectionResponse;
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -115,7 +116,7 @@ class LineServiceTest {
         assertThat(response.getDistances()).containsExactly(5, 4, 6, 7);
     }
 
-    @DisplayName("한 노선에 두개의 구간이 등록 된 상태에서 가장 마지막역을 제거하는 경우")
+    @DisplayName("한 노선에 두개의 구간이 등록 된 상태에서 가장 마지막역을 제거하는 경우 앞구간만 남는다")
     @Test
     void deleteLastSectionsAndDownStation() {
         Long lineId = lineService.saveLine(lineRequest);
@@ -129,7 +130,7 @@ class LineServiceTest {
         assertThat(response.getStationNames()).containsExactly("경기 광주역", "모란역");
     }
 
-    @DisplayName("한 노선에 두개의 구간이 등록 된 상태에서 가운데 역을 제거하는 경우")
+    @DisplayName("한 노선에 두개의 구간이 등록 된 상태에서 가운데 역을 제거하는 경우 하나의 구간으로 합쳐진다")
     @Test
     void deleteBetweenStationOfSections() {
         Long lineId = lineService.saveLine(lineRequest);
@@ -151,20 +152,36 @@ class LineServiceTest {
         Station station4 = stationRepository.save(new Station("미금역"));
         lineService.addSection(lineId, new SectionRequest(station1.getId(), station3.getId(), 4));
 
+        ThrowingCallable deleteNotExistStation = () -> lineService
+                .deleteSectionByStationId(lineId, station4.getId());
+
         assertThatExceptionOfType(EntityNotFoundException.class)
-                .isThrownBy(() -> lineService.deleteSectionByStationId(lineId, station4.getId()));
+                .isThrownBy(deleteNotExistStation);
     }
 
-    @DisplayName("구간이 하나인 노선의 상행 혹은 하행에 해당하는 역을 제거하려 하면 EX 발생")
+    @DisplayName("구간이 하나인 노선의 하행에 해당하는 역을 제거하려 하면 EX 발생")
     @Test
-    void deleteStationOfOneSectionThenThrow() {
+    void deleteDownStationOfOneSectionThenThrow() {
         Long lineId = lineService.saveLine(lineRequest);
 
+        ThrowingCallable deleteDownStationOfOneSection = () -> lineService
+                .deleteSectionByStationId(lineId, station2.getId());
+
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> lineService.deleteSectionByStationId(lineId, station1.getId()))
+                .isThrownBy(deleteDownStationOfOneSection)
                 .withMessageContaining("구간이 하나인 노선은 제거할 수 없습니다.");
+    }
+
+    @DisplayName("구간이 하나인 노선의 상행역을 제거하려 하면 EX 발생")
+    @Test
+    void deleteUpStationOfOneSectionThenThrow() {
+        Long lineId = lineService.saveLine(lineRequest);
+
+        ThrowingCallable deleteUpStationOfOneSection = () -> lineService
+                .deleteSectionByStationId(lineId, station1.getId());
+
         assertThatIllegalArgumentException()
-                .isThrownBy(() -> lineService.deleteSectionByStationId(lineId, station2.getId()))
+                .isThrownBy(deleteUpStationOfOneSection)
                 .withMessageContaining("구간이 하나인 노선은 제거할 수 없습니다.");
     }
 
