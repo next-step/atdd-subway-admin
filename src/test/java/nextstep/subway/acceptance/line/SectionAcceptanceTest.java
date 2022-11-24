@@ -27,6 +27,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private Long 신논현역_ID;
     private Long 강남역_ID;
     private Long 역삼역_ID;
+    private Long 선릉역_ID;
 
     @BeforeEach
     public void setUp() {
@@ -35,6 +36,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         신논현역_ID = 지하철역_생성(SHINNONHYUN_STATION).jsonPath().getLong("id");
         강남역_ID = 지하철역_생성(GANGNAM_STATION).jsonPath().getLong("id");
         역삼역_ID = 지하철역_생성(YUKSAM_STATION).jsonPath().getLong("id");
+        선릉역_ID = 지하철역_생성(SEOLLEUNG_STATION).jsonPath().getLong("id");
     }
 
     /**
@@ -115,6 +117,21 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(신논현역_ID, 강남역_ID, 10));
 
         //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철 노선이 생성되어 있다.
+     * When 기존의 역에 존재하지 않는 구간을 추가한다.
+     * Then 구간 추가에 실패한다.
+     */
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다")
+    void addSection_fail_none() {
+
+        ExtractableResponse<Response> createLineResponse = 지하철_노선_생성_요청(신분당선_이름, 신분당선_색상, 논현역_ID, 강남역_ID, 논현역_강남역_거리);
+
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_생성_요청(createLineResponse.jsonPath().getLong("id"), createSectionCreateParams(역삼역_ID, 선릉역_ID, 역삼역_선릉역_거리));
+
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
