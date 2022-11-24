@@ -1,6 +1,13 @@
 package nextstep.subway.section;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
+import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
+import nextstep.subway.line.LineAcceptanceTest;
+import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +43,27 @@ public class SectionAcceptanceTest {
     @DisplayName("노선에 첫 신규 구간을 등록한다.")
     @Test
     void 지하철_노선_첫_구간_생성_테스트() {
+        // given
+        StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
+        StationResponse 합정역 = StationAcceptanceTest.createStation("합정역").as(StationResponse.class);
 
+        LineRequest lineRequest = new LineRequest("2호선", "bg-greem-600", 당산역.getId(), 합정역.getId(), 10);
+        ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
+        LineResponse 이호선 = response.as(LineResponse.class);
+
+        // when
+        SectionRequest section = new SectionRequest(당산역.getId(), 합정역.getId(), 10);
+        ExtractableResponse<Response> addSectionResponse = addSection(response.header("Location"), section);
+        List<SectionResponse> responses = addSectionResponse.jsonPath().getList(".", SectionResponse.class);
+
+        // then
+        assertAll(
+                () -> assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(responses).hasSize(3),
+                () -> assertThat(responses.get(1).getLineId()).isEqualTo(이호선.getId()),
+                () -> assertThat(responses.get(1).getUpStationId()).isEqualTo(당산역.getId()),
+                () -> assertThat(responses.get(1).getDownStationId()).isEqualTo(합정역.getId())
+        );
     }
 
     /**
@@ -115,5 +142,4 @@ public class SectionAcceptanceTest {
     void 기존에_등록되지_않은_상하행역_등록_테스트() {
 
     }
-
 }
