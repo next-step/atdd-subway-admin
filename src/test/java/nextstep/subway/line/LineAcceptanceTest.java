@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
@@ -17,6 +18,7 @@ import org.springframework.http.MediaType;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
@@ -107,6 +109,38 @@ public class LineAcceptanceTest {
 
         // then
         assertThat(name).isEqualTo("신분당선");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 생성한 지하철 노선을 수정하면
+     * Then 해당 지하철 노선 정보는 수정된다
+     */
+    @Test
+    void 지하철_노선_수정() {
+        // given
+        Station upStation = createStation("강남역");
+        Station downStation = createStation("논현역");
+        Section section = createSection(10, upStation, downStation);
+        Long id = createLine("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+
+        // when
+        String name = "신분당손";
+        String color = "무지개색";
+        LineRequest lineRequest = new LineRequest(name, color, section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+
+        JsonPath jsonPath = RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .body(lineRequest)
+                .when().put("/lines/{id}", id)
+                .then().log().all()
+                .extract().jsonPath();
+
+        // then
+        assertAll(
+                () -> assertThat(jsonPath.getString("name")).isEqualTo(name),
+                () -> assertThat(jsonPath.getString("color")).isEqualTo(color)
+        );
     }
 
     private Section createSection(int distance, Station upStation, Station downStation) {
