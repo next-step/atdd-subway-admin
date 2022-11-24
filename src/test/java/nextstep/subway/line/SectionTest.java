@@ -23,6 +23,6 @@ class SectionTest {
     @DisplayName("구간 생성")
     @Test
     void constructor() {
-        assertThatNoException().isThrownBy(() -> new Section(신분당선(), StationFixtrue.논현역(), StationFixtrue.신논현역(), new Distance(논현역_신논현역_거리)));
+        assertThatNoException().isThrownBy(() -> new Section(신분당선(), StationFixtrue.논현역(), StationFixtrue.신논현역(), 논현역_신논현역_거리));
     }
 }

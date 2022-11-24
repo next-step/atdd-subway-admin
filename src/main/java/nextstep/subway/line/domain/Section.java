@@ -36,11 +36,11 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Line line, Station upStation, Station downStation, Distance distance) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
+        this.distance = new Distance(distance);
     }
 
     public Station getUpStation() {

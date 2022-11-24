@@ -19,36 +19,86 @@ public class Sections {
 
     public void add(Section addSection) {
         if (size() >= 1) {
-            validateSection(addSection);
-            validateContainsSection(addSection);
-            if (isSameUpStation(addSection.getUpStation())) {
-                if (existUpStationDistance(addSection.getUpStation()).compareTo(addSection.getDistance()) <= 0) {
-                    throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
-                }
-                for (int i = 0; i < this.sections.size(); i++) {
-                    if (this.sections.get(i).getUpStation().equals(addSection.getUpStation())) {
-                        Section existSection = this.sections.get(i);
-                        this.sections.remove(this.sections.get(i));
-                        this.sections.add(new Section(addSection.getLine(), addSection.getDownStation(), existSection.getDownStation(), new Distance(existSection.getDistance().getDistance() - addSection.getDistance().getDistance())));
-                    }
-                }
-            } else if (isSameDownStation(addSection.getDownStation())) {
-                if (existDownStationDistance(addSection.getDownStation()).compareTo(addSection.getDistance()) <= 0) {
-                    throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
-                }
-                for (int i = 0; i < this.sections.size(); i++) {
-                    if (this.sections.get(i).getDownStation().equals(addSection.getDownStation())) {
-                        Section existSection = this.sections.get(i);
-                        this.sections.remove(this.sections.get(i));
-                        this.sections.add(new Section(addSection.getLine(), existSection.getUpStation(), addSection.getUpStation(), new Distance(existSection.getDistance().getDistance() - addSection.getDistance().getDistance())));
-                    }
-                }
-            }
+            validateStations(addSection);
+            addSplitSection(addSection);
         }
         this.sections.add(addSection);
     }
 
-    private void validateContainsSection(Section section) {
+    private void addSplitSection(Section addSection) {
+        if (isSameUpStation(addSection.getUpStation())) {
+            addDownSection(addSection);
+        }
+        if (isSameDownStation(addSection.getDownStation())) {
+            addUpSection(addSection);
+        }
+    }
+
+    private void addUpSection(Section addSection) {
+        if (existDownStationDistance(addSection.getDownStation()).compareTo(addSection.getDistance()) <= 0) {
+            throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
+        }
+//        removeDownStationSection(addSection);
+        for (int i = 0; i < this.sections.size(); i++) {
+            if (this.sections.get(i).getDownStation().equals(addSection.getDownStation())) {
+                Section existSection = this.sections.get(i);
+                this.sections.remove(this.sections.get(i));
+                Station upStation = existSection.getUpStation();
+                Station downStation = addSection.getUpStation();
+                Section section = new Section(addSection.getLine(), upStation, downStation, existSection.getDistance().getDistance() - addSection.getDistance().getDistance());
+                this.sections.add(section);
+            }
+        }
+    }
+
+    private void removeDownStationSection(Section addSection) {
+        for (int i = 0; i < this.sections.size(); i++) {
+            if (this.sections.get(i).getDownStation().equals(addSection.getDownStation())) {
+
+            }
+        }
+    }
+
+    private void addDownSection(Section addSection) {
+        if (existUpStationDistance(addSection.getUpStation()).compareTo(addSection.getDistance()) <= 0) {
+            throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
+        }
+//        removeUpStationSection(addSection);
+        Section downSection = createDownSection(addSection);
+        this.sections.add(downSection);
+    }
+
+    private Section createDownSection(Section addSection) {
+        for (int i = 0; i < this.sections.size(); i++) {
+            if (this.sections.get(i).getUpStation().equals(addSection.getUpStation())) {
+                Section existSection = this.sections.get(i);
+                this.sections.remove(this.sections.get(i));
+                return new Section(addSection.getLine(), addSection.getDownStation(), existSection.getDownStation(), existSection.getDistance().getDistance() - addSection.getDistance().getDistance());
+            }
+        }
+
+//        for (Section section : this.sections) {
+//            if (section.isUpStation(addSection.getUpStation())) {
+//                return new Section(addSection.getLine(), addSection.getDownStation(), section.getDownStation(), section.getDistance().getDistance() - addSection.getDistance().getDistance());
+//            }
+//        }
+        throw new IllegalArgumentException();
+    }
+
+    private void removeUpStationSection(Section addSection) {
+        for (int i = 0; i < this.sections.size(); i++) {
+            if (this.sections.get(i).getUpStation().equals(addSection.getUpStation())) {
+                this.sections.remove(this.sections.get(i));
+            }
+        }
+    }
+
+    private void validateStations(Section addSection) {
+        validateExistsAllStations(addSection);
+        validateNotExistsAllStations(addSection);
+    }
+
+    private void validateNotExistsAllStations(Section section) {
         if (!isContainUpStation(section) && !isContainDownStation(section)) {
             throw new IllegalArgumentException(SECTION_CONTAINS_EXCEPTION_MESSAGE);
         }
@@ -90,7 +140,7 @@ public class Sections {
                 .anyMatch(section -> section.isDownStation(downStation));
     }
 
-    private void validateSection(Section section) {
+    private void validateExistsAllStations(Section section) {
         if (getStations().contains(section.getUpStation()) && getStations().contains(section.getDownStation())) {
             throw new IllegalArgumentException(SECTION_DUPLICATE_EXCEPTION_MESSAGE);
         }
