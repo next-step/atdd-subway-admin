@@ -36,16 +36,16 @@ public class Sections {
 		return sections;
 	}
 
-	public List<Station> allUpStations() {
+	private List<Station> allUpStations() {
 		return this.sections.stream()
 			.map(Section::getUpStation)
-			.collect(Collectors.toList());
+			.collect(Collectors.toCollection(LinkedList::new));
 	}
 
-	public List<Station> allDownStations() {
+	private List<Station> allDownStations() {
 		return this.sections.stream()
 			.map(Section::getDownStation)
-			.collect(Collectors.toList());
+			.collect(Collectors.toCollection(LinkedList::new));
 	}
 
 	public List<Station> allStations() {
@@ -75,13 +75,13 @@ public class Sections {
 
 	public Station firstUpStation() {
 		List<Station> stations = allUpStations();
-		stations.removeAll(allDownStations());
+		stations.removeIf(station -> allDownStations().contains(station));
 		return stations.get(0);
 	}
 
 	public Station lastDownStation() {
 		List<Station> stations = allDownStations();
-		stations.removeAll(allUpStations());
+		stations.removeIf(station -> allUpStations().contains(station));
 		return stations.get(0);
 	}
 

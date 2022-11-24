@@ -85,19 +85,19 @@ public class LineService {
 	public LineResponse addSection(Long lineId, SectionCreateRequest request) {
 		Line line = findById(lineId);
 
-		Station upStation = upStation(request.getUpStationId());
-		Station downStation = downStation(request.getDownStationId());
+		Station upStation = findUpStation(request.getUpStationId());
+		Station downStation = findDownStation(request.getDownStationId());
 
 		Section section = new Section(line, upStation , downStation, request.getDistance());
 		line.addSection(section);
 		return lineResponse(line);
 	}
 
-	private Station upStation(Long upStationId) {
+	private Station findUpStation(Long upStationId) {
 		return stationService.findById(upStationId);
 	}
 
-	private Station downStation(Long downStationId) {
+	private Station findDownStation(Long downStationId) {
 		return stationService.findById(downStationId);
 	}
 }
