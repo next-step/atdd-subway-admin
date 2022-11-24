@@ -29,10 +29,14 @@ public class Section {
     @AttributeOverride(name = "distance", column = @Column(name = "distance"))
     private Distance distance;
 
+    @Embedded
+    @AttributeOverride(name = "order", column = @Column(name = "sectionOrder"))
+    private Order order;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Line line;
 
-    public Section(long downStationId, long upStationId, Distance distance, Line line) {
+    public Section(long upStationId, long downStationId, Distance distance, Line line) {
         validSameStationId(downStationId, upStationId);
         this.downStationId = downStationId;
         this.upStationId = upStationId;
@@ -40,11 +44,12 @@ public class Section {
         this.line = line;
     }
 
-    public Section(Line line) {
-        validSameStationId(line.getDownStationId(), line.getUpStationId());
-        this.downStationId = line.getDownStationId();
-        this.upStationId = line.getUpStationId();
-        this.distance = line.getDistance();
+    public Section(long upStationId, long downStationId, Distance distance, Order order, Line line) {
+        validSameStationId(downStationId, upStationId);
+        this.downStationId = downStationId;
+        this.upStationId = upStationId;
+        this.distance = distance;
+        this.order = order;
         this.line = line;
     }
 
@@ -74,7 +79,6 @@ public class Section {
 
     public void registerLine(Line line) {
         this.line = line;
-        refreshDownUp();
     }
 
     public boolean isKnownSection(Section section) {
@@ -96,16 +100,12 @@ public class Section {
         return this.downStationId == downStationId;
     }
 
+    public boolean isSameDownStation(Section section) {
+        return this.downStationId == section.downStationId;
+    }
+
     public boolean isSameUpStation(Section section) {
         return this.upStationId == section.getUpStationId();
-    }
-
-    public boolean isSameDownStation(Section section) {
-        return this.downStationId == section.getDownStationId();
-    }
-
-    public boolean distanceEquealsOrGreaterThan(Section streamSection) {
-        return this.distance.equalsOrGreaterThan(streamSection.getDistance());
     }
 
     public void updateDistance(Distance distance) {
@@ -120,9 +120,36 @@ public class Section {
         this.upStationId = stationId;
     }
 
-    private void refreshDownUp() {
-        line.updateUpstationId(this.downStationId);
-        line.updateDownStationId(this.upStationId);
+    public boolean equalsOrder(Section section) {
+        return this.order.equals(section.order);
+    }
+
+    public boolean isPreOrder(Section section) {
+        return this.order.isPreOrder(section.order);
+    }
+
+    public boolean isEqualsOrPreOrder(Section section) {
+        return this.order.isEqualsOrPreOrder(section.order);
+    }
+
+    public boolean isEqualsOrLastOrder(Section section) {
+        return this.order.isEqualsOrLastOrder(section.order);
+    }
+
+    public int getOrderNumber() {
+        return this.order.getOrder();
+    }
+
+    public Order getOrder() {
+        return order;
+    }
+
+    public void updateOrder(Order order) {
+        this.order = order;
+    }
+
+    public void plusOrder() {
+        this.order = order.plusOne();
     }
 
     private void validSameStationId(long downStationId, long upStationId) {
