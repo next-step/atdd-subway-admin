@@ -3,9 +3,7 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.*;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.utils.DatabaseCleanup;
@@ -15,6 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -26,7 +31,7 @@ public class SectionAcceptanceTest {
     @Autowired
     DatabaseCleanup databaseCleanup;
 
-    private static final String BASE_URL = "/lines";
+    private static final String BASE_URL = "/sections";
 
     @BeforeEach
     public void setUp() {
@@ -47,7 +52,7 @@ public class SectionAcceptanceTest {
         StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
         StationResponse 합정역 = StationAcceptanceTest.createStation("합정역").as(StationResponse.class);
 
-        LineRequest lineRequest = new LineRequest("2호선", "bg-greem-600", 당산역.getId(), 합정역.getId(), 10);
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 합정역.getId(), 10);
         ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
         LineResponse 이호선 = response.as(LineResponse.class);
 
@@ -141,5 +146,18 @@ public class SectionAcceptanceTest {
     @Test
     void 기존에_등록되지_않은_상하행역_등록_테스트() {
 
+    }
+
+    private ExtractableResponse<Response> addSection(String location, SectionRequest sectionRequest) {
+        
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .body(sectionRequest)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().post(location + BASE_URL)
+                        .then().log().all()
+                        .extract();
+
+        return response;
     }
 }
