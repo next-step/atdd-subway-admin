@@ -33,7 +33,7 @@ public class SectionController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})
+    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<Void> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }

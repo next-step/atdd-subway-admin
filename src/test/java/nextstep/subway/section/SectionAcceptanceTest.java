@@ -181,7 +181,7 @@ public class SectionAcceptanceTest {
         createSection(이매역, 경기광주역, "50", 경강선);
 
         // when
-        ExtractableResponse<Response> response = removeSection(경강선, 경기광주역);
+        removeSection(경강선, 경기광주역, HttpStatus.OK);
 
         // then
         List<String> stationNames = LineAcceptanceTestUtil.getLines(Long.valueOf(경강선))
@@ -203,7 +203,7 @@ public class SectionAcceptanceTest {
         createSection(이매역, 경기광주역, "50", 경강선);
 
         // when
-        removeSection(경강선, 이매역);
+        removeSection(경강선, 이매역, HttpStatus.OK);
 
         // then
         List<String> stationNames = LineAcceptanceTestUtil.getLines(Long.valueOf(경강선))
@@ -225,11 +225,42 @@ public class SectionAcceptanceTest {
         createSection(이매역, 경기광주역, "50", 경강선);
 
         // when
-        removeSection(경강선, 판교역);
+        removeSection(경강선, 판교역, HttpStatus.OK);
 
         // then
         List<String> stationNames = LineAcceptanceTestUtil.getLines(Long.valueOf(경강선))
                 .jsonPath().getList("stations.name", String.class);
         assertThat(stationNames).containsExactly("이매역", "경기광주역");
+    }
+
+    /**
+     * Given : 노선에 한 구간만 존재할 때
+     * When : 역을 제거하면,
+     * Then : 예외가 발생한다
+     */
+    @DisplayName("구간이 하나인 노선에서 역을 제거하려고 하는 경우 예외 처리")
+    @Test
+    void 최소구간제거_실패() {
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 이매역, "10")
+                .jsonPath().getString("id");
+
+        // when / then
+        removeSection(경강선, 판교역, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * When : 노선에 없는 역을 제거하려고 할 때,
+     * Then : 예외가 발생한다
+     */
+    @DisplayName("노선에 존재하지 않는 역을 제거하려고 했을 경우 에러")
+    @Test
+    void 노선에_없는_역_제거_실패() {
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 이매역, "10")
+                .jsonPath().getString("id");
+
+        // when / then
+        removeSection(경강선, 경기광주역, HttpStatus.BAD_REQUEST);
     }
 }

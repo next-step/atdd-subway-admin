@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Embeddable
 public class Sections {
@@ -10,16 +11,20 @@ public class Sections {
     private static final String EXCEPTION_MESSAGE_FOR_NOT_FOUND_NEXT_STATION = "다음 구간이 없습니다.";
     private static final String EXCEPTION_MESSAGE_FOR_NOT_FOUND_PRE_STATION = "이전 구간이 없습니다.";
     private static final String EXCEPTION_MESSAGE_FOR_NOT_FOUND_FIRST_STATION = "첫번째 역을 찾을 수 없습니다";
+    private static final int MIN_SIZE_OF_SECTIONS = 3;
+    private static final String EXCEPTION_MESSAGE_FOR_NOT_REMOVABLE_LINE_STATE = "구간은 최소" + (MIN_SIZE_OF_SECTIONS - 2) + "개의 노선을 가지고 있어야 합니다!";
+    private static final String EXCEPTION_MESSAGE_FOR_NOT_EXIST_SECTIONS = "노선에 존재하지 않는 역입니다.";
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_of_line"))
-    private List<Section> sections = new ArrayList<>();
+    private List<Section> sections = new CopyOnWriteArrayList<>();
 
     protected Sections() {
     }
 
     public void add(Section section) {
         validateSection(section);
+
         if (sections.isEmpty()) {
             sections.add(section);
             return;
@@ -33,12 +38,15 @@ public class Sections {
     }
 
     public void remove(Station station) {
-        // TODO validate station
+        validateRemovableStation(station);
+
         Section section = findSection(station);
+
         if (isPresentNextStation(station)) {
             Section nextSection = findNextSection(station);
             nextSection.removeSection(section);
         }
+
         sections.remove(section);
     }
 
@@ -88,6 +96,11 @@ public class Sections {
         return Collections.unmodifiableList(stations);
     }
 
+    private boolean isPresentStation(Station station) {
+        return sections.stream()
+                .anyMatch(it -> it.getStation().isSame(station));
+    }
+
     private boolean isPresentNextStation(Station station) {
         return sections.stream()
                 .filter(it -> !Objects.isNull(it.getPreStation()))
@@ -106,7 +119,7 @@ public class Sections {
         return sections.stream()
                 .filter(it -> it.getStation().isSame(station))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_NOT_FOUND_NEXT_STATION));
+                .orElseThrow(() -> new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_NOT_FOUND_PRE_STATION));
     }
 
     private Section findFirstStation() {
@@ -121,6 +134,15 @@ public class Sections {
         }
         if (sections.contains(section)) {
             throw new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_DUPLICATE_STATIONS);
+        }
+    }
+
+    private void validateRemovableStation(Station station) {
+        if (sections.size() < MIN_SIZE_OF_SECTIONS) {
+            throw new IllegalStateException(EXCEPTION_MESSAGE_FOR_NOT_REMOVABLE_LINE_STATE);
+        }
+        if (!isPresentStation(station)) {
+            throw new IllegalArgumentException(EXCEPTION_MESSAGE_FOR_NOT_EXIST_SECTIONS);
         }
     }
 }

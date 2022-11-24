@@ -23,8 +23,8 @@ public class SectionAcceptanceTestUtil {
         return postWithPathValue(params, REQUEST_PATH_FOR_SECTION, lineId, MediaType.APPLICATION_JSON_VALUE);
     }
 
-    public static ExtractableResponse<Response> removeSection(String lineId, String stationId) {
-        return delete(REQUEST_PATH_FOR_SECTION + "?stationId={stationId}", lineId, stationId, HttpStatus.OK);
+    public static ExtractableResponse<Response> removeSection(String lineId, String stationId, HttpStatus status) {
+        return delete(REQUEST_PATH_FOR_SECTION + "?stationId={stationId}", lineId, stationId, status);
     }
 
     private static Map<String, String> getParams(String upStationId, String downStationId, String distance) {
