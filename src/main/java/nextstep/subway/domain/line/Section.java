@@ -19,7 +19,7 @@ import nextstep.subway.exception.InvalidSectionAddException;
 @Entity
 public class Section {
 
-	private static final String INVALIDE_SECTION_DISTANCE_MESSAGE = "구간의 거리는 0 이하일 수 없습니다.";
+	private static final String INVALID_SECTION_DISTANCE_MESSAGE = "구간의 거리는 0 이하일 수 없습니다.";
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
@@ -52,7 +52,7 @@ public class Section {
 
 	private static void validate(Integer distance) {
 		if (distance <= 0) {
-			throw new InvalidSectionAddException(INVALIDE_SECTION_DISTANCE_MESSAGE);
+			throw new InvalidSectionAddException(INVALID_SECTION_DISTANCE_MESSAGE);
 		}
 	}
 
