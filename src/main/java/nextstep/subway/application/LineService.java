@@ -30,7 +30,7 @@ public class LineService {
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
-        LineResponse lineResponse = getLineResponseWithStations(persistLine);
+        LineResponse lineResponse = LineResponse.of(persistLine);
         return lineResponse;
     }
 
@@ -38,7 +38,7 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> getLineResponseWithStations(line))
+                .map(line -> LineResponse.of(line))
                 .collect(Collectors.toList());
     }
 
@@ -46,7 +46,7 @@ public class LineService {
         Line line = lineRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION));
-        return getLineResponseWithStations(line);
+        return LineResponse.of(line);
     }
 
     @Transactional
@@ -64,19 +64,6 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION));
         Line persistLine = line.of(lineRequest);
 
-        return getLineResponseWithStations(persistLine);
-    }
-
-    private LineResponse getLineResponseWithStations(Line line) {
-        List<StationResponse> stations = new ArrayList<>();
-
-        stations.add(StationResponse.of(stationRepository
-                .findById(line.getUpStationId())
-                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION))));
-        stations.add(StationResponse.of(stationRepository
-                .findById(line.getDownStationId())
-                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION))));
-
-        return LineResponse.of(line).setStations(stations);
+        return LineResponse.of(persistLine);
     }
 }
