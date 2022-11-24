@@ -81,3 +81,6 @@
 * [x] isFindSameStation 변수 제거
 * [x] 종점에 대한 판단로직 다시 작성
 * [x] sortNo 의 사용 대신 정렬순서 해결해보기
+### 4단계 - 리뷰2
+* [ ] LineService 의 findResponseById() 에도 역의 순서대로 노출되도록 적용
+* [ ] LineServiceTest 에 given / when / then 적용
