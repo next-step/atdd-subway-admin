@@ -9,24 +9,20 @@ import java.util.stream.Collectors;
 public class SectionCreateResponse {
 
     private long lineId;
-    private long lineUpStationId;
-    private long lineDownStationId;
-
-    private int lineDistance;
+    private String lineName;
+    private String lineColor;
     private List<SectionResponse> sectionResponseList;
 
-    private SectionCreateResponse(long lineId, long lineUpStationId, long lineDownStationId, int lineDistance,
+    private SectionCreateResponse(long lineId, String lineName, String lineColor,
             List<SectionResponse> sectionResponseList) {
         this.lineId = lineId;
-        this.lineUpStationId = lineUpStationId;
-        this.lineDownStationId = lineDownStationId;
-        this.lineDistance = lineDistance;
+        this.lineName = lineName;
+        this.lineColor = lineColor;
         this.sectionResponseList = sectionResponseList;
     }
 
     public static SectionCreateResponse of(Line line, List<Section> sectionList) {
-        return new SectionCreateResponse(line.getId(), line.getUpStationId(), line.getDownStationId(),
-                line.getDistanceIntValue(),
+        return new SectionCreateResponse(line.getId(), line.getNameString(), line.getColorString(),
                 sectionList.stream()
                         .map(SectionResponse::from)
                         .collect(Collectors.toList()));
@@ -36,16 +32,12 @@ public class SectionCreateResponse {
         return lineId;
     }
 
-    public long getLineUpStationId() {
-        return lineUpStationId;
+    public String getLineName() {
+        return lineName;
     }
 
-    public long getLineDownStationId() {
-        return lineDownStationId;
-    }
-
-    public int getLineDistance() {
-        return lineDistance;
+    public String getLineColor() {
+        return lineColor;
     }
 
     public List<SectionResponse> getSectionResponseList() {

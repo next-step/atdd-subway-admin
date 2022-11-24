@@ -28,6 +28,6 @@ public class SectionCreateRequest {
     }
 
     public Section toSection(Line line) {
-        return new Section(downStationId, upStationId, new Distance(distance), line);
+        return new Section(upStationId, downStationId, new Distance(distance), line);
     }
 }

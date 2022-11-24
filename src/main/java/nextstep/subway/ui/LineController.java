@@ -37,7 +37,7 @@ public class LineController {
     /* 노선 생성 */
     @PostMapping
     public ResponseEntity<LineResponse> create(@RequestBody LineCreateRequest request) {
-        LineResponse response = lineService.create(request.toLine());
+        LineResponse response = lineService.create(request);
         return ResponseEntity.created(URI.create("lines/" + response.getId())).body(response);
     }
 

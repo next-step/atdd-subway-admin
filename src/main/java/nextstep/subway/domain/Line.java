@@ -7,7 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -24,26 +24,12 @@ public class Line {
     @Embedded
     @AttributeOverride(name = "color", column = @Column(name = "color", nullable = false, unique = true))
     private Color color;
-
-    @Column(name = "up_station_id")
-    private Long upStationId;
-
-    @Column(name = "down_station_id")
-    private Long downStationId;
-
-    @Embedded
-    @AttributeOverride(name = "distance", column = @Column(name = "distance"))
-    private Distance distance;
-
     @Embedded
     private SectionLineUp sectionLineUp = new SectionLineUp();
 
-    public Line(Name name, Color color, Long upStationId, Long downStationId, Distance distance) {
+    public Line(Name name, Color color) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
     }
 
     protected Line() {
@@ -57,24 +43,16 @@ public class Line {
         return name;
     }
 
+    public String getNameString() {
+        return name.getName();
+    }
+
     public Color getColor() {
         return color;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
-    public Distance getDistance() {
-        return distance;
-    }
-
-    public int getDistanceIntValue() {
-        return distance.getDistance();
+    public String getColorString() {
+        return color.getColor();
     }
 
     public Line updateName(Name name) {
@@ -87,35 +65,15 @@ public class Line {
         return this;
     }
 
-    public List<Long> getStationIds() {
-        return Arrays.asList(upStationId, downStationId);
-    }
-
-    public void initSectionLineUp(Section section) {
-        sectionLineUp.init(this, section);
-    }
-
     public void addSection(Section section) {
-        sectionLineUp.add(this, section);
+        sectionLineUp.addSection(section);
     }
 
-    public void updateUpstationId(long downStationId) {
-        if (this.upStationId == downStationId) {
-            upStationId = downStationId;
-        }
+    public List<Section> getSectionList(Comparator<Section> comparator) {
+        return sectionLineUp.getSectionList(comparator);
     }
 
-    public void updateDownStationId(long upStationId) {
-        if (this.downStationId == upStationId) {
-            downStationId = upStationId;
-        }
-    }
-
-    public void updateDistance(int newDistance) {
-        this.distance = new Distance(newDistance);
-    }
-
-    public List<Section> getSectionList() {
-        return sectionLineUp.getSectionList();
+    public List<Long> getStationIdsInOrder(Comparator<Section> comparator) {
+        return this.sectionLineUp.getStationIds(comparator);
     }
 }
