@@ -57,15 +57,15 @@ public class LineAcceptanceTest {
         Station station1 = stations.save(new Station("신사역"));
         Station station2 = stations.save(new Station("광교중앙"));
 
-        Map<String, String> params = setParams(new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10L));
-        ExtractableResponse<Response> response = createLine(params);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        ExtractableResponse<Response> response = createLine(lineRequest);
 
         //then
         List<String> lines = retrieveLineNames();
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(lines).contains(params.get("name"))
+                () -> assertThat(lines).contains(lineRequest.getName())
         );
     }
 
@@ -82,12 +82,11 @@ public class LineAcceptanceTest {
         Station station2 = stations.save(new Station("광교중앙"));
         Station station3 = stations.save(new Station("정자"));
 
-        Map<String, String> params = setParams(new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10L));
-        ExtractableResponse<Response> response1 = createLine(params);
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        ExtractableResponse<Response> response1 = createLine(lineRequest1);
 
-        params.clear();
-        params = setParams(new LineRequest("분당선", "bg-red-600", station1.getId(), station3.getId(), 10L));
-        ExtractableResponse<Response> response2 = createLine(params);
+        LineRequest lineRequest2 = new LineRequest("분당선", "bg-red-600", station1.getId(), station3.getId(), 10);
+        ExtractableResponse<Response> response2 = createLine(lineRequest2);
 
         // when
         List<String> lines = retrieveLineNames();
@@ -111,9 +110,8 @@ public class LineAcceptanceTest {
         Station station1 = stations.save(new Station("신사역"));
         Station station2 = stations.save(new Station("광교중앙"));
 
-        Map<String, String> params = setParams(new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10L));
-
-        ExtractableResponse<Response> response = createLine(params);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        ExtractableResponse<Response> response = createLine(lineRequest);
         String lineId = parseIdByLocation(response.header("Location"));
 
         // when
@@ -122,7 +120,7 @@ public class LineAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(lineResponse).isNotNull(),
-                () -> assertThat(lineResponse.getName()).isEqualTo(params.get("name"))
+                () -> assertThat(lineResponse.getName()).isEqualTo(lineRequest.getName())
         );
 
     }
@@ -141,15 +139,15 @@ public class LineAcceptanceTest {
         Station station2 = stations.save(new Station("광교중앙"));
         Station station3 = stations.save(new Station("정자"));
 
-        Map<String, String> params = setParams(new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10L));
-        ExtractableResponse<Response> response1 = createLine(params);
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        ExtractableResponse<Response> response1 = createLine(lineRequest1);
         String lineId = parseIdByLocation(response1.header("Location"));
 
         // when
-        params.put("name", "수인분당선");
-        params.put("downStationId", String.valueOf(station3.getId()));
+        lineRequest1.setName("수인분당선");
+        lineRequest1.setDownStationId(station3.getId());
 
-        ExtractableResponse<Response> response2 = updateLine(lineId, params);
+        ExtractableResponse<Response> response2 = updateLine(lineId, lineRequest1);
 
         // then
         LineResponse lineResponse = retrieveLineById(lineId);
@@ -174,8 +172,8 @@ public class LineAcceptanceTest {
         Station station1 = stations.save(new Station("신사역"));
         Station station2 = stations.save(new Station("광교중앙"));
 
-        Map<String, String> params = setParams(new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10L));
-        ExtractableResponse<Response> response1 = createLine(params);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        ExtractableResponse<Response> response1 = createLine(lineRequest);
 
         String lineId = parseIdByLocation(response1.header("Location"));
 
@@ -191,11 +189,11 @@ public class LineAcceptanceTest {
         );
     }
 
-    public static ExtractableResponse<Response> createLine(Map<String, String> params) {
+    public static ExtractableResponse<Response> createLine(LineRequest lineRequest) {
 
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
-                        .body(params)
+                        .body(lineRequest)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().post(BASE_URL)
                         .then().log().all()
@@ -231,11 +229,11 @@ public class LineAcceptanceTest {
         return response.jsonPath().getObject(".", LineResponse.class);
     }
 
-    private static ExtractableResponse<Response> updateLine(String id, Map<String, String> params) {
+    private static ExtractableResponse<Response> updateLine(String id, LineRequest lineRequest) {
 
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
-                        .body(params)
+                        .body(lineRequest)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .when().put(BASE_URL + id)
                         .then().log().all()
