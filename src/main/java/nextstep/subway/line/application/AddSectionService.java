@@ -14,8 +14,8 @@ import java.util.Arrays;
 @Service
 @Transactional(readOnly = true)
 public class AddSectionService {
-    private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private final LineRepository lineRepository;
+    private final StationRepository stationRepository;
 
     public AddSectionService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
@@ -26,6 +26,6 @@ public class AddSectionService {
     public void addSection(Long lineId, AddSectionRequest addSectionRequest) {
         Stations stations = new Stations(stationRepository.findAllById(Arrays.asList(addSectionRequest.getUpStationId(), addSectionRequest.getDownStationId())));
         Line line = lineRepository.findById(lineId).orElseThrow(EntityNotFoundException::new);
-        line.addSection(stations.get(addSectionRequest.getUpStationId()), stations.get(addSectionRequest.getDownStationId()), addSectionRequest.getDistance());
+        line.addSection(stations.get(addSectionRequest.getUpStationId()), stations.get(addSectionRequest.getDownStationId()), addSectionRequest.toDistance());
     }
 }

@@ -1,6 +1,8 @@
 package nextstep.subway.line.dto;
 
 
+import nextstep.subway.line.domain.Distance;
+
 import javax.validation.constraints.NotNull;
 
 public class AddSectionRequest {
@@ -20,8 +22,8 @@ public class AddSectionRequest {
         return downStationId;
     }
 
-    public int getDistance() {
-        return distance;
+    public Distance toDistance() {
+        return new Distance(distance);
     }
 
     public void setUpStationId(Long upStationId) {

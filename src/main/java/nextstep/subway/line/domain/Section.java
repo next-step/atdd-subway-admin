@@ -36,11 +36,11 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = distance;
     }
 
     public Station getUpStation() {
@@ -69,5 +69,9 @@ public class Section {
 
     public boolean isLonger(Section addSection) {
         return this.distance.compareTo(addSection.getDistance()) > 0;
+    }
+
+    public Distance differ(Section section) {
+        return new Distance(this.distance.getDistance() - section.getDistance().getDistance());
     }
 }

@@ -106,12 +106,12 @@ public class Sections {
 
     private void addDownSection(Section addSection, Section removeSection) {
         validateAddSectionDistance(addSection, removeSection);
-        this.sections.add(new Section(addSection.getLine(), addSection.getDownStation(), removeSection.getDownStation(), removeSection.getDistance().getDistance() - addSection.getDistance().getDistance()));
+        this.sections.add(new Section(addSection.getLine(), addSection.getDownStation(), removeSection.getDownStation(), removeSection.differ(addSection)));
     }
 
     private void addUpSection(Section addSection, Section removeSection) {
         validateAddSectionDistance(addSection, removeSection);
-        this.sections.add(new Section(addSection.getLine(), removeSection.getUpStation(), addSection.getUpStation(), removeSection.getDistance().getDistance() - addSection.getDistance().getDistance()));
+        this.sections.add(new Section(addSection.getLine(), removeSection.getUpStation(), addSection.getUpStation(), removeSection.differ(addSection)));
     }
 
     private void validateAddSectionDistance(Section addSection, Section removeSection) {

@@ -2,6 +2,7 @@ package nextstep.subway.line.dto;
 
 import nextstep.subway.common.domain.Name;
 import nextstep.subway.line.domain.Color;
+import nextstep.subway.line.domain.Distance;
 import nextstep.subway.line.domain.Line;
 
 import javax.validation.constraints.NotNull;
@@ -27,8 +28,8 @@ public class LineRequest {
         return downStationId;
     }
 
-    public int getDistance() {
-        return distance;
+    public Distance toDistance() {
+        return new Distance(distance);
     }
 
     public void setName(String name) {

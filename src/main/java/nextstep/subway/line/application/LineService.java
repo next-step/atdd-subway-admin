@@ -32,7 +32,7 @@ public class LineService {
         Long upStationId = lineRequest.getUpStationId();
         Long downStationId = lineRequest.getDownStationId();
         Stations stations = new Stations(stationRepository.findAllById(Arrays.asList(upStationId, downStationId)));
-        line.addSection(stations.get(upStationId), stations.get(downStationId), lineRequest.getDistance());
+        line.addSection(stations.get(upStationId), stations.get(downStationId), lineRequest.toDistance());
         Line saveLine = lineRepository.save(line);
         return LineResponse.of(saveLine);
     }
