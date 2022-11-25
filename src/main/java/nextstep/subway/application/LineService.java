@@ -30,37 +30,36 @@ public class LineService {
 
     public List<LineResponse> findAllLines() {
         Lines lines = new Lines(lineRepository.findAll());
-
         return lines.asList().stream()
-                .map(line -> LineResponse.from(line))
+                .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineById(Long id) {
-        Line line = lineRepository
-                .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
+        Line line = getLine(id);
         return LineResponse.from(line);
     }
 
     @Transactional
     public LineResponse modifyLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository
-                .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
+        Line line = getLine(id);
         line.modify(lineRequest.getName(), lineRequest.getColor());
         return LineResponse.from(lineRepository.save(line));
     }
 
     @Transactional
     public void deleteLine(Long id) {
-        Line line = lineRepository
-                .findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
+        Line line = getLine(id);
         lineRepository.delete(line);
     }
 
     private Station getStation(long stationId) {
         return stationRepository.getById(stationId);
+    }
+
+    private Line getLine(Long id) {
+        return lineRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
     }
 }

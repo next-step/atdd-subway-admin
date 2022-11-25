@@ -26,8 +26,8 @@ class SectionTest {
 
         //then
         assertAll(() -> {
-            assertThat(section.getLine().getName()).isEqualTo("2호선");
-            assertThat(section.getLine().getColor()).isEqualTo("green");
+            assertThat(section.getLine().findName()).isEqualTo("2호선");
+            assertThat(section.getLine().findColor()).isEqualTo("green");
         });
     }
 }

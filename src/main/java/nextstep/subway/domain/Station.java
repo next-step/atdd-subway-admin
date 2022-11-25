@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.constants.ErrorCode;
+
 import javax.persistence.*;
 
 @Entity
@@ -9,22 +11,25 @@ public class Station extends BaseEntity {
     private Long id;
     @Column(unique = true)
     private String name;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "LINE_ID")
-    private Line line;
 
-    public Station() {
-    }
+    public Station() {}
 
     public Station(String name) {
+        validation(name);
         this.name = name;
     }
 
-    public Long getId() {
+    private void validation(String name) {
+        if (name == null || name.isEmpty()) {
+            new IllegalArgumentException(ErrorCode.NO_EMPTY_STATION_NAME_EXCEPTION.getErrorMessage());
+        }
+    }
+
+    public Long findId() {
         return id;
     }
 
-    public String getName() {
+    public String findName() {
         return name;
     }
 }
