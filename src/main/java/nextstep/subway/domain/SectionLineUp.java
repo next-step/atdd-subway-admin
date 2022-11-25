@@ -44,13 +44,13 @@ public class SectionLineUp {
         boolean isEndDownStation = isEndDownStation(section);
         if (isEndUpStation) {
             addEndUpStation(section);
+            return;
         }
         if (isEndDownStation) {
             addEndDownStation(section);
+            return;
         }
-        if (!isEndUpStation && !isEndDownStation) {
-            createInternal(section);
-        }
+        createInternal(section);
     }
 
     private boolean isEndUpStation(Section section) {
