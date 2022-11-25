@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
+import nextstep.subway.DatabaseCleaner;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
@@ -26,6 +27,9 @@ public class LineAcceptanceTest {
     private int port;
 
     @Autowired
+    private DatabaseCleaner databaseCleaner;
+
+    @Autowired
     private StationRepository stationRepository;
     @Autowired
     private SectionRepository sectionRepository;
@@ -35,6 +39,7 @@ public class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        databaseCleaner.execute();
     }
 
     /**
