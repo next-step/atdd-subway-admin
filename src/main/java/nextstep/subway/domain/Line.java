@@ -20,16 +20,13 @@ public class Line extends BaseEntity {
     @Embedded
     private Sections sections = new Sections(new ArrayList<>());
 
-    private int distance;
-
     protected Line() {
 
     }
 
-    public Line(String name, String color, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
     }
 
     public Long getId() {
@@ -44,10 +41,6 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
     public List<Station> getStations() {
         return sections.getStations();
     }
@@ -58,7 +51,7 @@ public class Line extends BaseEntity {
     }
 
     public int compareToDistance(int distance) {
-        return Integer.compare(this.distance, distance);
+        return sections.compareToAllDistance(distance);
     }
 
     public boolean isContainStation(Station station) {

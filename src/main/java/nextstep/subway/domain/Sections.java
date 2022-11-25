@@ -110,4 +110,8 @@ public class Sections {
         sections.add(new Section(section.getDownStation(), null, 0));
         return sections;
     }
+
+    public int compareToAllDistance(int distance) {
+        return Integer.compare(sections.stream().mapToInt(Section::getDistance).sum(), distance);
+    }
 }

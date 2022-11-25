@@ -55,7 +55,7 @@ public class LineService {
     }
 
     private Line lineRequestToLine(LineRequest lineRequest) {
-        return new Line(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance());
+        return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
     public SectionsResponse addSection(Long lineId, SectionRequest sectionRequest) {
