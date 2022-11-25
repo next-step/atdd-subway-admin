@@ -1,39 +1,40 @@
 package nextstep.subway.dto;
 
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 
 public class SectionResponse {
     private Long lineId;
-    private Long upStationId;
-    private Long downStationId;
+    private StationResponse upStation;
+    private StationResponse downStation;
     private int distance;
 
-    public SectionResponse(Long lineId, Long upStationId, Long downStationId, int distance) {
+    public SectionResponse(Long lineId, StationResponse upStation, StationResponse downStation, int distance) {
         this.lineId = lineId;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
     public static SectionResponse of(Section section) {
         Long lineId = section.getLineId();
-        Long upStationId = section.getUpStationId();
-        Long downStationId = section.getDownStationId();
+        StationResponse upStation = StationResponse.of(section.getUpStation());
+        StationResponse downStation = StationResponse.of(section.getDownStation());
         int distance = section.getDistance();
-        return new SectionResponse(lineId, upStationId, downStationId, distance);
+        return new SectionResponse(lineId, upStation, downStation, distance);
     }
 
     public Long getLineId() {
         return lineId;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
+    public StationResponse getUpStation() {
+        return upStation;
     }
 
-    public Long getDownStationId() {
-        return downStationId;
+    public StationResponse getDownStation() {
+        return downStation;
     }
 
     public int getDistance() {
@@ -41,9 +42,17 @@ public class SectionResponse {
     }
 
     public boolean findSpecificSection(StationResponse upStation, StationResponse downStation) {
-        if (this.upStationId == upStation.getId() && this.downStationId == downStation.getId()) {
+        if (getStationId(this.upStation) == getStationId(upStation) && getStationId(this.downStation) == getStationId(downStation)) {
             return true;
         }
+
         return false;
+    }
+
+    private Long getStationId(StationResponse station) {
+        if (station == null) {
+            return null;
+        }
+        return station.getId();
     }
 }
