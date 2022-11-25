@@ -16,11 +16,12 @@ public class Station extends BaseEntity {
     @Embedded
     private StationName name;
 
-    public Station() {
+    protected Station() {
+
     }
 
-    public Station(StationName name) {
-        this.name = name;
+    public Station(String name) {
+        this.name = new StationName(name);
     }
 
     public Long getId() {
@@ -47,5 +48,13 @@ public class Station extends BaseEntity {
         int result = id != null ? id.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Station{" +
+                "id=" + id +
+                ", name=" + name +
+                '}';
     }
 }
