@@ -77,15 +77,24 @@ public class Section extends BaseEntity {
         return distance;
     }
 
-    public void switchUpStation(Station upStation) {
-        this.upStation = upStation;
+    public void switchDownStation(Section section) {
+        validateDistance(section.getDistance());
+
+        this.downStation = section.getDownStation();
+        this.distance = section.getDistance();
     }
 
-    public void switchDownStation(Station downStation) {
-        this.downStation = downStation;
+    public void switchUpStation(Section section){
+        validateDistance(section.getDistance());
+
+        this.upStation = section.getUpStation();
+        this.distance -= section.getDistance();
+
     }
 
-    public void updateDistance(int distance) {
-        this.distance = distance;
+    private void validateDistance(int distance) {
+        if (this.distance <= distance) {
+            throw new IllegalArgumentException();
+        }
     }
 }

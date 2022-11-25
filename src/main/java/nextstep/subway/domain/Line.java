@@ -42,8 +42,7 @@ public class Line extends BaseEntity {
     }
 
     public Sections addSection(Section section) {
-        sections.addSection(section);
-        return sections;
+        return sections.addSection(section);
     }
 
     public Long getId() {

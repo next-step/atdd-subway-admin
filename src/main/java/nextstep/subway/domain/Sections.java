@@ -11,15 +11,24 @@ public class Sections {
     @OneToMany(mappedBy = "line")
     List<Section> sections = new ArrayList<>();
 
-    public void addSection(Section newSection) {
+    public Sections addSection(Section newSection) {
 
         if (sections.isEmpty()) {
             setInitSection(newSection);
-            return;
+            return this;
         }
 
-        addNewSection(newSection);
+        if (exitsUpStation(newSection)) {
+            insertNewDownStation(newSection);
+            return this;
+        }
 
+        if (exitsDownStation(newSection)) {
+            insertNewUpStation(newSection);
+            return this;
+        }
+
+        return this;
     }
 
     private void setInitSection(Section newSection) {
@@ -28,26 +37,19 @@ public class Sections {
         sections.add(new Section(newSection.getLine(), newSection.getDownStation(), null, 0));
     }
 
-    private void addNewSection(Section newSection) {
-        //기존 상행역과 신규역인 경우
-        if (exitsUpStation(newSection)) {
-            Section section = findSectionWithUpStation(newSection.getUpStation());
-            Station preDownStation = section.getDownStation();
-            section.switchDownStation(newSection.getDownStation());
-            addGenerateSection(newSection.getLine(), newSection.getDownStation(), preDownStation, section.getDistance() - newSection.getDistance());
-            section.updateDistance(newSection.getDistance());
-            return;
-        }
+    private void insertNewDownStation(Section newSection) {
+        Section section = findSectionWithUpStation(newSection.getUpStation());
+        Station preDownStation = section.getDownStation();
+        int preDistance = section.getDistance();
+        section.switchDownStation(newSection);
+        addGeneratedSection(newSection.getLine(), newSection.getDownStation(), preDownStation, preDistance - newSection.getDistance());
+    }
 
-        //신규역과 기존 하행역인 경우
-        if (exitsDownStation(newSection)) {
-            Section section = findSectionWithDownStation(newSection.getDownStation());
-            Station preUpStation = section.getUpStation();
-            section.switchUpStation(newSection.getUpStation());
-            addGenerateSection(newSection.getLine(), preUpStation, newSection.getUpStation(), newSection.getDistance());
-            section.updateDistance(section.getDistance() - newSection.getDistance());
-            return;
-        }
+    private void insertNewUpStation(Section newSection) {
+        Section section = findSectionWithDownStation(newSection.getDownStation());
+        Station preUpStation = section.getUpStation();
+        section.switchUpStation(newSection);
+        addGeneratedSection(newSection.getLine(), preUpStation, newSection.getUpStation(), newSection.getDistance());
     }
 
     private boolean exitsUpStation(Section section) {
@@ -72,7 +74,7 @@ public class Sections {
                 .orElse(null);
     }
 
-    private void addGenerateSection(Line line, Station upStation, Station downStation, int distance) {
+    private void addGeneratedSection(Line line, Station upStation, Station downStation, int distance) {
         sections.add(new Section(line, upStation, downStation, distance));
     }
 
