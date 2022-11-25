@@ -228,7 +228,6 @@ public class SectionAcceptanceTest {
 
         // then
         assertThat(sectionResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
-
     }
 
     /**
@@ -287,6 +286,40 @@ public class SectionAcceptanceTest {
         // then
         assertThat(addSectionResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
+    }
+
+    /**
+     * Given 기존의 구간에
+     * When 새로운 구간 추가 시
+     * Then 지하철 노선의 거리 값도 변경된다.
+     */
+    @DisplayName("새로운 구간 생성 시 노선의 거리가 변경된다.")
+    @Test
+    void 새로운_구간_생성_시_노선_거리_반영_테스트() {
+        // given
+        StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
+        StationResponse 합정역 = StationAcceptanceTest.createStation("합정역").as(StationResponse.class);
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 10);
+        ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
+        LineResponse 이호선 = response.as(LineResponse.class);
+
+        SectionRequest section = new SectionRequest(당산역.getId(), 합정역.getId(), 10);
+        ExtractableResponse<Response> addSectionResponse = addSection(response.header("Location"), section);
+
+        // when
+        StationResponse 홍대입구역 = StationAcceptanceTest.createStation("홍대입구역").as(StationResponse.class);
+        SectionRequest firstSection = new SectionRequest(합정역.getId(), 홍대입구역.getId(), 7);
+        ExtractableResponse<Response> addFirstSectionResponse = addSection(response.header("Location"), firstSection);
+        SectionResponse sectionResponse = addFirstSectionResponse.jsonPath().getList(".", SectionResponse.class).get(0);
+
+        LineResponse lineResponse = LineAcceptanceTest.retrieveLineById("/1");
+
+        // then
+        assertAll(
+                () -> assertThat(lineResponse.getDistance()).isEqualTo(17),
+                () -> assertThat(lineResponse.getSections()).hasSize(4)
+        );
     }
 
     private ExtractableResponse<Response> addSection(String location, SectionRequest sectionRequest) {
