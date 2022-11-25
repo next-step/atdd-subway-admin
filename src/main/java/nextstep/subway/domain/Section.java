@@ -157,4 +157,12 @@ public class Section {
             throw new IllegalArgumentException("상행역과 하행역은 같은 역일 수 없습니다. 지하철ID:" + downStationId);
         }
     }
+
+    public boolean sameUpStationByDownStation(Section section) {
+        return this.upStationId == section.downStationId;
+    }
+
+    public boolean sameDownStationByUpStation(Section section) {
+        return this.downStationId == section.upStationId;
+    }
 }

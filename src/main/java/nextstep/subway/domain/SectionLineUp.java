@@ -39,6 +39,16 @@ public class SectionLineUp {
         add(section);
     }
 
+    public List<Long> getStationIds(Comparator<Section> comparator) {
+        sectionList.sort(comparator);
+        final List<Long> stationIds = new ArrayList<>();
+        sectionList.forEach(section -> {
+            stationIds.add(section.getUpStationId());
+            stationIds.add(section.getDownStationId());
+        });
+        return stationIds.stream().distinct().collect(Collectors.toList());
+    }
+
     private void add(Section section) {
         boolean isEndUpStation = isEndUpStation(section);
         boolean isEndDownStation = isEndDownStation(section);
@@ -63,24 +73,6 @@ public class SectionLineUp {
         return hasSameDownStationByUpStation(section) && notHasSameUpStation(section);
     }
 
-    private boolean notHasSameDownStation(Section section) {
-        return sectionList.stream().noneMatch(streamSection -> streamSection.isSameDownStation(section));
-    }
-
-    private boolean hasSameUpStationByDownStation(Section section) {
-        return sectionList.stream()
-                .anyMatch(streamSection -> streamSection.isSameUpStationId(section.getDownStationId()));
-    }
-    private boolean notHasSameUpStation(Section section) {
-        return sectionList.stream().noneMatch(streamSection -> streamSection.isSameUpStation(section));
-    }
-
-
-    private boolean hasSameDownStationByUpStation(Section section) {
-        return sectionList.stream()
-                .anyMatch(streamSection -> streamSection.isSameDownStationId(section.getUpStationId()));
-    }
-
     private void addEndUpStation(Section section) {
         section.updateOrder(new Order(START_INDEX));
         sectionList.stream().filter(section::isEqualsOrPreOrder)
@@ -95,20 +87,36 @@ public class SectionLineUp {
     }
 
     private void createInternal(Section section) {
-        if (isInternalUpStation(section)) {
+        if (hasSameUpStation(section)) {
             createInternalUpStation(section);
             return;
         }
-        if (isInternalDownStation(section)) {
+        if (hasSameDownStation(section)) {
             createInternalDownStation(section);
         }
     }
 
-    private boolean isInternalUpStation(Section section) {
+    private boolean notHasSameDownStation(Section section) {
+        return sectionList.stream().noneMatch(streamSection -> streamSection.isSameDownStation(section));
+    }
+
+    private boolean hasSameUpStationByDownStation(Section section) {
+        return sectionList.stream().anyMatch(streamSection -> streamSection.sameUpStationByDownStation(section));
+    }
+
+    private boolean notHasSameUpStation(Section section) {
+        return sectionList.stream().noneMatch(streamSection -> streamSection.isSameUpStation(section));
+    }
+
+    private boolean hasSameDownStationByUpStation(Section section) {
+        return sectionList.stream().anyMatch(streamSection -> streamSection.sameDownStationByUpStation(section));
+    }
+
+    private boolean hasSameUpStation(Section section) {
         return sectionList.stream().anyMatch(streamSection -> streamSection.isSameUpStation(section));
     }
 
-    private boolean isInternalDownStation(Section section) {
+    private boolean hasSameDownStation(Section section) {
         return sectionList.stream().anyMatch(streamSection -> streamSection.isSameDownStation(section));
     }
 
@@ -154,15 +162,5 @@ public class SectionLineUp {
                     "이미 중복된 구간이 있습니다. 상행선id:" + section.getUpStationId()
                             + ", 하행선id:" + section.getDownStationId());
         }
-    }
-
-    public List<Long> getStationIds(Comparator<Section> comparator) {
-        sectionList.sort(comparator);
-        final List<Long> stationIds = new ArrayList<>();
-        sectionList.forEach(section -> {
-            stationIds.add(section.getUpStationId());
-            stationIds.add(section.getDownStationId());
-        });
-        return stationIds.stream().distinct().collect(Collectors.toList());
     }
 }
