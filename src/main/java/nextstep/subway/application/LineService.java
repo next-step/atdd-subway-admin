@@ -25,7 +25,7 @@ public class LineService {
         Line persistLine = lineRepository.save(lineRequestToLine(lineRequest));
         Station upStation = stationService.getStationById(lineRequest.getUpStationId());
         Station downStation = stationService.getStationById(lineRequest.getDownStationId());
-        persistLine.initSection(new Section(persistLine, upStation, downStation, lineRequest.getDistance()));
+        persistLine.initSection(new Section(persistLine, upStation, downStation, new Distance(lineRequest.getDistance())));
         return LineResponse.of(persistLine);
     }
 
@@ -60,23 +60,13 @@ public class LineService {
 
     public SectionsResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = getLineDomainById(lineId);
-        int distance = sectionRequest.getDistance();
-        checkDistance(line, distance);
+        Distance distance = new Distance(sectionRequest.getDistance());
 
         Station requestUpStation = stationService.getStationById(sectionRequest.getUpStationId());
         Station requestDownStation = stationService.getStationById(sectionRequest.getDownStationId());
 
         return new SectionsResponse(line.addAndGetSections(requestUpStation, requestDownStation, distance)
                 .stream().map(SectionResponse::of).collect(Collectors.toList()));
-    }
-
-    private void checkDistance(Line line, int distance) {
-        if(line.compareToDistance(distance) <= 0) {
-            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
-        }
-        if(distance <= 0) {
-            throw new IllegalArgumentException(ErrorMessage.EXCEED_SECTION_DISTANCE.getMessage());
-        }
     }
 
 }

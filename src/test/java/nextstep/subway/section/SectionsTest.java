@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import nextstep.subway.application.Distance;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
@@ -26,9 +27,9 @@ public class SectionsTest {
         upStation = new Station("강남역");
         downStation = new Station("광교역");
 
-        sections.add(new Section(null, upStation, 0));
-        sections.add(new Section(upStation, downStation, 10));
-        sections.add(new Section(downStation, null, 0));
+        sections.add(new Section(null, upStation, new Distance(0, true)));
+        sections.add(new Section(upStation, downStation, new Distance(10)));
+        sections.add(new Section(downStation, null, new Distance(0, true)));
 
         this.sections = new Sections(sections);
     }
@@ -36,14 +37,14 @@ public class SectionsTest {
     @Test
     @DisplayName("상행역과 하행역이 모두 구간에 이미 등록되어 있는 경우 오류 발생 테스트")
     void upStationDownStationAlreadyExistExceptionTest() {
-        assertThatThrownBy(() -> sections.addAndGetSections(upStation,downStation,1))
+        assertThatThrownBy(() -> sections.addAndGetSections(upStation,downStation,new Distance(1)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
     @DisplayName("상행역과 하행역이 역방향으로 모두 구간에 이미 등록되어 있는 경우 오류 발생 테스트")
     void upStationDownStationReverseAlreadyExistExceptionTest() {
-        assertThatThrownBy(() -> sections.addAndGetSections(downStation,upStation,1))
+        assertThatThrownBy(() -> sections.addAndGetSections(downStation,upStation,new Distance(1)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -56,7 +57,7 @@ public class SectionsTest {
 
         //when
         //then
-        assertThatThrownBy(() -> sections.addAndGetSections(newUpStation, newDownStation, 1))
+        assertThatThrownBy(() -> sections.addAndGetSections(newUpStation, newDownStation, new Distance(1)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

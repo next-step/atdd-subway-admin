@@ -1,5 +1,8 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.application.Distance;
+import nextstep.subway.application.Distances;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -10,7 +13,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Section> sections;
 
     public Sections(List<Section> sections) {
@@ -60,18 +63,20 @@ public class Sections {
         return stations;
     }
 
-    public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, int distance) {
+    public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, Distance distance) {
+        new Distances(sections.stream().map(Section::getDistance).collect(Collectors.toList()))
+                .checkLessThanAllSectionDistance(distance);
         Section newSection = new Section(requestUpStation, requestDownStation, distance);
         Station newStation = checkAndGetNewStation(requestUpStation, requestDownStation);
 
         List<Section> sections = new ArrayList<>();
         if(requestUpStation.equals(newStation)) {
-            sections.add(addNewUpStationAndGetSection(newStation, requestDownStation, distance));
+            sections.add(getNewUpStationSection(newStation, requestDownStation, distance));
             sections.add(newSection);
         }
         if (requestDownStation.equals(newStation)) {
             sections.add(newSection);
-            sections.add(addNewDownStationAndGetSection(requestUpStation, newStation, distance));
+            sections.add(getNewDownStationSection(requestUpStation, newStation, distance));
         }
         this.sections.addAll(sections);
         return sections;
@@ -89,44 +94,41 @@ public class Sections {
         return isContainUpStation ? downStation : upStation;
     }
 
-    private Section addNewUpStationAndGetSection(Station newStation, Station downStation, int distance) {
+    private Section getNewUpStationSection(Station newStation, Station downStation, Distance distance) {
         Section existingSection = sections.stream()
                 .filter(section -> downStation.equals(section.getDownStation()))
                 .collect(Collectors.toList()).get(0);
-        sections.remove(existingSection);
         if(isFirst(downStation)) {
-            Section newSection = new Section(null, newStation, 0);
-            sections.add(newSection);
+            sections.remove(existingSection);
+            Section newSection = new Section(null, newStation, new Distance(0, true));
             return newSection;
         }
+        sections.remove(existingSection);
         Section newSection = new Section(existingSection.getUpStation(), newStation,
-                existingSection.getDistance() - distance);
+                existingSection.getDistance().getNewSectionDistance(distance));
         return newSection;
     }
 
-    private Section addNewDownStationAndGetSection(Station upStation, Station newStation, int distance) {
+    private Section getNewDownStationSection(Station upStation, Station newStation, Distance distance) {
         Section existingSection = sections.stream()
                 .filter(section -> upStation.equals(section.getUpStation()))
                 .collect(Collectors.toList()).get(0);
-        sections.remove(existingSection);
         if (isLast(upStation)) {
-            Section newSection = new Section(newStation, null, 0);
-            sections.add(newSection);
+            sections.remove(existingSection);
+            Section newSection = new Section(newStation, null, new Distance(0, true));
             return newSection;
         }
+        sections.remove(existingSection);
         Section newSection = new Section(newStation, existingSection.getDownStation(),
-                existingSection.getDistance() - distance);
+                existingSection.getDistance().getNewSectionDistance(distance));
         return newSection;
     }
 
     public List<Section> init(Section section) {
         sections.add(section);
-        sections.add(new Section(null, section.getUpStation(), 0));
-        sections.add(new Section(section.getDownStation(), null, 0));
+        sections.add(new Section(null, section.getUpStation(), new Distance(0, true)));
+        sections.add(new Section(section.getDownStation(), null, new Distance(0, true)));
         return sections;
     }
 
-    public int compareToAllDistance(int distance) {
-        return Integer.compare(sections.stream().mapToInt(Section::getDistance).sum(), distance);
-    }
 }

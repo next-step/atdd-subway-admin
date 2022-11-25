@@ -1,6 +1,6 @@
 package nextstep.subway.domain;
 
-import org.hibernate.annotations.Cascade;
+import nextstep.subway.application.Distance;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -50,19 +50,11 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public int compareToDistance(int distance) {
-        return sections.compareToAllDistance(distance);
-    }
-
-    public boolean isContainStation(Station station) {
-        return sections.isContainStation(station);
-    }
-
     public Sections getSections() {
         return sections;
     }
 
-    public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, int distance) {
+    public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, Distance distance) {
         List<Section> sections = this.sections.addAndGetSections(requestUpStation, requestDownStation, distance);
         sections.forEach(section -> section.setLine(this));
         return sections;
