@@ -203,7 +203,34 @@ public class Sections {
                 .sum();
     }
 
-    public void remove(Section section) {
-        this.sections.remove(section);
+    public void remove(Station station) {
+        int size = size();
+        List<Section> deleteSections = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            if (this.sections.get(i).isDownStation(station) || this.sections.get(i).isUpStation(station)) {
+                deleteSections.add(this.sections.get(i));
+            }
+        }
+        Station newDownStation = null;
+        Station newUpStation = null;
+        Line line = null;
+        int distance = 0;
+        if (deleteSections.size() == 2) {
+            for (Section section : this.sections) {
+                if (section.isUpStation(station)) {
+                    newDownStation = section.getDownStation();
+                    line = section.getLine();
+                    distance = distance + section.getDistance().getDistance();
+                }
+            }
+            for (Section section : this.sections) {
+                if (section.isDownStation(station)) {
+                    newUpStation = section.getUpStation();
+                    distance += section.getDistance().getDistance();
+                }
+            }
+            this.sections.removeAll(deleteSections);
+            this.sections.add(new Section(line, newUpStation, newDownStation, new Distance(distance)));
+        }
     }
 }

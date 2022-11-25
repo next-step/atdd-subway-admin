@@ -33,4 +33,8 @@ public class StationFixtrue {
     public static Station stationC() {
         return new Station(8L, "C");
     }
+
+    public static Station stationD() {
+        return new Station(9L, "D");
+    }
 }

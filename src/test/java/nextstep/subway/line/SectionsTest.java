@@ -114,7 +114,7 @@ class SectionsTest {
         assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_거리);
     }
 
-    @DisplayName("A-B-C 구간의 노선에서 B-C 구간을 제거한다.")
+    @DisplayName("A-B-C 구간의 노선에서 B역이 포함된 구간을 제거한다")
     @Test
     void remove_sectionBC() {
         Sections sections = new Sections();
@@ -122,21 +122,23 @@ class SectionsTest {
         sections.add(sectionBC());
         assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
         assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
-        sections.remove(sectionBC());
-        assertThat(sections.getStations()).containsExactly(stationA(), stationB());
-        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_B);
+        sections.remove(stationB());
+        assertThat(sections.getStations()).containsExactly(stationA(), stationC());
+        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
     }
 
-    @DisplayName("A-B-C 구간의 노선에서 A-B 구간을 제거한다.")
-    @Test
-    void remove_sectionAB() {
-        Sections sections = new Sections();
-        sections.add(sectionAB());
-        sections.add(sectionBC());
-        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
-        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
-        sections.remove(sectionAB());
-        assertThat(sections.getStations()).containsExactly(stationB(), stationC());
-        assertThat(sections.getDistance()).isEqualTo(DISTANCE_B_C);
-    }
+//    @DisplayName("노선에 등록 되어있지 않은 역을 제거할 수 없다.")
+//    @Test
+//    void removeNotRegistrationStation_fail() {
+//        Sections sections = new Sections();
+//        sections.add(sectionAB());
+//        sections.add(sectionBC());
+//        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
+//        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+//
+//        //when
+//        assertThatThrownBy(() -> sections.remove(stationD()))
+//                .isInstanceOf(IllegalArgumentException.class)
+//                .hasMessageContaining(SECTION_DUPLICATE_EXCEPTION_MESSAGE);
+//    }
 }
