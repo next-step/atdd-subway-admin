@@ -20,8 +20,7 @@ public class Line extends BaseEntity{
     @OneToMany(mappedBy = "line")
     private List<Section> sections = new ArrayList<>();
 
-    protected Line() {
-    }
+    protected Line() {}
 
     public Line(String name, String color) {
         this.name = name;
