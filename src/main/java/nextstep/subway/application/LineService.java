@@ -25,14 +25,14 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = getStation(lineRequest.getUpStationId());
         Station downStation = getStation(lineRequest.getDownStationId());
-        return LineResponse.of(lineRepository.save(lineRequest.toLine(upStation, downStation)));
+        return LineResponse.from(lineRepository.save(lineRequest.toLine(upStation, downStation)));
     }
 
     public List<LineResponse> findAllLines() {
         Lines lines = new Lines(lineRepository.findAll());
 
         return lines.asList().stream()
-                .map(line -> LineResponse.of(line))
+                .map(line -> LineResponse.from(line))
                 .collect(Collectors.toList());
     }
 
@@ -40,7 +40,7 @@ public class LineService {
         Line line = lineRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     @Transactional
@@ -49,7 +49,7 @@ public class LineService {
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
         line.modify(lineRequest.getName(), lineRequest.getColor());
-        return LineResponse.of(lineRepository.save(line));
+        return LineResponse.from(lineRepository.save(line));
     }
 
     @Transactional
