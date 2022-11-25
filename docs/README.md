@@ -50,5 +50,19 @@
     - [x] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다
     - [x] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다
 - [x] 역 목록을 조회한다.
+- [ ] 노선의 구간을 제거한다.
+    - [ ] A-B-C 구간의 노선에도 B가 포함된 구간을 제거한다.
+        - [ ] A-B 구간의 거리와 B-C 구간의 거리의 합이 A-B 구간의 거리가 된다.
+    - [ ] 하나의 구간만 있을 경우 구간을 제거할 수 없다.
+    - [ ] 노선에 등록되어있지 않은 역을 제거할 수 없다.
+    - [ ] A-B-C 구간의 노선에서 A-B 구간을 제거한다.
+    - [ ] A-B-C 구간의 노선에서 B-C 구간을 제거한다.
 
-리팩토링
+- src/main/java/nextstep/subway/line/domain/Sections.java
+    - addDownSection Distance를 가져오지말고 Section 내에서 비교 [ ]
+    - 108 ~ 111 Distance를 가져오지말고 Section or Distance 내에서 처리 [ ]
+- src/main/java/nextstep/subway/line/domain/Distance.java
+    - Integer.compare() 사용 [ ]
+    - isContainUpStation sections를 이용해서 Section에게 물어보기 [ ]
+- 거리 검증 테스트 [ ]
+- 구간 추가 검증 내역 구체화 [ ]
