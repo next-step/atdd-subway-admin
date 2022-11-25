@@ -68,10 +68,7 @@ class LineRepositoryTest {
 			() -> assertThat(actual).isNotNull(),
 			() -> assertThat(actual.getId()).isNotNull(),
 			() -> assertThat(actual.getName()).isEqualTo(NAME),
-			() -> assertThat(actual.getColor()).isEqualTo(COLOR),
-			() -> assertThat(actual.getUpStation()).isEqualTo(upStation),
-			() -> assertThat(actual.getDownStation()).isEqualTo(downStation),
-			() -> assertThat(actual.getDistance()).isEqualTo(DISTANCE)
+			() -> assertThat(actual.getColor()).isEqualTo(COLOR)
 		);
 	}
 

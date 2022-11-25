@@ -17,6 +17,7 @@ import nextstep.subway.application.line.LineService;
 import nextstep.subway.dto.line.LineCreateRequest;
 import nextstep.subway.dto.line.LineResponse;
 import nextstep.subway.dto.line.LineUpdateRequest;
+import nextstep.subway.dto.line.section.SectionCreateRequest;
 
 @RestController
 @RequestMapping("/lines")
@@ -54,6 +55,13 @@ public class LineController {
 	public ResponseEntity<Void> deleteLine(@PathVariable(name = "id") Long id) {
 		lineService.deleteLine(id);
 		return ResponseEntity.noContent().build();
+	}
+
+	@PostMapping("/{lineId}/sections")
+	public ResponseEntity<LineResponse> addSection(@PathVariable(name = "lineId") Long lineId,
+			@RequestBody SectionCreateRequest request) {
+		LineResponse lineResponse = lineService.addSection(lineId, request);
+		return ResponseEntity.created(URI.create("/lines/" + lineId + "/sections")).body(lineResponse);
 	}
 
 }

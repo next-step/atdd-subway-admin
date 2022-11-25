@@ -10,7 +10,7 @@ import nextstep.subway.dto.line.LineUpdateRequest;
 
 public class LineAcceptanceUtils {
 
-	private static final String LINE_URL = "/lines";
+	static final String LINE_URL = "/lines";
 
 	private LineAcceptanceUtils() {
 		throw new AssertionError("Utility class cannot be instantiated");
