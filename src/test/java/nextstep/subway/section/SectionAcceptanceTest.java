@@ -113,7 +113,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response =
                 SectionTestFixture.requestAddSection(신분당선.getId().toString(), 강남역.getId(), 역삼역.getId(), 10);
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
 

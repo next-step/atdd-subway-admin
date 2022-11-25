@@ -62,11 +62,20 @@ public class Section implements Comparable<Section>{
     }
 
     public void swapStation(Section newSection) {
+        validateDistance(newSection);
+        this.distance -= newSection.distance;
+
         if (compareUpStation(newSection)) {
             this.upStation = newSection.downStation;
             return;
         }
         this.downStation = newSection.upStation;
+    }
+
+    private void validateDistance(Section newSection) {
+        if (newSection.distance >= this.distance) {
+            throw new IllegalArgumentException("입력된 거리가 기존역 사이보다 크거나 같습니다.");
+        }
     }
 
     public Stream<Station> getStations() {

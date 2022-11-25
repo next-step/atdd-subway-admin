@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.SectionRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 public class SectionTestFixture {
@@ -15,7 +14,6 @@ public class SectionTestFixture {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/{lineId}/sections", lineId)
                 .then().log().all()
-                .statusCode(HttpStatus.CREATED.value())
                 .extract();
     }
 }
