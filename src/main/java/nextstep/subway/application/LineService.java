@@ -23,8 +23,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.getById(lineRequest.getUpStationId());
-        Station downStation = stationRepository.getById(lineRequest.getDownStationId());
+        Station upStation = getStation(lineRequest.getUpStationId());
+        Station downStation = getStation(lineRequest.getDownStationId());
         return LineResponse.of(lineRepository.save(lineRequest.toLine(upStation, downStation)));
     }
 
@@ -58,5 +58,9 @@ public class LineService {
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
         lineRepository.delete(line);
+    }
+
+    private Station getStation(long stationId) {
+        return stationRepository.getById(stationId);
     }
 }
