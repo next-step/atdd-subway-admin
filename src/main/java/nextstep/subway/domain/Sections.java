@@ -8,6 +8,8 @@ import java.util.List;
 @Embeddable
 public class Sections {
 
+    private static final String INVALID_DISTANCE_EXCEPTION = "유효하기 않은 거리로는 구간을 생성할 수 없습니다.";
+
     @OneToMany(mappedBy = "line")
     List<Section> sections = new ArrayList<>();
 
@@ -39,22 +41,34 @@ public class Sections {
 
     private void insertNewDownStation(Section newSection) {
         Section section = findSectionWithUpStation(newSection.getUpStation());
+        int newDistance = calculateDistance(section, newSection);
         Station preDownStation = section.getDownStation();
-        int preDistance = section.getDistance();
         section = section.switchDownStation(newSection);
-        setSwitchedSectionDistance(section, newSection);
-        addGeneratedSection(newSection.getLine(), newSection.getDownStation(), preDownStation, preDistance - newSection.getDistance());
+        section.updateDistance(newSection.getDistance());
+        addGeneratedSection(newSection.getLine(), newSection.getDownStation(), preDownStation, newDistance);
     }
 
     private void insertNewUpStation(Section newSection) {
         Section section = findSectionWithDownStation(newSection.getDownStation());
-        System.out.println("upStation : " + section.getUpStation());
-        System.out.println("downStation : " + section.getDownStation());
+        int newDistance = calculateDistance(section, newSection);
         Station preUpStation = section.getUpStation();
-        int preDistance = section.getDistance();
         section = section.switchUpStation(newSection);
-        setSwitchedSectionDistance(section, newSection);
-        addGeneratedSection(newSection.getLine(), preUpStation, newSection.getUpStation(), preDistance - newSection.getDistance());
+        section.updateDistance(newSection.getDistance());
+        addGeneratedSection(newSection.getLine(), preUpStation, newSection.getUpStation(), newDistance);
+    }
+
+    private int calculateDistance(Section preSection, Section newSection) {
+
+        if (preSection.getUpStation() == null || preSection.getDownStation() == null) {
+            return 0;
+        }
+
+        if (preSection.getDistance() - newSection.getDistance() <= 0) {
+            System.out.println(INVALID_DISTANCE_EXCEPTION);
+            throw new IllegalArgumentException(INVALID_DISTANCE_EXCEPTION);
+        }
+
+        return preSection.getDistance() - newSection.getDistance();
     }
 
     private boolean exitsUpStation(Section section) {
@@ -80,21 +94,7 @@ public class Sections {
     }
 
     private void addGeneratedSection(Line line, Station upStation, Station downStation, int distance) {
-        if (upStation == null || downStation == null) {
-            distance = 0;
-        }
         sections.add(new Section(line, upStation, downStation, distance));
-    }
-
-    private void setSwitchedSectionDistance(Section switchedSection, Section newSection) {
-
-            if (switchedSection.getDownStation() == newSection.getDownStation()) {
-                switchedSection.updateDistance(newSection.getDistance());
-            }
-
-            if (switchedSection.getUpStation() == newSection.getUpStation()) {
-                switchedSection.updateDistance(newSection.getDistance());
-            }
     }
 
     public List<Section> getSectionList() {

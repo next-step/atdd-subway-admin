@@ -31,4 +31,9 @@ public class SectionController {
         List<SectionResponse> sectionResponse = sectionService.retrieveSectionsByLine(lineId);
         return ResponseEntity.ok().body(sectionResponse);
     }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity handleIllegalArgsException() {
+        return ResponseEntity.badRequest().build();
+    }
 }

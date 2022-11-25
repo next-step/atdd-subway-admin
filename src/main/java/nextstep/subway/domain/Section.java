@@ -61,6 +61,20 @@ public class Section extends BaseEntity {
         return downStation.getId();
     }
 
+    public Section switchDownStation(Section section) {
+        this.downStation = section.getDownStation();
+        return this;
+    }
+
+    public Section switchUpStation(Section section){
+        this.upStation = section.getUpStation();
+        return this;
+    }
+
+    public void updateDistance(int distance) {
+        this.distance = distance;
+    }
+
     public Line getLine() {
         return line;
     }
@@ -75,19 +89,5 @@ public class Section extends BaseEntity {
 
     public int getDistance() {
         return distance;
-    }
-
-    public Section switchDownStation(Section section) {
-        this.downStation = section.getDownStation();
-        return this;
-    }
-
-    public Section switchUpStation(Section section){
-        this.upStation = section.getUpStation();
-        return this;
-    }
-
-    public void updateDistance(int distance) {
-        this.distance = distance;
     }
 }
