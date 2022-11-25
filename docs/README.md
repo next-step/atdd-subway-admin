@@ -59,7 +59,7 @@
     - [ ] A-B-C 구간의 노선에서 B-C 구간을 제거한다.
 
 - src/main/java/nextstep/subway/line/domain/Sections.java
-    - addDownSection Distance를 가져오지말고 Section 내에서 비교 [ ]
+    - addDownSection Distance를 가져오지말고 Section 내에서 비교 [x]
     - 108 ~ 111 Distance를 가져오지말고 Section or Distance 내에서 처리 [ ]
 - src/main/java/nextstep/subway/line/domain/Distance.java
     - Integer.compare() 사용 [ ]

@@ -66,4 +66,8 @@ public class Section {
     public Line getLine() {
         return line;
     }
+
+    public boolean isLonger(Section addSection) {
+        return this.distance.compareTo(addSection.getDistance()) > 0;
+    }
 }

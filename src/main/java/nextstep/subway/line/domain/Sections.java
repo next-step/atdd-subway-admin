@@ -105,7 +105,7 @@ public class Sections {
     }
 
     private void addDownSection(Section addSection, Section removeSection) {
-        if (removeSection.getDistance().compareTo(addSection.getDistance()) <= 0) {
+        if (!removeSection.isLonger(addSection)) {
             throw new IllegalArgumentException(DISTANCE_MINIMUM_EXCEPTION_MESSAGE);
         }
         this.sections.add(new Section(addSection.getLine(), addSection.getDownStation(), removeSection.getDownStation(), removeSection.getDistance().getDistance() - addSection.getDistance().getDistance()));
