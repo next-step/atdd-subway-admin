@@ -218,7 +218,7 @@ public class LineAcceptanceTest {
 
         ExtractableResponse response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get(BASE_URL + id)
+                .when().get(BASE_URL + "/" + id)
                 .then().log().all()
                 .extract();
 
@@ -235,7 +235,8 @@ public class LineAcceptanceTest {
                 RestAssured.given().log().all()
                         .body(lineRequest)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().put(BASE_URL + id)
+                        .when().put(BASE_URL + "/" + id)
+
                         .then().log().all()
                         .extract();
 
@@ -246,7 +247,7 @@ public class LineAcceptanceTest {
 
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete(BASE_URL + id)
+                .when().delete(BASE_URL + "/" + id)
                 .then().log().all()
                 .extract();
 
@@ -254,7 +255,7 @@ public class LineAcceptanceTest {
     }
 
     public String parseIdByLocation(String location) {
-        return location.substring(location.lastIndexOf("/"));
+        return location.substring(location.lastIndexOf("/")+1);
     }
 
     public Map<String, String> setParams(LineRequest lineRequest) {
