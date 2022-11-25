@@ -3,13 +3,14 @@ package nextstep.subway.ui;
 import nextstep.subway.application.LineService;
 import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.*;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(value = "/lines")
@@ -57,8 +58,10 @@ public class LineController {
         return ResponseEntity.ok(sectionResponse);
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<?> handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<?> handleIllegalArgsException(IllegalArgumentException ex) {
+        Map<String, String> body = new HashMap<>();
+        body.put("message", ex.getMessage());
+        return ResponseEntity.badRequest().body(body);
     }
 }

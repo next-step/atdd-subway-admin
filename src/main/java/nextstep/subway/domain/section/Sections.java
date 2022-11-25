@@ -75,9 +75,24 @@ public class Sections {
         Set<Station> stations = this.sectionItems.stream()
                 .flatMap(sectionItem -> Stream.of(sectionItem.getUpStation(), sectionItem.getDownStation()))
                 .collect(Collectors.toSet());
-        if(stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
+
+        if(isUpAndDownStationsAlreadyEnrolled(section, stations)) {
             throw new IllegalArgumentException(SectionMessage.ERROR_UP_AND_DOWN_STATIONS_ARE_ALREADY_ENROLLED.message());
         }
+
+        if(isUpAndDownStationsNotEnrolled(section, stations)) {
+            throw new IllegalArgumentException(SectionMessage.ERROR_UP_AND_DOWN_STATIONS_ARE_NOT_ENROLLED.message());
+        }
+    }
+
+    private boolean isUpAndDownStationsAlreadyEnrolled(Section section, Set<Station> stations) {
+        return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
+    }
+
+    private boolean isUpAndDownStationsNotEnrolled(Section section, Set<Station> stations) {
+        return !this.sectionItems.isEmpty()
+                && !stations.contains(section.getUpStation())
+                && !stations.contains(section.getDownStation());
     }
 
     private void addUpTerminalStationSection(Section section) {

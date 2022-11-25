@@ -10,6 +10,7 @@ import nextstep.subway.dto.SectionCreateRequest;
 import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.fixture.LineTestFixture;
 import nextstep.subway.fixture.StationTestFixture;
+import nextstep.subway.message.SectionMessage;
 import nextstep.subway.repository.LineRepository;
 import nextstep.subway.repository.StationRepository;
 import nextstep.subway.rest.SectionRestAssured;
@@ -161,6 +162,74 @@ public class SectionAcceptanceTest {
                 () -> assertThat(sectionResponse.getUpStation().getName()).isEqualTo(삼성역.getName().value()),
                 () -> assertThat(sectionResponse.getDownStation().getName()).isEqualTo(선릉역.getName().value()),
                 () -> assertThat(sectionResponse.getDistance()).isEqualTo(3)
+        );
+    }
+
+    /**
+     * Given 기존역 사이 길이보다 새로운 역의 길이가 큰 경우
+     * When 구간을 등록하면
+     * Then 등록에 실패한다
+     */
+    @DisplayName("지하철 구간 등록 예외 처리 - 기존역 사이 길이보다 새로운 역의 길이가 큰 경우")
+    @Test
+    void add_section_with_longer_distance_throw_exception() {
+        // given
+        Station 삼성역 = stationRepository.save(StationTestFixture.삼성역);
+        SectionCreateRequest createRequest = new SectionCreateRequest(삼성역.getId(), 선릉역.getId(), 7);
+
+        // when
+        ExtractableResponse<Response> response = SectionRestAssured.지하철_구간_추가(이호선.getId(), createRequest);
+
+        // then
+        // 강남역 -(5)- 역삼역 -(5)- [+삼성역 -(7)-] 선릉역
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.jsonPath().getString("message")).isEqualTo(SectionMessage.ERROR_NEW_SECTION_DISTANCE_MORE_THAN_ORIGIN_SECTION.message())
+        );
+    }
+
+    /**
+     * Given 상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우
+     * When 구간을 등록하면
+     * Then 등록에 실패한다
+     */
+    @DisplayName("지하철 구간 등록 예외 처리 - 상행역과 하행역이 이미 노선에 모두 등록되어 있는 경우")
+    @Test
+    void add_section_with_enrolled_stations_throw_exception() {
+        // given
+        Station 삼성역 = stationRepository.save(StationTestFixture.삼성역);
+        SectionCreateRequest createRequest = new SectionCreateRequest(역삼역.getId(), 선릉역.getId(), 3);
+
+        // when
+        ExtractableResponse<Response> response = SectionRestAssured.지하철_구간_추가(이호선.getId(), createRequest);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.jsonPath().getString("message")).isEqualTo(SectionMessage.ERROR_UP_AND_DOWN_STATIONS_ARE_ALREADY_ENROLLED.message())
+        );
+    }
+
+    /**
+     * 상행역과 하행역 둘 중 하나도 포함되어있지 않는 경우
+     * When 구간을 등록하면
+     * Then 등록에 실패한다
+     */
+    @DisplayName("지하철 구간 등록 예외 처리 - 상행역과 하행역 둘 중 하나도 포함되어있지 않는 경우")
+    @Test
+    void add_section_without_up_stations_throw_exception() {
+        // given
+        Station 삼성역 = stationRepository.save(StationTestFixture.삼성역);
+        Station 종합운동장 = stationRepository.save(StationTestFixture.종합운동장);
+        SectionCreateRequest createRequest = new SectionCreateRequest(삼성역.getId(), 종합운동장.getId(), 3);
+
+        // when
+        ExtractableResponse<Response> response = SectionRestAssured.지하철_구간_추가(이호선.getId(), createRequest);
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.jsonPath().getString("message")).isEqualTo(SectionMessage.ERROR_UP_AND_DOWN_STATIONS_ARE_NOT_ENROLLED.message())
         );
     }
 }
