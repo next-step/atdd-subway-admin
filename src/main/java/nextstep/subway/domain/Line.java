@@ -16,8 +16,6 @@ public class Line extends BaseEntity{
     private String name;
     @Column(unique = true)
     private String color;
-    @Embedded
-    private Stations stations = new Stations();
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
     private List<Section> sections = new ArrayList<>();
 
