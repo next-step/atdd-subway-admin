@@ -3,7 +3,6 @@ package nextstep.subway.section;
 import io.restassured.RestAssured;
 import nextstep.subway.DatabaseCleaner;
 import nextstep.subway.application.LineService;
-import nextstep.subway.application.SectionLineStationService;
 import nextstep.subway.application.StationService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.SectionRequest;
@@ -24,9 +23,6 @@ public class SectionLineStationServiceTest {
 
     @LocalServerPort
     private int port;
-
-    @Autowired
-    SectionLineStationService sectionLineStationService;
 
     @Autowired
     LineService lineService;
@@ -62,7 +58,7 @@ public class SectionLineStationServiceTest {
     @Test
     @DisplayName("상행역과 하행역이 모두 구간에 이미 등록되어 있는 경우 오류 발생 테스트")
     void upStationDownStationAlreadyExistExceptionTest() {
-        assertThatThrownBy(() -> sectionLineStationService
+        assertThatThrownBy(() -> lineService
                 .addSection(lineId, new SectionRequest(upStationId,downStationId,10)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -70,7 +66,7 @@ public class SectionLineStationServiceTest {
     @Test
     @DisplayName("상행역과 하행역이 역방향으로 모두 구간에 이미 등록되어 있는 경우 오류 발생 테스트")
     void upStationDownStationReverseAlreadyExistExceptionTest() {
-        assertThatThrownBy(() -> sectionLineStationService
+        assertThatThrownBy(() -> lineService
                 .addSection(lineId, new SectionRequest(downStationId,upStationId,10)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -83,7 +79,7 @@ public class SectionLineStationServiceTest {
         Long newDownStationId = StationAcceptanceTest.createStationAndGetId("또다른새역");
         //when
         //then
-        assertThatThrownBy(() -> sectionLineStationService
+        assertThatThrownBy(() -> lineService
                 .addSection(lineId, new SectionRequest(newUpStationId, newDownStationId, 5)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -95,10 +91,10 @@ public class SectionLineStationServiceTest {
         Long newUpStationId = StationAcceptanceTest.createStationAndGetId("새로운역");
         //when
         //then
-        assertThatThrownBy(() -> sectionLineStationService
+        assertThatThrownBy(() -> lineService
                 .addSection(lineId, new SectionRequest(newUpStationId, downStationId, 100)))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> sectionLineStationService
+        assertThatThrownBy(() -> lineService
                 .addSection(lineId, new SectionRequest(newUpStationId, downStationId, 101)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
@@ -110,10 +106,10 @@ public class SectionLineStationServiceTest {
         Long newUpStationId = StationAcceptanceTest.createStationAndGetId("새로운역");
         //when
         //then
-        assertThatThrownBy(() -> sectionLineStationService
+        assertThatThrownBy(() -> lineService
                 .addSection(lineId, new SectionRequest(newUpStationId, downStationId, 0)))
                 .isInstanceOf(IllegalArgumentException.class);
-        assertThatThrownBy(() -> sectionLineStationService
+        assertThatThrownBy(() -> lineService
                 .addSection(lineId, new SectionRequest(newUpStationId, downStationId, -10)))
                 .isInstanceOf(IllegalArgumentException.class);
     }

@@ -25,10 +25,16 @@ public class Section extends BaseEntity {
 
     protected Section() {}
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Station upStation, Station downStation, int distance) {
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
+    }
+
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.line = line;
+        this.upStation = upStation;
+        this.downStation = downStation;
         this.distance = distance;
     }
 
@@ -50,6 +56,10 @@ public class Section extends BaseEntity {
 
     public Line getLine() {
         return line;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
     }
 
 }
