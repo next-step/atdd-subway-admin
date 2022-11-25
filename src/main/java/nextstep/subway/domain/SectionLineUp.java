@@ -54,18 +54,31 @@ public class SectionLineUp {
     }
 
     private boolean isEndUpStation(Section section) {
-        //  출발지로 가는 노선이 없고, 도착지에서 출발하는 노선은 있지만, 도착지로 향하는 노선이 없는 경우
-        return sectionList.stream().noneMatch(streamSection -> streamSection.isSameUpStation(section)) &&
-                sectionList.stream()
-                        .anyMatch(streamSection -> streamSection.isSameUpStationId(section.getDownStationId())) &&
-                sectionList.stream().noneMatch(streamSection -> streamSection.isSameDownStation(section));
+        //  출발지가 같은 노선이 없고, 도착지에서 출발하는 노선은 있지만, 도착지로 향하는 노선이 없는 경우
+        return notHasSameUpStation(section) && notHasSameDownStation(section) && hasSameUpStationByDownStation(section);
     }
 
     private boolean isEndDownStation(Section section) {
         //  출발지로 향하는 노선이 있지만, 출발지에서 출발하는 노선이 없는 경우
+        return hasSameDownStationByUpStation(section) && notHasSameUpStation(section);
+    }
+
+    private boolean notHasSameDownStation(Section section) {
+        return sectionList.stream().noneMatch(streamSection -> streamSection.isSameDownStation(section));
+    }
+
+    private boolean hasSameUpStationByDownStation(Section section) {
         return sectionList.stream()
-                .anyMatch(streamSection -> streamSection.isSameDownStationId(section.getUpStationId())) &&
-                sectionList.stream().noneMatch(streamSection -> streamSection.isSameUpStation(section));
+                .anyMatch(streamSection -> streamSection.isSameUpStationId(section.getDownStationId()));
+    }
+    private boolean notHasSameUpStation(Section section) {
+        return sectionList.stream().noneMatch(streamSection -> streamSection.isSameUpStation(section));
+    }
+
+
+    private boolean hasSameDownStationByUpStation(Section section) {
+        return sectionList.stream()
+                .anyMatch(streamSection -> streamSection.isSameDownStationId(section.getUpStationId()));
     }
 
     private void addEndUpStation(Section section) {
