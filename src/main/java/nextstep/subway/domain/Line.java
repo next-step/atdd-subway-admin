@@ -45,6 +45,10 @@ public class Line extends BaseEntity {
         return sections.addSection(section);
     }
 
+    public void updateDistance(int distance) {
+        this.distance = distance;
+    }
+
     public Long getId() {
         return id;
     }

@@ -35,6 +35,7 @@ public class SectionService {
         Sections sections = line.addSection(sectionRequest.toSection(line, upStation, downStation, sectionRequest.getDistance()));
 
         List<Section> persistSections = sectionRepository.saveAll(sections.getSectionList());
+        line.updateDistance(persistSections.stream().mapToInt(section -> section.getDistance()).sum());
 
         return persistSections.stream().map(section -> SectionResponse.of(section)).collect(Collectors.toList());
     }
