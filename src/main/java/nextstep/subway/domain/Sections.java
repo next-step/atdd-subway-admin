@@ -41,15 +41,19 @@ public class Sections {
         Section section = findSectionWithUpStation(newSection.getUpStation());
         Station preDownStation = section.getDownStation();
         int preDistance = section.getDistance();
-        section.switchDownStation(newSection);
+        section = section.switchDownStation(newSection);
+        setSwitchedSectionDistance(section, newSection);
         addGeneratedSection(newSection.getLine(), newSection.getDownStation(), preDownStation, preDistance - newSection.getDistance());
     }
 
     private void insertNewUpStation(Section newSection) {
         Section section = findSectionWithDownStation(newSection.getDownStation());
+        System.out.println("upStation : " + section.getUpStation());
+        System.out.println("downStation : " + section.getDownStation());
         Station preUpStation = section.getUpStation();
         int preDistance = section.getDistance();
-        section.switchUpStation(newSection);
+        section = section.switchUpStation(newSection);
+        setSwitchedSectionDistance(section, newSection);
         addGeneratedSection(newSection.getLine(), preUpStation, newSection.getUpStation(), preDistance - newSection.getDistance());
     }
 
@@ -76,7 +80,21 @@ public class Sections {
     }
 
     private void addGeneratedSection(Line line, Station upStation, Station downStation, int distance) {
+        if (upStation == null || downStation == null) {
+            distance = 0;
+        }
         sections.add(new Section(line, upStation, downStation, distance));
+    }
+
+    private void setSwitchedSectionDistance(Section switchedSection, Section newSection) {
+
+            if (switchedSection.getDownStation() == newSection.getDownStation()) {
+                switchedSection.updateDistance(newSection.getDistance());
+            }
+
+            if (switchedSection.getUpStation() == newSection.getUpStation()) {
+                switchedSection.updateDistance(newSection.getDistance());
+            }
     }
 
     public List<Section> getSectionList() {
