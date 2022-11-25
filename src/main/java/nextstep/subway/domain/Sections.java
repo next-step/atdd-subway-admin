@@ -31,6 +31,12 @@ public class Sections {
         sections.add(section);
     }
 
+    public void removeSectionContainsBy(Station station) {
+        Optional<Section> upSection = getUpSection(station);
+        Optional<Section> downSection = getDownSection(station);
+        mergeSection(upSection, downSection);
+    }
+
     public List<Station> getOrderedStations() {
         Optional<Section> firstSection = getFirstSection();
 
@@ -43,6 +49,18 @@ public class Sections {
                     .findFirst();
         }
         return new ArrayList<>(result);
+    }
+
+    private Optional<Section> getUpSection(Station station) {
+        return sections.stream()
+                .filter(upSection -> Objects.equals(upSection.getDownStation(), station))
+                .findFirst();
+    }
+
+    private Optional<Section> getDownSection(Station station) {
+        return sections.stream()
+                .filter(downSection -> Objects.equals(downSection.getUpStation(), station))
+                .findFirst();
     }
 
     private Optional<Section> getFirstSection() {
@@ -82,7 +100,15 @@ public class Sections {
         return sections.stream()
                 .map(Section::getStations)
                 .flatMap(Collection::stream)
-                .filter(station -> section.getStations().contains(station))
+                .filter(section::containsStation)
                 .collect(Collectors.toSet());
+    }
+
+    private void mergeSection(Optional<Section> upSection, Optional<Section> downSection) {
+        if (upSection.isPresent()) {
+            Section up = upSection.get();
+            downSection.ifPresent(down -> down.mergeUpStation(up));
+            sections.remove(up);
+        }
     }
 }

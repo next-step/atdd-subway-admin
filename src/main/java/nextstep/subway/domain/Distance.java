@@ -21,11 +21,15 @@ public class Distance {
         return new Distance(distance);
     }
 
-    public void subtract(Distance distance) {
+    public Distance subtract(Distance distance) {
         if (this.distance <= distance.distance) {
             throw new IllegalArgumentException("새로운 역이 기존 역 사이보다 크거나 같으면 등록할 수 없다");
         }
-        this.distance -= distance.distance;
+        return Distance.from(this.distance -= distance.distance);
+    }
+
+    public Distance add(Distance distance) {
+        return Distance.from(this.distance + distance.getDistance());
     }
 
     public Long getDistance() {

@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -44,6 +45,23 @@ public class Section {
         this.downStation = downStation;
     }
 
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (!(object instanceof Section)) {
+            return false;
+        }
+        Section section = (Section) object;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, line, distance, upStation, downStation);
+    }
+
     public void rebase(Section section) {
         rebaseIfUpStationEquals(section);
         rebaseIfDownStationEquals(section);
@@ -65,16 +83,25 @@ public class Section {
         return Arrays.asList(upStation, downStation);
     }
 
+    public boolean containsStation(Station station) {
+        return getStations().contains(station);
+    }
+
+    public void mergeUpStation(Section upSection) {
+        this.upStation = upSection.getUpStation();
+        this.distance = distance.add(upSection.distance);
+    }
+
     private void rebaseIfUpStationEquals(Section section) {
         if(this.upStation.equals(section.upStation)) {
-            this.distance.subtract(section.distance);
+            distance = distance.subtract(section.distance);
             upStation = section.downStation;
         }
     }
 
     private void rebaseIfDownStationEquals(Section section) {
         if(this.downStation.equals(section.downStation)) {
-            this.distance.subtract(section.distance);
+            distance = distance.subtract(section.distance);
             downStation = section.upStation;
         }
     }
