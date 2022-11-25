@@ -69,7 +69,6 @@ public class Sections {
         }
 
         if (preSection.getDistance() - newSection.getDistance() <= 0) {
-            System.out.println(INVALID_DISTANCE_EXCEPTION);
             throw new IllegalArgumentException(INVALID_DISTANCE_EXCEPTION);
         }
 
