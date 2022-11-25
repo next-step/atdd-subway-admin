@@ -2,6 +2,7 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.SectionLineUp;
 
 import java.util.List;
 import java.util.stream.Collectors;

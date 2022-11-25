@@ -1,9 +1,5 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.Distance;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-
 public class SectionCreateRequest {
     private long downStationId;
     private long upStationId;
@@ -25,9 +21,5 @@ public class SectionCreateRequest {
 
     public int getDistance() {
         return distance;
-    }
-
-    public Section toSection(Line line) {
-        return new Section(upStationId, downStationId, new Distance(distance), line);
     }
 }

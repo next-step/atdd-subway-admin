@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -69,11 +68,11 @@ public class Line {
         sectionLineUp.addSection(section);
     }
 
-    public List<Section> getSectionList(Comparator<Section> comparator) {
-        return sectionLineUp.getSectionList(comparator);
+    public List<Section> getSectionLineUpInOrder() {
+        return sectionLineUp.getSectionsInOrder();
     }
 
-    public List<Long> getStationIdsInOrder(Comparator<Section> comparator) {
-        return this.sectionLineUp.getStationIds(comparator);
+    public Stations getStationsInOrder() {
+        return this.sectionLineUp.getStationsInOrder();
     }
 }
