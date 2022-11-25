@@ -239,7 +239,23 @@ public class SectionAcceptanceTest {
     @DisplayName("기존에 등록된 상행역과 하행역의 구간을 등록한다.")
     @Test
     void 기존에_등록된_상하행역_등록_테스트() {
+        // given
+        StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
+        StationResponse 합정역 = StationAcceptanceTest.createStation("합정역").as(StationResponse.class);
 
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 10);
+        ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
+        LineResponse 이호선 = response.as(LineResponse.class);
+
+        SectionRequest section1 = new SectionRequest(당산역.getId(), 합정역.getId(), 10);
+        ExtractableResponse<Response> addSectionResponse1 = addSection(response.header("Location"), section1);
+
+        // when
+        SectionRequest section2 = new SectionRequest(당산역.getId(), 합정역.getId(), 10);
+        ExtractableResponse<Response> addSectionResponse2 = addSection(response.header("Location"), section2);
+
+        // then
+        assertThat(addSectionResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -250,6 +266,26 @@ public class SectionAcceptanceTest {
     @DisplayName("기존에 등록되지 않은 상행역과 하행역의 구간을 등록한다.")
     @Test
     void 기존에_등록되지_않은_상하행역_등록_테스트() {
+
+        // given
+        StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
+        StationResponse 합정역 = StationAcceptanceTest.createStation("합정역").as(StationResponse.class);
+
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 10);
+        ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
+        LineResponse 이호선 = response.as(LineResponse.class);
+
+        SectionRequest section1 = new SectionRequest(당산역.getId(), 합정역.getId(), 10);
+        ExtractableResponse<Response> addSectionResponse1 = addSection(response.header("Location"), section1);
+
+        // when
+        StationResponse 여의도역 = StationAcceptanceTest.createStation("여의도역").as(StationResponse.class);
+        StationResponse 여의나루역 = StationAcceptanceTest.createStation("여의나루역").as(StationResponse.class);
+        SectionRequest section2 = new SectionRequest(여의도역.getId(), 여의나루역.getId(), 3);
+        ExtractableResponse<Response> addSectionResponse2 = addSection(response.header("Location"), section2);
+
+        // then
+        assertThat(addSectionResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
 
     }
 
