@@ -62,23 +62,10 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    public List<Section> addAndGetSections(Section newSection, Station requestUpStation, Station requestDownStation) {
-        List<Section> sections = this.sections.addAndGetSections(newSection,
-                checkAndGetNewStation(requestUpStation, requestDownStation), requestUpStation, requestDownStation);
+    public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, int distance) {
+        List<Section> sections = this.sections.addAndGetSections(requestUpStation, requestDownStation, distance);
         sections.forEach(section -> section.setLine(this));
         return sections;
-    }
-
-    private Station checkAndGetNewStation(Station upStation, Station downStation) {
-        boolean isContainUpStation = this.isContainStation(upStation);
-        boolean isContainDownStation = this.isContainStation(downStation);
-        if(isContainUpStation && isContainDownStation) {
-            throw new IllegalArgumentException(ErrorMessage.ALREADY_EXIST_SECTION.getMessage());
-        }
-        if(!isContainUpStation && !isContainDownStation) {
-            throw new IllegalArgumentException(ErrorMessage.NO_EXIST_STATIONS.getMessage());
-        }
-        return isContainUpStation ? downStation : upStation;
     }
 
     public void initSection(Section section) {

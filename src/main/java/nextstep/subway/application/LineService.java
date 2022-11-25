@@ -65,9 +65,8 @@ public class LineService {
 
         Station requestUpStation = stationService.getStationById(sectionRequest.getUpStationId());
         Station requestDownStation = stationService.getStationById(sectionRequest.getDownStationId());
-        Section newSection = new Section(line, requestUpStation, requestDownStation, distance);
 
-        return new SectionsResponse(line.addAndGetSections(newSection, requestUpStation, requestDownStation)
+        return new SectionsResponse(line.addAndGetSections(requestUpStation, requestDownStation, distance)
                 .stream().map(SectionResponse::of).collect(Collectors.toList()));
     }
 

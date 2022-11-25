@@ -60,18 +60,33 @@ public class Sections {
         return stations;
     }
 
-    public List<Section> addAndGetSections(Section newSection, Station newStation, Station requestUpStation, Station requestDownStation) {
+    public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, int distance) {
+        Section newSection = new Section(requestUpStation, requestDownStation, distance);
+        Station newStation = checkAndGetNewStation(requestUpStation, requestDownStation);
+
         List<Section> sections = new ArrayList<>();
         if(requestUpStation.equals(newStation)) {
-            sections.add(addNewUpStationAndGetSection(newStation, requestDownStation, newSection.getDistance()));
+            sections.add(addNewUpStationAndGetSection(newStation, requestDownStation, distance));
             sections.add(newSection);
         }
         if (requestDownStation.equals(newStation)) {
             sections.add(newSection);
-            sections.add(addNewDownStationAndGetSection(requestUpStation, newStation, newSection.getDistance()));
+            sections.add(addNewDownStationAndGetSection(requestUpStation, newStation, distance));
         }
         this.sections.addAll(sections);
         return sections;
+    }
+
+    private Station checkAndGetNewStation(Station upStation, Station downStation) {
+        boolean isContainUpStation = this.isContainStation(upStation);
+        boolean isContainDownStation = this.isContainStation(downStation);
+        if(isContainUpStation && isContainDownStation) {
+            throw new IllegalArgumentException(ErrorMessage.ALREADY_EXIST_SECTION.getMessage());
+        }
+        if(!isContainUpStation && !isContainDownStation) {
+            throw new IllegalArgumentException(ErrorMessage.NO_EXIST_STATIONS.getMessage());
+        }
+        return isContainUpStation ? downStation : upStation;
     }
 
     private Section addNewUpStationAndGetSection(Station newStation, Station downStation, int distance) {
