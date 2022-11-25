@@ -2,6 +2,7 @@ package nextstep.subway.domain;
 
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import java.util.Arrays;
 import java.util.List;
@@ -86,6 +87,18 @@ class SectionsTest {
         // then
 
         assertThat(sections.getOrderedStations()).containsExactlyElementsOf(createStations(1L, 3L));
+    }
+
+    @Test
+    @DisplayName("구간이 하나일 경우, 종점역을 지우게 되면, 에러가 발생해야 한다")
+    void throws_exception_when_remove_last_station_of_last_section() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(createSection(1L, 3L, 100L));
+
+        // when && then
+        assertThatThrownBy(() -> sections.removeSectionContainsBy(createStation(1L)))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     private Section createSection(Long upStationId, Long downStationId, Long distance) {

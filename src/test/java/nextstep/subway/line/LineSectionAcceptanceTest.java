@@ -256,8 +256,35 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertThat(노선_지하철_역_번호들).containsExactly(서울역_번호, 수원역_번호);
     }
 
+    /**
+     * When 노선의 하나뿐인 구간의 하행 종점역이 삭제되면
+     * Then 에러가 발생해야 한다
+     **/
+    @DisplayName("노선의 하나뿐인 구간의 하행 종점역이 삭제되면 에러가 발생해야 한다")
+    @Test
+    void throws_exception_when_remove_last_down_station_of_last_section() {
+        // when && then
+        구간_삭제_결과에서_에러가_발생해야_한다(노선에_역을_삭제한다(노선_아이디, 두정역_번호));
+    }
+
+    /**
+     * When 노선의 하나뿐인 구간의 상행 종점역이 삭제되면
+     * Then 에러가 발생해야 한다
+     **/
+    @DisplayName("노선의 하나뿐인 구간의 상행 종점역이 삭제되면 에러가 발생해야 한다")
+    @Test
+    void throws_exception_when_remove_last_up_station_of_last_section() {
+        // when && then
+        구간_삭제_결과에서_에러가_발생해야_한다(노선에_역을_삭제한다(노선_아이디, 서울역_번호));
+    }
+
+
     private void 구간_생성_결과에서_에러가_발생해야_한다(ExtractableResponse<Response> 구간_생성_결과) {
         assertThat(구간_생성_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private void 구간_삭제_결과에서_에러가_발생해야_한다(ExtractableResponse<Response> 구간_삭제_결과) {
+        assertThat(구간_삭제_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private void 지하철역_목록이_상행선부터_차례로_노출되어야_한다(List<Long> 지하철역_번호_목록, Long 서울역_번호, Long 두정역_번호, Long 수원역_번호) {

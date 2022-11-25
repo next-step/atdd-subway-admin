@@ -105,12 +105,15 @@ public class Sections {
     }
 
     private void mergeSection(Optional<Section> upSection, Optional<Section> downSection) {
+        validate(upSection, downSection);
         mergeMiddleSection(upSection, downSection);
         mergeLastSection(upSection, downSection);
     }
 
-    private boolean isMiddleSection(Optional<Section> upSection, Optional<Section> downSection) {
-        return upSection.isPresent() && downSection.isPresent();
+    private void validate(Optional<Section> upSection, Optional<Section> downSection) {
+        if (isAnyPresent(upSection, downSection)) {
+            throwExceptionIfSectionsHasOneSection();
+        }
     }
 
     private void mergeMiddleSection(Optional<Section> upSection, Optional<Section> downSection) {
@@ -126,6 +129,20 @@ public class Sections {
         if (!isMiddleSection(upSection, downSection)) {
             upSection.ifPresent(up -> sections.remove(up));
             downSection.ifPresent(down -> sections.remove(down));
+        }
+    }
+
+    private boolean isMiddleSection(Optional<Section> upSection, Optional<Section> downSection) {
+        return upSection.isPresent() && downSection.isPresent();
+    }
+
+    private boolean isAnyPresent(Optional<Section> upSection, Optional<Section> downSection) {
+        return upSection.isPresent() || downSection.isPresent();
+    }
+
+    private void throwExceptionIfSectionsHasOneSection() {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("하나 남은 구간의 종점은 삭제할 수 없습니다.");
         }
     }
 }
