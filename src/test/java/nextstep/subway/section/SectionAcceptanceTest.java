@@ -210,7 +210,25 @@ public class SectionAcceptanceTest {
     @DisplayName("기존 구간 이상 거리의 새로운 역을 등록한다.")
     @Test
     void 기존_구간_거리_이상_거리의_역_추가_테스트() {
-        
+        // given
+        StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
+        StationResponse 홍대입구역 = StationAcceptanceTest.createStation("홍대입구역").as(StationResponse.class);
+
+        LineRequest lineRequest1 = new LineRequest("2호선", "bg-green-600", 10);
+        ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest1);
+        LineResponse 이호선 = response.as(LineResponse.class);
+
+        SectionRequest section = new SectionRequest(당산역.getId(), 홍대입구역.getId(), 10);
+        ExtractableResponse<Response> sectionResponse1 = addSection(response.header("Location"), section);
+
+        // when
+        StationResponse 합정역 = StationAcceptanceTest.createStation("합정역").as(StationResponse.class);
+        SectionRequest lineRequest2 = new SectionRequest(당산역.getId(), 합정역.getId(), 15);
+        ExtractableResponse<Response> sectionResponse2 = addSection(response.header("Location"), lineRequest2);
+
+        // then
+        assertThat(sectionResponse2.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+
     }
 
     /**
