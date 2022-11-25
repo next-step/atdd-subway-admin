@@ -7,39 +7,69 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import nextstep.subway.domain.Station;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public abstract class SectionTestFixtures {
+public abstract class SectionAcceptanceTestActions {
 
     private static final String PATH_LINE = "/lines";
-    private static final String PATH_LINE_ID_SECTION = PATH_LINE + "/{lineId}/section";
+    private static final String PATH_LINE_PATH_LINE_ID = PATH_LINE + "/{lineId}";
+    private static final String PATH_LINE_ID_SECTION = PATH_LINE + "/{lineId}/sections";
+
+    public static String 해당_구간만_등록되어_있다(String stationId1, String stationId2) {
+        return 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId2, "7", "id");
+    }
+
+    public static String 노선이_순서대로_등록되어_있다(String stationId1, String stationId2, String stationId3) {
+        String lineId = 지하철_노선_등록되어_있음("신분당선", "bg-red-600", stationId1, stationId3, "7", "id");
+        역_사이_새로운역_등록(stationId1, stationId2, "4", lineId);
+        return lineId;
+    }
+
+    public static void 해당_구간만_조회된다(String pathVariable, Station station1, Station station2) {
+        JsonPath 목록조회결과 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
+        assertThat(목록조회결과.getList("distances", String.class)).containsOnly("4");
+        assertThat(목록조회결과.getList("stationNames", String.class))
+                .containsExactly(station1.getName(), station2.getName());
+    }
+
+    public static void 해당_구간으로_합쳐지며_길이도_합쳐진다(String pathVariable, Station station1, Station station2) {
+        JsonPath 목록조회결과 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
+        assertThat(목록조회결과.getList("distances", String.class)).containsOnly("7");
+        assertThat(목록조회결과.getList("stationNames", String.class))
+                .containsExactly(station1.getName(), station2.getName());
+    }
+
+    public static void 제거할_수_없다(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    public static ExtractableResponse<Response> 역을_제거하려_하면(String lineId, String stationId) {
+        return 삭제(PATH_LINE_ID_SECTION + "?stationId=" + stationId, lineId);
+    }
+
+    public static void 해당역을_제거한다(String lineId, String stationId) {
+        ExtractableResponse<Response> response = 삭제(PATH_LINE_ID_SECTION + "?stationId=" + stationId, lineId);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private static ExtractableResponse<Response> 삭제(String path, String pathVariable) {
+        return RestAssured.given().log().all()
+                .when().delete(path, pathVariable)
+                .then().log().all()
+                .extract();
+    }
 
     public static void 등록이_불가하다(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
-    public static void 기존_구간과_하행_종점으로_등록한_중앙역_구간이_함께_조회됨(String pathVariable,
-                                                         String... containValues) {
-        JsonPath 목록조회 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(목록조회.getList("distance", String.class)).contains(containValues);
-        assertThat(목록조회.getList("downStation.name", String.class)).contains("중앙역");
-    }
-
-
-    public static void 기존_구간과_상행_종점으로_등록한_모란역_구간이_함께_조회됨(String pathVariable,
-                                                         String... containValues) {
-        JsonPath 목록조회 = 목록조회(PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(목록조회.getList("distance", String.class)).contains(containValues);
-        assertThat(목록조회.getList("upStation.name", String.class)).contains("모란역");
-    }
-
-    public static void 새로운_길이를_뺀_나머지를_새롭게_추가된_역과의_길이로_설정(String information, String pathVariable,
-                                                         String... containValues) {
-        List<String> informationList = 목록조회(information, PATH_LINE_ID_SECTION, pathVariable);
-        assertThat(informationList).contains(containValues);
+    public static void 등록_완료(String pathVariable, Station... stations) {
+        JsonPath 목록조회결과 = 목록조회(PATH_LINE_PATH_LINE_ID, pathVariable);
+        assertThat(목록조회결과.getList("stationNames", String.class))
+                .containsExactly(stations[0].getName(), stations[1].getName(), stations[2].getName());
     }
 
     public static ExtractableResponse<Response> 새로운_역_하행_종점으로_등록(String upStationId, String downStationId,
@@ -83,17 +113,6 @@ public abstract class SectionTestFixtures {
                 .when().get(path, pathVariable)
                 .then().log().all()
                 .extract().jsonPath();
-    }
-
-    private static List<String> 목록조회(String information, String path, String pathVariable) {
-        return RestAssured.given().log().all()
-                .when().get(path, pathVariable)
-                .then().log().all()
-                .extract().jsonPath().getList(information, String.class);
-    }
-
-    private static String 생성_값_리턴(Map<String, String> paramMap, String path, String pathVariable, String returnValue) {
-        return 생성(paramMap, path, pathVariable).jsonPath().getString(returnValue);
     }
 
     private static String 생성_값_리턴(Map<String, String> paramMap, String path, String returnValue) {

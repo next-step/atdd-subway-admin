@@ -12,22 +12,24 @@ public class LineResponse {
     private String name;
     private String color;
     private List<StationResponse> stations;
+    private Set<String> stationNames;
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color, List<StationResponse> stations, Set<String> stationNames) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
+        this.stationNames = stationNames;
     }
 
     public static LineResponse of(Line line) {
         List<StationResponse> stations = createStations(line);
         stations.sort((o1, o2) -> o1.getId() > o2.getId() ? 1 : -1);
 
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), stations, line.getStationNames());
     }
 
     private static List<StationResponse> createStations(Line line) {
@@ -53,5 +55,13 @@ public class LineResponse {
 
     public String getColor() {
         return color;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
+    }
+
+    public Set<String> getStationNames() {
+        return stationNames;
     }
 }

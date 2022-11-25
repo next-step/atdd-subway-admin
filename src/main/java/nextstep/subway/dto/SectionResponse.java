@@ -1,33 +1,23 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.Section;
+import java.util.List;
+import java.util.Set;
 
 public class SectionResponse {
 
-    private int distance;
-    private StationResponse upStation;
-    private StationResponse downStation;
+    private List<Integer> distances;
+    private Set<String> stationNames;
 
-    public SectionResponse(int distance, StationResponse upStation, StationResponse downStation) {
-        this.distance = distance;
-        this.upStation = upStation;
-        this.downStation = downStation;
+    public SectionResponse(List<Integer> distance, Set<String> stationNames) {
+        this.distances = distance;
+        this.stationNames = stationNames;
     }
 
-    public static SectionResponse of(Section section) {
-        return new SectionResponse(section.getDistance(), StationResponse.of(section.getUpStation()),
-                StationResponse.of(section.getDownStation()));
+    public List<Integer> getDistances() {
+        return distances;
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
-    public StationResponse getUpStation() {
-        return upStation;
-    }
-
-    public StationResponse getDownStation() {
-        return downStation;
+    public Set<String> getStationNames() {
+        return stationNames;
     }
 }

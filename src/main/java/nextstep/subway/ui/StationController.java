@@ -30,12 +30,14 @@ public class StationController {
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
-        return ResponseEntity.ok().body(stationService.findAllStations());
+        return ResponseEntity.ok()
+                .body(stationService.findAllStations());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<StationResponse> showStationById(@PathVariable Long id) {
-        return ResponseEntity.ok().body(stationService.findResponseById(id));
+        return ResponseEntity.ok()
+                .body(stationService.findResponseById(id));
     }
 
     @PostMapping
@@ -43,17 +45,20 @@ public class StationController {
         Long id = stationService.saveStation(stationRequest);
         StationResponse stationResponse = new StationResponse();
         stationResponse.setId(id);
-        return ResponseEntity.created(URI.create("/stations/" + id)).body(stationResponse);
+        return ResponseEntity.created(URI.create("/stations/" + id))
+                .body(stationResponse);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity deleteStation(@PathVariable Long id) {
         stationService.deleteStationById(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.noContent()
+                .build();
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class, PersistenceException.class})
     public ResponseEntity handleIllegalArgsException() {
-        return ResponseEntity.badRequest().build();
+        return ResponseEntity.badRequest()
+                .build();
     }
 }

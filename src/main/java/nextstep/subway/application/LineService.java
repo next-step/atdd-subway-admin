@@ -30,19 +30,17 @@ public class LineService {
         setUpDownStation(lineRequest);
 
         Line line = lineRequest.toLine();
-        line.addSection(lineRequest.getDistance(), lineRequest.getUpStation(), lineRequest.getDownStation());
+        line.addDefaultSection(lineRequest.getDistance(), lineRequest.getUpStation(), lineRequest.getDownStation());
 
         return lineRepository.save(line)
                 .getId();
     }
 
-    public List<SectionResponse> findSectionResponsesByLineId(Long lineId) {
+    public SectionResponse findSectionResponsesByLineId(Long lineId) {
         Line line = lineRepository.findWithSectionsById(lineId)
                 .orElseThrow(EntityNotFoundException::new);
 
-        return line.getSectionList().stream()
-                .map(SectionResponse::of)
-                .collect(Collectors.toList());
+        return new SectionResponse(line.getDistances(), line.getStationNames());
     }
 
     public List<LineResponse> findAllLines() {
@@ -66,11 +64,8 @@ public class LineService {
                 .orElseThrow(EntityNotFoundException::new);
         Station upStation = stationService.findEntityById(sectionRequest.getUpStationId());
         Station downStation = stationService.findEntityById(sectionRequest.getDownStationId());
-        int distance = sectionRequest.getDistance();
 
-        line.validateAlreadyAndNotExistsStations(upStation, downStation);
-        line.isFindSameUpStationThenCreateNewSection(upStation, downStation, distance);
-        line.isFindSameDownStationThenCreateNewSection(upStation, downStation, distance);
+        line.addSection(sectionRequest.getDistance(), upStation, downStation);
     }
 
     @Transactional
@@ -84,6 +79,15 @@ public class LineService {
     @Transactional
     public void deleteLineById(Long lineId) {
         lineRepository.deleteById(lineId);
+    }
+
+    @Transactional
+    public void deleteSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findWithSectionsById(lineId)
+                .orElseThrow(EntityNotFoundException::new);
+        Station station = stationService.findEntityById(stationId);
+
+        line.deleteSectionByStation(station);
     }
 
     private void setUpDownStation(LineRequest lineRequest) {
