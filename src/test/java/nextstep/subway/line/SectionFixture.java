@@ -39,15 +39,15 @@ public class SectionFixture {
         return new Section(7L, 이호선(), 역삼역(), 선릉역(), new Distance(논현역_강남역_거리));
     }
 
-    public static Section section_A_B() {
+    public static Section sectionAB() {
         return new Section(8L, lineA(), stationA(), stationB(), new Distance(DISTANCE_A_B));
     }
 
-    public static Section section_A_C() {
+    public static Section sectionAC() {
         return new Section(9L, lineA(), stationA(), stationC(), new Distance(DISTANCE_A_C));
     }
 
-    public static Section section_B_C() {
+    public static Section sectionBC() {
         return new Section(10L, lineA(), stationB(), stationC(), new Distance(DISTANCE_B_C));
     }
 }

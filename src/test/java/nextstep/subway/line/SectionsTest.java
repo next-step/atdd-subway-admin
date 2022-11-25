@@ -116,14 +116,27 @@ class SectionsTest {
 
     @DisplayName("A-B-C 구간의 노선에서 B-C 구간을 제거한다.")
     @Test
-    void deleteBetweenSection() {
+    void remove_sectionBC() {
         Sections sections = new Sections();
-        sections.add(section_A_B());
-        sections.add(section_B_C());
+        sections.add(sectionAB());
+        sections.add(sectionBC());
         assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
         assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
-        sections.remove(section_B_C());
+        sections.remove(sectionBC());
         assertThat(sections.getStations()).containsExactly(stationA(), stationB());
         assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_B);
+    }
+
+    @DisplayName("A-B-C 구간의 노선에서 A-B 구간을 제거한다.")
+    @Test
+    void remove_sectionAB() {
+        Sections sections = new Sections();
+        sections.add(sectionAB());
+        sections.add(sectionBC());
+        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
+        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+        sections.remove(sectionAB());
+        assertThat(sections.getStations()).containsExactly(stationB(), stationC());
+        assertThat(sections.getDistance()).isEqualTo(DISTANCE_B_C);
     }
 }
