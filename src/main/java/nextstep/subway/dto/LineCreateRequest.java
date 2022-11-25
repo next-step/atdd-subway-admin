@@ -1,9 +1,6 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.line.Distance;
 import nextstep.subway.domain.line.Line;
-import nextstep.subway.domain.line.LineColor;
-import nextstep.subway.domain.line.LineName;
 
 public class LineCreateRequest {
 
@@ -42,10 +39,6 @@ public class LineCreateRequest {
     }
 
     public Line toLineEntity() {
-        return new Line(
-                new LineName(this.name),
-                new LineColor(this.color),
-                new Distance(this.distance)
-        );
+        return new Line(this.name, this.color);
     }
 }

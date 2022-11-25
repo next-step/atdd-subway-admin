@@ -36,4 +36,9 @@ public class LineColor {
     public int hashCode() {
         return color != null ? color.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return color;
+    }
 }

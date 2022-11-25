@@ -3,10 +3,12 @@ package nextstep.subway.application;
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineColor;
 import nextstep.subway.domain.line.LineName;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.exception.NotFoundEntityException;
+import nextstep.subway.message.LineMessage;
 import nextstep.subway.repository.LineRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,8 +36,9 @@ public class LineService {
 
     private Line mapToLine(LineCreateRequest request) {
         Line line = request.toLineEntity();
-        line.toUpStation(stationService.findById(request.getUpStationId()));
-        line.toDownStation(stationService.findById(request.getDownStationId()));
+        Station upStation = stationService.findById(request.getUpStationId());
+        Station downStation = stationService.findById(request.getDownStationId());
+        line.addSection(upStation, downStation, request.getDistance());
         return line;
     }
 
@@ -60,12 +63,12 @@ public class LineService {
     }
 
     public Line findByIdWithStations(Long lineId) {
-        return lineRepository.findByIdWithStations(lineId)
-                .orElseThrow(NotFoundEntityException::new);
+        return lineRepository.findByIdWithSections(lineId)
+                .orElseThrow(() -> new NotFoundEntityException(LineMessage.ERROR_NOT_FOUND_LINE_BY_ID.message()));
     }
 
     public List<LineResponse> findAllLinesWithStations() {
-        return lineRepository.findAllWithStations().stream()
+        return lineRepository.findAllWithSections().stream()
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }

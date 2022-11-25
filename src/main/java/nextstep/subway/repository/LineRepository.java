@@ -11,14 +11,16 @@ public interface LineRepository extends JpaRepository<Line, Long> {
 
     @Query("select l " +
             "from Line l " +
-            "join fetch l.upStation " +
-            "join fetch l.downStation ")
-    List<Line> findAllWithStations();
+            "left join fetch l.sections.sectionItems s " +
+            "left join fetch s.upStation " +
+            "left join fetch s.downStation ")
+    List<Line> findAllWithSections();
 
     @Query("select l " +
             "from Line l " +
-            "join fetch l.upStation " +
-            "join fetch l.downStation " +
+            "left join fetch l.sections.sectionItems s " +
+            "left join fetch s.upStation " +
+            "left join fetch s.downStation " +
             "where l.id = :id")
-    Optional<Line> findByIdWithStations(Long id);
+    Optional<Line> findByIdWithSections(Long id);
 }
