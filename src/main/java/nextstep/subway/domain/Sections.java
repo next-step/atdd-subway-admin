@@ -48,8 +48,9 @@ public class Sections {
     private void insertNewUpStation(Section newSection) {
         Section section = findSectionWithDownStation(newSection.getDownStation());
         Station preUpStation = section.getUpStation();
+        int preDistance = section.getDistance();
         section.switchUpStation(newSection);
-        addGeneratedSection(newSection.getLine(), preUpStation, newSection.getUpStation(), newSection.getDistance());
+        addGeneratedSection(newSection.getLine(), preUpStation, newSection.getUpStation(), preDistance - newSection.getDistance());
     }
 
     private boolean exitsUpStation(Section section) {

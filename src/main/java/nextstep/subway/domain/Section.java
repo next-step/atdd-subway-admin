@@ -88,7 +88,7 @@ public class Section extends BaseEntity {
         validateDistance(section.getDistance());
 
         this.upStation = section.getUpStation();
-        this.distance -= section.getDistance();
+        this.distance = section.getDistance();
 
     }
 
