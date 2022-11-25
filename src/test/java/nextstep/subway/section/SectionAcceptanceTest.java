@@ -117,4 +117,20 @@ public class SectionAcceptanceTest {
     }
 
 
+    /**
+     * Given 기존 노선 뒤에 새로운 역을 하행 종점으로 등록한다.
+     * When 기존 노선의 상행역과 신규 하행역으로 등록을 한다.
+     * Then Then BAD_REQUEST 를 응답한다.
+     */
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
+    @Test
+    void checkExistSectionValidation() {
+        // given
+        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 광교역.getId(), 역삼역.getId(), 10);
+        // given
+        ExtractableResponse<Response> response =
+                SectionTestFixture.requestAddSection(신분당선.getId().toString(), 강남역.getId(), 역삼역.getId(), 1);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

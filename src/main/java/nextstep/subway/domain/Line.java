@@ -55,11 +55,21 @@ public class Line extends BaseEntity {
     }
 
     public void addSection(Section section) {
+        validateSection(section);
         sections.add(section);
         section.setLine(this);
     }
 
     public List<Station> getStations() {
         return sections.getStations();
+    }
+
+    private boolean checkExistSection(Section section){
+        return section.isExistsSections(sections.getStations());
+    }
+    private void validateSection(Section newSection) {
+        if (checkExistSection(newSection)) {
+            throw new IllegalArgumentException("상행역과 하행역이 모두 노선에 등록되어 있습니다.");
+        }
     }
 }

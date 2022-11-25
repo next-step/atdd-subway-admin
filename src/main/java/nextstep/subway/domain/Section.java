@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import java.util.List;
 import java.util.stream.Stream;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -86,9 +87,13 @@ public class Section implements Comparable<Section>{
         this.line = line;
     }
 
+    public boolean isExistsSections(List<Station> stations) {
+        return stations.contains(upStation) && stations.contains(downStation);
+    }
     @Override
     public int compareTo(Section other) {
         return this.downStation == other.upStation ? -1 : 1;
     }
+
 
 }
