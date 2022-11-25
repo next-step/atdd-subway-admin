@@ -67,9 +67,16 @@ public class Line extends BaseEntity {
     private boolean checkExistSection(Section section){
         return section.isExistsSections(sections.getStations());
     }
+
+    private boolean checkIncludeStation(Section section){
+        return section.isIncludeStation(sections.getStations());
+    }
     private void validateSection(Section newSection) {
         if (checkExistSection(newSection)) {
             throw new IllegalArgumentException("상행역과 하행역이 모두 노선에 등록되어 있습니다.");
+        }
+        if (!checkIncludeStation(newSection)) {
+            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않습니다.");
         }
     }
 }

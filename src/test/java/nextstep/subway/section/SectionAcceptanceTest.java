@@ -126,10 +126,24 @@ public class SectionAcceptanceTest {
     @Test
     void checkExistSectionValidation() {
         // given
-        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 광교역.getId(), 역삼역.getId(), 10);
+        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 광교역.getId(), 하행신설역.getId(), 10);
         // given
         ExtractableResponse<Response> response =
-                SectionTestFixture.requestAddSection(신분당선.getId().toString(), 강남역.getId(), 역삼역.getId(), 1);
+                SectionTestFixture.requestAddSection(신분당선.getId().toString(), 강남역.getId(), 하행신설역.getId(), 1);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 기존 노선에 신규상행역과 신규하행역으로 등록을 한다.
+     * Then Then BAD_REQUEST 를 응답한다.
+     */
+    @DisplayName("상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음")
+    @Test
+    void checkExistUpOrDownValidation() {
+        // given
+        ExtractableResponse<Response> response =
+                SectionTestFixture.requestAddSection(신분당선.getId().toString(), 상행신설역.getId(), 하행신설역.getId(), 1);
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }

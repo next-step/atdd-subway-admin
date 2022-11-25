@@ -90,6 +90,10 @@ public class Section implements Comparable<Section>{
     public boolean isExistsSections(List<Station> stations) {
         return stations.contains(upStation) && stations.contains(downStation);
     }
+
+    public boolean isIncludeStation(List<Station> stations) {
+        return stations.contains(upStation) || stations.contains(downStation);
+    }
     @Override
     public int compareTo(Section other) {
         return this.downStation == other.upStation ? -1 : 1;
