@@ -2,7 +2,6 @@ package nextstep.subway.domain;
 
 import javax.persistence.*;
 import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 @Embeddable
 public class Sections {
@@ -17,7 +16,7 @@ public class Sections {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_of_line"))
-    private List<Section> sections = new CopyOnWriteArrayList<>();
+    private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
     }
