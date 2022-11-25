@@ -45,8 +45,7 @@ public class Sections {
         List<Station> stations = new ArrayList<>();
 
         Station firstStation = sections.stream().filter(section -> section.getUpStation() == null)
-                .collect(Collectors.toList()).get(0)
-                .getDownStation();
+                .findFirst().get().getDownStation();
         Station nextStation = firstStation;
 
         while(nextStation != null) {
@@ -54,8 +53,7 @@ public class Sections {
             Station finalNextStation = nextStation;
             nextStation = sections.stream().filter(section ->
                             section.getUpStation() != null && section.getUpStation().equals(finalNextStation))
-                    .collect(Collectors.toList()).get(0)
-                    .getDownStation();
+                    .findFirst().get().getDownStation();
         }
         return stations;
     }
@@ -94,7 +92,7 @@ public class Sections {
     private Section getNewUpStationSection(Station newStation, Station downStation, Distance distance) {
         Section existingSection = sections.stream()
                 .filter(section -> downStation.equals(section.getDownStation()))
-                .collect(Collectors.toList()).get(0);
+                .findFirst().get();
         if(isFirst(downStation)) {
             sections.remove(existingSection);
             Section newSection = new Section(null, newStation, new Distance(0, true));
@@ -109,7 +107,7 @@ public class Sections {
     private Section getNewDownStationSection(Station upStation, Station newStation, Distance distance) {
         Section existingSection = sections.stream()
                 .filter(section -> upStation.equals(section.getUpStation()))
-                .collect(Collectors.toList()).get(0);
+                .findFirst().get();
         if (isLast(upStation)) {
             sections.remove(existingSection);
             Section newSection = new Section(newStation, null, new Distance(0, true));
