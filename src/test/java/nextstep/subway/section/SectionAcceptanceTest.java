@@ -150,7 +150,26 @@ public class SectionAcceptanceTest {
     @DisplayName("새로운 상행 종점역을 생성한다.")
     @Test
     void 새로운_상행_종점역_생성_테스트() {
+        // given
+        StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
+        StationResponse 합정역 = StationAcceptanceTest.createStation("합정역").as(StationResponse.class);
 
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 10);
+        ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
+        LineResponse 이호선 = response.as(LineResponse.class);
+
+        SectionRequest section = new SectionRequest(당산역.getId(), 합정역.getId(), 10);
+        ExtractableResponse<Response> addSectionResponse = addSection(response.header("Location"), section);
+
+        // when
+        StationResponse 영등포구청역 = StationAcceptanceTest.createStation("영등포구청역").as(StationResponse.class);
+        SectionRequest firstSection = new SectionRequest(영등포구청역.getId(), 당산역.getId(), 17);
+        ExtractableResponse<Response> addFirstSectionResponse = addSection(response.header("Location"), firstSection);
+
+        // then
+        assertAll(
+                () -> assertThat(addFirstSectionResponse.jsonPath().getList(".", SectionResponse.class).stream().filter(res -> res.findSpecificSection(null, 영등포구청역))).isNotNull()
+        );
     }
 
     /**
@@ -161,7 +180,26 @@ public class SectionAcceptanceTest {
     @DisplayName("새로운 하행 종점역을 생성한다.")
     @Test
     void 새로운_하행_종점역_생성_테스트() {
+        // given
+        StationResponse 당산역 = StationAcceptanceTest.createStation("당산역").as(StationResponse.class);
+        StationResponse 합정역 = StationAcceptanceTest.createStation("합정역").as(StationResponse.class);
 
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 10);
+        ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
+        LineResponse 이호선 = response.as(LineResponse.class);
+
+        SectionRequest section = new SectionRequest(당산역.getId(), 합정역.getId(), 10);
+        ExtractableResponse<Response> addSectionResponse = addSection(response.header("Location"), section);
+
+        // when
+        StationResponse 홍대입구역 = StationAcceptanceTest.createStation("홍대입구역").as(StationResponse.class);
+        SectionRequest firstSection = new SectionRequest(합정역.getId(), 홍대입구역.getId(), 7);
+        ExtractableResponse<Response> addFirstSectionResponse = addSection(response.header("Location"), firstSection);
+
+        // then
+        assertAll(
+                () -> assertThat(addFirstSectionResponse.jsonPath().getList(".", SectionResponse.class).stream().filter(res -> res.findSpecificSection(홍대입구역, null))).isNotNull()
+        );
     }
 
     /**
@@ -172,7 +210,7 @@ public class SectionAcceptanceTest {
     @DisplayName("기존 구간 이상 거리의 새로운 역을 등록한다.")
     @Test
     void 기존_구간_거리_이상_거리의_역_추가_테스트() {
-
+        
     }
 
     /**
