@@ -5,6 +5,8 @@ import javax.persistence.AccessType;
 import javax.persistence.Embeddable;
 import java.util.Objects;
 
+import static java.lang.Integer.compare;
+
 @Embeddable
 @Access(AccessType.FIELD)
 public class Distance implements Comparable<Distance> {
@@ -41,12 +43,7 @@ public class Distance implements Comparable<Distance> {
 
     @Override
     public int compareTo(Distance o) {
-        if (this.distance > o.distance) {
-            return 1;
-        } else if (this.distance < o.distance) {
-            return -1;
-        }
-        return 0;
+        return compare(this.distance, o.distance);
     }
 
     public int getDistance() {

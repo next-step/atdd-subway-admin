@@ -60,9 +60,9 @@
 
 - src/main/java/nextstep/subway/line/domain/Sections.java
     - addDownSection Distance를 가져오지말고 Section 내에서 비교 [x]
-    - 108 ~ 111 Distance를 가져오지말고 Section or Distance 내에서 처리 [ ]
+    - 108 ~ 111 Distance를 가져오지말고 Section or Distance 내에서 처리 [x]
 - src/main/java/nextstep/subway/line/domain/Distance.java
-    - Integer.compare() 사용 [ ]
+    - Integer.compare() 사용 [x]
     - isContainUpStation sections를 이용해서 Section에게 물어보기 [ ]
 - 거리 검증 테스트 [ ]
 - 구간 추가 검증 내역 구체화 [ ]
