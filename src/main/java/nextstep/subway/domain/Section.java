@@ -54,7 +54,10 @@ public class Section {
             return false;
         }
         Section section = (Section) object;
-        return Objects.equals(id, section.id);
+        return Objects.equals(id, section.id)
+                && Objects.equals(line, section.line)
+                && Objects.equals(upStation, section.upStation)
+                && Objects.equals(downStation, section.downStation);
     }
 
     @Override

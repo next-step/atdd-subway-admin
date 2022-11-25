@@ -16,7 +16,7 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -105,10 +105,27 @@ public class Sections {
     }
 
     private void mergeSection(Optional<Section> upSection, Optional<Section> downSection) {
-        if (upSection.isPresent()) {
+        mergeMiddleSection(upSection, downSection);
+        mergeLastSection(upSection, downSection);
+    }
+
+    private boolean isMiddleSection(Optional<Section> upSection, Optional<Section> downSection) {
+        return upSection.isPresent() && downSection.isPresent();
+    }
+
+    private void mergeMiddleSection(Optional<Section> upSection, Optional<Section> downSection) {
+        if (isMiddleSection(upSection, downSection)) {
             Section up = upSection.get();
-            downSection.ifPresent(down -> down.mergeUpStation(up));
+            Section down = downSection.get();
+            down.mergeUpStation(up);
             sections.remove(up);
+        }
+    }
+
+    private void mergeLastSection(Optional<Section> upSection, Optional<Section> downSection) {
+        if (!isMiddleSection(upSection, downSection)) {
+            upSection.ifPresent(up -> sections.remove(up));
+            downSection.ifPresent(down -> sections.remove(down));
         }
     }
 }

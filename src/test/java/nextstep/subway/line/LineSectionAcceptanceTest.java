@@ -18,7 +18,6 @@ import io.restassured.response.Response;
 import java.util.List;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -209,13 +208,52 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     void rebase_sections_if_middle_station_of_line_removed() {
         // given
         노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 수원역_번호));
+        노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(수원역_번호, 인천역_번호));
 
         // when
         노선에_역을_삭제한다(노선_아이디, 수원역_번호);
 
         // then
         List<Long> 노선_지하철_역_번호들 = 노선_결과에서_노선_지하철역_번호를_조회한다(특정_노선을_조회한다(노선_아이디));
-        assertThat(노선_지하철_역_번호들).containsExactly(서울역_번호, 두정역_번호);
+        assertThat(노선_지하철_역_번호들).containsExactly(서울역_번호, 인천역_번호, 두정역_번호);
+    }
+
+    /**
+     * Given 노선에 추가 구간을 생성하고
+     * When 노선의 상행 종점역이 삭제되면
+     * Then 노선의 구간과 역이 재배치 되어야 한다
+     **/
+    @DisplayName("노선의 상행 종점역이 삭제되면 노선의 구간과 역이 재배치 되어야 한다")
+    @Test
+    void rebase_sections_if_last_up_station_of_line_removed() {
+        // given
+        노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 수원역_번호));
+
+        // when
+        노선에_역을_삭제한다(노선_아이디, 서울역_번호);
+
+        // then
+        List<Long> 노선_지하철_역_번호들 = 노선_결과에서_노선_지하철역_번호를_조회한다(특정_노선을_조회한다(노선_아이디));
+        assertThat(노선_지하철_역_번호들).containsExactly(수원역_번호, 두정역_번호);
+    }
+
+    /**
+     * Given 노선에 추가 구간을 생성하고
+     * When 노선의 하행 종점역이 삭제되면
+     * Then 노선의 구간과 역이 재배치 되어야 한다
+     **/
+    @DisplayName("노선의 하행 종점역이 삭제되면 노선의 구간과 역이 재배치 되어야 한다")
+    @Test
+    void rebase_sections_if_last_down_station_of_line_removed() {
+        // given
+        노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 수원역_번호));
+
+        // when
+        노선에_역을_삭제한다(노선_아이디, 두정역_번호);
+
+        // then
+        List<Long> 노선_지하철_역_번호들 = 노선_결과에서_노선_지하철역_번호를_조회한다(특정_노선을_조회한다(노선_아이디));
+        assertThat(노선_지하철_역_번호들).containsExactly(서울역_번호, 수원역_번호);
     }
 
     private void 구간_생성_결과에서_에러가_발생해야_한다(ExtractableResponse<Response> 구간_생성_결과) {

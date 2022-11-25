@@ -33,7 +33,7 @@ class SectionsTest {
         sections.addSection(createSection(3L, 5L, 50L));
 
         // when
-        sections.addSection(createSection(4L, 5L, 60L));
+        sections.addSection(createSection(4L, 5L, 30L));
 
         // then
         assertThat(sections.getOrderedStations()).containsExactlyElementsOf(createStations(1L, 3L, 4L, 5L));
@@ -54,6 +54,38 @@ class SectionsTest {
         // then
 
         assertThat(sections.getOrderedStations()).containsExactlyElementsOf(createStations(1L, 5L, 10L));
+    }
+
+    @Test
+    @DisplayName("기존 구간에서 상행 종점 구간을 지우게 되면, 종점 구간을 제외한 역들이 정상적으로 연결되어야 한다")
+    void should_replace_with_other_section_when_remove_last_up_section() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(createSection(1L, 3L, 100L));
+        sections.addSection(createSection(3L, 5L, 50L));
+
+        // when
+        sections.removeSectionContainsBy(createStation(1L));
+
+        // then
+
+        assertThat(sections.getOrderedStations()).containsExactlyElementsOf(createStations(3L, 5L));
+    }
+
+    @Test
+    @DisplayName("기존 구간에서 하행 종점 구간을 지우게 되면, 종점 구간을 제외한 역들이 정상적으로 연결되어야 한다")
+    void should_replace_with_other_section_when_remove_last_down_section() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(createSection(1L, 3L, 100L));
+        sections.addSection(createSection(3L, 5L, 50L));
+
+        // when
+        sections.removeSectionContainsBy(createStation(5L));
+
+        // then
+
+        assertThat(sections.getOrderedStations()).containsExactlyElementsOf(createStations(1L, 3L));
     }
 
     private Section createSection(Long upStationId, Long downStationId, Long distance) {
