@@ -13,6 +13,7 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
+    private static final int MIN_SECTION_COUNT = 1;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "line_id")
     private List<Section> sections = new ArrayList<>();
@@ -26,18 +27,33 @@ public class Sections {
     }
 
     public void addSection(Station preStation, Station station, Integer distance) {
-        Map<Station, Section> toMap = getSectionsToMap();
-        validateStation(preStation, station, toMap);
+        boolean isPresentPreStation = isExistsStation(preStation);
+        boolean isPresentStation = isExistsStation(station);
+        validateStation(isPresentPreStation, isPresentStation);
 
-        if (toMap.containsKey(preStation)) {
+        if (isPresentPreStation) {
             updateSectionForPreStation(preStation, station, distance);
         }
 
-        if (toMap.containsKey(station)) {
+        if (isPresentStation) {
             updateSectionForStation(preStation, station, distance);
         }
 
         add(preStation, station, distance);
+    }
+
+    private void validateStation(boolean isPresentPreStation, boolean isPresentStation) {
+        if (isPresentPreStation && isPresentStation) {
+            throw new IllegalArgumentException("시작/도착 역이 이미 존재합니다.");
+        }
+
+        if (!isPresentPreStation && !isPresentStation) {
+            throw new IllegalArgumentException("시작/도착 역이 모두 존재하지 않습니다.");
+        }
+    }
+
+    private boolean isExistsStation(Station station) {
+        return getSectionsToMap().containsKey(station) || getSectionsToMapByPreStation().containsKey(station);
     }
 
     private void updateSectionForStation(Station preStation, Station station, Integer distance) {
@@ -54,54 +70,77 @@ public class Sections {
                 .ifPresent(section -> section.updateSection(station, section.getStation(), distance));
     }
 
-    private void validateStation(Station preStation, Station station, Map<Station, Section> toMap) {
-        validateAllIncludeStation(preStation, station, toMap);
-        validateNotIncludeStation(preStation, station, toMap);
+    public void deleteSectionByStation(Station station) {
+        validateNotIncludeSection(station);
+        validateLastSection();
+        Optional<Section> sectionByStation = Optional.ofNullable(getSectionsToMap().get(station));
+        Optional<Section> sectionByPreStation = Optional.ofNullable(getSectionsToMapByPreStation().get(station));
+
+        if(sectionByPreStation.isPresent() && sectionByStation.isPresent()){
+            createNewSection(sectionByStation.get(), sectionByPreStation.get());
+        }
+
+        sectionByStation.ifPresent(section -> sections.remove(section));
+        sectionByPreStation.ifPresent(section -> sections.remove(section));
     }
 
-    private void validateAllIncludeStation(Station preStation, Station station, Map<Station, Section> toMap) {
-        if (toMap.containsKey(preStation) && toMap.containsKey(station)) {
-            throw new IllegalArgumentException("시작/도착 역이 이미 존재합니다.");
+    private void validateNotIncludeSection(Station station) {
+        if (!isExistsStation(station)) {
+            throw new IllegalArgumentException("구간 내에 존재하지 않는 역입니다.");
         }
     }
 
-    private void validateNotIncludeStation(Station preStation, Station station, Map<Station, Section> toMap) {
-        if (!toMap.containsKey(preStation) && !toMap.containsKey(station)) {
-            throw new IllegalArgumentException("시작/도착 역이 모두 존재하지 않습니다.");
+    private void validateLastSection() {
+        if (sections.size() == MIN_SECTION_COUNT) {
+            throw new IllegalArgumentException("마지막 구간이므로 삭제할 수 없습니다.");
         }
     }
 
+    private void createNewSection(Section sectionByStation, Section sectionByPreStation) {
+        Station newPreStation = sectionByStation.getPreStation();
+        Station newStation = sectionByPreStation.getStation();
+        int newDistance = sectionByStation.getDistance() + sectionByPreStation.getDistance();
+
+        add(newPreStation, newStation, newDistance);
+    }
+
+    public List<Station> getOrderStations() {
+        Map<Station, Section> sectionsMapByPreStation = getSectionsToMapByPreStation();
+        Section firstSection = findFirstSection().orElse(null);
+
+        List<Station> orders = new ArrayList<>();
+        orders.add(firstSection.getPreStation());
+        orders.addAll(getStations(sectionsMapByPreStation, firstSection));
+
+        return orders;
+    }
+
+    private List<Station> getStations(Map<Station, Section> sectionsMapByPreStation, Section firstSection) {
+        List<Station> orders = new ArrayList<>();
+        while (firstSection != null) {
+            Section tmp = firstSection;
+            orders.add(tmp.getStation());
+            firstSection = sectionsMapByPreStation.get(tmp.getStation());
+        }
+        return new ArrayList<>(orders);
+    }
+
+    private Optional<Section> findFirstSection() {
+        Map<Station, Section> sectionsToMap = getSectionsToMap();
+        return this.sections.stream()
+                .filter(section -> !sectionsToMap.containsKey(section.getPreStation()))
+                .findAny();
+    }
     private Map<Station, Section> getSectionsToMap() {
         return sections.stream().collect(Collectors.toMap(
                 Section::getStation, section -> section
         ));
     }
 
-
-    public List<Section> getOrderStations() {
-        Map<Station, Section> map = getSectionsToMapByPreStation();
-        Section section1 = findFirstSection().orElse(null);
-
-        List<Section> orders = new ArrayList<>();
-        while (section1 != null) {
-            Section tmp = section1;
-            orders.add(tmp);
-            section1 = map.get(tmp.getStation());
-        }
-
-        return orders;
-    }
-
     private Map<Station, Section> getSectionsToMapByPreStation() {
         return sections.stream().collect(Collectors.toMap(
                 Section::getPreStation, section -> section
         ));
-    }
-
-    private Optional<Section> findFirstSection() {
-        return this.sections.stream()
-                .filter(section -> section.getPreStation() == null)
-                .findAny();
     }
 
     public List<Section> getSections() {

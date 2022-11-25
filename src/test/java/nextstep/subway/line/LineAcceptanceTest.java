@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.*;
 
 import io.restassured.RestAssured;
@@ -7,7 +8,9 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
-import nextstep.subway.line.utils.DatabaseCleanUtil;
+import nextstep.subway.AcceptanceTest;
+import nextstep.subway.dto.StationResponse;
+import nextstep.subway.utils.DatabaseCleanUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,21 +21,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 @DisplayName("지하철 노선 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    DatabaseCleanUtil databaseCleanUtil;
+public class LineAcceptanceTest extends AcceptanceTest {
+    StationResponse 잠실역;
+    StationResponse 몽촌토성역;
+    StationResponse 교대역;
 
     @BeforeEach
     public void setUp(){
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleanUtil.cleanUp();
+        super.setUp();
+
+        잠실역 = 지하철역_1개_생성("잠실역").as(StationResponse.class);
+        몽촌토성역 = 지하철역_1개_생성("몽촌토성역").as(StationResponse.class);
+        교대역 = 지하철역_1개_생성("교대역").as(StationResponse.class);
     }
 
     /**
@@ -47,7 +47,7 @@ public class LineAcceptanceTest {
 
         //when
         ExtractableResponse<Response> extract =
-                지하철_노선_1개_생성("2호선", "bg-color-060", 1L, 2L, 10);
+                지하철_노선_1개_생성("2호선", "bg-color-060", 교대역.getId(), 잠실역.getId(), 10);
 
         // then
         assertThat(extract.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -66,8 +66,8 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 목록 조회")
     void findAllLines(){
         // given
-        지하철_노선_1개_생성("2호선", "bg-color-060", 1L, 2L, 10);
-        지하철_노선_1개_생성("8호선", "bg-color-440", 3L, 4L, 5);
+        지하철_노선_1개_생성("2호선", "bg-color-060", 교대역.getId(), 잠실역.getId(), 10);
+        지하철_노선_1개_생성("8호선", "bg-color-440", 잠실역.getId(), 몽촌토성역.getId(), 5);
 
         // when
         ExtractableResponse<Response> extract = 지하철_노선_목록_조회();
@@ -86,7 +86,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 조회")
     void findLine(){
         // given
-        ExtractableResponse<Response> created = 지하철_노선_1개_생성("2호선", "bg-color-060", 1L, 2L, 10);
+        ExtractableResponse<Response> created = 지하철_노선_1개_생성("2호선", "bg-color-060", 교대역.getId(), 잠실역.getId(), 10);
 
         // when
         ExtractableResponse<Response> result = 지하철_노선_정보_조회(created.jsonPath().get("id"));
@@ -106,7 +106,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 수정")
     void updateLine() {
         // given
-        ExtractableResponse<Response> created = 지하철_노선_1개_생성("2호선", "bg-color-060", 1L, 2L, 10);
+        ExtractableResponse<Response> created = 지하철_노선_1개_생성("2호선", "bg-color-060", 교대역.getId(), 잠실역.getId(), 10);
 
         // when
         ExtractableResponse<Response> updated =
@@ -125,7 +125,7 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 삭제")
     void delete(){
         // given
-        ExtractableResponse<Response> created = 지하철_노선_1개_생성("2호선", "bg-color-060", 1L, 2L, 10);
+        ExtractableResponse<Response> created = 지하철_노선_1개_생성("2호선", "bg-color-060", 교대역.getId(), 잠실역.getId(), 10);
 
         // when
         ExtractableResponse<Response> deleted = 지하철_노선_1개_삭제(created.jsonPath().get("id"));

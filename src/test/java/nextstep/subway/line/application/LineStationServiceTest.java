@@ -2,6 +2,8 @@ package nextstep.subway.line.application;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
 import nextstep.subway.application.LineService;
 import nextstep.subway.application.LineStationService;
 import nextstep.subway.domain.Line;
@@ -56,8 +58,12 @@ public class LineStationServiceTest {
         Station newStation = stationRepository.save(new Station("사당역"));
         lineStationService.addSection(line.getId(), new SectionRequest(newStation.getId(), station1.getId(), 10));
 
-        // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getSections().getSections()).hasSize(3);
+        // then - 구간 2개 (역이 3개)
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).containsExactly(
+                "사당역","잠실역","교대역"
+        );
+        assertThat(line.getSections().getSections()).hasSize(2);
     }
 
     @Test
@@ -69,8 +75,12 @@ public class LineStationServiceTest {
         Station newStation = stationRepository.save(new Station("사당역"));
         lineStationService.addSection(line.getId(), new SectionRequest(station2.getId(), newStation.getId(), 10));
 
-        // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getSections().getSections()).hasSize(3);
+        // then - 구간 2개 (역이 3개)
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).containsExactly(
+                "잠실역","교대역","사당역"
+        );
+        assertThat(line.getSections().getSections()).hasSize(2);
     }
 
     @Test
@@ -82,8 +92,12 @@ public class LineStationServiceTest {
         Station newStation = stationRepository.save(new Station("사당역"));
         lineStationService.addSection(line.getId(), new SectionRequest(station1.getId(), newStation.getId(), 5));
 
-        // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getSections().getSections()).hasSize(3);
+        // then - 구간 2개 (역이 3개)
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).containsExactly(
+                "잠실역","사당역","교대역"
+        );
+        assertThat(line.getSections().getSections()).hasSize(2);
     }
 
     @Test
@@ -95,8 +109,12 @@ public class LineStationServiceTest {
         Station newStation = stationRepository.save(new Station("사당역"));
         lineStationService.addSection(line.getId(), new SectionRequest(newStation.getId(), station2.getId(), 5));
 
-        // then - 역이 3개, 역 정보 조회는 일단 대기
-        assertThat(line.getSections().getSections()).hasSize(3);
+        // then - 구간 2개 (역이 3개)
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).containsExactly(
+                "잠실역","사당역","교대역"
+        );
+        assertThat(line.getSections().getSections()).hasSize(2);
     }
 
     @Test
@@ -123,5 +141,96 @@ public class LineStationServiceTest {
         assertThatIllegalArgumentException().isThrownBy(
                 () -> lineStationService.addSection(line.getId(), new SectionRequest(newStation1.getId(), newStation2.getId(), 10))
         );
+    }
+
+    @Test
+    @DisplayName("구간이 1개인 경우, 구간 제거 시 예외를 발생시킨다.")
+    void deleteSectionExceptionByLastSection(){
+        // given - 역 2개 / 노선 1개 추가 :beforeEach 처리
+
+        // when
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> lineStationService.deleteSection(line.getId(), station1.getId())
+        );
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 구간을 제거하려고 하면 예외를 발생시킨다.")
+    void deleteSectionExceptionByNotIncludeSection(){
+        // given - 역 2개 / 노선 1개 추가 :beforeEach 처리
+
+        // when
+        Station newStation = stationRepository.save(new Station("수원역"));
+
+        // then
+        assertThatIllegalArgumentException().isThrownBy(
+                () -> lineStationService.deleteSection(line.getId(), newStation.getId())
+        );
+    }
+
+    @Test
+    @DisplayName("상행종점을 제거한다.")
+    void deleteSectionFirstStation() {
+        // given - 역 2개 / 노선 1개 추가 : beforeEach 처리
+        // 신규역 추가 and 구간 추가
+        Station newStation = stationRepository.save(new Station("사당역"));
+        lineStationService.addSection(line.getId(), new SectionRequest(newStation.getId(), station1.getId(), 10));
+
+        // when
+        lineStationService.deleteSection(line.getId(), newStation.getId());
+
+        // then
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).hasSize(2);
+        assertThat(stationNames).containsExactly(
+                "잠실역", "교대역"
+        );
+    }
+
+    @Test
+    @DisplayName("하행종점을 제거한다.")
+    void deleteSectionLastStation(){
+        // given - 역 2개 / 노선 1개 추가 : beforeEach 처리
+        // 신규역 추가 and 구간 추가
+        Station newStation = stationRepository.save(new Station("사당역"));
+        lineStationService.addSection(line.getId(), new SectionRequest(newStation.getId(), station1.getId(), 10));
+
+        // when
+        lineStationService.deleteSection(line.getId(), station2.getId());
+
+        // then
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).hasSize(2);
+        assertThat(stationNames).containsExactly(
+                "사당역", "잠실역"
+        );
+    }
+
+    @Test
+    @DisplayName("중간역을 제거한다.")
+    void deleteSection(){
+        // given - 역 2개 / 노선 1개 추가 : beforeEach 처리
+        // 신규역 추가 and 구간 추가
+        Station newStation = stationRepository.save(new Station("사당역"));
+        lineStationService.addSection(line.getId(), new SectionRequest(newStation.getId(), station1.getId(), 10));
+
+        // when
+        lineStationService.deleteSection(line.getId(), station1.getId());
+
+        // then
+        List<String> stationNames = getStationNames(line);
+        assertThat(stationNames).hasSize(2);
+        assertThat(stationNames).containsExactly(
+                "사당역", "교대역"
+        );
+    }
+
+    private List<String> getStationNames(Line line) {
+        return line.getSections().getOrderStations()
+                .stream()
+                .map(station -> station.getName())
+                .collect(Collectors.toList());
     }
 }

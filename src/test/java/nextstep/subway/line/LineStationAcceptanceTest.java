@@ -9,38 +9,23 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
-import nextstep.subway.line.utils.DatabaseCleanUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-public class LineStationAcceptanceTest {
-
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    DatabaseCleanUtil databaseCleanUtil;
-
+public class LineStationAcceptanceTest extends AcceptanceTest {
     StationResponse 강남역;
     StationResponse 잠실역;
     LineResponse _2호선;
 
     @BeforeEach
     void beforeEach(){
-        if(RestAssured.port == RestAssured.UNDEFINED_PORT){
-            RestAssured.port = port;
-        }
-        databaseCleanUtil.cleanUp();
+        super.setUp();
 
         강남역 = 지하철역_1개_생성("강남역").as(StationResponse.class);
         잠실역 = 지하철역_1개_생성("잠실역").as(StationResponse.class);
@@ -59,7 +44,7 @@ public class LineStationAcceptanceTest {
 
         // when
         StationResponse 사당역 = 지하철역_1개_생성("사당역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(사당역.getId(), 강남역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 사당역.getId(), 강남역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -82,7 +67,7 @@ public class LineStationAcceptanceTest {
 
         // when
         StationResponse 건대입구역 = 지하철역_1개_생성("건대입구역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(잠실역.getId(), 건대입구역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 잠실역.getId(), 건대입구역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -105,7 +90,7 @@ public class LineStationAcceptanceTest {
 
         // when
         StationResponse 역삼역 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 역삼역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 강남역.getId(), 역삼역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -128,7 +113,7 @@ public class LineStationAcceptanceTest {
 
         // when
         StationResponse 역삼역 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 역삼역.getId(), 20);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 강남역.getId(), 역삼역.getId(), 20);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -146,7 +131,7 @@ public class LineStationAcceptanceTest {
 
         // when
         StationResponse 역삼역 = 지하철역_1개_생성("역삼역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 역삼역.getId(), 25);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 강남역.getId(), 역삼역.getId(), 25);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -155,7 +140,7 @@ public class LineStationAcceptanceTest {
     /**
      * given 노선과 역(a,b)을 생성하고
      * when 구간(a,b)을 추가하면
-     * then 예외가 발생한다.
+     * then 상행역과 하행역이 모두 기존 구간에 포함되어 있으므로, 구간을 추가할 수 없다.
      */
     @Test
     @DisplayName("노선 구간이 기존 역에 모두 포함되면 예외를 발생시킨다.")
@@ -163,7 +148,7 @@ public class LineStationAcceptanceTest {
         // given - beforeEach
 
         // when
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(강남역.getId(), 잠실역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 강남역.getId(), 잠실역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -172,7 +157,7 @@ public class LineStationAcceptanceTest {
     /**
      * given 노선과 역(a,b)을 생성하고
      * when 구간(c,d)을 추가하면
-     * then 예외가 발생한다.
+     * then 구간 내에 존재하지 않는 역들이기 때문에 구간을 추가할 수 없다.
      */
     @Test
     @DisplayName("노선 구간이 기존 역에 존재하지 않으면 예외를 발생시킨다.")
@@ -182,13 +167,13 @@ public class LineStationAcceptanceTest {
         // when
         StationResponse 시청역 = 지하철역_1개_생성("시청역").as(StationResponse.class);
         StationResponse 왕십리역 = 지하철역_1개_생성("왕십리역").as(StationResponse.class);
-        ExtractableResponse<Response> response = 노선_구간_1개_추가(시청역.getId(), 왕십리역.getId(), 10);
+        ExtractableResponse<Response> response = 노선_구간_1개_추가(_2호선.getId(), 시청역.getId(), 왕십리역.getId(), 10);
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    private ExtractableResponse<Response> 노선_구간_1개_추가(Long upStationId, Long downStationId, Integer distance) {
+    public static ExtractableResponse<Response> 노선_구간_1개_추가(Long lineId, Long upStationId, Long downStationId, Integer distance) {
         Map<String, Object> param = new HashMap<>();
         param.put("upStationId", upStationId);
         param.put("downStationId", downStationId);
@@ -197,7 +182,7 @@ public class LineStationAcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(param)
-                .when().post("/lines/{id}/sections", _2호선.getId())
+                .when().post("/lines/{id}/sections", lineId)
                 .then().log().all()
                 .extract();
     }

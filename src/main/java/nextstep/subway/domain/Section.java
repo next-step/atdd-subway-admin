@@ -49,6 +49,11 @@ public class Section extends BaseEntity {
         this.distance -= distance;
     }
 
+    public void linkPreSection(Section targetSection){
+        this.preStation = targetSection.preStation;
+        this.distance += targetSection.distance;
+    }
+
     private void validateDistance(Station preStation, Integer distance) {
         if(preStation !=null && this.distance <= distance){
             throw new IllegalArgumentException("신규 등록 구간 거리는 기존 거리보다 크면 안됩니다.");
