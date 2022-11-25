@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import static nextstep.subway.line.LineFixture.신분당선;
 import static nextstep.subway.line.SectionFixture.*;
-import static nextstep.subway.line.SectionTest.강남역_선릉역_거리;
+import static nextstep.subway.line.SectionTest.*;
 import static nextstep.subway.line.domain.Sections.*;
 import static nextstep.subway.station.domain.StationFixtrue.*;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -112,5 +112,18 @@ class SectionsTest {
         sections.add(역삼역_선릉역_구간());
         assertThat(sections.getStations()).containsExactly(강남역(), 역삼역(), 선릉역());
         assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_거리);
+    }
+
+    @DisplayName("A-B-C 구간의 노선에서 B-C 구간을 제거한다.")
+    @Test
+    void deleteBetweenSection() {
+        Sections sections = new Sections();
+        sections.add(section_A_B());
+        sections.add(section_B_C());
+        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
+        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+        sections.remove(section_B_C());
+        assertThat(sections.getStations()).containsExactly(stationA(), stationB());
+        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_B);
     }
 }

@@ -202,4 +202,8 @@ public class Sections {
                 .mapToInt(section -> section.getDistance().getDistance())
                 .sum();
     }
+
+    public void remove(Section section) {
+        this.sections.remove(section);
+    }
 }

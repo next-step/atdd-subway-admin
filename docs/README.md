@@ -56,7 +56,7 @@
     - [ ] 하나의 구간만 있을 경우 구간을 제거할 수 없다.
     - [ ] 노선에 등록되어있지 않은 역을 제거할 수 없다.
     - [ ] A-B-C 구간의 노선에서 A-B 구간을 제거한다.
-    - [ ] A-B-C 구간의 노선에서 B-C 구간을 제거한다.
+    - [x] A-B-C 구간의 노선에서 B-C 구간을 제거한다.
 
 - src/main/java/nextstep/subway/line/domain/Sections.java
     - addDownSection Distance를 가져오지말고 Section 내에서 비교 [x]
