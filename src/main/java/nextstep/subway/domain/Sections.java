@@ -21,11 +21,25 @@ public class Sections {
     }
 
     public void add(Section section) {
+        ifContainsStationAdd(section);
         sections.add(section);
     }
 
+    private void ifContainsStationAdd(Section newSection) {
+        sections.stream()
+                .filter(section -> section.containsStation(newSection))
+                .findFirst()
+                .ifPresent(section -> section.swapStation(newSection));
+    }
+
+
+
     public List<Station> getStations() {
-        return sections.stream().flatMap(Section::getStations).collect(Collectors.toList());
+        return sections.stream()
+                .sorted()
+                .flatMap(Section::getStations)
+                .distinct()
+                .collect(Collectors.toList());
 
     }
 }

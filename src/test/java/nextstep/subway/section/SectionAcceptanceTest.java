@@ -67,8 +67,7 @@ public class SectionAcceptanceTest {
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(lineResponse.getStations()).hasSize(3);
-
-
+        assertThat(lineResponse.getStations().get(1).getName()).isEqualTo(역삼역.getName());
     }
 
     /**
@@ -95,7 +94,7 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionDownStation() {
         // when
-        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 강남역.getId(), 하행신설역.getId(), 10);
+        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 광교역.getId(), 하행신설역.getId(), 10);
         // then
         List<StationResponse> stations =
                 LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class).getStations();

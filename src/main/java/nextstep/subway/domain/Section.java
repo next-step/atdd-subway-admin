@@ -12,7 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section implements Comparable<Section>{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,9 +45,28 @@ public class Section extends BaseEntity {
         this.downStation = downStation;
     }
 
-
     public static Section of(Station upStation, Station downStation, int distance) {
         return new Section(upStation, downStation, distance);
+    }
+
+    public boolean containsStation(Section newSection) {
+        return compareUpStation(newSection) || compareDownStation(newSection);
+    }
+
+    private boolean compareUpStation(Section newSection) {
+        return upStation == newSection.upStation;
+    }
+
+    private boolean compareDownStation(Section newSection) {
+        return downStation == newSection.downStation;
+    }
+
+    public void swapStation(Section newSection) {
+        if (compareUpStation(newSection)) {
+            this.upStation = newSection.downStation;
+            return;
+        }
+        this.downStation = newSection.upStation;
     }
 
     public Stream<Station> getStations() {
@@ -57,4 +76,10 @@ public class Section extends BaseEntity {
     public void setLine(Line line) {
         this.line = line;
     }
+
+    @Override
+    public int compareTo(Section other) {
+        return this.downStation == other.upStation ? -1 : 1;
+    }
+
 }
