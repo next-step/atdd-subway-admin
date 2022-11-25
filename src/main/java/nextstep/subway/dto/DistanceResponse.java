@@ -1,6 +1,6 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.application.Distance;
+import nextstep.subway.domain.Distance;
 
 public class DistanceResponse {
 

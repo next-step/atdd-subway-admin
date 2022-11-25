@@ -1,8 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.application.Distance;
-import nextstep.subway.application.Distances;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;

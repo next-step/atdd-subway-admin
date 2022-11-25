@@ -1,6 +1,4 @@
-package nextstep.subway.application;
-
-import nextstep.subway.domain.ErrorMessage;
+package nextstep.subway.domain;
 
 import java.util.List;
 

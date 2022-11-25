@@ -1,6 +1,6 @@
 package nextstep.subway.section;
 
-import nextstep.subway.application.Distance;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;

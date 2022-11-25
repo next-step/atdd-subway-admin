@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.application.Distance;
-
 import javax.persistence.*;
 import java.util.Objects;
 
