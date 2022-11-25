@@ -12,15 +12,15 @@ public class Section extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id")
+    @JoinColumn(name = "line_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private Line line;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_to_up_station_id"))
+    @JoinColumn(name = "up_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_up_station"))
     private Station upStation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_to_down_station_id"))
+    @JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_section_to_down_station"))
     private Station downStation;
 
     @Embedded
@@ -30,17 +30,42 @@ public class Section extends BaseEntity {
     }
 
     public Section(final Station upStation, final Station downStation, final Distance distance) {
+        this(null, upStation, downStation, distance);
+    }
+
+    public Section(final Long id, final Station upStation, final Station downStation, final Distance distance) {
+        this.id = id;
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
     }
 
-    public static Section of(Station upStation, Station downStation, Distance distance) {
-        return new Section(upStation, downStation, distance);
-    }
-
     public void addLine(Line line) {
         this.line = line;
+    }
+
+    public boolean contains(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
+    }
+
+    public boolean equalsUpStation(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean equalsDownStation(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public void minusDistance(int distance) {
+        this.distance = this.distance.subtract(distance);
+    }
+
+    public void updateUpStation(Station station) {
+        this.upStation = station;
+    }
+
+    public void updateDownStation(Station station) {
+        this.downStation = station;
     }
 
     public List<Station> getStations() {

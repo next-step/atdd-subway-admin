@@ -24,12 +24,12 @@ public class Distance {
         }
     }
 
-    public void add(int distance) {
-        this.distance += distance;
+    public Distance add(int distance) {
+        return new Distance(this.distance + distance);
     }
 
-    public Distance subtract(Distance distance) {
-        return new Distance(this.distance - distance.value());
+    public Distance subtract(int distance) {
+        return new Distance(this.distance - distance);
     }
 
     public int value() {

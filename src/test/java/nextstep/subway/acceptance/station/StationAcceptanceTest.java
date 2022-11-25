@@ -1,14 +1,14 @@
-package nextstep.subway.station;
+package nextstep.subway.acceptance.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
+import nextstep.subway.acceptance.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.AcceptanceTestFixture.응답코드가_일치한다;
-import static nextstep.subway.station.StationAcceptanceTestFixture.*;
+import static nextstep.subway.acceptance.station.StationAcceptanceTestFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
@@ -25,7 +25,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성("강남역");
 
         // then
-        응답코드가_일치한다(지하철역_생성_응답.statusCode(), HttpStatus.CREATED);
+        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
         지하철역_목록에_지하철역_이름이_포함되어_있다(지하철역_이름_전체_목록(), "강남역");
@@ -46,7 +46,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철역_생성_응답 = 지하철역_생성("강남역");
 
         // then
-        응답코드가_일치한다(지하철역_생성_응답.statusCode(), HttpStatus.BAD_REQUEST);
+        assertThat(지하철역_생성_응답.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -65,7 +65,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철역_전체_목록_응답 = 지하철역_전체_목록();
 
         // then
-        응답코드가_일치한다(지하철역_전체_목록_응답.statusCode(), HttpStatus.OK);
+        assertThat(지하철역_전체_목록_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
         지하철역_목록에_지하철역_이름이_포함되어_있다(지하철역_전체_목록_응답.jsonPath().getList("name", String.class), "강남역", "역삼역");
     }
 
@@ -84,7 +84,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철역_삭제_응답 = 지하철역_삭제(지하철역_생성_응답.body().jsonPath().getLong("id"));
 
         // then
-        응답코드가_일치한다(지하철역_삭제_응답.statusCode(), HttpStatus.NO_CONTENT);
+        assertThat(지하철역_삭제_응답.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         지하철역_목록에_지하철역이_존재하지_않는다(지하철역_이름_전체_목록(), "강남역");
     }
 }

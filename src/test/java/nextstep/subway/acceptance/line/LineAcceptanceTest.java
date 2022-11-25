@@ -1,8 +1,8 @@
-package nextstep.subway.line;
+package nextstep.subway.acceptance.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
+import nextstep.subway.acceptance.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,9 +10,9 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.subway.AcceptanceTestFixture.응답코드가_일치한다;
-import static nextstep.subway.line.LineAcceptanceTestFixture.*;
-import static nextstep.subway.station.StationAcceptanceTestFixture.지하철역_생성;
+import static nextstep.subway.acceptance.line.LineAcceptanceTestFixture.*;
+import static nextstep.subway.acceptance.station.StationAcceptanceTestFixture.지하철역_생성;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
@@ -38,7 +38,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_생성_응답 = 지하철_노선_생성("신분당선", "bg-red-600", upStationId, downStationId, 10);
 
         // then
-        응답코드가_일치한다(지하철_노선_생성_응답.statusCode(), HttpStatus.CREATED);
+        assertThat(지하철_노선_생성_응답.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         지하철_노선_목록에_생성한_노선이_포함되어_있다(지하철_노선_이름_전체_목록(), "신분당선");
     }
 
@@ -94,7 +94,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_수정 = 지하철_노선_수정(지하철_노선_생성.jsonPath().getLong("id"), "신분당선", "bg-yellow-600");
 
         // then
-        응답코드가_일치한다(지하철_노선_수정.statusCode(), HttpStatus.OK);
+        assertThat(지하철_노선_수정.statusCode()).isEqualTo(HttpStatus.OK.value());
         ExtractableResponse<Response> 지하철_노선_조회 = 지하철_노선_조회(지하철_노선_생성.jsonPath().getLong("id"));
         수정된_지하철_노선_정보를_검증한다(지하철_노선_조회, "신분당선", "bg-yellow-600");
     }
@@ -114,7 +114,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철_노선_삭제 = 지하철_노선_삭제(지하철_노선_생성.jsonPath().getLong("id"));
 
         // then
-        응답코드가_일치한다(지하철_노선_삭제.statusCode(), HttpStatus.NO_CONTENT);
+        assertThat(지하철_노선_삭제.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         지하철_노선_목록에서_삭제되었는지_검증한다(지하철_노선_이름_전체_목록());
     }
 }

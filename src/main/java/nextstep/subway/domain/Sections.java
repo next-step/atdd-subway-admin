@@ -6,10 +6,14 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.common.ErrorMessage.*;
+import static nextstep.subway.common.ErrorMessage.DUPLICATE_SECTION;
+import static nextstep.subway.common.ErrorMessage.NOT_ALLOW_ADD_SECTION;
 
 @Embeddable
 public class Sections {
@@ -24,58 +28,55 @@ public class Sections {
         this.sections.add(section);
     }
 
-    public void addBetweenSection(Section section) {
-        validateSection(section);
-        validateDuplicate(section);
+    public void updateSection(Station upStation, Station downStation, int distance) {
+        this.validateDuplicateSections(upStation, downStation);
+        this.validateUpdatable(upStation, downStation);
 
-        Section registeredSection = getRegisteredSection(section);
-        sections.remove(registeredSection);
-        sections.add(divideSection(section, registeredSection));
-        sections.add(section);
+        Optional<Section> sectionOptional = sections.stream()
+                .filter(section -> section.equalsUpStation(upStation) || section.equalsDownStation(downStation))
+                .findAny();
+
+        if (!sectionOptional.isPresent()) {
+            return;
+        }
+
+        Section section = sectionOptional.get();
+        section.minusDistance(distance);
+
+        if (section.equalsUpStation(upStation)) {
+            section.updateUpStation(downStation);
+            return;
+        }
+
+        section.updateDownStation(upStation);
     }
 
-    private void validateDuplicate(Section section) {
-        Set<Station> stations = new HashSet<>();
-        for (Section registeredSection : sections) {
-            stations.add(registeredSection.getUpStation());
-            stations.add(registeredSection.getDownStation());
-        }
-        if (stations.contains(section.getUpStation()) && stations.contains(section.getDownStation())) {
+    private void validateDuplicateSections(Station upStation, Station downStation) {
+        Optional<Section> findUpStation = sections.stream()
+                .filter(section -> section.contains(upStation))
+                .findAny();
+
+        Optional<Section> findDownStation = sections.stream()
+                .filter(section -> section.contains(downStation))
+                .findAny();
+
+        if (findUpStation.isPresent() && findDownStation.isPresent()) {
             throw new IllegalArgumentException(DUPLICATE_SECTION.getMessage());
         }
     }
 
-    private void validateSection(Section section) {
-        if (Objects.isNull(section)) {
-            throw new IllegalArgumentException(SECTION_NOT_NULL.getMessage());
-        }
-    }
-
-    private Section getRegisteredSection(Section section) {
-        return sections.stream()
-                .filter(registeredSection -> isContainStation(registeredSection, section))
+    private void validateUpdatable(Station upStation, Station downStation) {
+        sections.stream()
+                .filter(section -> isEqualsStation(upStation, downStation, section))
                 .findAny()
                 .orElseThrow(() -> new IllegalArgumentException(NOT_ALLOW_ADD_SECTION.getMessage()));
     }
 
-    private Section divideSection(Section section, Section registeredSection) {
-        Section dividedSection = createSection(section, registeredSection);
-        dividedSection.addLine(section.getLine());
-        return dividedSection;
-    }
-
-    private Section createSection(Section section, Section registeredSection) {
-        Distance distance = registeredSection.getDistance().subtract(section.getDistance());
-
-        if (Objects.equals(registeredSection.getUpStation(), section.getUpStation())) {
-            return Section.of(section.getDownStation(), registeredSection.getDownStation(), distance);
-        }
-        return Section.of(registeredSection.getUpStation(), section.getUpStation(), distance);
-    }
-
-    private boolean isContainStation(Section registeredSection, Section section) {
-        return Objects.equals(registeredSection.getUpStation(), section.getUpStation())
-                || Objects.equals(registeredSection.getDownStation(), section.getDownStation());
+    private static boolean isEqualsStation(Station upStation, Station downStation, Section section) {
+        return section.equalsUpStation(downStation)
+                || section.equalsUpStation(upStation)
+                || section.equalsDownStation(upStation)
+                || section.equalsDownStation(downStation);
     }
 
     public List<StationResponse> toResponse() {

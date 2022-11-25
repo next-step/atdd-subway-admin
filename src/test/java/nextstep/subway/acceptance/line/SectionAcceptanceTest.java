@@ -1,8 +1,9 @@
-package nextstep.subway.line;
+package nextstep.subway.acceptance.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
+import nextstep.subway.acceptance.AcceptanceTest;
+import nextstep.subway.acceptance.station.StationAcceptanceTestFixture;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.StationResponse;
@@ -11,12 +12,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
-import static nextstep.subway.AcceptanceTestFixture.응답코드가_일치한다;
-import static nextstep.subway.line.LineAcceptanceTestFixture.지하철_노선_생성;
-import static nextstep.subway.line.LineAcceptanceTestFixture.지하철_노선_조회;
-import static nextstep.subway.line.SectionAcceptanceTestFixture.구간_생성;
-import static nextstep.subway.line.SectionAcceptanceTestFixture.지하철_노선에_구간이_추가된다;
-import static nextstep.subway.station.StationAcceptanceTestFixture.지하철역_생성;
+import static nextstep.subway.acceptance.line.LineAcceptanceTestFixture.지하철_노선_생성;
+import static nextstep.subway.acceptance.line.LineAcceptanceTestFixture.지하철_노선_조회;
+import static nextstep.subway.acceptance.line.SectionAcceptanceTestFixture.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -28,8 +27,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        강남역 = 지하철역_생성("강남역").as(StationResponse.class);
-        광교역 = 지하철역_생성("광교역").as(StationResponse.class);
+        강남역 = StationAcceptanceTestFixture.지하철역_생성("강남역").as(StationResponse.class);
+        광교역 = StationAcceptanceTestFixture.지하철역_생성("광교역").as(StationResponse.class);
         신분당선 = 지하철_노선_생성("신분당선", "bg-red-600", 강남역.getId(), 광교역.getId(), 30).as(LineResponse.class);
     }
 
@@ -42,13 +41,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createSection() {
         // given
-        StationResponse 판교역 = 지하철역_생성("판교역").as(StationResponse.class);
+        StationResponse 판교역 = StationAcceptanceTestFixture.지하철역_생성("판교역").as(StationResponse.class);
 
         // when
         ExtractableResponse<Response> 구간_생성_응답 = 구간_생성(신분당선.getId(), new SectionRequest(강남역.getId(), 판교역.getId(), 7));
 
         // then
-        응답코드가_일치한다(구간_생성_응답.statusCode(), HttpStatus.OK);
+        assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
         지하철_노선에_구간이_추가된다(지하철_노선_조회(신분당선.getId()));
     }
 
@@ -65,7 +64,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 구간_생성_응답 = 구간_생성(신분당선.getId(), 기존_구간과_같은_구간);
 
         // then
-        응답코드가_일치한다(구간_생성_응답.statusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        구간_생성에_실패한다(구간_생성_응답.statusCode());
     }
 
     /**
@@ -77,15 +76,15 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void notAllowCreateSection_isNotContains() {
         // given
-        StationResponse 판교역 = 지하철역_생성("판교역").as(StationResponse.class);
-        StationResponse 정자역 = 지하철역_생성("정자역").as(StationResponse.class);
+        StationResponse 판교역 = StationAcceptanceTestFixture.지하철역_생성("판교역").as(StationResponse.class);
+        StationResponse 정자역 = StationAcceptanceTestFixture.지하철역_생성("정자역").as(StationResponse.class);
 
         // when
         SectionRequest 기존_구간이_포함되지_않는_구간 = new SectionRequest(판교역.getId(), 정자역.getId(), 10);
         ExtractableResponse<Response> 구간_생성_응답 = 구간_생성(신분당선.getId(), 기존_구간이_포함되지_않는_구간);
 
         // then
-        응답코드가_일치한다(구간_생성_응답.statusCode(), HttpStatus.INTERNAL_SERVER_ERROR);
+        구간_생성에_실패한다(구간_생성_응답.statusCode());
     }
 
     /**
@@ -97,14 +96,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createUpStation() {
         // given
-        StationResponse 신사역 = 지하철역_생성("신사역").as(StationResponse.class);
+        StationResponse 신사역 = StationAcceptanceTestFixture.지하철역_생성("신사역").as(StationResponse.class);
 
         // when
         SectionRequest 기존_구간이_포함되지_않는_구간 = new SectionRequest(신사역.getId(), 강남역.getId(), 10);
         ExtractableResponse<Response> 구간_생성_응답 = 구간_생성(신분당선.getId(), 기존_구간이_포함되지_않는_구간);
 
         // then
-        응답코드가_일치한다(구간_생성_응답.statusCode(), HttpStatus.OK);
+        assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     /**
@@ -116,14 +115,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createDownStation() {
         // given
-        StationResponse 수원역 = 지하철역_생성("수원역").as(StationResponse.class);
+        StationResponse 수원역 = StationAcceptanceTestFixture.지하철역_생성("수원역").as(StationResponse.class);
 
         // when
         SectionRequest 기존_구간이_포함되지_않는_구간 = new SectionRequest(광교역.getId(), 수원역.getId(), 15);
         ExtractableResponse<Response> 구간_생성_응답 = 구간_생성(신분당선.getId(), 기존_구간이_포함되지_않는_구간);
 
         // then
-        응답코드가_일치한다(구간_생성_응답.statusCode(), HttpStatus.OK);
+        assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     /**
@@ -135,13 +134,13 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void createBetweenUpStation() {
         // given
-        StationResponse 수원역 = 지하철역_생성("수원역").as(StationResponse.class);
+        StationResponse 수원역 = StationAcceptanceTestFixture.지하철역_생성("수원역").as(StationResponse.class);
 
         // when
-        SectionRequest 기존_구간이_포함되지_않는_구간 = new SectionRequest(수원역.getId(), 광교역.getId(), 15);
+        SectionRequest 기존_구간이_포함되지_않는_구간 = new SectionRequest(수원역.getId(), 광교역.getId(), 13);
         ExtractableResponse<Response> 구간_생성_응답 = 구간_생성(신분당선.getId(), 기존_구간이_포함되지_않는_구간);
 
         // then
-        응답코드가_일치한다(구간_생성_응답.statusCode(), HttpStatus.OK);
+        assertThat(구간_생성_응답.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 }

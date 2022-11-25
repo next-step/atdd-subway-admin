@@ -1,4 +1,4 @@
-package nextstep.subway;
+package nextstep.subway.acceptance;
 
 import io.restassured.RestAssured;
 import nextstep.subway.utils.DatabaseCleanUp;
