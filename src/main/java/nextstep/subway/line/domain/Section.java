@@ -92,4 +92,12 @@ public class Section {
     public Distance sumDistance(Section section) {
         return new Distance(this.distance.sum(section.getDistance()));
     }
+
+    public boolean isContainStation(Section section) {
+        return section.isContainStation(this.upStation) || section.isContainStation(this.downStation);
+    }
+
+    private boolean isContainStation(Station station) {
+        return isUpStation(station) || isDownStation(station);
+    }
 }

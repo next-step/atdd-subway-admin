@@ -40,10 +40,20 @@ public class Sections {
         }
     }
 
-    private void validateNotExistsAllStations(Section section) {
-        if (!isContainUpStation(section) && !isContainDownStation(section)) {
+    private void validateNotExistsAllStations(Section addSection) {
+        if (!isContainStation(addSection)) {
             throw new IllegalArgumentException(SECTION_CONTAINS_EXCEPTION_MESSAGE);
         }
+    }
+
+    private boolean isContainStation(Section section) {
+        boolean isContainStation = false;
+        for (Section value : this.sections) {
+            if (value.isContainStation(section)) {
+                isContainStation = true;
+            }
+        }
+        return isContainStation;
     }
 
     private boolean isAddBetweenSection(Section addSection) {
