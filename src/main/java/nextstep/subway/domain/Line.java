@@ -12,12 +12,15 @@ public class Line extends BaseEntity{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(unique = true)
     private String name;
+
     @Column(unique = true)
     private String color;
-    @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST)
-    private List<Section> sections = new ArrayList<>();
+
+    @Embedded
+    private final Sections sections = new Sections();
 
     protected Line() {}
 
@@ -47,15 +50,15 @@ public class Line extends BaseEntity{
         this.sections.add(section);
     }
 
-    public Long findId() {
+    public Long getId() {
         return this.id;
     }
 
-    public String findName() {
+    public String getName() {
         return this.name;
     }
 
-    public String findColor() {
+    public String getColor() {
         return this.color;
     }
 
