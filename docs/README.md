@@ -58,9 +58,9 @@
         - [x] [x] A-B-C 구간의 노선에서 A역을 제거한다.
             - [x] [x] B-C 구간이 된다.
             - [x] [] B-C 구간의 거리가 된다.
-        - [x] [ ] A-B-C 구간의 노선에서 C역을 제거한다.
-            - [x] [ ] A-B 구간이 된다.
-            - [x] [ ] A-B 구간의 거리가 된다.
+        - [x] [x] A-B-C 구간의 노선에서 C역을 제거한다.
+            - [x] [x] A-B 구간이 된다.
+            - [x] [x] A-B 구간의 거리가 된다.
 
 - src/main/java/nextstep/subway/line/domain/Sections.java
     - addDownSection Distance를 가져오지말고 Section 내에서 비교 [x]
