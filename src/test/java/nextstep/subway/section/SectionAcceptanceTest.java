@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class SectionAcceptanceTest extends AcceptanceTest {
 
     StationResponse 강남역;
-    StationResponse 광교역;
+    StationResponse 정자역;
     LineResponse 신분당선;
 
     private ExtractableResponse<Response> getStations() {
@@ -36,12 +36,12 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     public void setUp() {
         super.setUp();
         강남역 = 지하철역_등록("강남역").as(StationResponse.class);
-        광교역 = 지하철역_등록("광교역").as(StationResponse.class);
+        정자역 = 지하철역_등록("정자역").as(StationResponse.class);
         Map<String, Object> params = new HashMap<>();
         params.put("name", "2호선");
         params.put("color", "bg-green-600");
         params.put("upStationId", 강남역.getId());
-        params.put("downStationId", 광교역.getId());
+        params.put("downStationId", 정자역.getId());
         params.put("distance", 10);
         신분당선 = 지하철노선_등록(params).as(LineResponse.class);
     }
@@ -57,15 +57,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 지하철역과 노선을 등록하고
-     * When 구간을 등록하면
-     * Then 노선에 지하철역이 등록된다
+     * When 노선의 역들 사이에 새로운 역을 등록하면
+     * Then 노선에 새로운 구간이 생성된다
      */
     @DisplayName("역 사이에 새로운 역을 등록한다")
     @Test
     void 역_사이에_새로운_역_등록() {
-        //given
-        Long 판교역id = getId(지하철역_등록("판교역"));
         //when
+        Long 판교역id = getId(지하철역_등록("판교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 강남역.getId());
         params.put("downStationId", 판교역id);
@@ -77,19 +76,43 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     }
 
     /**
-     * Given 지하철역을 생성하고
-     * When 기존에 존재하는 지하철역 이름으로 지하철역을 생성하면
-     * Then 지하철역 생성이 안된다
+     * Given 지하철역과 노선을 등록하고
+     * When 노선의 상행 종점을 하행 역으로 하는 지하철역을 생성하면
+     * Then 노선에 새로운 구간이 생성된다
+     * Then 노선의 상행 종점역이 바뀐다
      */
     @DisplayName("새로운 역을 상행 종점으로 등록한다")
     @Test
     void 새로운_역을_상행_종점으로_등록() {
-
+        //when
+        Long 신사역id = getId(지하철역_등록("신사역"));
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", 신사역id);
+        params.put("downStationId", 강남역.getId());
+        params.put("distance", 5);
+        ExtractableResponse<Response> 지하철구간_등록 = 지하철구간_등록(params, 신분당선.getId());
+        //then
+        assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
+    /**
+     * Given 지하철역과 노선을 등록하고
+     * When 노선의 하행 종점을 상행 역으로 하는 지하철역을 생성하면
+     * Then 노선에 새로운 구간이 생성된다
+     * Then 노선의 하행 종점역이 바뀐다
+     */
     @DisplayName("새로운 역을 하행 종점으로 등록한다")
     @Test
     void 새로운_역을_하행_종점으로_등록() {
+        //when
+        Long 광교역id = getId(지하철역_등록("광교역"));
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", 정자역.getId());
+        params.put("downStationId", 광교역id);
+        params.put("distance", 4);
+        ExtractableResponse<Response> 지하철구간_등록 = 지하철구간_등록(params, 신분당선.getId());
+        //then
+        assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음")
