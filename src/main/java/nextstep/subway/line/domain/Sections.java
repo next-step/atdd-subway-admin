@@ -11,7 +11,6 @@ import java.util.List;
 @Embeddable
 public class Sections {
     public static final String SECTION_DUPLICATE_EXCEPTION_MESSAGE = "상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.";
-
     public static final String SECTION_CONTAINS_EXCEPTION_MESSAGE = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.";
     public static final String DISTANCE_MINIMUM_EXCEPTION_MESSAGE = "새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 등록을 할 수 없다.";
     public static final int REMOVE_SECTION_MINIMUM_SIZE = 1;
@@ -197,10 +196,27 @@ public class Sections {
                 .sum();
     }
 
-    public void removeBetweenStation(Station station) {
+    public void removeStation(Station station) {
+        validateRemoveStation(station);
+        remove(station);
+    }
+
+    private void validateRemoveStation(Station station) {
         validateLastSection();
         validateNotExistsAllStations(station);
-        addUniteSection(removeUpSection(station), removeDownSection(station));
+    }
+
+    private void remove(Station station) {
+        if (isSameDownStation(station) && isSameUpStation(station)) {
+            addUniteSection(removeUpSection(station), removeDownSection(station));
+            return;
+        }
+        if (isSameDownStation(station)) {
+            removeUpSection(station);
+        }
+        if (isSameUpStation(station)) {
+            removeDownSection(station);
+        }
     }
 
     private void validateLastSection() {

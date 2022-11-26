@@ -122,7 +122,7 @@ class SectionsTest {
         sections.add(sectionBC());
         assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
         assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
-        sections.removeBetweenStation(stationB());
+        sections.removeStation(stationB());
         assertThat(sections.getStations()).containsExactly(stationA(), stationC());
         assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
     }
@@ -136,7 +136,7 @@ class SectionsTest {
         assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
         assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
 
-        assertThatThrownBy(() -> sections.removeBetweenStation(stationD()))
+        assertThatThrownBy(() -> sections.removeStation(stationD()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -145,7 +145,21 @@ class SectionsTest {
     void removeLastSection_fail() {
         Sections sections = new Sections();
         sections.add(sectionAB());
-        assertThatThrownBy(() -> sections.removeBetweenStation(stationA()))
+        assertThatThrownBy(() -> sections.removeStation(stationA()))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("A-B-C 구간의 노선에서 A역을 제거한다.")
+    @Test
+    void removeUpStation() {
+        Sections sections = new Sections();
+        sections.add(sectionAB());
+        sections.add(sectionBC());
+        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
+        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+
+        sections.removeStation(stationA());
+        assertThat(sections.getStations()).containsExactly(stationB(), stationC());
+        assertThat(sections.getDistance()).isEqualTo(DISTANCE_B_C);
     }
 }
