@@ -20,7 +20,7 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        return new LineResponse(line.findId(), line.findName(), line.findColor(), line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
     }
     public Long getId() {
         return id;

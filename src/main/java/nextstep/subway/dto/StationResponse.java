@@ -11,7 +11,7 @@ public class StationResponse {
     private LocalDateTime modifiedDate;
 
     public static StationResponse of(Station station) {
-        return new StationResponse(station.findId(), station.findName(), station.getCreatedDate(), station.getModifiedDate());
+        return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
     }
 
     public StationResponse() {}
@@ -23,11 +23,11 @@ public class StationResponse {
         this.modifiedDate = modifiedDate;
     }
 
-    public Long findId() {
+    public Long getId() {
         return id;
     }
 
-    public String findName() {
+    public String getName() {
         return name;
     }
 
