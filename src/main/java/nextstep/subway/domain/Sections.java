@@ -30,10 +30,10 @@ public class Sections {
         if (!sections.isEmpty()) {
             sections.forEach(inner -> inner.validSection(section));
             sections
-                .stream()
-                .filter(inner -> inner.isSameUpDownStation(section))
-                .findAny()
-                .ifPresent(inner -> inner.resetSection(section));
+                    .stream()
+                    .filter(inner -> inner.isSameUpDownStation(section))
+                    .findAny()
+                    .ifPresent(inner -> inner.resetSection(section));
         }
 
         sections.add(section);
@@ -41,29 +41,29 @@ public class Sections {
 
     public List<StationResponse> getStations() {
         return getStationList().stream()
-            .map(StationResponse::of)
-            .collect(Collectors.toList());
+                .map(StationResponse::of)
+                .collect(Collectors.toList());
     }
 
     private List<Station> getStationList() {
 
-        Deque<Station> stationDeque = new ArrayDeque<>();
+        Deque<Station> setctions = new ArrayDeque<>();
 
         sections.forEach(section -> {
             Station upStation = section.getUpStation();
             Station downStation = section.getDownStation();
 
-            if (stationDeque.isEmpty()) {
-                stationDeque.addAll(Arrays.asList(upStation, downStation));
+            if (setctions.isEmpty()) {
+                setctions.addAll(Arrays.asList(upStation, downStation));
             } else {
-                getSequenceStation(stationDeque, upStation, downStation);
+                makeSequenceStations(setctions, upStation, downStation);
             }
         });
 
-        return new ArrayList(stationDeque);
+        return new ArrayList(setctions);
     }
 
-    private void getSequenceStation(Deque stationDeque, Station upStation, Station downStation) {
+    private void makeSequenceStations(Deque stationDeque, Station upStation, Station downStation) {
         if (stationDeque.getFirst().equals(downStation)) {
             stationDeque.addFirst(upStation);
             return;
