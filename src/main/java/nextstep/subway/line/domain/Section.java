@@ -93,11 +93,19 @@ public class Section {
         return new Distance(this.distance.sum(section.getDistance()));
     }
 
-    public boolean isContainStation(Section section) {
-        return section.isContainStation(this.upStation) || section.isContainStation(this.downStation);
+    public boolean isUpStation(Section section) {
+        return section.isUpStation(this.upStation) || section.isDownStation(this.upStation);
     }
 
-    private boolean isContainStation(Station station) {
-        return isUpStation(station) || isDownStation(station);
+    public boolean isDownStation(Section section) {
+        return section.isUpStation(this.downStation) || section.isDownStation(this.downStation);
+    }
+
+    public boolean isSameUpStation(Section removeSection) {
+        return this.isUpStation(removeSection.getUpStation());
+    }
+
+    public boolean isSameDownStation(Section removeSection) {
+        return this.isDownStation(removeSection.getDownStation());
     }
 }

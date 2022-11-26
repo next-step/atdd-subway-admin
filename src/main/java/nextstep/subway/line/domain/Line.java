@@ -39,7 +39,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return this.sections.getStations();
+        return this.sections.findStations();
     }
 
     public Long getId() {

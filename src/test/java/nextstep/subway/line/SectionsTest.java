@@ -23,7 +23,7 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(논현역_신논현역_구간());
         sections.add(신논현역_강남역_구간());
-        assertThat(sections.size()).isEqualTo(2);
+        assertThat(sections.findSize()).isEqualTo(2);
     }
 
     @DisplayName("구간역 목록을 조회한다.")
@@ -32,7 +32,7 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(논현역_신논현역_구간());
         sections.add(신논현역_강남역_구간());
-        assertThat(sections.getStations()).containsExactly(논현역(), 신논현역(), 강남역());
+        assertThat(sections.findStations()).containsExactly(논현역(), 신논현역(), 강남역());
     }
     
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없다.")
@@ -82,7 +82,7 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(신논현역_강남역_구간());
         sections.add(논현역_신논현역_구간());
-        assertThat(sections.getStations()).containsExactly(논현역(), 신논현역(), 강남역());
+        assertThat(sections.findStations()).containsExactly(논현역(), 신논현역(), 강남역());
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
@@ -91,7 +91,7 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(논현역_신논현역_구간());
         sections.add(신논현역_강남역_구간());
-        assertThat(sections.getStations()).containsExactly(논현역(), 신논현역(), 강남역());
+        assertThat(sections.findStations()).containsExactly(논현역(), 신논현역(), 강남역());
     }
 
     @DisplayName("구간 사이에 구간을 추가한다 / 상행역을 기준으로 구간을 추가한다.")
@@ -100,8 +100,8 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(강남역_선릉역_구간());
         sections.add(강남역_역삼역_구간());
-        assertThat(sections.getStations()).containsExactly(강남역(), 역삼역(), 선릉역());
-        assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_거리);
+        assertThat(sections.findStations()).containsExactly(강남역(), 역삼역(), 선릉역());
+        assertThat(sections.findDistance()).isEqualTo(강남역_선릉역_거리);
     }
 
     @DisplayName("구간 사이에 구간을 추가한다 / 하행역을 기준으로 구간을 추가한다.")
@@ -110,8 +110,8 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(강남역_선릉역_구간());
         sections.add(역삼역_선릉역_구간());
-        assertThat(sections.getStations()).containsExactly(강남역(), 역삼역(), 선릉역());
-        assertThat(sections.getDistance()).isEqualTo(강남역_선릉역_거리);
+        assertThat(sections.findStations()).containsExactly(강남역(), 역삼역(), 선릉역());
+        assertThat(sections.findDistance()).isEqualTo(강남역_선릉역_거리);
     }
 
     @DisplayName("A-B-C 구간의 노선에서 B역이 포함된 구간을 제거한다")
@@ -120,11 +120,11 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(sectionAB());
         sections.add(sectionBC());
-        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
-        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+        assertThat(sections.findStations()).containsExactly(stationA(), stationB(), stationC());
+        assertThat(sections.findDistance()).isEqualTo(DISTANCE_A_C);
         sections.removeStation(stationB());
-        assertThat(sections.getStations()).containsExactly(stationA(), stationC());
-        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+        assertThat(sections.findStations()).containsExactly(stationA(), stationC());
+        assertThat(sections.findDistance()).isEqualTo(DISTANCE_A_C);
     }
 
     @DisplayName("노선에 등록 되어있지 않은 역을 제거할 수 없다.")
@@ -133,8 +133,8 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(sectionAB());
         sections.add(sectionBC());
-        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
-        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+        assertThat(sections.findStations()).containsExactly(stationA(), stationB(), stationC());
+        assertThat(sections.findDistance()).isEqualTo(DISTANCE_A_C);
 
         assertThatThrownBy(() -> sections.removeStation(stationD()))
                 .isInstanceOf(IllegalArgumentException.class);
@@ -155,12 +155,12 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(sectionAB());
         sections.add(sectionBC());
-        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
-        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+        assertThat(sections.findStations()).containsExactly(stationA(), stationB(), stationC());
+        assertThat(sections.findDistance()).isEqualTo(DISTANCE_A_C);
 
         sections.removeStation(stationA());
-        assertThat(sections.getStations()).containsExactly(stationB(), stationC());
-        assertThat(sections.getDistance()).isEqualTo(DISTANCE_B_C);
+        assertThat(sections.findStations()).containsExactly(stationB(), stationC());
+        assertThat(sections.findDistance()).isEqualTo(DISTANCE_B_C);
     }
 
     @DisplayName("A-B-C 구간의 노선에서 C역을 제거한다.")
@@ -169,11 +169,11 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.add(sectionAB());
         sections.add(sectionBC());
-        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
-        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+        assertThat(sections.findStations()).containsExactly(stationA(), stationB(), stationC());
+        assertThat(sections.findDistance()).isEqualTo(DISTANCE_A_C);
 
         sections.removeStation(stationC());
-        assertThat(sections.getStations()).containsExactly(stationA(), stationB());
-        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_B);
+        assertThat(sections.findStations()).containsExactly(stationA(), stationB());
+        assertThat(sections.findDistance()).isEqualTo(DISTANCE_A_B);
     }
 }

@@ -36,7 +36,7 @@ public class SectionFixture {
     }
     
     public static Section 역삼역_선릉역_구간() {
-        return new Section(7L, 이호선(), 역삼역(), 선릉역(), new Distance(논현역_강남역_거리));
+        return new Section(7L, 이호선(), 역삼역(), 선릉역(), new Distance(역삼역_선릉역_거리));
     }
 
     public static Section sectionAB() {
