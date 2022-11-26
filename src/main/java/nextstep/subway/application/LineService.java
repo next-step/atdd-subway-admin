@@ -1,16 +1,20 @@
 package nextstep.subway.application;
 
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.repository.LineRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static nextstep.subway.common.ErrorMessage.NOT_FOUND;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,8 +31,10 @@ public class LineService {
     public LineResponse saveLine(LineCreateRequest request) {
         Station upStation = stationService.findById(request.getUpStationId());
         Station downStation = stationService.findById(request.getDownStationId());
-        Line saveLine = lineRepository.save(request.toLine(upStation, downStation));
-        return LineResponse.of(saveLine);
+
+        Line line = lineRepository.save(request.toLine());
+        line.addSection(new Section(upStation, downStation, new Distance(request.getDistance())));
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> findAllLines() {
@@ -37,17 +43,16 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(Long id) {
+    public Line findById(Long id) {
         return lineRepository.findById(id)
-                .map(LineResponse::of)
-                .orElseThrow(IllegalArgumentException::new);
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
     }
 
     @Transactional
     public void updateLine(Long id, LineUpdateRequest request) {
         Line line = lineRepository.findById(id)
-                .orElseThrow(IllegalArgumentException::new);
-        line.updateNameAndColor(request.getName(), request.getColor());
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
+        line.update(request.getName(), request.getColor());
     }
 
     @Transactional

@@ -14,29 +14,29 @@ public class Line extends BaseEntity {
     @Column
     private String color;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_to_up_station_id"))
-    private Station upStation;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_to_down_station_id"))
-    private Station downStation;
-
-    @Column
-    private int distance;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    public Line(String name, String color) {
+        this(null, name, color);
     }
 
-    public void updateNameAndColor(String name, String color) {
+    public Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.sections = new Sections();
+    }
+
+    public void addSection(Section section) {
+        sections.add(section);
+        section.addLine(this);
+    }
+
+    public void update(String name, String color) {
         this.name = name;
         this.color = color;
     }
@@ -53,27 +53,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    @Override
-    public String toString() {
-        return "Line{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", color='" + color + '\'' +
-                ", distance=" + distance +
-                ", upStation=" + upStation +
-                ", downStation=" + downStation +
-                '}';
+    public Sections getSections() {
+        return sections;
     }
 }
