@@ -140,19 +140,20 @@ public class Sections {
     }
 
     private void addStations(List<Station> stations) {
-        Station upStation = findDownStationByUpStation(findFirstUpStation());
+        Station upStation = findDownStation(findFirstUpStation());
         while (!isLastDownStation(upStation)) {
             addStation(stations, upStation);
-            upStation = findDownStationByUpStation(upStation);
+            upStation = findDownStation(upStation);
         }
     }
 
-    private Station findDownStationByUpStation(Station upStation) {
-        Station downStation = upStation;
+    private Station findDownStation(Station station) {
         for (Section section : this.sections) {
-            downStation = findDownStationByUpStation(upStation, downStation, section);
+            if (section.isUpStation(station)) {
+                return section.getDownStation();
+            }
         }
-        return downStation;
+        throw new IllegalArgumentException();
     }
 
     private boolean isLastDownStation(Station upStation) {
@@ -163,7 +164,7 @@ public class Sections {
     private void addFirstSectionStations(List<Station> stations) {
         Station firstUpStation = findFirstUpStation();
         stations.add(firstUpStation);
-        stations.add(findDownStationByUpStation(firstUpStation));
+        stations.add(findDownStation(firstUpStation));
     }
 
     private Station findFirstUpStation() {
@@ -172,14 +173,6 @@ public class Sections {
             firstUpStation = findUpStation(firstUpStation, section);
         }
         return firstUpStation;
-    }
-
-    private static Station findDownStationByUpStation(Station upStation, Station downStation, Section section) {
-        Station station = downStation;
-        if (section.isUpStation(upStation)) {
-            station = section.getDownStation();
-        }
-        return station;
     }
 
     private void addStation(List<Station> stations, Station upStation) {
