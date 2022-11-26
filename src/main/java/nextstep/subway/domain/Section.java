@@ -13,15 +13,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Section implements Comparable<Section>{
+public class Section implements Comparable<Section> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     private int distance;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "up_station_id", foreignKey = @ForeignKey(name = "fk_section_up_station_to_station"))
     private Station upStation;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", foreignKey = @ForeignKey(name = "fk_section_down_station_to_station"))
     private Station downStation;
@@ -80,7 +83,7 @@ public class Section implements Comparable<Section>{
     }
 
     public Stream<Station> getStations() {
-        return Stream.of(upStation,downStation);
+        return Stream.of(upStation, downStation);
     }
 
     public void setLine(Line line) {
@@ -94,6 +97,7 @@ public class Section implements Comparable<Section>{
     public boolean isIncludeStation(List<Station> stations) {
         return stations.contains(upStation) || stations.contains(downStation);
     }
+
     @Override
     public int compareTo(Section other) {
         return this.downStation == other.upStation ? -1 : 1;
