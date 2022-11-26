@@ -46,6 +46,10 @@ public class Distance implements Comparable<Distance> {
         return compare(this.distance, o.distance);
     }
 
+    public int sum(Distance o) {
+        return Integer.sum(this.distance, o.distance);
+    }
+
     public int getDistance() {
         return this.distance;
     }

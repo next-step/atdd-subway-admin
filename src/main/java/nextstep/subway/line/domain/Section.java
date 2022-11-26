@@ -88,4 +88,8 @@ public class Section {
     public Distance differ(Section section) {
         return new Distance(this.distance.getDistance() - section.getDistance().getDistance());
     }
+
+    public Distance sumDistance(Section section) {
+        return new Distance(this.distance.sum(section.getDistance()));
+    }
 }

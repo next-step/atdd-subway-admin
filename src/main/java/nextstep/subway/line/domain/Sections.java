@@ -203,34 +203,41 @@ public class Sections {
                 .sum();
     }
 
-    public void remove(Station station) {
-        int size = size();
-        List<Section> deleteSections = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            if (this.sections.get(i).isDownStation(station) || this.sections.get(i).isUpStation(station)) {
-                deleteSections.add(this.sections.get(i));
+    public void removeBetweenStation(Station station) {
+        addUniteSection(removeUpSection(station), removeDownSection(station));
+    }
+
+    private void addUniteSection(Section upSection, Section downSection) {
+        this.sections.add(new Section(upSection.getLine(), upSection.getUpStation(), downSection.getDownStation(), upSection.sumDistance(downSection)));
+    }
+
+    private Section removeDownSection(Station station) {
+        Section section = findDownSection(station);
+        this.sections.remove(section);
+        return section;
+    }
+
+    private Section findDownSection(Station station) {
+        for (Section section : this.sections) {
+            if (section.isUpStation(station)) {
+                return section;
             }
         }
-        Station newDownStation = null;
-        Station newUpStation = null;
-        Line line = null;
-        int distance = 0;
-        if (deleteSections.size() == 2) {
-            for (Section section : this.sections) {
-                if (section.isUpStation(station)) {
-                    newDownStation = section.getDownStation();
-                    line = section.getLine();
-                    distance = distance + section.getDistance().getDistance();
-                }
+        throw new IllegalArgumentException();
+    }
+
+    private Section removeUpSection(Station station) {
+        Section section = findUpSection(station);
+        this.sections.remove(section);
+        return section;
+    }
+
+    private Section findUpSection(Station station) {
+        for (Section section : this.sections) {
+            if (section.isDownStation(station)) {
+                return section;
             }
-            for (Section section : this.sections) {
-                if (section.isDownStation(station)) {
-                    newUpStation = section.getUpStation();
-                    distance += section.getDistance().getDistance();
-                }
-            }
-            this.sections.removeAll(deleteSections);
-            this.sections.add(new Section(line, newUpStation, newDownStation, new Distance(distance)));
         }
+        throw new IllegalArgumentException();
     }
 }

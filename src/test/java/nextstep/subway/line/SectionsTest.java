@@ -122,7 +122,7 @@ class SectionsTest {
         sections.add(sectionBC());
         assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
         assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
-        sections.remove(stationB());
+        sections.removeBetweenStation(stationB());
         assertThat(sections.getStations()).containsExactly(stationA(), stationC());
         assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
     }
