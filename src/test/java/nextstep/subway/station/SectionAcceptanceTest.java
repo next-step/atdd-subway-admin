@@ -144,4 +144,88 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(400);
         assertThat(response.jsonPath().getString("message")).isEqualTo("상행역과 하행역 둘 중 하나도 포함되어있지 않아 추가할 수 없습니다.");
     }
+
+    /**
+     * Given 지하철역과 노선에 구간이 2개 등록되어 있고
+     * When 종점을 제거하면
+     * Then 지하철 노선에 다음 역이 종점으로 확인된다.
+     */
+    @Test
+    @DisplayName("지하철 구간의 종점을 제거한다")
+    void deleteSection_last() {
+        Long gangnamStationId = getId(StationApi.createStation("강남역"));
+        Long seongsuStationId = getId(StationApi.createStation("성수역"));
+        Long lineId = getId(LineApi.createStationLine("신분당선", gangnamStationId, seongsuStationId, 10));
+
+        Long addedStationId = getId(StationApi.createStation("판교역"));
+        SectionApi.requestAddSection(lineId, gangnamStationId, addedStationId, 7);
+
+        ExtractableResponse<Response> response = LineApi.deleteSection(lineId, seongsuStationId);
+        assertThat(response.statusCode()).isEqualTo(200);
+
+        List<String> stationNames = LineApi.getStationLine(lineId).jsonPath().getList("stations.name");
+        assertThat(stationNames).contains("강남역", "판교역");
+        assertThat(stationNames).doesNotContain("성수역");
+    }
+
+    /**
+     * Given 지하철역과 노선에 구간이 2개 등록되어 있고
+     * When 종점을 제거하면
+     * Then 지하철 노선에 다음 역이 종점으로 확인된다.
+     */
+    @Test
+    @DisplayName("지하철 구간의 가운데 역을 제거한다")
+    void deleteSection_middle() {
+        Long gangnamStationId = getId(StationApi.createStation("강남역"));
+        Long seongsuStationId = getId(StationApi.createStation("성수역"));
+        Long lineId = getId(LineApi.createStationLine("신분당선", gangnamStationId, seongsuStationId, 10));
+
+        Long addedStationId = getId(StationApi.createStation("판교역"));
+        SectionApi.requestAddSection(lineId, gangnamStationId, addedStationId, 7);
+
+        ExtractableResponse<Response> response = LineApi.deleteSection(lineId, addedStationId);
+        assertThat(response.statusCode()).isEqualTo(200);
+
+        List<String> stationNames = LineApi.getStationLine(lineId).jsonPath().getList("stations.name");
+        assertThat(stationNames).contains("강남역", "성수역");
+        assertThat(stationNames).doesNotContain("판교역");
+    }
+
+    /**
+     * Given 지하철역과 노선에 구간이 하나 등록되어 있고
+     * When 종점을 제거하면
+     * Then 지하철 노선에 구간이 제거되지 않는다.
+     */
+    @Test
+    @DisplayName("지하철 구간을 제거할 때 구간이 하나인 경우 제거할 수 없다")
+    void deleteSection_When_lastStation_illegalArgument() {
+        Long gangnamStationId = getId(StationApi.createStation("강남역"));
+        Long seongsuStationId = getId(StationApi.createStation("성수역"));
+        Long lineId = getId(LineApi.createStationLine("신분당선", gangnamStationId, seongsuStationId, 10));
+
+        SectionApi.requestAddSection(lineId, gangnamStationId, seongsuStationId, 7);
+
+        ExtractableResponse<Response> response = LineApi.deleteSection(lineId, seongsuStationId);
+        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.jsonPath().getString("message")).isEqualTo("구간이 하나인 노선에서는 역을 제거할 수 없습니다.");
+    }
+    /**
+     * Given 지하철역과 노선이 등록되어 있고
+     * When 노선에 포함되지 않은 종점을 제거하면
+     * Then 지하철 노선에 구간이 제거되지 않는다.
+     */
+    @Test
+    @DisplayName("노선에 포함되지 않은 구간을 제거하면 구간이 제거되지 않는다")
+    void deleteSection_When_noneContainsStation_illegalArgument() {
+        Long gangnamStationId = getId(StationApi.createStation("강남역"));
+        Long seongsuStationId = getId(StationApi.createStation("성수역"));
+        Long lineId = getId(LineApi.createStationLine("신분당선", gangnamStationId, seongsuStationId, 10));
+
+        SectionApi.requestAddSection(lineId, gangnamStationId, seongsuStationId, 7);
+
+        Long pangyoStationId = getId(StationApi.createStation("판교역"));
+        ExtractableResponse<Response> response = LineApi.deleteSection(lineId, pangyoStationId);
+        assertThat(response.statusCode()).isEqualTo(400);
+        assertThat(response.jsonPath().getString("message")).isEqualTo("해당 역은 구간에 포함되어 있지 않습니다.");
+    }
 }
