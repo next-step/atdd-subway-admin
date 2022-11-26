@@ -43,7 +43,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeSectionByStation(Station station) {
-        sections.removeSectionContainsBy(station);
+        sections.removeSectionThatContains(station);
     }
 
     public Long getId() {

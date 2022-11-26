@@ -90,6 +90,14 @@ public class Section {
         return getStations().contains(station);
     }
 
+    public boolean isEqualsUpStation(Station station) {
+        return Objects.equals(upStation, station);
+    }
+
+    public boolean isEqualsDownStation(Station station) {
+        return Objects.equals(downStation, station);
+    }
+
     public void mergeUpStation(Section upSection) {
         this.upStation = upSection.getUpStation();
         this.distance = distance.add(upSection.distance);

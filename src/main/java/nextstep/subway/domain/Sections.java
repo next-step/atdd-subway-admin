@@ -16,6 +16,7 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
+    public static final int SINGLE_SECTION = 1;
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
@@ -31,7 +32,7 @@ public class Sections {
         sections.add(section);
     }
 
-    public void removeSectionContainsBy(Station station) {
+    public void removeSectionThatContains(Station station) {
         Optional<Section> upSection = getUpSection(station);
         Optional<Section> downSection = getDownSection(station);
         mergeSection(upSection, downSection);
@@ -53,13 +54,13 @@ public class Sections {
 
     private Optional<Section> getUpSection(Station station) {
         return sections.stream()
-                .filter(upSection -> Objects.equals(upSection.getDownStation(), station))
+                .filter(upSection -> upSection.isEqualsDownStation(station))
                 .findFirst();
     }
 
     private Optional<Section> getDownSection(Station station) {
         return sections.stream()
-                .filter(downSection -> Objects.equals(downSection.getUpStation(), station))
+                .filter(downSection -> downSection.isEqualsUpStation(station))
                 .findFirst();
     }
 
@@ -141,7 +142,7 @@ public class Sections {
     }
 
     private void throwExceptionIfSectionsHasOneSection() {
-        if (sections.size() == 1) {
+        if (sections.size() == SINGLE_SECTION) {
             throw new IllegalArgumentException("하나 남은 구간의 종점은 삭제할 수 없습니다.");
         }
     }

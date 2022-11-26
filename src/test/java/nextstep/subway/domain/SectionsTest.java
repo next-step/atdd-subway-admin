@@ -50,7 +50,7 @@ class SectionsTest {
         sections.addSection(createSection(5L, 10L, 10L));
 
         // when
-        sections.removeSectionContainsBy(createStation(3L));
+        sections.removeSectionThatContains(createStation(3L));
 
         // then
 
@@ -66,7 +66,7 @@ class SectionsTest {
         sections.addSection(createSection(3L, 5L, 50L));
 
         // when
-        sections.removeSectionContainsBy(createStation(1L));
+        sections.removeSectionThatContains(createStation(1L));
 
         // then
 
@@ -82,7 +82,7 @@ class SectionsTest {
         sections.addSection(createSection(3L, 5L, 50L));
 
         // when
-        sections.removeSectionContainsBy(createStation(5L));
+        sections.removeSectionThatContains(createStation(5L));
 
         // then
 
@@ -97,7 +97,7 @@ class SectionsTest {
         sections.addSection(createSection(1L, 3L, 100L));
 
         // when && then
-        assertThatThrownBy(() -> sections.removeSectionContainsBy(createStation(1L)))
+        assertThatThrownBy(() -> sections.removeSectionThatContains(createStation(1L)))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 

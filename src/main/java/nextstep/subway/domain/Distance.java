@@ -5,6 +5,8 @@ import javax.persistence.Embeddable;
 
 @Embeddable
 public class Distance {
+    public static final int DISTANCE_ZERO = 0;
+
     @Column(name = "distance")
     private Long distance;
 
@@ -15,7 +17,7 @@ public class Distance {
     }
 
     public static Distance from(Long distance) {
-        if (distance <= 0) {
+        if (distance <= DISTANCE_ZERO) {
             throw new IllegalArgumentException("역 사이의 거리는 0이하일 수 없습니다.");
         }
         return new Distance(distance);
