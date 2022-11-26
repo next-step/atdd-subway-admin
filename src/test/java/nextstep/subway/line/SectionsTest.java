@@ -162,4 +162,18 @@ class SectionsTest {
         assertThat(sections.getStations()).containsExactly(stationB(), stationC());
         assertThat(sections.getDistance()).isEqualTo(DISTANCE_B_C);
     }
+
+    @DisplayName("A-B-C 구간의 노선에서 C역을 제거한다.")
+    @Test
+    void removeDownStation() {
+        Sections sections = new Sections();
+        sections.add(sectionAB());
+        sections.add(sectionBC());
+        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
+        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+
+        sections.removeStation(stationC());
+        assertThat(sections.getStations()).containsExactly(stationA(), stationB());
+        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_B);
+    }
 }
