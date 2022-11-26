@@ -1,9 +1,7 @@
 package nextstep.subway.application;
 
 import nextstep.subway.domain.*;
-import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,15 +14,18 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequestToLine(lineRequest));
+        Station upStation = stationService.getStationById(lineRequest.getUpStationId());
+        Station downStation = stationService.getStationById(lineRequest.getDownStationId());
+        persistLine.initSection(new Section(persistLine, upStation, downStation, new Distance(lineRequest.getDistance())));
         return LineResponse.of(persistLine);
     }
 
@@ -33,15 +34,19 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLineById(Long id) {
-        return lineRepository.findById(id).map(LineResponse::of)
+    public Line getLineDomainById(Long id) {
+        return lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.LINE_NO_FIND_BY_ID.getMessage()));
+    }
+
+    public LineResponse getLineById(Long id) {
+        return LineResponse.of(getLineDomainById(id));
     }
 
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.LINE_NO_FIND_BY_ID.getMessage()));
-        line.updateRequest(lineUpdateRequest);
+        line.updateNameAndColor(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
         lineRepository.save(line);
     }
 
@@ -50,14 +55,18 @@ public class LineService {
     }
 
     private Line lineRequestToLine(LineRequest lineRequest) {
-        return new Line(lineRequest.getName(), lineRequest.getColor(),
-                getStationById(lineRequest.getUpStationId()),
-                getStationById(lineRequest.getDownStationId()),
-                lineRequest.getDistance());
+        return new Line(lineRequest.getName(), lineRequest.getColor());
     }
 
-    private Station getStationById(Long id) {
-        return stationRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.LINE_NO_FIND_BY_ID.getMessage()));
+    public SectionsResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = getLineDomainById(lineId);
+        Distance distance = new Distance(sectionRequest.getDistance());
+
+        Station requestUpStation = stationService.getStationById(sectionRequest.getUpStationId());
+        Station requestDownStation = stationService.getStationById(sectionRequest.getDownStationId());
+
+        return new SectionsResponse(line.addAndGetSections(requestUpStation, requestDownStation, distance)
+                .stream().map(SectionResponse::of).collect(Collectors.toList()));
     }
+
 }

@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleaner;
-import nextstep.subway.domain.ErrorMessage;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -19,14 +18,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("지하철호선 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -55,8 +50,8 @@ public class LineAcceptanceTest {
     void createLineTest() {
         //given
         String lineName = "신분당선";
-        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
-        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
+        Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
 
         //when
         final ExtractableResponse<Response> apiResponse =
@@ -74,21 +69,17 @@ public class LineAcceptanceTest {
         //given
         String lineName1 = "신분당선";
         String lineName2 = "분당선";
-        Long stationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
-        Long newStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
-        Long anotherStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("또다른지하철역"));
+        Long stationId = StationAcceptanceTest.createStationAndGetId("지하철역");
+        Long newStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
+        Long anotherStationId = StationAcceptanceTest.createStationAndGetId("또다른지하철역");
         createLine(new LineRequest(lineName1, "bg-red-600", stationId, newStationId, 10));
         createLine(new LineRequest(lineName2, "bg-red-600", stationId, anotherStationId, 10));
 
         //when
-        List<String> lineNames = retrieveAllLineNames();
+        Set<String> results = new HashSet<>(retrieveAllLineNames());
 
         //then
-        assertThat(lineNames.size()).isEqualTo(2);
-        assertThat(lineNames.stream()
-                .filter(lineName -> lineName1.equals(lineName) || lineName2.equals(lineName))
-                .collect(Collectors.toSet()).size())
-                .isEqualTo(2);
+        assertThat(results).containsOnly(lineName1, lineName2);
     }
 
     @Test
@@ -96,15 +87,16 @@ public class LineAcceptanceTest {
     void retrieveOneLineTest() {
         //given
         String lineName = "신분당선";
-        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
-        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
+        Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
         String lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
-        assertThat(lineName.equals(retrieveLineName(lineId)))
-                //then
-                .isTrue();
+        String resultLineName = retrieveLineName(lineId);
+
+        //then
+        assertThat(lineName.equals(resultLineName)).isTrue();
     }
 
     @Test
@@ -112,8 +104,8 @@ public class LineAcceptanceTest {
     void updateLineTest() {
         //given
         String lineName = "신분당선";
-        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
-        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
+        Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
         String lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
@@ -133,21 +125,22 @@ public class LineAcceptanceTest {
     void deleteLineTest() {
         //given
         String lineName = "신분당선";
-        Long upStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("지하철역"));
-        Long downStationId = Long.parseLong(StationAcceptanceTest.createStationAndGetId("새로운지하철역"));
+        Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
+        Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
         String lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
-        assertThat(deleteLine(lineId).statusCode())
-                //then
-                .isEqualTo(HttpStatus.NO_CONTENT.value());
+        int resultCode = deleteLine(lineId).statusCode();
+
+        //then
+        assertThat(resultCode).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 
     /**
      * 지하철호선 생성
      */
-    ExtractableResponse<Response> createLine(LineRequest lineRequest) {
+    static ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         final Map param = new HashMap();
         param.put("name", lineRequest.getName());
         param.put("color", lineRequest.getColor());
@@ -165,7 +158,7 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선 생성 후 id 조회
      */
-    String createLineAndGetId(LineRequest lineRequest) {
+    public static String createLineAndGetId(LineRequest lineRequest) {
         return createLine(lineRequest).jsonPath().get("id").toString();
     }
 

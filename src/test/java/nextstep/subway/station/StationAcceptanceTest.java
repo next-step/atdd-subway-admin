@@ -14,10 +14,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,9 +72,10 @@ public class StationAcceptanceTest {
         createStation(stationName);
 
         // when
-        assertThat(createStationAndGetResponseCode(stationName))
-                // then
-                .isEqualTo(HttpStatus.BAD_REQUEST.value());
+        int resultCode = createStationAndGetResponseCode(stationName);
+
+        //then
+        assertThat(resultCode).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -95,16 +93,10 @@ public class StationAcceptanceTest {
         createStation(stationName2);
 
         //when
-        final List<String> stationNames = getStationNames();
+        final Set<String> results = new HashSet<>(getStationNames());
 
         //then
-        //size 테스트
-        assertThat(stationNames.size()).isEqualTo(2);
-        //이름 포함 테스트
-        assertThat(stationNames.stream()
-                .filter(stationName -> stationName.equals(stationName1) || stationName.equals(stationName2))
-                .collect(Collectors.toSet()).size())
-                .isEqualTo(2);
+        assertThat(results).containsOnly(stationName1, stationName2);
     }
 
     /**
@@ -117,7 +109,7 @@ public class StationAcceptanceTest {
     void deleteStationTest() {
         //given
         String stationName = "강남역";
-        String id = createStationAndGetId(stationName);
+        Long id = createStationAndGetId(stationName);
 
         //when
         deleteStation(id);
@@ -155,8 +147,8 @@ public class StationAcceptanceTest {
     /**
      * 주어진 이름으로 지하철역을 생성 후 id를 조회한다.
      */
-    public static String createStationAndGetId(String stationName) {
-        return createStation(stationName).jsonPath().get("id").toString();
+    public static Long createStationAndGetId(String stationName) {
+        return Long.parseLong(createStation(stationName).jsonPath().get("id").toString());
     }
     /**
      * 주어진 이름으로 지하철역을 생성 후 상태코드를 조회한다.
@@ -180,7 +172,7 @@ public class StationAcceptanceTest {
     /**
      * 주어진id로 지하철역을 삭제한다.
      */
-    void deleteStation(String id) {
+    void deleteStation(Long id) {
         RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/stations/" + id)

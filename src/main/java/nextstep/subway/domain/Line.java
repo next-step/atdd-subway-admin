@@ -1,12 +1,8 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineUpdateRequest;
-import nextstep.subway.dto.StationResponse;
-
 import javax.persistence.*;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -19,26 +15,16 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
-    private int distance;
+    @Embedded
+    private Sections sections = new Sections(new ArrayList<>());
 
     protected Line() {
 
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
     }
 
     public Long getId() {
@@ -53,25 +39,26 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public void updateNameAndColor(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
-    public int getDistance() {
-        return distance;
+    public Sections getSections() {
+        return sections;
     }
 
-    public List<StationResponse> getStationResponses() {
-        return Arrays.asList(upStation, downStation).stream().map(StationResponse::of)
-                .collect(Collectors.toList());
+    public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, Distance distance) {
+        List<Section> sections = this.sections.addAndGetSections(requestUpStation, requestDownStation, distance);
+        sections.forEach(section -> section.setLine(this));
+        return sections;
     }
 
-    public void updateRequest(LineUpdateRequest lineUpdateRequest) {
-        this.name = lineUpdateRequest.getName();
-        this.color = lineUpdateRequest.getColor();
+    public void initSection(Section section) {
+        sections.init(section).stream().forEach(newSection -> newSection.setLine(this));
     }
 }
