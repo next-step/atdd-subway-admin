@@ -120,5 +120,11 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [x] 기존 생성자는 되도록 public으로 풀지 않기 ( protected로 은닉화 - 외부에서 쉽게 선언 못하도록 )
     - [x] 의존성 방향 재정의 ( respone -> entity는 가능하지만, 반대의 경우는 지양하기 )
     - [x] api경로 확인하기
-    - [x] 중복된 테스트 하나로 빼내기        
-              
+    - [x] 중복된 테스트 하나로 빼내기
+    
+## Step3 - 구간 추가 기능    
+#### Step3 리뷰 사항 반영
+- [ ] Step3 1차 리뷰 사항 반영
+    - [ ] BaseTest BeforeEach 추가
+    - [ ] getById는 EntityNotFoundException 에러 처리
+    - [ ] Stream.of 사용하기
