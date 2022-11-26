@@ -3,13 +3,17 @@ package nextstep.subway.Line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -18,9 +22,14 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
+//@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class LineAcceptanceTest {
     private final String DELIMITER = "/";
+
+    @Autowired
+    StationRepository stationRepository;
+
     private static Map<String, String> of(String lineName, String color) {
         Map<String, String> map = new HashMap<>();
         map.put("name", lineName);
@@ -28,18 +37,8 @@ class LineAcceptanceTest {
         return map;
     }
 
-    private static void creatStation(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/stations")
-                .then().log().all();
-    }
-
     @LocalServerPort
-    int port;
+    private int port;
 
     private Map<String, String> params;
 
@@ -86,6 +85,7 @@ class LineAcceptanceTest {
         Map<String, String> params2 = LineAcceptanceTest.of("3호선", "orange");
         ExtractableResponse<Response> response1 = createLine(params1);
         ExtractableResponse<Response> response2 = createLine(params2);
+
 
         assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -177,12 +177,17 @@ class LineAcceptanceTest {
         assertThat(retrieveResponse.body().jsonPath().getString("name")).isNull();
     }
 
-    ExtractableResponse<Response> createLine(Map<String, String> params) {
+    private ExtractableResponse<Response> createLine(Map<String, String> params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines")
                 .then().log().all()
                 .extract();
+    }
+
+    @Transactional
+    public void creatStation(String name) {
+        stationRepository.save(new StationRequest(name).toStation());
     }
 }

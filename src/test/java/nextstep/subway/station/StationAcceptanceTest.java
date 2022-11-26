@@ -17,12 +17,13 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
     private static final String DELIMITER = "/";
 
-    private static Map<String, String> of(String stationName) {
+    private static Map<String, String> from(String stationName) {
         Map<String, String> map = new HashMap<>();
         map.put("name", stationName);
         return map;
@@ -31,14 +32,14 @@ public class StationAcceptanceTest {
     private Map<String, String> params;
 
     @LocalServerPort
-    int port;
+    private int port;
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        params = StationAcceptanceTest.of("강남역");
+        params = StationAcceptanceTest.from("강남역");
     }
 
     /**
