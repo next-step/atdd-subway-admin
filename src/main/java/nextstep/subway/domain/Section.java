@@ -64,11 +64,11 @@ public class Section extends BaseEntity {
         return isSameUpStation(compareSection.upStation) || isSameUpStation(compareSection.downStation);
     }
 
-    private boolean isSameUpStation(Station station) {
+    public boolean isSameUpStation(Station station) {
         return upStation.equals(station);
     }
 
-    private boolean isSameDownStation(Station station) {
+    public boolean isSameDownStation(Station station) {
         return downStation.equals(station);
     }
 
@@ -114,6 +114,18 @@ public class Section extends BaseEntity {
         return distance;
     }
 
+    public void removeSection(Section removeSection) {
+        if (isSameUpStation(removeSection.downStation)) {
+            this.upStation = removeSection.upStation;
+        }
+
+        if (isSameDownStation(removeSection.upStation)) {
+            this.downStation = removeSection.downStation;
+        }
+
+        this.distance.plusDistance(removeSection.distance);
+    }
+    
     @Override
     public boolean equals(Object o) {
         if (this == o) {

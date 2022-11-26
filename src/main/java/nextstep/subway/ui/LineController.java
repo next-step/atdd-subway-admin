@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -41,21 +42,21 @@ public class LineController {
 
     @GetMapping("/{id}")
     public ResponseEntity<LineResponse> findById(
-        @PathVariable("id") Long id
+            @PathVariable("id") Long id
     ) {
         return ResponseEntity.ok(lineService.getLineById(id));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<LineResponse> updateLine(
-        @PathVariable("id") Long id, @RequestBody LineUpdateRequest lineuUpdateRequest
+            @PathVariable("id") Long id, @RequestBody LineUpdateRequest lineuUpdateRequest
     ) {
         return ResponseEntity.ok(lineService.updateLine(id, lineuUpdateRequest));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteLine(
-        @PathVariable("id") Long id
+            @PathVariable("id") Long id
     ) {
         lineService.deleteLine(id);
         return ResponseEntity.ok().build();
@@ -63,10 +64,19 @@ public class LineController {
 
     @PostMapping("/{id}/sections")
     public ResponseEntity<LineResponse> updateSection(
-        @PathVariable final Long id,
-        @RequestBody final SectionRequest sectionRequest
+            @PathVariable final Long id,
+            @RequestBody final SectionRequest sectionRequest
     ) {
         return ResponseEntity.ok(lineService.updateSection(id, sectionRequest));
+    }
+
+    @DeleteMapping("{lineId}/sections")
+    public ResponseEntity<Void> deleteSection(
+            @PathVariable Long lineId,
+            @RequestParam Long stationId
+    ) {
+        lineService.deleteSection(lineId, stationId);
+        return ResponseEntity.ok().build();
     }
 
 }

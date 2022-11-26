@@ -71,7 +71,7 @@ public class LineService {
         Line line = this.findLineById(id);
 
         Section section = reqToSection(line, sectionRequest);
-        
+
         line.addSection(section);
 
         return LineResponse.of(line);
@@ -83,8 +83,15 @@ public class LineService {
         return new Section(line, downStation, upStation, sectionRequest.getDistance());
     }
 
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = stationService.findStationById(stationId);
+        line.getSections().deleteStation(station);
+    }
+
     public Line findLineById(Long id) {
         return lineRepository.findById(id)
-            .orElseThrow(() -> new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR));
+                .orElseThrow(() -> new SubwayException(ErrorCode.LINE_NULL_POINTER_ERROR));
     }
 }

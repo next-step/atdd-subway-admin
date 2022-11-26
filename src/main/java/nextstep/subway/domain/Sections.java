@@ -6,15 +6,20 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Deque;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.ErrorCode;
+import nextstep.subway.exception.SubwayException;
 
 @Embeddable
 public class Sections {
+
+    private static final int HAS_ONE_STATION_SIZE = 1;
 
     @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
     private List<Section> sections = new ArrayList<>();
@@ -71,5 +76,73 @@ public class Sections {
 
         stationDeque.addLast(downStation);
     }
+
+    public void deleteStation(Station deleteStation) {
+        validRemoveStation(deleteStation);
+
+        if (isBetweenStations(deleteStation)) {
+            deleteBetweenStation(deleteStation);
+        }
+
+        if (sections.size() != HAS_ONE_STATION_SIZE) {
+            removeUpStation(deleteStation);
+            removeDownStation(deleteStation);
+        }
+    }
+
+    public void validRemoveStation(Station deleteStation) {
+        validSectionsSize();
+        validStationInStations(deleteStation);
+    }
+
+    private void validStationInStations(Station deleteStation) {
+        if (!getStationList().contains(deleteStation)) {
+            throw new SubwayException(ErrorCode.VALID_DELETE_NOT_IN_STATIONS_ERROR);
+        }
+    }
+
+    private void validSectionsSize() {
+        if (sections.size() == HAS_ONE_STATION_SIZE) {
+            throw new SubwayException(ErrorCode.VALID_DELETE_LAST_STATION_ERROR);
+        }
+    }
+
+    public boolean isBetweenStations(Station deleteStation) {
+        List<Station> stations = getStationList();
+
+        Station firstStation = stations.get(0);
+        Station lastStation = stations.get(stations.size() - 1);
+
+        return firstStation.equals(deleteStation) || lastStation.equals(deleteStation);
+    }
+
+    private void deleteBetweenStation(Station removeStation) {
+        Section removeSection = getRemoveSection(removeStation);
+        sections.remove(removeSection);
+        sections.stream()
+                .findFirst()
+                .ifPresent(inner -> inner.removeSection(removeSection));
+    }
+
+    private Section getRemoveSection(Station removeStation) {
+        return sections.stream()
+                .filter(inner -> inner.isSameUpStation(removeStation) || inner.isSameDownStation(removeStation))
+                .findAny()
+                .filter(inner -> inner.isSameUpStation(removeStation))
+                .orElseThrow(NoSuchElementException::new);
+    }
+
+    private void removeUpStation(Station removeStation) {
+        sections.stream()
+                .filter(inner -> inner.isSameUpStation(removeStation))
+                .findAny().ifPresent(inner -> sections.remove(inner));
+    }
+
+    private void removeDownStation(Station removeStation) {
+        sections.stream()
+                .filter(inner -> inner.isSameDownStation(removeStation))
+                .findAny().ifPresent(inner -> sections.remove(inner));
+    }
+
 
 }
