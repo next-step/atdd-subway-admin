@@ -58,11 +58,11 @@ public class Section implements Comparable<Section> {
     }
 
     private boolean compareUpStation(Section newSection) {
-        return upStation == newSection.upStation;
+        return upStation.equals(newSection.upStation);
     }
 
     private boolean compareDownStation(Section newSection) {
-        return downStation == newSection.downStation;
+        return downStation.equals(newSection.downStation);
     }
 
     public void swapStation(Section newSection) {
@@ -102,6 +102,4 @@ public class Section implements Comparable<Section> {
     public int compareTo(Section other) {
         return this.downStation == other.upStation ? -1 : 1;
     }
-
-
 }
