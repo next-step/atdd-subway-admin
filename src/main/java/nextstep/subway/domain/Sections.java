@@ -41,8 +41,8 @@ public class Sections {
         if (upStation.isPresent() || downStation.isPresent()) {
             validateDistance(newSection);
         }
-        if (!upStation.isPresent() || !downStation.isPresent()) {
-            //상행 혹은 하행에 역 추가(노선 연장)
+        if (!upStation.isPresent() && !downStation.isPresent()) {
+            //상행 혹은 하행에 역 추가시 노선 길이 연장
             updateLineDistance(newSection);
         }
 
@@ -52,14 +52,14 @@ public class Sections {
         sections.add(newSection);
     }
 
-    private void updateLineDistance(Section newSection) {
-        newSection.updateLineDistance(newSection);
-    }
-
     private void validateNotExistsStations(Section newSection) {
-        if (sections.stream().noneMatch(section -> section.getStations().contains(newSection.getStations()))) {
+        if (!getStations().contains(newSection.getUpStation()) && !getStations().contains(newSection.getDownStation())) {
             throw new IllegalArgumentException(NOT_EXISTS_SECTION_STATION_MSG);
         }
+    }
+
+    private void updateLineDistance(Section newSection) {
+        newSection.updateLineDistance(newSection);
     }
 
     private void validateDuplicateStations(Section newSection) {
