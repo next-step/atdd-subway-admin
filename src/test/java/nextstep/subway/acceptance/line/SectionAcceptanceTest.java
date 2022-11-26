@@ -229,6 +229,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineA);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationB, stationC);
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(DISTANCE_B_C);
     }
 
     /**
@@ -252,6 +253,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineA);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationA, stationB);
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(DISTANCE_A_B);
     }
 
     /**
