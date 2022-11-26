@@ -20,12 +20,12 @@ public class Distance {
         return distance;
     }
 
-    public Distance substract(Distance distance) {
+    public Distance subtract(Distance distance) {
         return new Distance(this.distance - distance.distance);
     }
 
     public boolean isSameOrLonger(Distance distance) {
-        return substract(distance).distance <= 0;
+        return subtract(distance).distance <= 0;
     }
 
     public void add(Distance distance) {

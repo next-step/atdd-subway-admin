@@ -72,12 +72,12 @@ public class Section {
     }
 
     public void updateUpStation(Section section) {
-        this.distance = this.distance.substract(section.distance);
+        this.distance = this.distance.subtract(section.distance);
         this.upStation = section.getUpStation();
     }
 
     public void updateDownStation(Section section) {
-        this.distance = this.distance.substract(section.distance);
+        this.distance = this.distance.subtract(section.distance);
         this.downStation = section.getDownStation();
     }
 
