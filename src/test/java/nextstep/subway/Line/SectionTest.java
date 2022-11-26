@@ -10,7 +10,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@ExtendWith(MockitoExtension.class)
 class SectionTest {
 
     @Test
@@ -26,8 +25,8 @@ class SectionTest {
 
         //then
         assertAll(() -> {
-            assertThat(section.getLine().findName()).isEqualTo("2호선");
-            assertThat(section.getLine().findColor()).isEqualTo("green");
+            assertThat(section.getLine().getName()).isEqualTo("2호선");
+            assertThat(section.getLine().getColor()).isEqualTo("green");
         });
     }
 }
