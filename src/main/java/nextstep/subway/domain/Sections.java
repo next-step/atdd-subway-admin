@@ -6,6 +6,8 @@ import javax.persistence.OneToMany;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.constants.ErrorMessage.*;
+
 @Embeddable
 public class Sections {
 
@@ -39,7 +41,7 @@ public class Sections {
         if (upStation.isPresent() || downStation.isPresent()) {
             validateDistance(newSection);
         }
-        if(!upStation.isPresent() || !downStation.isPresent()) {
+        if (!upStation.isPresent() || !downStation.isPresent()) {
             //상행 혹은 하행에 역 추가(노선 연장)
             updateLineDistance(newSection);
         }
@@ -56,19 +58,19 @@ public class Sections {
 
     private void validateNotExistsStations(Section newSection) {
         if (sections.stream().noneMatch(section -> section.getStations().contains(newSection.getStations()))) {
-            throw new IllegalArgumentException("입력한 상행/하행역 모두 등록된 구간에서 존재하지 않는 역");
+            throw new IllegalArgumentException(NOT_EXISTS_SECTION_STATION_MSG);
         }
     }
 
     private void validateDuplicateStations(Section newSection) {
         if (sections.stream().anyMatch(section -> section.getStations().containsAll(newSection.getStations()))) {
-            throw new IllegalArgumentException("입력한 상행/하행역을 구간으로 이미 사용 중");
+            throw new IllegalArgumentException(DUPLICATE_SECTION_STATION_MSG);
         }
     }
 
     private void validateDistance(Section newSection) {
         if (sections.stream().anyMatch(section -> section.getDistance().isSameOrLonger(newSection.getDistance()))) {
-            throw new IllegalArgumentException("역간 추가시 구간 길이는 노선길이보다 크거나 같을 수 없습니다.");
+            throw new IllegalArgumentException(INVALID_DISTANCE_MSG);
         }
     }
 
