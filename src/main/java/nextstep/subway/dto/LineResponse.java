@@ -1,11 +1,11 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
+import nextstep.subway.domain.Station;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LineResponse {
 
@@ -16,63 +16,23 @@ public class LineResponse {
 
     private LineResponse() {}
 
-    public LineResponse(Long id, String name, String color, Sections sections) {
+    public LineResponse(Long id, String name, String color, Set<StationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations = sortSections(sections);
-    }
-
-    private Set<StationResponse> sortSections(Sections sections) {
-        Set<StationResponse> stationResponses = new LinkedHashSet<>();
-
-        Section firstSection = findFirstSection(sections);
-        stationResponses.add(StationResponse.of(firstSection.getUpStation()));
-        for (int i = 0; i < sections.getList().size(); i++) {
-            addedNextSectionStations(firstSection, sections, stationResponses);
-        }
-
-        return stationResponses;
-    }
-
-    private void addedNextSectionStations(Section firstSection,
-                                          Sections sections,
-                                          Set<StationResponse> stationResponses) {
-        for (Section section : sections.getList()) {
-            firstSection = resetNextSection(section, firstSection);
-            stationResponses.add(StationResponse.of(firstSection.getUpStation()));
-            stationResponses.add(StationResponse.of(firstSection.getDownStation()));
-        }
-    }
-
-    private Section resetNextSection(Section section, Section firstSection) {
-        if (section.isPostStation(firstSection)) {
-            return section;
-        }
-        return firstSection;
-    }
-
-    private Section findFirstSection(Sections sections) {
-        Section firstSection = null;
-        for (Section section : sections.getList()) {
-            firstSection = resetFirstSection(section, firstSection);
-        }
-        return firstSection;
-    }
-
-    private Section resetFirstSection(Section section, Section firstSection) {
-        if (section.isPreStation(firstSection)) {
-            return section;
-        }
-        return firstSection;
+        this.stations = stations;
     }
 
     public static LineResponse of(Line line) {
+        Set<Station> stations = line.getSections().sortStations();
         return new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                line.getSections());
+                stations
+                        .stream()
+                        .map(StationResponse::of)
+                        .collect(Collectors.toSet()));
     }
 
     public Long getId() {

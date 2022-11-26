@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.exception.InvalidParameterException;
 
 import javax.persistence.*;
@@ -65,9 +64,6 @@ public class Section {
     }
 
     public boolean isPreStation(Section section) {
-        if (section == null) {
-            return true;
-        }
         return downStation.equalsById(section.getUpStation());
     }
 
@@ -93,9 +89,38 @@ public class Section {
         return downStation.equalsById(station);
     }
 
-    public boolean containsAllStation(Section infixSection) {
-        if ((upStation.equalsById(infixSection.upStation) && downStation.equalsById(infixSection.downStation))
-                || (upStation.equalsById(infixSection.downStation) && downStation.equalsById(infixSection.upStation))) {
+    public boolean isContainsPreStation(Section infixSection) {
+        if (upStation.equalsById(infixSection.upStation) ||
+                downStation.equalsById(infixSection.upStation)) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isContainsPostStation(Section infixSection) {
+        if (upStation.equalsById(infixSection.downStation) ||
+                downStation.equalsById(infixSection.downStation)) {
+            return true;
+        }
+        return false;
+    }
+
+    public Section delete(Section otherSection, Station station) {
+        if (upStation.equals(station)) {
+            upStation = otherSection.upStation;
+        }
+        if (downStation.equals(station)) {
+            downStation = otherSection.downStation;
+        }
+        distance = distance + otherSection.distance;
+        return this;
+    }
+
+    public boolean contains(Station station) {
+        if (upStation.equalsById(station)) {
+            return true;
+        }
+        if (downStation.equalsById(station)) {
             return true;
         }
         return false;

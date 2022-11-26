@@ -36,6 +36,10 @@ public class Line {
         sections.infix(section);
     }
 
+    public void deleteStation(Station station) {
+        sections.delete(station);
+    }
+
     public Long getId() {
         return id;
     }

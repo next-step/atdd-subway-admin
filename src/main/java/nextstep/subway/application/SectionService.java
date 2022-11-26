@@ -52,6 +52,14 @@ public class SectionService {
         return SectionResponse.of(getSection(id));
     }
 
+    @Transactional
+    public void deleteSection(Long stationId, Long lineId) {
+        Line line = getLine(lineId);
+        Station station = getStation(stationId);
+
+        line.deleteStation(station);
+    }
+
     private Line getLine(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Line", id));
