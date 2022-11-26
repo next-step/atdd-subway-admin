@@ -1,8 +1,9 @@
-package nextstep.subway.lineStation;
+package nextstep.acceptence.lineStation;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.exception.AcceptanceTest;
+import nextstep.acceptence.exception.AcceptanceTest;
+import nextstep.acceptence.line.LineAcceptanceFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,9 +11,8 @@ import org.springframework.http.HttpStatus;
 
 import java.sql.SQLException;
 
-import static nextstep.subway.line.LineAcceptanceFixture.노선을_생성후_ID_를_리턴한다;
-import static nextstep.subway.lineStation.LineStationAcceptanceFixture.*;
-import static nextstep.subway.station.StationAcceptanceFixture.지하철역_생성후_ID_를_리턴한다;
+import static nextstep.acceptence.lineStation.LineStationAcceptanceFixture.*;
+import static nextstep.acceptence.station.StationAcceptanceFixture.지하철역_생성후_ID_를_리턴한다;
 
 @DisplayName("지하철구간 관련 기능")
 public class LineStationAcceptanceTest extends AcceptanceTest {
@@ -32,7 +32,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         downStationId = 지하철역_생성후_ID_를_리턴한다("역삼역");
         newStationId = 지하철역_생성후_ID_를_리턴한다("선릉역");
 
-        lineId = 노선을_생성후_ID_를_리턴한다("1호선", "RED", upStationId, downStationId, 10);
+        lineId = LineAcceptanceFixture.노선을_생성후_ID_를_리턴한다("1호선", "RED", upStationId, downStationId, 10);
     }
 
 

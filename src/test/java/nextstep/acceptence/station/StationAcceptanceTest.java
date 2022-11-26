@@ -1,15 +1,15 @@
-package nextstep.subway.station;
+package nextstep.acceptence.station;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.exception.AcceptanceTest;
+import nextstep.acceptence.exception.AcceptanceTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import static nextstep.subway.station.StationAcceptanceFixture.*;
+import static nextstep.acceptence.station.StationAcceptanceFixture.*;
 
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
