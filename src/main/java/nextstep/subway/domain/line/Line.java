@@ -3,12 +3,11 @@ package nextstep.subway.domain.line;
 import nextstep.subway.domain.BaseEntity;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.request.LineRequest;
-import nextstep.subway.dto.response.StationResponse;
 
 import javax.persistence.*;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -79,7 +78,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return Arrays.asList(upStation, downStation).stream()
+        return Stream.of(upStation, downStation)
                 .collect(Collectors.toList());
     }
 }
