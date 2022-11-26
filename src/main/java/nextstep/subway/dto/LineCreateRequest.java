@@ -1,7 +1,6 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Color;
-import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Name;
 
@@ -21,6 +20,26 @@ public class LineCreateRequest {
     }
 
     public Line toLine() throws IllegalArgumentException {
-        return new Line(new Name(name), new Color(color), upStationId, downStationId, new Distance(distance));
+        return new Line(new Name(name), new Color(color));
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Long getUpStationId() {
+        return upStationId;
+    }
+
+    public Long getDownStationId() {
+        return downStationId;
+    }
+
+    public Integer getDistance() {
+        return distance;
     }
 }

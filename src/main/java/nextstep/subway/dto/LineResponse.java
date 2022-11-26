@@ -4,6 +4,7 @@ import nextstep.subway.domain.Color;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Name;
 import nextstep.subway.domain.Station;
+import nextstep.subway.domain.Stations;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,10 +39,8 @@ public class LineResponse {
         return stations;
     }
 
-    public static LineResponse fromLineStations(Line line, List<Station> stations) {
+    public static LineResponse fromLineStations(Line line, Stations stations) {
         return new LineResponse(line.getId(), line.getName(), line.getColor(),
-                stations.stream()
-                        .map(StationToLineResponse::fromStation)
-                        .collect(Collectors.toList()));
+                stations.makeStationToLineResponse());
     }
 }

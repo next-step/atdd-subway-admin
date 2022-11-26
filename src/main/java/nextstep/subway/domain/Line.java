@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.util.Arrays;
 import java.util.List;
 
 @Entity
@@ -24,23 +23,12 @@ public class Line {
     @Embedded
     @AttributeOverride(name = "color", column = @Column(name = "color", nullable = false, unique = true))
     private Color color;
-
-    @Column(name = "up_station_id")
-    private Long upStationId;
-
-    @Column(name = "down_station_id")
-    private Long downStationId;
-
     @Embedded
-    @AttributeOverride(name = "distance", column = @Column(name = "distance"))
-    private Distance distance;
+    private SectionLineUp sectionLineUp = new SectionLineUp();
 
-    public Line(Name name, Color color, Long upStationId, Long downStationId, Distance distance) {
+    public Line(Name name, Color color) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
     }
 
     protected Line() {
@@ -54,16 +42,16 @@ public class Line {
         return name;
     }
 
+    public String getNameString() {
+        return name.getName();
+    }
+
     public Color getColor() {
         return color;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
+    public String getColorString() {
+        return color.getColor();
     }
 
     public Line updateName(Name name) {
@@ -76,7 +64,15 @@ public class Line {
         return this;
     }
 
-    public List<Long> getStationIds() {
-        return Arrays.asList(upStationId, downStationId);
+    public void addSection(Section section) {
+        sectionLineUp.addSection(section);
+    }
+
+    public List<Section> getSectionLineUpInOrder() {
+        return sectionLineUp.getSectionsInOrder();
+    }
+
+    public Stations getStationsInOrder() {
+        return this.sectionLineUp.getStationsInOrder();
     }
 }

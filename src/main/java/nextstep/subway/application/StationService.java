@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.Stations;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
@@ -34,8 +35,12 @@ public class StationService {
                 .collect(Collectors.toList());
     }
 
-    public List<Station> findAllById(List<Long> stationIds) {
-        return stationRepository.findAllById(stationIds);
+    public Stations findAllById(List<Long> stationIds) {
+        List<Station> stationList = stationRepository.findAllById(stationIds);
+        if (stationList.size() != stationIds.size()) {
+            throw new IllegalStateException("존재하지 않는 지하철역이 포함되어 있습니다");
+        }
+        return new Stations(stationList);
     }
 
     @Transactional
