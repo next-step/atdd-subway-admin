@@ -66,7 +66,7 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-
+    @Transactional
     public LineResponse updateSection(Long id, SectionRequest sectionRequest) {
         Line line = this.findLineById(id);
 
