@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -35,7 +36,14 @@ public class Sections {
     public void removeSectionThatContains(Station station) {
         Optional<Section> upSection = getUpSection(station);
         Optional<Section> downSection = getDownSection(station);
-        mergeSection(upSection, downSection);
+        validateSectionSize();
+        if (isAllTrue(upSection.isPresent(), downSection.isPresent())) {
+            mergeMiddleSection(upSection.get(), downSection.get());
+        }
+        if (!isAllTrue(upSection.isPresent(), downSection.isPresent())) {
+            upSection.ifPresent(up -> sections.remove(up));
+            downSection.ifPresent(down -> sections.remove(down));
+        }
     }
 
     public List<Station> getOrderedStations() {
@@ -105,45 +113,18 @@ public class Sections {
                 .collect(Collectors.toSet());
     }
 
-    private void mergeSection(Optional<Section> upSection, Optional<Section> downSection) {
-        validate(upSection, downSection);
-        mergeMiddleSection(upSection, downSection);
-        mergeLastSection(upSection, downSection);
-    }
-
-    private void validate(Optional<Section> upSection, Optional<Section> downSection) {
-        if (isAnyPresent(upSection, downSection)) {
-            throwExceptionIfSectionsHasOneSection();
-        }
-    }
-
-    private void mergeMiddleSection(Optional<Section> upSection, Optional<Section> downSection) {
-        if (isMiddleSection(upSection, downSection)) {
-            Section up = upSection.get();
-            Section down = downSection.get();
-            down.mergeUpStation(up);
-            sections.remove(up);
-        }
-    }
-
-    private void mergeLastSection(Optional<Section> upSection, Optional<Section> downSection) {
-        if (!isMiddleSection(upSection, downSection)) {
-            upSection.ifPresent(up -> sections.remove(up));
-            downSection.ifPresent(down -> sections.remove(down));
-        }
-    }
-
-    private boolean isMiddleSection(Optional<Section> upSection, Optional<Section> downSection) {
-        return upSection.isPresent() && downSection.isPresent();
-    }
-
-    private boolean isAnyPresent(Optional<Section> upSection, Optional<Section> downSection) {
-        return upSection.isPresent() || downSection.isPresent();
-    }
-
-    private void throwExceptionIfSectionsHasOneSection() {
+    private void validateSectionSize() {
         if (sections.size() == SINGLE_SECTION) {
             throw new IllegalArgumentException("하나 남은 구간의 종점은 삭제할 수 없습니다.");
         }
+    }
+
+    private void mergeMiddleSection(Section upSection, Section downSection) {
+        downSection.mergeUpStation(upSection);
+        sections.remove(upSection);
+    }
+
+    private boolean isAllTrue(Boolean... booleans) {
+        return Arrays.stream(booleans).allMatch(bool -> Boolean.TRUE == bool);
     }
 }
