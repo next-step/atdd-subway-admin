@@ -20,11 +20,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends BaseTest {
 
-    @BeforeEach
-    public void setUp() {
-        setUpBaseTestEnvironment();
-    }
-
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다

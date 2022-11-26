@@ -27,8 +27,6 @@ public class LineAcceptanceTest extends BaseTest {
 
     @BeforeEach
     void setUp() {
-        setUpBaseTestEnvironment();
-
         stationRepository.save(new Station("강남역"));
         stationRepository.save(new Station("서초역"));
     }
