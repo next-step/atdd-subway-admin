@@ -180,7 +180,7 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
 
     /**
-     * A-B 구간을 가진 노선 A가 생성되어 있다.
+     * Given A-B 구간을 가진 노선 A가 생성되어 있다.
      * When A역 삭제를 요청하면
      * Then 구간 삭제에 실패한다.
      */
@@ -189,6 +189,21 @@ class SectionAcceptanceTest extends AcceptanceTest {
     void removeSection_fail_size() {
 
         ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(lineA, stationA);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given A역, B역, C역이 생성되어 있다.
+     * Given A-B 구간을 가진 노선 A가 생성되어 있다.
+     * When C역 삭제를 요청하면
+     * Then 구간 삭제에 실패한다.
+     */
+    @DisplayName("노선에 등록 되어있지 않은 역을 제거할 수 없다.")
+    @Test
+    void removeNotExistStation_fail() {
+
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(lineA, stationC);
 
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
