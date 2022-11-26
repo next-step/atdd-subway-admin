@@ -8,10 +8,10 @@ import java.util.Objects;
 public class LineColor {
 
     @Column
-    private String color;
+    private final String color;
 
     protected LineColor() {
-
+        this.color = null;
     }
 
     public LineColor(String color) {
@@ -35,5 +35,10 @@ public class LineColor {
     @Override
     public int hashCode() {
         return color != null ? color.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return color;
     }
 }

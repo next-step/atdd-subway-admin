@@ -4,18 +4,19 @@ import nextstep.subway.message.LineMessage;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.util.Objects;
 
 @Embeddable
 public class Distance {
 
     @Column
-    private int distance;
+    private final Integer distance;
 
     protected Distance() {
-
+        this.distance = null;
     }
 
-    public Distance(int distance) {
+    public Distance(Integer distance) {
         validateDistance(distance);
         this.distance = distance;
     }
@@ -26,6 +27,14 @@ public class Distance {
         }
     }
 
+    public Distance minus(Distance other) {
+        return new Distance(this.distance - other.distance);
+    }
+
+    public boolean isMoreThan(Distance other) {
+        return this.distance >= other.distance;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -33,11 +42,16 @@ public class Distance {
 
         Distance distance1 = (Distance) o;
 
-        return distance == distance1.distance;
+        return Objects.equals(distance, distance1.distance);
     }
 
     @Override
     public int hashCode() {
         return distance;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(distance);
     }
 }

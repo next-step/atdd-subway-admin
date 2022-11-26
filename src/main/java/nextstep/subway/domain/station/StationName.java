@@ -11,10 +11,10 @@ import java.util.Objects;
 public class StationName {
 
     @Column(unique = true)
-    private String name;
+    private final String name;
 
     protected StationName() {
-
+        this.name = null;
     }
 
     public StationName(String name) {
@@ -45,5 +45,10 @@ public class StationName {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

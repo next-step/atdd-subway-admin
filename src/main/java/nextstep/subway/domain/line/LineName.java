@@ -11,10 +11,10 @@ import java.util.Objects;
 public class LineName {
 
     @Column(length = 6, nullable = false, unique = true)
-    private String name;
+    private final String name;
 
     protected LineName() {
-
+        this.name = null;
     }
 
     public LineName(String name) {
@@ -45,5 +45,10 @@ public class LineName {
     @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }
