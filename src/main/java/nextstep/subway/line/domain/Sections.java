@@ -14,6 +14,7 @@ public class Sections {
 
     public static final String SECTION_CONTAINS_EXCEPTION_MESSAGE = "상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없다.";
     public static final String DISTANCE_MINIMUM_EXCEPTION_MESSAGE = "새로운 구간의 거리가 기존 구간의 거리보다 크거나 같으면 등록을 할 수 없다.";
+    public static final int REMOVE_SECTION_MINIMUM_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -197,8 +198,15 @@ public class Sections {
     }
 
     public void removeBetweenStation(Station station) {
+        validateLastSection();
         validateNotExistsAllStations(station);
         addUniteSection(removeUpSection(station), removeDownSection(station));
+    }
+
+    private void validateLastSection() {
+        if (size() <= REMOVE_SECTION_MINIMUM_SIZE) {
+            throw new IllegalArgumentException();
+        }
     }
 
     private void validateNotExistsAllStations(Station station) {

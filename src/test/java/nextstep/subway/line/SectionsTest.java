@@ -139,4 +139,13 @@ class SectionsTest {
         assertThatThrownBy(() -> sections.removeBetweenStation(stationD()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
+
+    @DisplayName("하나의 구간만 있을 경우 구간을 제거할 수 없다.")
+    @Test
+    void removeLastSection_fail() {
+        Sections sections = new Sections();
+        sections.add(sectionAB());
+        assertThatThrownBy(() -> sections.removeBetweenStation(stationA()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }
