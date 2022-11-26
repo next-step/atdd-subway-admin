@@ -81,4 +81,7 @@ public class Section {
         this.downStation = section.getDownStation();
     }
 
+    public void updateLineDistance(Section newSection) {
+        this.distance.add(newSection.distance);
+    }
 }

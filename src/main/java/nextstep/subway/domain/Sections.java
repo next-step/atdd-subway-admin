@@ -31,17 +31,45 @@ public class Sections {
     }
 
     public void addSection(Section newSection) {
-        // 상행 하행 둘 중 하나도 포함되어있지 않는 경우
-        // 상행 하행 모두 기등록된 경우
-        // Distance 가 같은 경우
-
+        validateNotExistsStations(newSection);
+        validateDuplicateStations(newSection);
 
         Optional<Section> upStation = sections.stream().filter(section -> section.isEqualUpStation(newSection)).findFirst();
         Optional<Section> downStation = sections.stream().filter(section -> section.isEqualDownStation(newSection)).findFirst();
+        if (upStation.isPresent() || downStation.isPresent()) {
+            validateDistance(newSection);
+        }
+        if(!upStation.isPresent() || !downStation.isPresent()) {
+            //상행 혹은 하행에 역 추가(노선 연장)
+            updateLineDistance(newSection);
+        }
+
         upStation.ifPresent(section -> section.updateUpStation(newSection));
         downStation.ifPresent(section -> section.updateDownStation(newSection));
 
         sections.add(newSection);
+    }
+
+    private void updateLineDistance(Section newSection) {
+        newSection.updateLineDistance(newSection);
+    }
+
+    private void validateNotExistsStations(Section newSection) {
+        if (sections.stream().noneMatch(section -> section.getStations().contains(newSection.getStations()))) {
+            throw new IllegalArgumentException("입력한 상행/하행역 모두 등록된 구간에서 존재하지 않는 역");
+        }
+    }
+
+    private void validateDuplicateStations(Section newSection) {
+        if (sections.stream().anyMatch(section -> section.getStations().containsAll(newSection.getStations()))) {
+            throw new IllegalArgumentException("입력한 상행/하행역을 구간으로 이미 사용 중");
+        }
+    }
+
+    private void validateDistance(Section newSection) {
+        if (sections.stream().anyMatch(section -> section.getDistance().isSameOrLonger(newSection.getDistance()))) {
+            throw new IllegalArgumentException("역간 추가시 구간 길이는 노선길이보다 크거나 같을 수 없습니다.");
+        }
     }
 
     public List<Station> getStations() {
