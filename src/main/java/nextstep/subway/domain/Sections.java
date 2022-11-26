@@ -52,20 +52,22 @@ public class Sections {
 
     private List<Station> getStationList() {
 
-        Deque<Station> setctions = new ArrayDeque<>();
+        Deque<Station> stations = new ArrayDeque<>();
 
         sections.forEach(section -> {
+
             Station upStation = section.getUpStation();
             Station downStation = section.getDownStation();
 
-            if (setctions.isEmpty()) {
-                setctions.addAll(Arrays.asList(upStation, downStation));
+            if (stations.isEmpty()) {
+                stations.addAll(Arrays.asList(upStation, downStation));
             } else {
-                makeSequenceStations(setctions, upStation, downStation);
+                makeSequenceStations(stations, upStation, downStation);
             }
+
         });
 
-        return new ArrayList(setctions);
+        return new ArrayList(stations);
     }
 
     private void makeSequenceStations(Deque stationDeque, Station upStation, Station downStation) {
@@ -73,7 +75,6 @@ public class Sections {
             stationDeque.addFirst(upStation);
             return;
         }
-
         stationDeque.addLast(downStation);
     }
 
@@ -107,13 +108,20 @@ public class Sections {
         }
     }
 
-    public boolean isBetweenStations(Station deleteStation) {
-        List<Station> stations = getStationList();
+    private boolean isBetweenStations(Station removeStation) {
+        return getUpStationList().contains(removeStation) && getDownStationList().contains(removeStation);
+    }
 
-        Station firstStation = stations.get(0);
-        Station lastStation = stations.get(stations.size() - 1);
+    private List<Station> getUpStationList() {
+        return sections.stream()
+                .map(Section::getUpStation)
+                .collect(Collectors.toList());
+    }
 
-        return firstStation.equals(deleteStation) || lastStation.equals(deleteStation);
+    private List<Station> getDownStationList() {
+        return sections.stream()
+                .map(Section::getDownStation)
+                .collect(Collectors.toList());
     }
 
     private void deleteBetweenStation(Station removeStation) {
@@ -143,6 +151,5 @@ public class Sections {
                 .filter(inner -> inner.isSameDownStation(removeStation))
                 .findAny().ifPresent(inner -> sections.remove(inner));
     }
-
 
 }
