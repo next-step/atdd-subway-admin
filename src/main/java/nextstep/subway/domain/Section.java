@@ -89,10 +89,7 @@ public class Section {
         return downStation.equalsById(station);
     }
 
-    public boolean isContainsPreStation(boolean isContains, Section infixSection) {
-        if (isContains) {
-            return true;
-        }
+    public boolean isContainsPreStation(Section infixSection) {
         if (upStation.equalsById(infixSection.upStation) ||
                 downStation.equalsById(infixSection.upStation)) {
             return true;
@@ -100,10 +97,7 @@ public class Section {
         return false;
     }
 
-    public boolean isContainsPostStation(boolean isContains, Section infixSection) {
-        if (isContains) {
-            return true;
-        }
+    public boolean isContainsPostStation(Section infixSection) {
         if (upStation.equalsById(infixSection.downStation) ||
                 downStation.equalsById(infixSection.downStation)) {
             return true;
@@ -120,6 +114,16 @@ public class Section {
         }
         distance = distance + otherSection.distance;
         return this;
+    }
+
+    public boolean contains(Station station) {
+        if (upStation.equalsById(station)) {
+            return true;
+        }
+        if (downStation.equalsById(station)) {
+            return true;
+        }
+        return false;
     }
 
     public Long getId() {

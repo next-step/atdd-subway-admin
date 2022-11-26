@@ -1,9 +1,11 @@
 package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Station;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class LineResponse {
 
@@ -22,11 +24,15 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
+        Set<Station> stations = line.getSections().sortStations();
         return new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
-                line.getSections().sortSections());
+                stations
+                        .stream()
+                        .map(StationResponse::of)
+                        .collect(Collectors.toSet()));
     }
 
     public Long getId() {
