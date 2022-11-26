@@ -128,7 +128,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 강남역.getId());
         params.put("downStationId", 광교역id);
-        params.put("distance", 4);
+        params.put("distance", 10);
         ExtractableResponse<Response> 지하철구간_등록 = 지하철구간_등록(params, 신분당선.getId());
         //then
         assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
