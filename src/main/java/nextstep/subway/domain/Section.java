@@ -60,6 +60,21 @@ public class Section {
         modifyDownStation(section);
     }
 
+    public boolean hasStation(Station station) {
+        return getStations().contains(station);
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public Station getStation(Station station) {
+        if (station.equals(upStation)) {
+            return downStation;
+        }
+        return upStation;
+    }
+
     private void modifyUpStation(Section section) {
         if (!section.upStation.equals(this.upStation)) {
             return;
