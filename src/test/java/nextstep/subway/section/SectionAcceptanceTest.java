@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import java.util.List;
 
 import static nextstep.subway.section.SectionAcceptanceTestUtil.createSection;
+import static nextstep.subway.section.SectionAcceptanceTestUtil.removeSection;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 관련 기능")
@@ -41,9 +42,9 @@ public class SectionAcceptanceTest {
         databaseCleanup.execute();
         판교역 = StationAcceptanceTestUtil.createStation("판교역")
                 .jsonPath().getString("id");
-        경기광주역 = StationAcceptanceTestUtil.createStation("경기광주역")
-                .jsonPath().getString("id");
         이매역 = StationAcceptanceTestUtil.createStation("이매역")
+                .jsonPath().getString("id");
+        경기광주역 = StationAcceptanceTestUtil.createStation("경기광주역")
                 .jsonPath().getString("id");
         부발역 = StationAcceptanceTestUtil.createStation("부발역")
                 .jsonPath().getString("id");
@@ -164,5 +165,102 @@ public class SectionAcceptanceTest {
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given : 구간에 3개의 역이 등록되어 있고
+     * When : 마지막 역을 제거하면
+     * Then : 구간에 2개의 역이 남고, 종전 역이 종점역으로 바뀐다.
+     */
+    @DisplayName("종점 제거 시 종전역이 종점으로 대체되는 지 확인")
+    @Test
+    void 종점제거_성공() {
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 이매역, "10")
+                .jsonPath().getString("id");
+        createSection(이매역, 경기광주역, "50", 경강선);
+
+        // when
+        removeSection(경강선, 경기광주역, HttpStatus.OK);
+
+        // then
+        List<String> stationNames = LineAcceptanceTestUtil.getLines(Long.valueOf(경강선))
+                .jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).containsExactly("판교역", "이매역");
+    }
+
+    /**
+     * Given : 구간에 3개의 역이 등록되어 있고
+     * When : 중간 역을 제거하면
+     * Then : 구간에 2개의 역이 남고, 처음역과 마지막 역이 연결된다.
+     */
+    @DisplayName("중간역을 제거 하는 경우 확인")
+    @Test
+    void 중간제거_성공() {
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 이매역, "10")
+                .jsonPath().getString("id");
+        createSection(이매역, 경기광주역, "50", 경강선);
+
+        // when
+        removeSection(경강선, 이매역, HttpStatus.OK);
+
+        // then
+        List<String> stationNames = LineAcceptanceTestUtil.getLines(Long.valueOf(경강선))
+                .jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).containsExactly("판교역", "경기광주역");
+    }
+
+    /**
+     * Given : 구간에 3개의 역이 등록되어 있고
+     * When : 상행 종점 역을 제거하면
+     * Then : 구간에 2개의 역이 남고, 중간역이 처음역이 되며, 중간과 마지막 역이 남는다.
+     */
+    @DisplayName("상행 종점을 제거하는 경우, 제거 성공하는 지 확인")
+    @Test
+    void 상행종점제거_성공() {
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 이매역, "10")
+                .jsonPath().getString("id");
+        createSection(이매역, 경기광주역, "50", 경강선);
+
+        // when
+        removeSection(경강선, 판교역, HttpStatus.OK);
+
+        // then
+        List<String> stationNames = LineAcceptanceTestUtil.getLines(Long.valueOf(경강선))
+                .jsonPath().getList("stations.name", String.class);
+        assertThat(stationNames).containsExactly("이매역", "경기광주역");
+    }
+
+    /**
+     * Given : 노선에 한 구간만 존재할 때
+     * When : 역을 제거하면,
+     * Then : 예외가 발생한다
+     */
+    @DisplayName("구간이 하나인 노선에서 역을 제거하려고 하는 경우 예외 처리")
+    @Test
+    void 최소구간제거_실패() {
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 이매역, "10")
+                .jsonPath().getString("id");
+
+        // when / then
+        removeSection(경강선, 판교역, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
+     * When : 노선에 없는 역을 제거하려고 할 때,
+     * Then : 예외가 발생한다
+     */
+    @DisplayName("노선에 존재하지 않는 역을 제거하려고 했을 경우 에러")
+    @Test
+    void 노선에_없는_역_제거_실패() {
+        // given
+        경강선 = LineAcceptanceTestUtil.createLine("경강선", "bg-blue-600", 판교역, 이매역, "10")
+                .jsonPath().getString("id");
+
+        // when / then
+        removeSection(경강선, 경기광주역, HttpStatus.BAD_REQUEST);
     }
 }

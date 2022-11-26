@@ -51,6 +51,14 @@ public class RestAssuredRequestBuilder {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> delete(String path, String variable1, String variable2, HttpStatus status) {
+        return RestAssured.given().log().all()
+                .when().delete(path, variable1, variable2)
+                .then().log().all()
+                .statusCode(status.value())
+                .extract();
+    }
+
     public static ExtractableResponse<Response> put(Map params, String mediaType, String path, Long id, HttpStatus status) {
         return RestAssured.given().log().all()
                 .body(params)

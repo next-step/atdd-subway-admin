@@ -28,4 +28,11 @@ public class SectionService {
         Line line = lineRepository.findById(lineId).orElseThrow(NoResultException::new);
         line.registerSection(sectionRequest.toSection(upStation, downStation));
     }
+
+    @Transactional
+    public void removeSection(Long lineId, Long stationId) {
+        Station station = stationRepository.findById(stationId).orElseThrow(NoResultException::new);
+        Line line = lineRepository.findById(lineId).orElseThrow(NoResultException::new);
+        line.removeStation(station);
+    }
 }

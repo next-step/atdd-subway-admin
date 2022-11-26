@@ -17,13 +17,23 @@ public class SectionController {
     }
 
 
-    @PostMapping("/{id}/sections")
-    public ResponseEntity<Void> registerSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
-        sectionService.registerSection(id, sectionRequest);
+    @PostMapping("/{lineId}/sections")
+    public ResponseEntity<Void> registerSection(
+            @PathVariable Long lineId,
+            @RequestBody SectionRequest sectionRequest) {
+        sectionService.registerSection(lineId, sectionRequest);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<Void> removeSection(
+            @PathVariable Long lineId,
+            @RequestParam Long stationId) {
+        sectionService.removeSection(lineId, stationId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class, IllegalStateException.class})
     public ResponseEntity<Void> handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
