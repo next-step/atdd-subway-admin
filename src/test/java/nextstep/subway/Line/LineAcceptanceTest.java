@@ -3,7 +3,9 @@ package nextstep.subway.Line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.AcceptanceTest;
+import nextstep.subway.DatabaseCleaner;
+import nextstep.subway.application.StationService;
 import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -13,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -22,32 +25,17 @@ import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
-//@DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class LineAcceptanceTest {
-    private final String DELIMITER = "/";
+class LineAcceptanceTest extends AcceptanceTest {
 
     @Autowired
-    StationRepository stationRepository;
-
-    private static Map<String, String> of(String lineName, String color) {
-        Map<String, String> map = new HashMap<>();
-        map.put("name", lineName);
-        map.put("color", color);
-        return map;
-    }
-
-    @LocalServerPort
-    private int port;
-
-    private Map<String, String> params;
+    StationService stationService;
 
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
-        params = LineAcceptanceTest.of("2호선", "green");
+        databaseCleaner.execute();
         creatStation("강남역");
         creatStation("서초역");
     }
@@ -60,14 +48,10 @@ class LineAcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = createLine(params);
+        ExtractableResponse<Response> response = createLine(generateParams("2호선", "green"));
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        List<String> lineNames =
-                RestAssured.given().log().all()
-                        .when().get("/lines")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> lineNames = showLines();
         // then
         assertThat(lineNames).containsAnyOf("2호선");
     }
@@ -81,8 +65,9 @@ class LineAcceptanceTest {
     @Test
     void showCreatedLines() {
         // given
-        Map<String, String> params1 = LineAcceptanceTest.of("2호선", "green");
-        Map<String, String> params2 = LineAcceptanceTest.of("3호선", "orange");
+        Map<String, String> params1 = generateParams("2호선", "green");
+        Map<String, String> params2 = generateParams("3호선", "orange");
+
         ExtractableResponse<Response> response1 = createLine(params1);
         ExtractableResponse<Response> response2 = createLine(params2);
 
@@ -90,11 +75,7 @@ class LineAcceptanceTest {
         assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         assertThat(response2.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // when
-        List<String> lineNames =
-                RestAssured.given().log().all()
-                        .when().get("/lines")
-                        .then().log().all()
-                        .extract().jsonPath().getList("name", String.class);
+        List<String> lineNames = showLines();
         // then
         assertThat(lineNames).hasSize(2);
 
@@ -108,17 +89,14 @@ class LineAcceptanceTest {
     @Test
     void retrieveTheLine() {
         // given
-        ExtractableResponse<Response> response = createLine(params);
+        ExtractableResponse<Response> response = createLine(generateParams("2호선", "green"));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // when
-        ExtractableResponse<Response> retrieveResponse =
-                RestAssured.given().log().all()
-                        .when().get("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> retrieveResponse = retrieveLine(response.body().jsonPath().getLong("id"));
         // then
         assertThat(retrieveResponse.body().jsonPath().getString("name")).contains("2호선");
     }
+
     /**
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 수정하면
@@ -128,10 +106,10 @@ class LineAcceptanceTest {
     @Test
     void modifyTheLine() {
         // given
-        ExtractableResponse<Response> response = createLine(params);
+        ExtractableResponse<Response> response = createLine(generateParams("2호선", "green"));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // when
-        Map<String, String> modifyParams = LineAcceptanceTest.of("3호선", "orange");
+        Map<String, String> modifyParams = generateParams("3호선", "orange");
         ExtractableResponse<Response> modifyResponse =
                 RestAssured.given().log().all()
                         .body(modifyParams)
@@ -141,11 +119,7 @@ class LineAcceptanceTest {
                         .extract();
         assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         // then
-        ExtractableResponse<Response> retrieveResponse =
-                RestAssured.given().log().all()
-                        .when().get("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> retrieveResponse = retrieveLine(response.body().jsonPath().getLong("id"));
         assertThat(retrieveResponse.body().jsonPath().getString("name")).contains("3호선");
     }
     /**
@@ -157,6 +131,7 @@ class LineAcceptanceTest {
     @Test
     void deleteTheLine() {
         // given
+        Map params = generateParams("2호선", "green");
         ExtractableResponse<Response> response = createLine(params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // when
@@ -169,12 +144,20 @@ class LineAcceptanceTest {
                         .extract();
         assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         // then
-        ExtractableResponse<Response> retrieveResponse =
-                RestAssured.given().log().all()
-                        .when().get("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> retrieveResponse = retrieveLine(response.body().jsonPath().getLong("id"));
         assertThat(retrieveResponse.body().jsonPath().getString("name")).isNull();
+    }
+
+    @Transactional
+    public void creatStation(String name) {
+        stationService.saveStation(new StationRequest(name));
+    }
+
+    private List<String> showLines() {
+        return RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
     }
 
     private ExtractableResponse<Response> createLine(Map<String, String> params) {
@@ -186,8 +169,19 @@ class LineAcceptanceTest {
                 .extract();
     }
 
-    @Transactional
-    public void creatStation(String name) {
-        stationRepository.save(new StationRequest(name).toStation());
+    private ExtractableResponse<Response> retrieveLine(long id) {
+        return RestAssured.given().log().all()
+                .when().get("/lines" + DELIMITER + id)
+                .then().log().all()
+                .extract();
+    }
+
+    private Map<String, String> generateParams(String name, String color) {
+        Map<String, String> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+        params.put("upStationId", "1");
+        params.put("downStationId", "2");
+        return params;
     }
 }
