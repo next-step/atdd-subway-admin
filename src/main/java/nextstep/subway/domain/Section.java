@@ -62,4 +62,23 @@ public class Section {
         stations.add(downStation);
         return stations;
     }
+
+    public boolean isEqualUpStation(Section section) {
+        return section.getUpStation().equals(upStation);
+    }
+
+    public boolean isEqualDownStation(Section section) {
+        return section.getDownStation().equals(downStation);
+    }
+
+    public void updateUpStation(Section section) {
+        this.distance = this.distance.substract(section.distance);
+        this.upStation = section.getUpStation();
+    }
+
+    public void updateDownStation(Section section) {
+        this.distance = this.distance.substract(section.distance);
+        this.downStation = section.getDownStation();
+    }
+
 }

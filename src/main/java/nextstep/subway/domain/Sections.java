@@ -3,9 +3,7 @@ package nextstep.subway.domain;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -19,7 +17,7 @@ public class Sections {
     }
 
     public List<Section> getSections() {
-        return sections;
+        return Collections.unmodifiableList(sections);
     }
 
     public Sections(List<Section> sections) {
@@ -32,11 +30,21 @@ public class Sections {
         return new Sections(sections);
     }
 
-    public void addSection(Section section) {
-        sections.add(section);
+    public void addSection(Section newSection) {
+        // 상행 하행 둘 중 하나도 포함되어있지 않는 경우
+        // 상행 하행 모두 기등록된 경우
+        // Distance 가 같은 경우
+
+
+        Optional<Section> upStation = sections.stream().filter(section -> section.isEqualUpStation(newSection)).findFirst();
+        Optional<Section> downStation = sections.stream().filter(section -> section.isEqualDownStation(newSection)).findFirst();
+        upStation.ifPresent(section -> section.updateUpStation(newSection));
+        downStation.ifPresent(section -> section.updateDownStation(newSection));
+
+        sections.add(newSection);
     }
 
     public List<Station> getStations() {
-        return sections.stream().map(section -> section.getStations()).distinct().flatMap(Collection::stream).collect(Collectors.toList());
+        return sections.stream().map(section -> section.getStations()).flatMap(Collection::stream).distinct().collect(Collectors.toList());
     }
 }

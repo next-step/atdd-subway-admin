@@ -3,6 +3,7 @@ package nextstep.subway.application;
 import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,11 +24,11 @@ public class SectionService {
     }
 
     @Transactional
-    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+    public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION_MSG));
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new NoSuchElementException("존재하지 않는 상행역"));
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new NoSuchElementException("존재하지 않는 하행역"));
         line.addSection(Section.of(line, upStation, downStation, new Distance(sectionRequest.getDistance())));
-        return LineResponse.from(line);
+        return SectionResponse.from(line);
     }
 }

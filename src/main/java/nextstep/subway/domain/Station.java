@@ -11,6 +11,9 @@ public class Station extends BaseEntity {
     @AttributeOverride(name = "name", column = @Column(name = "name", unique = true, nullable = false))
     private Name name;
 
+//    @Embedded
+//    private Sections sections;
+
     public Station() {
     }
 
