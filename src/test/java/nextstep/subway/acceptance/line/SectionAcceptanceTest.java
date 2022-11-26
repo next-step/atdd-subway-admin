@@ -13,8 +13,7 @@ import java.util.Map;
 
 import static nextstep.subway.acceptance.line.LineSteps.*;
 import static nextstep.subway.acceptance.station.StationSteps.*;
-import static nextstep.subway.line.LineFixture.신분당선_색상;
-import static nextstep.subway.line.LineFixture.신분당선_이름;
+import static nextstep.subway.line.LineFixture.*;
 import static nextstep.subway.line.SectionTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -26,6 +25,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
     private Long 강남역;
     private Long 역삼역;
     private Long 선릉역;
+    private Long stationA;
+    private Long stationB;
+    private Long stationC;
+    private Long lineA;
 
     @BeforeEach
     public void setUp() {
@@ -35,6 +38,10 @@ class SectionAcceptanceTest extends AcceptanceTest {
         강남역 = 지하철역_생성(GANGNAM_STATION).jsonPath().getLong("id");
         역삼역 = 지하철역_생성(YUKSAM_STATION).jsonPath().getLong("id");
         선릉역 = 지하철역_생성(SEOLLEUNG_STATION).jsonPath().getLong("id");
+        stationA = 지하철역_생성(A_STATION).jsonPath().getLong("id");
+        stationB = 지하철역_생성(B_STATION).jsonPath().getLong("id");
+        stationC = 지하철역_생성(C_STATION).jsonPath().getLong("id");
+        lineA = 지하철_노선_생성_요청(LINE_NAME_A, LINE_COLOR_B, stationA, stationB, DISTANCE_A_B).jsonPath().getLong("id");
     }
 
     /**
@@ -169,6 +176,21 @@ class SectionAcceptanceTest extends AcceptanceTest {
 
         // then
         구간_추가_검증(createLineResponse, 논현역, 신논현역, 강남역);
+    }
+
+
+    /**
+     * A-B 구간을 가진 노선 A가 생성되어 있다.
+     * When A역 삭제를 요청하면
+     * Then 구간 삭제에 실패한다.
+     */
+    @DisplayName("하나의 구간만 있을 경우 구간을 제거할 수 없다.")
+    @Test
+    void removeSection_fail_size() {
+
+        ExtractableResponse<Response> response = 지하철_노선에_지하철_구간_제거_요청(lineA, stationA);
+
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     private Map<String, String> addSectionCreateParams(Long upStationId, Long downStationId, int distance) {

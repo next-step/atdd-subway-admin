@@ -20,6 +20,9 @@ public class StationSteps {
     public static final String SHINNONHYUN_STATION = "신논현역";
     public static final String NONHYUN_STATION = "논현역";
     public static final String SEOLLEUNG_STATION = "선릉역";
+    public static final String A_STATION = "A역";
+    public static final String B_STATION = "B역";
+    public static final String C_STATION = "C역";
 
     public static ExtractableResponse<Response> 지하철역_생성(String stationName) {
         Map<String, String> param = new HashMap<>();

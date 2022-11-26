@@ -87,4 +87,10 @@ public class LineSteps {
         assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(id);
     }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_요청(Long lineId, Long stationId) {
+        return given()
+                .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
+                .then().log().all().extract();
+    }
 }
