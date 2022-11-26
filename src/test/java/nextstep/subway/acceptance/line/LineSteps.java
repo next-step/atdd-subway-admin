@@ -40,6 +40,12 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+        return given()
+                .when().get("/lines/{id}", id)
+                .then().log().all().extract();
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(String location, String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("color", color);
