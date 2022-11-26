@@ -254,6 +254,30 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationA, stationB);
     }
 
+    /**
+     * Given A역, B역, C역이 생성되어 있다.
+     * Given A-B-C 구간을 가진 노선 A가 생성되어 있다.
+     * When B역 삭제를 요청하면
+     * Then A-C 구간을 가진 노선이 된다.
+     * Then 노선의 거리는 A-C 구간의 거리와 같다.
+     */
+    @DisplayName("A-B-C 구간의 노선에서 B역을 제거한다.")
+    @Test
+    void removeStationB_success() {
+
+        //Given
+        지하철_노선에_지하철_구간_생성_요청(lineA, addSectionCreateParams(stationB, stationC, DISTANCE_B_C));
+
+        //when
+        지하철_노선에_지하철_구간_제거_요청(lineA, stationB);
+
+        // then
+        ExtractableResponse<Response> response = 지하철_노선_조회_요청(lineA);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(response.jsonPath().getList("stations.id", Long.class)).containsExactly(stationA, stationC);
+        assertThat(response.jsonPath().getInt("distance")).isEqualTo(DISTANCE_A_C);
+    }
+
     private Map<String, String> addSectionCreateParams(Long upStationId, Long downStationId, int distance) {
         Map<String, String> params = new HashMap<>();
         params.put("upStationId", upStationId + "");

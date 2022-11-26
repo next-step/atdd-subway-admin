@@ -54,6 +54,10 @@ public class Line extends BaseEntity {
         return this.color;
     }
 
+    public int getDistance() {
+        return this.sections.findDistance();
+    }
+
     public void addSection(Station upStation, Station downStation, Distance distance) {
         this.sections.add(new Section(this, upStation, downStation, distance));
     }
