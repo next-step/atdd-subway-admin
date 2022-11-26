@@ -127,18 +127,16 @@ class SectionsTest {
         assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
     }
 
-//    @DisplayName("노선에 등록 되어있지 않은 역을 제거할 수 없다.")
-//    @Test
-//    void removeNotRegistrationStation_fail() {
-//        Sections sections = new Sections();
-//        sections.add(sectionAB());
-//        sections.add(sectionBC());
-//        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
-//        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
-//
-//        //when
-//        assertThatThrownBy(() -> sections.remove(stationD()))
-//                .isInstanceOf(IllegalArgumentException.class)
-//                .hasMessageContaining(SECTION_DUPLICATE_EXCEPTION_MESSAGE);
-//    }
+    @DisplayName("노선에 등록 되어있지 않은 역을 제거할 수 없다.")
+    @Test
+    void removeNotRegistrationStation_fail() {
+        Sections sections = new Sections();
+        sections.add(sectionAB());
+        sections.add(sectionBC());
+        assertThat(sections.getStations()).containsExactly(stationA(), stationB(), stationC());
+        assertThat(sections.getDistance()).isEqualTo(DISTANCE_A_C);
+
+        assertThatThrownBy(() -> sections.removeBetweenStation(stationD()))
+                .isInstanceOf(IllegalArgumentException.class);
+    }
 }

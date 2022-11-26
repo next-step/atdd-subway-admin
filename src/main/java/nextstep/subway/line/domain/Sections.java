@@ -53,14 +53,14 @@ public class Sections {
         return isSameUpStation(addSection.getUpStation()) || isSameDownStation(addSection.getDownStation());
     }
 
-    private boolean isSameUpStation(Station upStation) {
+    private boolean isSameUpStation(Station station) {
         return this.sections.stream()
-                .anyMatch(section -> section.isUpStation(upStation));
+                .anyMatch(section -> section.isUpStation(station));
     }
 
-    private boolean isSameDownStation(Station downStation) {
+    private boolean isSameDownStation(Station station) {
         return this.sections.stream()
-                .anyMatch(section -> section.isDownStation(downStation));
+                .anyMatch(section -> section.isDownStation(station));
     }
 
     private Section removeSection(Section section) {
@@ -197,7 +197,14 @@ public class Sections {
     }
 
     public void removeBetweenStation(Station station) {
+        validateNotExistsAllStations(station);
         addUniteSection(removeUpSection(station), removeDownSection(station));
+    }
+
+    private void validateNotExistsAllStations(Station station) {
+        if (!isSameDownStation(station) && !isSameUpStation(station)) {
+            throw new IllegalArgumentException();
+        }
     }
 
     private void addUniteSection(Section upSection, Section downSection) {
