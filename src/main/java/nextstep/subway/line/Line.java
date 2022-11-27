@@ -54,7 +54,7 @@ public class Line {
     }
 
     public List<Map<String, Object>> getStations() {
-        return sections.getStations();
+        return sections.getStationsResponse();
     }
 
     public void update(Line updateLine) {

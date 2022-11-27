@@ -1,5 +1,6 @@
 package nextstep.subway.line;
 
+import nextstep.subway.section.CreateSectionRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,8 +18,8 @@ class LineController {
     }
 
     @PostMapping("/lines")
-    public ResponseEntity<LineResponse> createLine(@RequestBody CreateLineDto dto) {
-        LineResponse response = lineService.register(dto);
+    public ResponseEntity<LineResponse> createLine(@RequestBody CreateLineRequest request) {
+        LineResponse response = lineService.register(request);
         return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 
@@ -33,8 +34,8 @@ class LineController {
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity<Void> updateLine(@PathVariable("id") long id, @RequestBody UpdateLineDto dto) {
-        lineService.update(id, dto);
+    public ResponseEntity<Void> updateLine(@PathVariable("id") long id, @RequestBody UpdateLineRequest request) {
+        lineService.update(id, request);
         return ResponseEntity.ok().build();
     }
 
@@ -42,5 +43,11 @@ class LineController {
     public ResponseEntity<Void> deleteLine(@PathVariable("id") long id) {
         lineService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/lines/{lineId}/sections")
+    public ResponseEntity<LineResponse> createSection(@RequestBody CreateSectionRequest request, @PathVariable("lineId") long lineId) {
+        LineResponse response = lineService.registerSection(lineId, request);
+        return ResponseEntity.created(URI.create("/lines/" + response.getId())).body(response);
     }
 }
