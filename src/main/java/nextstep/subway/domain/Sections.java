@@ -59,8 +59,6 @@ public class Sections {
     }
 
     public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, Distance distance) {
-        new Distances(sections.stream().map(Section::getDistance).collect(Collectors.toList()))
-                .checkLessThanAllSectionDistance(distance);
         Section newSection = new Section(requestUpStation, requestDownStation, distance);
         Station newStation = checkAndGetNewStation(requestUpStation, requestDownStation);
 
@@ -100,7 +98,7 @@ public class Sections {
         }
         sections.remove(existingSection);
         Section newSection = new Section(existingSection.getUpStation(), newStation,
-                existingSection.getDistance().getNewSectionDistance(distance));
+                existingSection.getDistance().compareTo(distance));
         return newSection;
     }
 
@@ -115,7 +113,7 @@ public class Sections {
         }
         sections.remove(existingSection);
         Section newSection = new Section(newStation, existingSection.getDownStation(),
-                existingSection.getDistance().getNewSectionDistance(distance));
+                existingSection.getDistance().compareTo(distance));
         return newSection;
     }
 

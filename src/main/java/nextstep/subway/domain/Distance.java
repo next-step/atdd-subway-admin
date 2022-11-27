@@ -9,17 +9,17 @@ public class Distance {
     private int distance;
 
     public Distance(int distance) {
-        if(distance <= 0) {
+        if (distance <= 0) {
             throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
         }
         this.distance = distance;
     }
 
     public Distance(int distance, boolean isZeroAllowed) {
-        if(isZeroAllowed && distance < 0) {
+        if (isZeroAllowed && distance < 0) {
             throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
         }
-        if(!isZeroAllowed && distance <=0) {
+        if (!isZeroAllowed && distance <= 0) {
             throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
         }
         this.distance = distance;
@@ -33,12 +33,12 @@ public class Distance {
         return distance;
     }
 
-    public Distance getNewSectionDistance(Distance distance) {
-        int newSectionDistance = this.distance - distance.getDistance();
-        if(newSectionDistance < 0) {
+    public Distance compareTo(Distance distance) {
+        int newDistance = this.distance - distance.getDistance();
+        if (newDistance <= 0) {
             throw new IllegalArgumentException(ErrorMessage.EXCEED_SECTION_DISTANCE.getMessage());
         }
-        return new Distance(newSectionDistance);
+        return new Distance(newDistance);
     }
 
     @Override
