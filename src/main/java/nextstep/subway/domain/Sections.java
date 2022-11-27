@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -16,7 +17,8 @@ import javax.persistence.OneToMany;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    public static final int SINGLE_SECTION = 1;
+    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -31,6 +33,19 @@ public class Sections {
         sections.add(section);
     }
 
+    public void removeSectionThatContains(Station station) {
+        Optional<Section> upSection = getUpSection(station);
+        Optional<Section> downSection = getDownSection(station);
+        validateSectionSize();
+        if (isAllTrue(upSection.isPresent(), downSection.isPresent())) {
+            mergeMiddleSection(upSection.get(), downSection.get());
+        }
+        if (!isAllTrue(upSection.isPresent(), downSection.isPresent())) {
+            upSection.ifPresent(up -> sections.remove(up));
+            downSection.ifPresent(down -> sections.remove(down));
+        }
+    }
+
     public List<Station> getOrderedStations() {
         Optional<Section> firstSection = getFirstSection();
 
@@ -43,6 +58,18 @@ public class Sections {
                     .findFirst();
         }
         return new ArrayList<>(result);
+    }
+
+    private Optional<Section> getUpSection(Station station) {
+        return sections.stream()
+                .filter(upSection -> upSection.isEqualsDownStation(station))
+                .findFirst();
+    }
+
+    private Optional<Section> getDownSection(Station station) {
+        return sections.stream()
+                .filter(downSection -> downSection.isEqualsUpStation(station))
+                .findFirst();
     }
 
     private Optional<Section> getFirstSection() {
@@ -82,7 +109,22 @@ public class Sections {
         return sections.stream()
                 .map(Section::getStations)
                 .flatMap(Collection::stream)
-                .filter(station -> section.getStations().contains(station))
+                .filter(section::containsStation)
                 .collect(Collectors.toSet());
+    }
+
+    private void validateSectionSize() {
+        if (sections.size() == SINGLE_SECTION) {
+            throw new IllegalArgumentException("하나 남은 구간의 종점은 삭제할 수 없습니다.");
+        }
+    }
+
+    private void mergeMiddleSection(Section upSection, Section downSection) {
+        downSection.mergeUpStation(upSection);
+        sections.remove(upSection);
+    }
+
+    private boolean isAllTrue(Boolean... booleans) {
+        return Arrays.stream(booleans).allMatch(bool -> Boolean.TRUE == bool);
     }
 }

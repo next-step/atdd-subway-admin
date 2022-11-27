@@ -49,6 +49,14 @@ public class LineAcceptanceFixture {
                 .getString("color");
     }
 
+    public static List<Long> 노선_결과에서_노선_지하철역_번호를_조회한다(ExtractableResponse<Response> 노선_생성_결과) {
+        return 노선_생성_결과.jsonPath()
+                .getList("stations", StationResponse.class)
+                .stream()
+                .map(StationResponse::getId)
+                .collect(Collectors.toList());
+    }
+
     public static List<String> 노선_목록을_조회한다() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
@@ -114,6 +122,16 @@ public class LineAcceptanceFixture {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .pathParam("id", 노선_아이디)
                 .when().post("lines/{id}/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> 노선에_역을_삭제한다(Long 노선_아이디, Long 역_아이디) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .pathParam("id", 노선_아이디)
+                .queryParam("stationId", 역_아이디)
+                .when().delete("lines/{id}/sections")
                 .then().log().all()
                 .extract();
     }

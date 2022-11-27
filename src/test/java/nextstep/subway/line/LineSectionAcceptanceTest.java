@@ -3,9 +3,12 @@ package nextstep.subway.line;
 import static nextstep.subway.line.LineAcceptanceFixture.구간_생성_결과에서_지하철역_번호들을_조회한다;
 import static nextstep.subway.line.LineAcceptanceFixture.구간_요청_정보;
 import static nextstep.subway.line.LineAcceptanceFixture.노선_결과에서_노선_아이디를_조회한다;
+import static nextstep.subway.line.LineAcceptanceFixture.노선_결과에서_노선_지하철역_번호를_조회한다;
 import static nextstep.subway.line.LineAcceptanceFixture.노선_요청;
 import static nextstep.subway.line.LineAcceptanceFixture.노선에_구간을_생성한다;
+import static nextstep.subway.line.LineAcceptanceFixture.노선에_역을_삭제한다;
 import static nextstep.subway.line.LineAcceptanceFixture.노선을_생성한다;
+import static nextstep.subway.line.LineAcceptanceFixture.특정_노선을_조회한다;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철_생성_결과에서_지하철역_번호를_조회한다;
 import static nextstep.subway.station.StationAcceptanceFixture.지하철_역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -195,8 +198,93 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         구간_생성_결과에서_에러가_발생해야_한다(구간_생성_결과);
     }
 
+    /**
+     * Given 노선에 추가 구간을 생성하고
+     * When 노선의 중간 역이 삭제되면
+     * Then 노선의 구간과 역이 재배치 되어야 한다
+     **/
+    @DisplayName("노선의 중간 역이 삭제되면 노선의 구간과 역이 재배치 되어야 한다")
+    @Test
+    void rebase_sections_if_middle_station_of_line_removed() {
+        // given
+        노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 수원역_번호));
+        노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(수원역_번호, 인천역_번호));
+
+        // when
+        노선에_역을_삭제한다(노선_아이디, 수원역_번호);
+
+        // then
+        List<Long> 노선_지하철_역_번호들 = 노선_결과에서_노선_지하철역_번호를_조회한다(특정_노선을_조회한다(노선_아이디));
+        assertThat(노선_지하철_역_번호들).containsExactly(서울역_번호, 인천역_번호, 두정역_번호);
+    }
+
+    /**
+     * Given 노선에 추가 구간을 생성하고
+     * When 노선의 상행 종점역이 삭제되면
+     * Then 노선의 구간과 역이 재배치 되어야 한다
+     **/
+    @DisplayName("노선의 상행 종점역이 삭제되면 노선의 구간과 역이 재배치 되어야 한다")
+    @Test
+    void rebase_sections_if_last_up_station_of_line_removed() {
+        // given
+        노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 수원역_번호));
+
+        // when
+        노선에_역을_삭제한다(노선_아이디, 서울역_번호);
+
+        // then
+        List<Long> 노선_지하철_역_번호들 = 노선_결과에서_노선_지하철역_번호를_조회한다(특정_노선을_조회한다(노선_아이디));
+        assertThat(노선_지하철_역_번호들).containsExactly(수원역_번호, 두정역_번호);
+    }
+
+    /**
+     * Given 노선에 추가 구간을 생성하고
+     * When 노선의 하행 종점역이 삭제되면
+     * Then 노선의 구간과 역이 재배치 되어야 한다
+     **/
+    @DisplayName("노선의 하행 종점역이 삭제되면 노선의 구간과 역이 재배치 되어야 한다")
+    @Test
+    void rebase_sections_if_last_down_station_of_line_removed() {
+        // given
+        노선에_구간을_생성한다(노선_아이디, 구간_요청_정보(서울역_번호, 수원역_번호));
+
+        // when
+        노선에_역을_삭제한다(노선_아이디, 두정역_번호);
+
+        // then
+        List<Long> 노선_지하철_역_번호들 = 노선_결과에서_노선_지하철역_번호를_조회한다(특정_노선을_조회한다(노선_아이디));
+        assertThat(노선_지하철_역_번호들).containsExactly(서울역_번호, 수원역_번호);
+    }
+
+    /**
+     * When 노선의 하나뿐인 구간의 하행 종점역이 삭제되면
+     * Then 에러가 발생해야 한다
+     **/
+    @DisplayName("노선의 하나뿐인 구간의 하행 종점역이 삭제되면 에러가 발생해야 한다")
+    @Test
+    void throws_exception_when_remove_last_down_station_of_last_section() {
+        // when && then
+        구간_삭제_결과에서_에러가_발생해야_한다(노선에_역을_삭제한다(노선_아이디, 두정역_번호));
+    }
+
+    /**
+     * When 노선의 하나뿐인 구간의 상행 종점역이 삭제되면
+     * Then 에러가 발생해야 한다
+     **/
+    @DisplayName("노선의 하나뿐인 구간의 상행 종점역이 삭제되면 에러가 발생해야 한다")
+    @Test
+    void throws_exception_when_remove_last_up_station_of_last_section() {
+        // when && then
+        구간_삭제_결과에서_에러가_발생해야_한다(노선에_역을_삭제한다(노선_아이디, 서울역_번호));
+    }
+
+
     private void 구간_생성_결과에서_에러가_발생해야_한다(ExtractableResponse<Response> 구간_생성_결과) {
         assertThat(구간_생성_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    private void 구간_삭제_결과에서_에러가_발생해야_한다(ExtractableResponse<Response> 구간_삭제_결과) {
+        assertThat(구간_삭제_결과.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private void 지하철역_목록이_상행선부터_차례로_노출되어야_한다(List<Long> 지하철역_번호_목록, Long 서울역_번호, Long 두정역_번호, Long 수원역_번호) {

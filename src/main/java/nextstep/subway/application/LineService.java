@@ -70,6 +70,14 @@ public class LineService {
         return getLineResponseBy(lineRepository.save(line));
     }
 
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = getLineBy(lineId);
+        Station station = getLastStation(stationId);
+        line.removeSectionByStation(station);
+        lineRepository.save(line);
+    }
+
     private Line getLineBy(Long lineId) {
         return lineRepository.findById(lineId)
                 .orElseThrow(() -> new EntityNotFoundException("지하철 노선 아이디 [ " + lineId + " ]를 찾을 수 없습니다."));
