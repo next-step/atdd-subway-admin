@@ -74,8 +74,9 @@ public class LineService {
     @Transactional
     public LineReponse addLineSections(Long id, LineSectionRequest lineSectionRequest) {
         Line line = lineRepository.getById(id);
-        LineStation toSaveLineStation = lineSectionRequest.toLineStation(lineSectionRequest);
-        line.addLineStation(toSaveLineStation);
+        LineStation lineStation = lineSectionRequest.toLineStation(lineSectionRequest);
+        line.addLineStation(lineStation);
+
         lineRepository.save(line);
         return LineReponse.of(line);
     }

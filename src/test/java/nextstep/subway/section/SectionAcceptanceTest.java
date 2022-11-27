@@ -1,11 +1,10 @@
 package nextstep.subway.section;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.BaseTest;
-import nextstep.subway.domain.line.Line;
-import nextstep.subway.domain.line.LineRepository;
-import nextstep.subway.domain.line.LineStation;
-import nextstep.subway.domain.line.LineStationRepository;
+import nextstep.subway.domain.line.*;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.request.LineSectionRequest;
@@ -19,7 +18,10 @@ import org.springframework.http.MediaType;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("구간 등록 테스트")
@@ -38,9 +40,10 @@ public class SectionAcceptanceTest extends BaseTest {
         Station gangNam = stationRepository.save(new Station("강남역"));
         Station seocho = stationRepository.save(new Station("서초역"));
 
-        LineStation lineStation = new LineStation(gangNam.getId(), seocho.getId(), 7);
-        Line line = new Line("신분당선", "red");
-        line.addLineStation(lineStation);
+        List<LineStation> lineStation = Stream.of(new LineStation(gangNam.getId(), seocho.getId(), 7))
+                                        .collect(Collectors.toList());
+        LineStations lineStations = new LineStations(lineStation);
+        Line line = new Line("신분당선", "red", lineStations);
         lineRepository.save(line);
     }
 
@@ -61,7 +64,7 @@ public class SectionAcceptanceTest extends BaseTest {
         LineSectionRequest lineSectionRequest= new LineSectionRequest(firstStation.getId(), secondStation.getId(), 5);
 
         // When
-        List<HashMap> stations = request_register_line_section(lineSectionRequest);
+        List<HashMap> stations = request_register_line_section(lineSectionRequest).jsonPath().get("stations");
         LineStationResponse firstLineSection = makeTestLineStationResponse(stations.get(0));
         LineStationResponse secondLineSection = makeTestLineStationResponse(stations.get(1));
 
@@ -85,7 +88,7 @@ public class SectionAcceptanceTest extends BaseTest {
                                     );
     }
 
-    private List<HashMap> request_register_line_section(LineSectionRequest lineSectionRequest) {
+    private ExtractableResponse<Response> request_register_line_section(LineSectionRequest lineSectionRequest) {
         Line line = lineRepository.getByName("신분당선");
         return RestAssured.given().log().all()
                 .pathParam("id", line.getId())
@@ -93,8 +96,7 @@ public class SectionAcceptanceTest extends BaseTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/{id}/sections")
                 .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract().jsonPath().getList("stations");
+                .extract();
     }
 
     /**
@@ -114,7 +116,7 @@ public class SectionAcceptanceTest extends BaseTest {
         LineSectionRequest lineSectionRequest= new LineSectionRequest(firstStation.getId(), secondStation.getId(), 5);
 
         // When
-        List<HashMap> stations = request_register_line_section(lineSectionRequest);
+        List<HashMap> stations = request_register_line_section(lineSectionRequest).jsonPath().get("stations");
         LineStationResponse firstLineSection = makeTestLineStationResponse(stations.get(0));
         LineStationResponse secondLineSection = makeTestLineStationResponse(stations.get(1));
 
@@ -147,7 +149,7 @@ public class SectionAcceptanceTest extends BaseTest {
         LineSectionRequest lineSectionRequest= new LineSectionRequest(secondStation.getId(), thirdStation.getId(), 5);
 
         // When
-        List<HashMap> stations = request_register_line_section(lineSectionRequest);
+        List<HashMap> stations = request_register_line_section(lineSectionRequest).jsonPath().get("stations");
         LineStationResponse firstLineSection = makeTestLineStationResponse(stations.get(0));
         LineStationResponse secondLineSection = makeTestLineStationResponse(stations.get(1));
 
@@ -161,5 +163,68 @@ public class SectionAcceptanceTest extends BaseTest {
                 () -> assertEquals(secondLineSection.getDownStationId(), thirdStation.getId()),
                 () -> assertEquals(secondLineSection.getDistance(), lineSectionRequest.getDistance())
         );
+    }
+
+    /**
+     * 상행, 하행 지하철역이
+     * 모두 노선에 등록되어 있다면
+     * 기존 노선에 등록할수 없다.
+     */
+    @Test
+    @DisplayName("등록하려는 지하철노선이 기존 노선에 등록되어 있어, 노선 등록이 실패하는 테스트")
+    public void addSectionsFailTestForExistStation() {
+        // Given
+        Station firstStation = stationRepository.getByName("강남역");
+        Station secondStation = stationRepository.getByName("서초역");
+
+        LineSectionRequest lineSectionRequest= new LineSectionRequest(firstStation.getId(), secondStation.getId(), 7);
+
+        // When
+        ExtractableResponse<Response> response = request_register_line_section(lineSectionRequest);
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * 추가하려는 상행, 하행 지하철역의 길이가
+     * 추가되는 노선 사이의 길이보다 길다면
+     * 기존 노선에 등록할수 없다.
+     */
+    @Test
+    @DisplayName("등록하려는 지하철노선 길이가 기존 노선길이보다 길다면, 노선 등록이 실패하는 테스트")
+    public void addSectionsFailTestForDistance() {
+        // Given
+        Station firstStation = stationRepository.getByName("강남역");
+        Station secondStation = stationRepository.save(new Station("마포구청역"));
+
+        LineSectionRequest lineSectionRequest= new LineSectionRequest(firstStation.getId(), secondStation.getId(), 12);
+
+        // When
+        ExtractableResponse<Response> response = request_register_line_section(lineSectionRequest);
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * 추가하려는 상행, 하행역이
+     * 기존 노선에 포함되어 있지 않다면
+     * 기존 노선에 등록할수 없다.
+     */
+    @Test
+    @DisplayName("등록하려는 지하철노선역이 기존노선에 포함되어 있지 않다면, 노선 등록이 실패하는 테스트")
+    public void addSectionsFailTestForNotExistStation() {
+        // Given
+        Station firstStation = stationRepository.save(new Station("망원역"));
+        Station secondStation = stationRepository.save(new Station("마포구청역"));
+
+        LineSectionRequest lineSectionRequest= new LineSectionRequest(firstStation.getId(), secondStation.getId(), 5);
+
+        // When
+        ExtractableResponse<Response> response = request_register_line_section(lineSectionRequest);
+
+        // Then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

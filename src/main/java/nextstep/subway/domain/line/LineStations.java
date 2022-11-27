@@ -1,11 +1,8 @@
 package nextstep.subway.domain.line;
 
-import nextstep.subway.dto.request.LineSectionRequest;
-
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @Embeddable
 public class LineStations {
@@ -13,7 +10,15 @@ public class LineStations {
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
     private List<LineStation> lineStations = new ArrayList<>();
 
+    protected LineStations() {}
+
+    public LineStations(List<LineStation> lineStations) {
+        this.lineStations = lineStations;
+    }
+
     public void addLineStation(LineStation lineStation) {
+        checkValidation(lineStation);
+
         lineStations.stream()
                 .filter(it -> it.getUpStationId() == lineStation.getUpStationId())
                 .findFirst()
@@ -22,8 +27,31 @@ public class LineStations {
         this.lineStations.add(lineStation);
     }
 
-    private void modifyExistLineStation(LineStation lineStation) {
+    private void checkValidation(LineStation lineStation) {
+        for (LineStation existLineStation : lineStations) {
+            validationCheckSame(existLineStation, lineStation);
+            validationCheckDistance(existLineStation, lineStation);
+        }
 
+        lineStations.stream()
+                .filter(it ->
+                        it.getUpStationId() == lineStation.getUpStationId() || it.getUpStationId() == lineStation.getDownStationId() ||
+                        it.getDownStationId() == lineStation.getUpStationId() || it.getDownStationId() == lineStation.getDownStationId()
+                )
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException());
+    }
+
+    private void validationCheckDistance(LineStation existLineStation, LineStation lineStation) {
+        if ( existLineStation.getUpStationId() == lineStation.getUpStationId() && existLineStation.getDistance() <= lineStation.getDistance() ) {
+            throw new RuntimeException();
+        }
+    }
+
+    private void validationCheckSame(LineStation existLineStation, LineStation lineStation) {
+        if ( existLineStation.isSame(lineStation) ) {
+            throw new RuntimeException();
+        }
     }
 
     public List<LineStation> getValues() {
