@@ -44,7 +44,7 @@ public class LineService {
     public LineResponse modifyLine(Long id, LineRequest lineRequest) {
         Line line = getLine(id);
         line.modify(lineRequest.getName(), lineRequest.getColor());
-        return LineResponse.from(lineRepository.save(line));
+        return LineResponse.from(line);
     }
 
     @Transactional
