@@ -5,6 +5,7 @@ import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.Stations;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
@@ -85,6 +86,15 @@ public class LineService {
                 upDownStations.findById(downStationId),
                 new Distance(request.getDistance()), line));
 
+        return SectionCreateResponse.of(line, line.getSectionLineUpInOrder());
+    }
+
+    public SectionCreateResponse deleteSection(long lineId, long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("요청한 노선을 찾을 수 없습니다. 노선ID:" + lineId));
+        Station station = stationService.findById(stationId);
+        line.deleteSection(station);
+        stationService.deleteIfNotContainsAnySection(station);
         return SectionCreateResponse.of(line, line.getSectionLineUpInOrder());
     }
 
