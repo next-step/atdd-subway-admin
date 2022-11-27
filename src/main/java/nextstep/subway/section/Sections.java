@@ -99,6 +99,7 @@ public class Sections {
     }
 
     private Section sliceDownSection(Section newSection, Section targetSection, Distance distance) {
+        validateEqualDistance(distance);
         if (distance.isNegative()) {
             newSection.syncUpStation(targetSection, distance);
             return newSection;
@@ -137,6 +138,7 @@ public class Sections {
     }
 
     private Section sliceUpSection(Section newSection, Section targetSection, Distance distance) {
+        validateEqualDistance(distance);
         if (distance.isNegative()) {
             newSection.syncDownStation(targetSection, distance);
             return newSection;
@@ -175,7 +177,7 @@ public class Sections {
         for (int index = startIndex; index < sections.size(); index++) {
             totalDistance.add(sections.get(index).getDistance());
         }
-        validateDistance(distance, totalDistance);
+        validateExceedDistance(distance, totalDistance);
     }
 
     private void validateUpSectionDistance(Distance distance, int endIndex) {
@@ -183,15 +185,18 @@ public class Sections {
         for (int index = 0; index <= endIndex; index++) {
             totalDistance.add(sections.get(index).getDistance());
         }
-        validateDistance(distance, totalDistance);
+        validateExceedDistance(distance, totalDistance);
     }
 
-    private void validateDistance(Distance distance, Distance totalDistance) {
-        if (distance.compare(totalDistance) == 0) {
-            throw new IllegalArgumentException("해당 거리에 이미 역이 등록되었습니다.");
-        }
+    private void validateExceedDistance(Distance distance, Distance totalDistance) {
         if (distance.compare(totalDistance) == 1) {
             throw new IllegalArgumentException("입력한 역의 길이가 종점까지의 거리를 초과했습니다.");
+        }
+    }
+
+    private void validateEqualDistance(Distance distance) {
+        if (distance.isZero()) {
+            throw new IllegalArgumentException("해당 거리에 이미 역이 등록되었습니다.");
         }
     }
 
