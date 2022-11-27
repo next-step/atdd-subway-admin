@@ -29,8 +29,8 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLines() {
-        Lines lines = new Lines(lineRepository.findAll());
-        return lines.asList().stream()
+        List<Line> lines = lineRepository.findAll();
+        return lines.stream()
                 .map(LineResponse::from)
                 .collect(Collectors.toList());
     }
