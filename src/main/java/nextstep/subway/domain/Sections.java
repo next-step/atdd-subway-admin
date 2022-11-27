@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.stream.Collectors.toList;
 import static nextstep.subway.common.ErrorMessage.*;
 
 @Embeddable
@@ -82,6 +83,14 @@ public class Sections {
     public void delete(Station station) {
         validateHasSection(station);
         validateSingleSection();
+
+        List<Section> targets = sections.stream()
+                .filter(section -> section.contains(station))
+                .collect(toList());
+
+        if (targets.size() == 1) {
+            targets.forEach(sections::remove);
+        }
     }
 
     private void validateHasSection(Station station) {

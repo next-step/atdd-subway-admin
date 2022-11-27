@@ -194,4 +194,40 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         구간_삭제에_실패한다(구간_삭제_응답.statusCode());
     }
+
+    /**
+     * Given 구간을 생성하고
+     * When 하행을 제거하는 경우
+     * Then 다음으로 오던 역이 하행역이 된다
+     */
+    @DisplayName("하행역을 제거하는 경우 다음으로 오던 역이 하행역이 된다.")
+    @Test
+    void delete_success01() {
+        // given
+        구간_생성(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 15));
+
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제(신분당선.getId(), 광교역.getId());
+
+        // then
+        구간_삭제에_성공한다(구간_삭제_응답.statusCode());
+    }
+
+    /**
+     * Given 구간을 생성하고
+     * When 상행을 제거하는 경우
+     * Then 다음으로 오던 역이 상행역이 된다
+     */
+    @DisplayName("상행역을 제거하는 경우 다음으로 오던 역이 상행역이 된다.")
+    @Test
+    void delete_success02() {
+        // given
+        구간_생성(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 15));
+
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제(신분당선.getId(), 강남역.getId());
+
+        // then
+        구간_삭제에_성공한다(구간_삭제_응답.statusCode());
+    }
 }
