@@ -6,7 +6,7 @@ import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionCreateRequest;
-import nextstep.subway.dto.SectionCreateResponse;
+import nextstep.subway.dto.LineSectionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -73,14 +73,14 @@ public class LineController {
 
     /* 노선 구간 생성 */
     @PostMapping(value = "/{id}/sections")
-    public ResponseEntity<SectionCreateResponse> createSection(@PathVariable(value = "id") long id,
+    public ResponseEntity<LineSectionResponse> createSection(@PathVariable(value = "id") long id,
             @RequestBody SectionCreateRequest request) {
         return ResponseEntity.ok(lineService.createSection(id, request));
     }
 
     /* 구간 삭제 */
     @DeleteMapping(value = "/{id}/sections")
-    public ResponseEntity<SectionCreateResponse> deleteSection(
+    public ResponseEntity<LineSectionResponse> deleteSection(
             @PathVariable(value = "id") long id,
             @RequestParam(value = "stationId") long stationId) {
 

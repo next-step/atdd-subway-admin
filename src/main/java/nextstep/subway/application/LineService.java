@@ -11,7 +11,7 @@ import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionCreateRequest;
-import nextstep.subway.dto.SectionCreateResponse;
+import nextstep.subway.dto.LineSectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -73,7 +73,7 @@ public class LineService {
     }
 
     @Transactional(isolation = READ_COMMITTED)
-    public SectionCreateResponse createSection(long id, SectionCreateRequest request) {
+    public LineSectionResponse createSection(long id, SectionCreateRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("요청한 노선을 찾을 수 없습니다. 노선ID:" + id));
         long upStationId = request.getUpStationId();
@@ -85,11 +85,11 @@ public class LineService {
                 upDownStations.findById(downStationId),
                 new Distance(request.getDistance()), line));
 
-        return SectionCreateResponse.of(line, line.getSectionLineUpInOrder());
+        return LineSectionResponse.of(line, line.getSectionLineUpInOrder());
     }
 
     @Transactional(isolation = READ_COMMITTED)
-    public SectionCreateResponse deleteSection(long lineId, long stationId) {
+    public LineSectionResponse deleteSection(long lineId, long stationId) {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("요청한 노선을 찾을 수 없습니다. 노선ID:" + lineId));
         Station station = stationService.findById(stationId);
@@ -98,7 +98,7 @@ public class LineService {
                 .map(Section::getId)
                 .collect(Collectors.toList()));
         stationService.deleteIfNotContainsAnySection(station);
-        return SectionCreateResponse.of(line, line.getSectionLineUpInOrder());
+        return LineSectionResponse.of(line, line.getSectionLineUpInOrder());
     }
 
     private Stations findStations(List<Long> stationIds) {
