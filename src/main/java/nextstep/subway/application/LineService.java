@@ -1,9 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Distance;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -14,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static nextstep.subway.common.ErrorMessage.CANNOT_REMOVE_STATION_NOT_INCLUDE_LINE;
 import static nextstep.subway.common.ErrorMessage.NOT_FOUND;
 
 @Service
@@ -43,20 +41,30 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public Line findById(Long id) {
-        return lineRepository.findById(id)
+    public Line findById(Long lineId) {
+        return lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
     }
 
     @Transactional
-    public void updateLine(Long id, LineUpdateRequest request) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
+    public void updateLine(Long lineId, LineUpdateRequest request) {
+        Line line = this.findById(lineId);
         line.update(request.getName(), request.getColor());
     }
 
     @Transactional
-    public void deleteById(Long id) {
-        lineRepository.deleteById(id);
+    public void deleteById(Long lineId) {
+        lineRepository.deleteById(lineId);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = this.findById(lineId);
+        Station station = stationService.findById(stationId);
+
+        Sections sections = line.getSections();
+        if (!sections.hasStation(station)) {
+            throw new IllegalArgumentException(CANNOT_REMOVE_STATION_NOT_INCLUDE_LINE.getMessage());
+        }
     }
 }

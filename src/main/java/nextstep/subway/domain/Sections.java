@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.StationResponse;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -10,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static nextstep.subway.common.ErrorMessage.DUPLICATE_SECTION;
 import static nextstep.subway.common.ErrorMessage.NOT_ALLOW_ADD_SECTION;
@@ -26,6 +23,11 @@ public class Sections {
 
     public void add(Section section) {
         this.sections.add(section);
+    }
+
+    public boolean hasStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.equalsUpStation(station) || section.equalsDownStation(station));
     }
 
     public void updateSection(Station upStation, Station downStation, int distance) {
@@ -72,18 +74,11 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException(NOT_ALLOW_ADD_SECTION.getMessage()));
     }
 
-    private static boolean isEqualsStation(Station upStation, Station downStation, Section section) {
+    private boolean isEqualsStation(Station upStation, Station downStation, Section section) {
         return section.equalsUpStation(downStation)
                 || section.equalsUpStation(upStation)
                 || section.equalsDownStation(upStation)
                 || section.equalsDownStation(downStation);
-    }
-
-    public List<StationResponse> toResponse() {
-        return sections.stream()
-                .flatMap(section -> section.getStations().stream()).distinct()
-                .map(station -> new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate()))
-                .collect(Collectors.toList());
     }
 
     public List<Section> values() {

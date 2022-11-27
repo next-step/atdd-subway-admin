@@ -25,12 +25,23 @@ public class SectionAcceptanceTestFixture {
                 .extract();
     }
 
+    public static ExtractableResponse<Response> 구간_삭제(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .when().delete(BASE_URL + "?stationId={stationId}", lineId, stationId)
+                .then().log().all()
+                .extract();
+    }
+
     public static void 지하철_노선에_구간이_추가된다(ExtractableResponse<Response> 지하철_노선_조회) {
         List<StationResponse> stations = 지하철_노선_조회.jsonPath().getList("stations");
         assertThat(stations).hasSize(3);
     }
 
     public static void 구간_생성에_실패한다(int statusCode) {
+        assertThat(statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    public static void 역_삭제에_실패한다(int statusCode) {
         assertThat(statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
