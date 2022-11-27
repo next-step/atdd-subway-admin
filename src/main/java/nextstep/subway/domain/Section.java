@@ -19,10 +19,10 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
 
     @Embedded
@@ -135,5 +135,14 @@ public class Section {
 
     public boolean sameDownStationByUpStation(Section section) {
         return this.downStation.equals(section.upStation);
+    }
+
+    public void updateBy(Section section) {
+        this.updateDistance(this.minusDistance(section));
+        if (hasSameUpStation(section)) {
+            this.updateUpStation(section.getDownStation());
+            return;
+        }
+        this.updateDownStation(section.getUpStation());
     }
 }

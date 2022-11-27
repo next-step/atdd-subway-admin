@@ -5,7 +5,10 @@ import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -34,7 +37,7 @@ public class SectionLineUp {
 
     private void add(Section section) {
         if (!isEndUpStation(section) && !isEndDownStation(section)) {
-            createInternal(section);
+            createInternalSection(section);
             return;
         }
         sectionList.add(section);
@@ -48,13 +51,13 @@ public class SectionLineUp {
     public Stations getStationsInOrder() {
 
         Section firstSection = findFirstSection(sectionList.get(START_INDEX));
-        final List<Station> stations = searchStationsByOrder(new ArrayList<>(), firstSection);
+        final Set<Station> stations = searchStationsByOrder(new HashSet<>(), firstSection);
         return new Stations(stations.stream().distinct().collect(Collectors.toList()));
     }
 
     private boolean isEndUpStation(Section section) {
         //  출발지가 같은 노선이 없고, 도착지에서 출발하는 노선은 있지만, 도착지로 향하는 노선이 없는 경우
-        return notHasSameUpStation(section) && notHasSameDownStation(section) && hasSameUpStationByDownStation(section);
+        return notHasSameDownStation(section) && hasSameUpStationByDownStation(section);
     }
 
     private boolean isEndDownStation(Section section) {
@@ -62,34 +65,19 @@ public class SectionLineUp {
         return hasSameDownStationByUpStation(section) && notHasSameUpStation(section);
     }
 
-    private void createInternal(Section section) {
-        if (hasSameUpStation(section)) {
-            createInternalUpStation(section);
-            return;
-        }
-        if (hasSameDownStation(section)) {
-            createInternalDownStation(section);
-        }
-    }
-
-    private void createInternalUpStation(Section section) {
-        sectionList.stream().filter(streamSection -> streamSection.hasSameUpStation(section))
-                .findFirst()
-                .ifPresent(existSection -> {
-                    existSection.updateDistance(existSection.minusDistance(section));
-                    existSection.updateUpStation(section.getDownStation());
+    private void createInternalSection(Section section) {
+        findInternalMatchSection(section)
+                .ifPresent(matchSection -> {
+                    matchSection.updateBy(section);
                     sectionList.add(section);
                 });
     }
 
-    private void createInternalDownStation(Section section) {
-        sectionList.stream().filter(streamSection -> streamSection.hasSameDownStation(section))
-                .findFirst()
-                .ifPresent(existSection -> {
-                    existSection.updateDistance(existSection.minusDistance(section));
-                    existSection.updateDownStation(section.getUpStation());
-                    sectionList.add(section);
-                });
+    private Optional<Section> findInternalMatchSection(Section section) {
+        return sectionList.stream()
+                .filter(streamSection -> streamSection.hasSameUpStation(section) ||
+                        streamSection.hasSameDownStation(section))
+                .findFirst();
     }
 
     private boolean notHasSameDownStation(Section section) {
@@ -106,14 +94,6 @@ public class SectionLineUp {
 
     private boolean hasSameDownStationByUpStation(Section section) {
         return sectionList.stream().anyMatch(streamSection -> streamSection.sameDownStationByUpStation(section));
-    }
-
-    private boolean hasSameUpStation(Section section) {
-        return sectionList.stream().anyMatch(streamSection -> streamSection.hasSameUpStation(section));
-    }
-
-    private boolean hasSameDownStation(Section section) {
-        return sectionList.stream().anyMatch(streamSection -> streamSection.hasSameDownStation(section));
     }
 
     private void validUnknownStation(Section section) {
@@ -152,7 +132,7 @@ public class SectionLineUp {
                 .orElse(section);
     }
 
-    private List<Section> searchSectionsByOrder(ArrayList<Section> sections, Section section) {
+    private List<Section> searchSectionsByOrder(List<Section> sections, Section section) {
         sections.add(section);
         return sectionList.stream().filter(streamSection -> streamSection.hasSameUpStation(section.getDownStation()))
                 .findFirst()
@@ -160,7 +140,7 @@ public class SectionLineUp {
                 .orElse(sections);
     }
 
-    private List<Station> searchStationsByOrder(List<Station> stations, Section section) {
+    private Set<Station> searchStationsByOrder(Set<Station> stations, Section section) {
         stations.add(section.getUpStation());
         stations.add(section.getDownStation());
         return sectionList.stream().filter(streamSection -> streamSection.hasSameUpStation(section.getDownStation()))
