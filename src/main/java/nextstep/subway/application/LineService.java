@@ -1,6 +1,9 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Distance;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -11,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static nextstep.subway.common.ErrorMessage.CANNOT_REMOVE_STATION_NOT_INCLUDE_LINE;
 import static nextstep.subway.common.ErrorMessage.NOT_FOUND;
 
 @Service
@@ -62,9 +64,6 @@ public class LineService {
         Line line = this.findById(lineId);
         Station station = stationService.findById(stationId);
 
-        Sections sections = line.getSections();
-        if (!sections.hasStation(station)) {
-            throw new IllegalArgumentException(CANNOT_REMOVE_STATION_NOT_INCLUDE_LINE.getMessage());
-        }
+        line.removeSection(station);
     }
 }

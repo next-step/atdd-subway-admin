@@ -6,6 +6,7 @@ public enum ErrorMessage {
     DUPLICATE_SECTION("동일한 구간이 존재합니다."),
     LINE_SECTION_NOT_NULL("해당역을 포함하는 노선이 존재하지 않습니다."),
     CANNOT_REMOVE_STATION_NOT_INCLUDE_LINE("노선에 포함되어 있지 않은 역을 제거할 수 없습니다."),
+    CANNOT_REMOVE_STATION_ONLY_ONE_SECTION("노선에 구간이 1개이면 삭제할 수 없습니다."),
     ;
 
     private final String message;

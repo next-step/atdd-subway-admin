@@ -148,21 +148,50 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     /**
      * Given 노선에 구간을 생성하고
-     * When 노선에 등록되어 있지 않은 역을 제거하면
+     * When 노선에 등록되어 있지 않은 역을 제거하려고 시도하면
      * Then 예외가 발생한다
      */
     @DisplayName("노선에 등록되어 있지 않은 역을 제거하는 경우 예외가 발생한다.")
     @Test
-    void delete() {
+    void delete_exception01() {
         // given
         구간_생성(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 15));
-
         StationResponse 수원역 = 지하철역_생성("수원역").as(StationResponse.class);
 
         // when
-        ExtractableResponse<Response> 구간_생성_응답 = 구간_삭제(신분당선.getId(), 수원역.getId());
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제(신분당선.getId(), 수원역.getId());
 
         // then
-        역_삭제에_실패한다(구간_생성_응답.statusCode());
+        구간_삭제에_실패한다(구간_삭제_응답.statusCode());
+    }
+
+    /**
+     * Given 구간이 하나인 노선에서
+     * When 역을 제거하는 경우
+     * Then 예외가 발생한다
+     */
+    @DisplayName("구간이 하나인 노선에서 상행역을 제거하는 경우 예외가 발생한다.")
+    @Test
+    void delete_exception02() {
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제(신분당선.getId(), 강남역.getId());
+
+        // then
+        구간_삭제에_실패한다(구간_삭제_응답.statusCode());
+    }
+
+    /**
+     * Given 구간이 하나인 노선에서
+     * When 역을 제거하는 경우
+     * Then 예외가 발생한다
+     */
+    @DisplayName("구간이 하나인 노선에서 하행역을 제거하는 경우 예외가 발생한다.")
+    @Test
+    void delete_exception03() {
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제(신분당선.getId(), 광교역.getId());
+
+        // then
+        구간_삭제에_실패한다(구간_삭제_응답.statusCode());
     }
 }

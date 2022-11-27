@@ -9,8 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static nextstep.subway.common.ErrorMessage.DUPLICATE_SECTION;
-import static nextstep.subway.common.ErrorMessage.NOT_ALLOW_ADD_SECTION;
+import static nextstep.subway.common.ErrorMessage.*;
 
 @Embeddable
 public class Sections {
@@ -23,11 +22,6 @@ public class Sections {
 
     public void add(Section section) {
         this.sections.add(section);
-    }
-
-    public boolean hasStation(Station station) {
-        return sections.stream()
-                .anyMatch(section -> section.equalsUpStation(station) || section.equalsDownStation(station));
     }
 
     public void updateSection(Station upStation, Station downStation, int distance) {
@@ -83,5 +77,31 @@ public class Sections {
 
     public List<Section> values() {
         return Collections.unmodifiableList(sections);
+    }
+
+    public void delete(Station station) {
+        validateHasSection(station);
+        validateSingleSection();
+    }
+
+    private void validateHasSection(Station station) {
+        if (!this.hasStation(station)) {
+            throw new IllegalArgumentException(CANNOT_REMOVE_STATION_NOT_INCLUDE_LINE.getMessage());
+        }
+    }
+
+    private boolean hasStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.contains(station));
+    }
+
+    private void validateSingleSection() {
+        if (this.isSingleSection()) {
+            throw new IllegalArgumentException(CANNOT_REMOVE_STATION_ONLY_ONE_SECTION.getMessage());
+        }
+    }
+
+    private boolean isSingleSection() {
+        return this.sections.size() == 1;
     }
 }

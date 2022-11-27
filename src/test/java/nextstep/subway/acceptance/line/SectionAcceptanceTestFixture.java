@@ -41,7 +41,7 @@ public class SectionAcceptanceTestFixture {
         assertThat(statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    public static void 역_삭제에_실패한다(int statusCode) {
+    public static void 구간_삭제에_실패한다(int statusCode) {
         assertThat(statusCode).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 }
