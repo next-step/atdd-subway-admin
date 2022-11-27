@@ -12,14 +12,19 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
     public static final String LINE_URL = "/lines";
+    public static final String STATION_URL = "/stations";
+    public static final String STATION_KEY_NAME = "name";
     @LocalServerPort
     int port;
 
@@ -38,7 +43,7 @@ public class LineAcceptanceTest {
     @Test
     void createLine() {
         // When
-        ExtractableResponse<Response> response = createLineRest(new LineRequest("신분당선","bg-red-600", 1L, 2L,10));
+        ExtractableResponse<Response> response = createLineRest(generateLineRequest("신분당선","bq-red-600","지하철역","새로운지하철역",10));
 
         // Then
         ExtractableResponse<Response> lineNamesResponse =
@@ -46,8 +51,13 @@ public class LineAcceptanceTest {
                         .when().get(LINE_URL)
                         .then().log().all()
                         .extract();
-        assertThat(lineNamesResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(lineNamesResponse.jsonPath().getList("name", String.class)).containsAnyOf("신분당선");
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(lineNamesResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineNamesResponse.jsonPath().getList("name", String.class)).containsAnyOf("신분당선")
+        );
+
     }
 
     /**
@@ -59,15 +69,17 @@ public class LineAcceptanceTest {
     @Test
     void getLines() {
         // given
-        createLineRest(new LineRequest("신분당선","bg-red-600", 1L, 2L,10));
-        createLineRest(new LineRequest("분당선","bg-green-600", 1L, 2L,10));
+        createLineRest(generateLineRequest("신분당선","bg-red-600", "지하철역", "새로운지하철역",10));
+        createLineRest(generateLineRequest("분당선","bg-green-600", "또지하철역", "또다른지하철역",10));
 
         // when
         List<String> lineNames = linesNamesList(linesNameGet());
 
         // then
-        assertThat(lineNames.size()).isEqualTo(2);
-        assertThat(lineNames).contains("신분당선","분당선");
+        assertAll(
+                () -> assertThat(lineNames.size()).isEqualTo(2),
+                () -> assertThat(lineNames).contains("신분당선","분당선")
+        );
     }
 
     /**
@@ -79,14 +91,18 @@ public class LineAcceptanceTest {
     @Test
     void getLine() {
         // given
-        ExtractableResponse<Response> response = createLineRest(new LineRequest("신분당선","bg-red-600", 1L, 2L,10));
+        ExtractableResponse<Response> response = createLineRest(generateLineRequest("신분당선","bg-red-600", "지하철역", "새로운지하철역",10));
 
         // when
         Long id = response.jsonPath().getLong("id");
         ExtractableResponse<Response> lineNameResponse = lineGet(id);
 
         // then
-        assertThat(lineNameResponse.jsonPath().getString("name")).isEqualTo("신분당선");
+        assertAll(
+                () -> assertThat(lineNameResponse.jsonPath().getString("name")).isEqualTo("신분당선"),
+                () -> assertThat(lineNameResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(lineNameResponse.jsonPath().getList("stations").size()).isEqualTo(2)
+        );
 
     }
 
@@ -101,11 +117,11 @@ public class LineAcceptanceTest {
     @Test
     void updateLine() {
         // given
-        ExtractableResponse<Response> response = createLineRest(new LineRequest("신분당선","bg-red-600", 1L, 2L,10));
+        ExtractableResponse<Response> response = createLineRest(generateLineRequest("신분당선","bg-red-600", "지하철역", "새로운지하철역",10));
 
         // when
         Long id = response.jsonPath().getLong("id");
-        ExtractableResponse<Response> lineNameResponse = linePut(id, new LineRequest("다른분당선","bg-red-600",1L,2L,10));
+        ExtractableResponse<Response> lineNameResponse = linePut(id, generateLineRequest("다른분당선","bg-red-600","또지하철역","또다른지하철역",10));
 
         // then
         assertThat(lineNameResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -122,7 +138,7 @@ public class LineAcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        ExtractableResponse<Response> response = createLineRest(new LineRequest("신분당선","bg-red-600", 1L, 2L,10));
+        ExtractableResponse<Response> response = createLineRest(generateLineRequest("신분당선","bg-red-600", "지하철역", "새로운지하철역",10));
 
         // when
         Long id = response.jsonPath().getLong("id");
@@ -174,6 +190,23 @@ public class LineAcceptanceTest {
         RestAssured.given().log().all()
                 .when().delete(LINE_URL+"/{id}",id)
                 .then().log().all();
+    }
+
+    private LineRequest generateLineRequest(String name, String color, String upStationName, String downStationName, int distance) {
+        Long upStationId = createStationRest(upStationName).jsonPath().getLong("id");
+        Long downStationId = createStationRest(downStationName).jsonPath().getLong("id");
+        return LineRequest.of(name, color, upStationId, downStationId, distance);
+    }
+
+    private ExtractableResponse<Response> createStationRest(String stationName) {
+        Map<String, String> params = new HashMap<>();
+        params.put(STATION_KEY_NAME, stationName);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().post(STATION_URL)
+                .then().log().all()
+                .extract();
     }
 
     private List<String> linesNamesList(ExtractableResponse<Response> response) {
