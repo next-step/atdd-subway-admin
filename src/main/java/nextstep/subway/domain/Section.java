@@ -67,6 +67,10 @@ public class Section {
         return this.distance.minus(section.getDistance());
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public int getDistanceIntValue() {
         return distance.getDistance();
     }

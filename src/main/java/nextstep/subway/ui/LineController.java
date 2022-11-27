@@ -27,8 +27,8 @@ import java.util.Optional;
 @RequestMapping(value = "/lines")
 public class LineController {
 
-    private LineService lineService;
-    private LineRepository lineRepository;
+    private final LineService lineService;
+    private final LineRepository lineRepository;
 
     public LineController(LineService lineService, LineRepository lineRepository) {
         this.lineService = lineService;

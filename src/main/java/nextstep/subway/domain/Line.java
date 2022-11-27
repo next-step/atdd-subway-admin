@@ -76,7 +76,7 @@ public class Line {
         return this.sectionLineUp.getStationsInOrder();
     }
 
-    public void deleteSection(Station station) {
-        sectionLineUp.deleteSection(station);
+    public List<Section> deleteSection(Station station) {
+        return sectionLineUp.deleteSection(station);
     }
 }

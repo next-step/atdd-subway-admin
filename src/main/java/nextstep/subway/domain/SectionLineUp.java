@@ -6,6 +6,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -57,14 +58,12 @@ public class SectionLineUp {
         return new Stations(stations.stream().distinct().collect(Collectors.toList()));
     }
 
-    public void deleteSection(Station station) {
-        validUnknownStation(station);
+    public List<Section> deleteSection(Station station) {
         validOnlyOneSection();
         if (isInternalStation(station)) {
-            deleteInternalStation(station);
-            return;
+            return deleteInternalStation(station);
         }
-        delete(station);
+        return delete(station);
     }
 
     private void validOnlyOneSection() {
@@ -73,27 +72,33 @@ public class SectionLineUp {
         }
     }
 
-    private void deleteInternalStation(Station station) {
+    private List<Section> deleteInternalStation(Station station) {
         Section upSection = findSameDownStation(station);
         Section downSection = findSameUpStation(station);
-        sectionList.removeAll(Arrays.asList(upSection,downSection));
-        sectionList.add(Section.mergeByDelete(upSection,downSection));
+        sectionList.add(Section.mergeByDelete(upSection, downSection));
+        List<Section> deletedSections = Arrays.asList(upSection, downSection);
+        sectionList.removeAll(deletedSections);
+        return deletedSections;
     }
 
     private Section findSameDownStation(Station station) {
         return sectionList.stream().filter(section -> section.isSameDownStation(station))
-                .findFirst().get();
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("하행역이 같은 구간을 찾을 수 없습니다"));
     }
 
     private Section findSameUpStation(Station station) {
         return sectionList.stream().filter(section -> section.isSameUpStation(station))
-                .findFirst().get();
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("상행역이 같은 구간을 찾을 수 없습니다"));
     }
 
-    private void delete(Station station) {
-        sectionList.stream().filter(section -> section.isKnownStation(station))
+    private List<Section> delete(Station station) {
+        Section deletedSection = sectionList.stream().filter(section -> section.isKnownStation(station))
                 .findFirst()
-                .ifPresent(sectionList::remove);
+                .orElseThrow(() -> new IllegalArgumentException("노선에 포함되지 않은 역입니다. 요청id:" + station.getId()));
+        sectionList.remove(deletedSection);
+        return Collections.singletonList(deletedSection);
     }
 
     private boolean isInternalStation(Station station) {
@@ -164,12 +169,6 @@ public class SectionLineUp {
         }
     }
 
-    private void validUnknownStation(Station station) {
-        if (isUnknownStation(station)) {
-            throw new IllegalArgumentException("노선에 포함되지 않은 역입니다. 요청id:" + station.getId());
-        }
-    }
-
     private boolean notHasSection(Section section) {
         return sectionList.stream().noneMatch(streamSection -> streamSection.isKnownSection(section));
     }
@@ -206,9 +205,5 @@ public class SectionLineUp {
                 .findFirst()
                 .map(streamSection -> searchStationsByOrder(stations, streamSection))
                 .orElse(stations);
-    }
-
-    private boolean isUnknownStation(Station station) {
-        return sectionList.stream().noneMatch(section -> section.isKnownStation(station));
     }
 }
