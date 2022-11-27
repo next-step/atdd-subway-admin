@@ -118,7 +118,7 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         // then
         상태코드를_체크한다(response.statusCode(), HttpStatus.BAD_REQUEST.value());
     }
-    
+
     /**
      * Given 지하철 노선을 생성하고
      * When 상행역을 삭제하면
@@ -174,5 +174,22 @@ public class LineStationAcceptanceTest extends AcceptanceTest {
         // then
         상태코드를_체크한다(response.statusCode(), HttpStatus.NO_CONTENT.value());
         지하철_구간이_추가되었는지_체크한다(노선을_조회한다(lineId), "강남역", "역삼역");
+    }
+
+    /**
+     * Given 지하철 노선을 생성하고
+     * When 마지막역을 삭제하려고하면
+     * Then 예외가 발생한다.
+     */
+    @Test
+    @DisplayName("마지막역을 삭제하려고하면 예외가 발생한다.")
+    void deleteEndException() {
+        지하철_구간을_추가한다(lineId, upStationId, downStationId, 10);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_구간을_삭제한다(lineId, downStationId);
+
+        // then
+        상태코드를_체크한다(response.statusCode(), HttpStatus.BAD_REQUEST.value());
     }
 }

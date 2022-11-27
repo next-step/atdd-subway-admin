@@ -24,6 +24,10 @@ public class LineStations {
     protected LineStations() {
     }
 
+    public LineStations(List<LineStation> lineStations) {
+        this.lineStations = lineStations;
+    }
+
     public List<Station> getStations() {
         return lineStations.stream()
                 .map(LineStation::getRelationStation)
