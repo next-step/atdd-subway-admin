@@ -4,8 +4,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -59,62 +59,58 @@ public class Sections {
     }
 
     public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, Distance distance) {
-        Section newSection = new Section(requestUpStation, requestDownStation, distance);
-        Station newStation = checkAndGetNewStation(requestUpStation, requestDownStation);
-
-        List<Section> sections = new ArrayList<>();
-        if(requestUpStation.equals(newStation)) {
-            sections.add(getNewUpStationSection(newStation, requestDownStation, distance));
-            sections.add(newSection);
+        checkRequestSectionContainsValidStations(requestUpStation, requestDownStation);
+        if (isNewStation(requestUpStation)) {
+            List<Section> sections = Arrays.asList(getNewUpperSection(requestUpStation, requestDownStation, distance),
+                    new Section(requestUpStation, requestDownStation, distance));
+            this.sections.addAll(sections);
+            return sections;
         }
-        if (requestDownStation.equals(newStation)) {
-            sections.add(newSection);
-            sections.add(getNewDownStationSection(requestUpStation, newStation, distance));
-        }
+        List<Section> sections = Arrays.asList(new Section(requestUpStation, requestDownStation, distance),
+                getNewLowerSection(requestUpStation, requestDownStation, distance));
         this.sections.addAll(sections);
         return sections;
     }
 
-    private Station checkAndGetNewStation(Station upStation, Station downStation) {
-        boolean isContainUpStation = this.isContainStation(upStation);
-        boolean isContainDownStation = this.isContainStation(downStation);
-        if(isContainUpStation && isContainDownStation) {
+    private void checkRequestSectionContainsValidStations(Station requestUpStation, Station requestDownStation) {
+        boolean isContainUpStation = this.isContainStation(requestUpStation);
+        boolean isContainDownStation = this.isContainStation(requestDownStation);
+        if (isContainUpStation && isContainDownStation) {
             throw new IllegalArgumentException(ErrorMessage.ALREADY_EXIST_SECTION.getMessage());
         }
-        if(!isContainUpStation && !isContainDownStation) {
+        if (!isContainUpStation && !isContainDownStation) {
             throw new IllegalArgumentException(ErrorMessage.NO_EXIST_STATIONS.getMessage());
         }
-        return isContainUpStation ? downStation : upStation;
     }
 
-    private Section getNewUpStationSection(Station newStation, Station downStation, Distance distance) {
+    private boolean isNewStation(Station station) {
+        return !this.isContainStation(station);
+    }
+
+    private Section getNewUpperSection(Station newStation, Station downStation, Distance distance) {
         Section existingSection = sections.stream()
                 .filter(section -> downStation.equals(section.getDownStation()))
                 .findFirst().get();
-        if(isFirst(downStation)) {
+        if (isFirst(downStation)) {
             sections.remove(existingSection);
-            Section newSection = new Section(null, newStation, new Distance(0, true));
-            return newSection;
+            return new Section(null, newStation, new Distance(0, true));
         }
         sections.remove(existingSection);
-        Section newSection = new Section(existingSection.getUpStation(), newStation,
+        return new Section(existingSection.getUpStation(), newStation,
                 existingSection.getDistance().compareTo(distance));
-        return newSection;
     }
 
-    private Section getNewDownStationSection(Station upStation, Station newStation, Distance distance) {
+    private Section getNewLowerSection(Station upStation, Station newStation, Distance distance) {
         Section existingSection = sections.stream()
                 .filter(section -> upStation.equals(section.getUpStation()))
                 .findFirst().get();
         if (isLast(upStation)) {
             sections.remove(existingSection);
-            Section newSection = new Section(newStation, null, new Distance(0, true));
-            return newSection;
+            return new Section(newStation, null, new Distance(0, true));
         }
         sections.remove(existingSection);
-        Section newSection = new Section(newStation, existingSection.getDownStation(),
+        return new Section(newStation, existingSection.getDownStation(),
                 existingSection.getDistance().compareTo(distance));
-        return newSection;
     }
 
     public List<Section> init(Section section) {
