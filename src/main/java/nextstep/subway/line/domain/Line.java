@@ -39,7 +39,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return this.sections.getStations();
+        return this.sections.findStations();
     }
 
     public Long getId() {
@@ -54,12 +54,20 @@ public class Line extends BaseEntity {
         return this.color;
     }
 
-    public void addSection(Station upStation, Station downStation, int distance) {
+    public int getDistance() {
+        return this.sections.findDistance();
+    }
+
+    public void addSection(Station upStation, Station downStation, Distance distance) {
         this.sections.add(new Section(this, upStation, downStation, distance));
     }
 
     public void update(Name name, Color color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void removeSection(Station station) {
+        this.sections.removeStation(station);
     }
 }

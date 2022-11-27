@@ -19,10 +19,16 @@ class SectionTest {
     public static final int 강남역_선릉역_거리 = 6;
     public static final int 논현역_강남역_거리 = 5;
     public static final int 역삼역_선릉역_거리 = 2;
+    public static final int DISTANCE_A_B = 3;
+    public static final int DISTANCE_B_C = 2;
+    public static final int DISTANCE_A_C = 5;
+    public static final int DISTANCE_C_D = 2;
+    public static final int DISTANCE_D_E = 3;
+    public static final int DISTANCE_C_E = 5;
 
     @DisplayName("구간 생성")
     @Test
     void constructor() {
-        assertThatNoException().isThrownBy(() -> new Section(신분당선(), StationFixtrue.논현역(), StationFixtrue.신논현역(), 논현역_신논현역_거리));
+        assertThatNoException().isThrownBy(() -> new Section(신분당선(), StationFixtrue.논현역(), StationFixtrue.신논현역(), new Distance(논현역_신논현역_거리)));
     }
 }

@@ -3,6 +3,7 @@ package nextstep.subway.line.domain;
 import nextstep.subway.station.domain.Station;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 public class Section {
@@ -36,11 +37,24 @@ public class Section {
         this.distance = distance;
     }
 
-    public Section(Line line, Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = new Distance(distance);
+        this.distance = distance;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Section section = (Section) o;
+        return Objects.equals(id, section.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 
     public Station getUpStation() {
@@ -65,5 +79,33 @@ public class Section {
 
     public Line getLine() {
         return line;
+    }
+
+    public boolean isLonger(Section addSection) {
+        return this.distance.compareTo(addSection.getDistance()) > 0;
+    }
+
+    public Distance differ(Section section) {
+        return new Distance(this.distance.getDistance() - section.getDistance().getDistance());
+    }
+
+    public Distance sumDistance(Section section) {
+        return new Distance(this.distance.sum(section.getDistance()));
+    }
+
+    public boolean isUpStation(Section section) {
+        return section.isUpStation(this.upStation) || section.isDownStation(this.upStation);
+    }
+
+    public boolean isDownStation(Section section) {
+        return section.isUpStation(this.downStation) || section.isDownStation(this.downStation);
+    }
+
+    public boolean isSameUpStation(Section removeSection) {
+        return this.isUpStation(removeSection.getUpStation());
+    }
+
+    public boolean isSameDownStation(Section removeSection) {
+        return this.isDownStation(removeSection.getDownStation());
     }
 }

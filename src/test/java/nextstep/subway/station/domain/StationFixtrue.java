@@ -21,4 +21,20 @@ public class StationFixtrue {
     public static Station 선릉역() {
         return new Station(5L, "선릉역");
     }
+
+    public static Station stationA() {
+        return new Station(6L, "A");
+    }
+
+    public static Station stationB() {
+        return new Station(7L, "B");
+    }
+
+    public static Station stationC() {
+        return new Station(8L, "C");
+    }
+
+    public static Station stationD() {
+        return new Station(9L, "D");
+    }
 }

@@ -40,6 +40,12 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(Long id) {
+        return given()
+                .when().get("/lines/{id}", id)
+                .then().log().all().extract();
+    }
+
     public static ExtractableResponse<Response> 지하철_노선_수정_요청(String location, String name, String color) {
         Map<String, String> params = new HashMap<>();
         params.put("color", color);
@@ -82,9 +88,27 @@ public class LineSteps {
                 .then().log().all().extract();
     }
 
-    public static void 구간_추가_검증(ExtractableResponse<Response> createLineResponse, Long... id) {
+    public static void 지하철_노선_구간_검증(ExtractableResponse<Response> createLineResponse, int distance, Long... id) {
         ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(createLineResponse.header("location"));
-        assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(id);
+        assertAll(
+                () -> assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(id),
+                () -> assertThat(findLineResponse.jsonPath().getInt("distance")).isEqualTo(distance)
+        );
+    }
+
+    public static void 지하철_노선_구간_검증(Long lineId, int distance, Long... id) {
+        ExtractableResponse<Response> findLineResponse = 지하철_노선_조회_요청(lineId);
+        assertAll(
+                () -> assertThat(findLineResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(findLineResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(id),
+                () -> assertThat(findLineResponse.jsonPath().getInt("distance")).isEqualTo(distance)
+        );
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선에_지하철_구간_제거_요청(Long lineId, Long stationId) {
+        return given()
+                .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
+                .then().log().all().extract();
     }
 }
