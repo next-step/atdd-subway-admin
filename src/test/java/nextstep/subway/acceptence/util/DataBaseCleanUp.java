@@ -1,4 +1,4 @@
-package nextstep.acceptence.exception;
+package nextstep.subway.acceptence.util;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;

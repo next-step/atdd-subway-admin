@@ -1,4 +1,4 @@
-package nextstep.unit.line;
+package nextstep.subway.unit.line;
 
 import nextstep.subway.application.exception.exception.NotValidDataException;
 import nextstep.subway.domain.Line;

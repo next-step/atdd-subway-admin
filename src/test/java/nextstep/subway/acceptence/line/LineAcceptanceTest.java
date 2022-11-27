@@ -1,8 +1,8 @@
-package nextstep.acceptence.line;
+package nextstep.subway.acceptence.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.acceptence.exception.AcceptanceTest;
+import nextstep.subway.acceptence.util.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,7 @@ import org.springframework.http.HttpStatus;
 import java.sql.SQLException;
 import java.util.List;
 
-import static nextstep.acceptence.station.StationAcceptanceFixture.지하철역_생성후_ID_를_리턴한다;
+import static nextstep.subway.acceptence.station.StationAcceptanceFixture.지하철역_생성후_ID_를_리턴한다;
 
 @DisplayName("노선 관련 기능")
 class LineAcceptanceTest extends AcceptanceTest {

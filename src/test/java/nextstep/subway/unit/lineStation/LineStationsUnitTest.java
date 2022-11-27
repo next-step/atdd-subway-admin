@@ -1,4 +1,4 @@
-package nextstep.unit.lineStation;
+package nextstep.subway.unit.lineStation;
 
 import nextstep.subway.application.exception.exception.NotFoundDataException;
 import nextstep.subway.application.exception.exception.NotValidDataException;
