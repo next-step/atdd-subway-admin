@@ -57,4 +57,8 @@ public class Distance {
     public int hashCode() {
         return Objects.hash(distance);
     }
+
+    public Distance merge(Distance distance) {
+        return new Distance(this.distance + distance.getDistance());
+    }
 }
