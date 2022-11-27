@@ -1,8 +1,6 @@
 package nextstep.subway.domain.line;
 
 import nextstep.subway.domain.BaseEntity;
-import nextstep.subway.domain.station.Station;
-import nextstep.subway.dto.request.LineRequest;
 
 import javax.persistence.*;
 
@@ -20,12 +18,6 @@ public class LineStation extends BaseEntity {
 
     private int distance;
 
-//    public static LineStation of(LineRequest lineRequest) {
-//
-//
-//    }
-
-
     public Long getId() {
         return id;
     }
@@ -42,7 +34,8 @@ public class LineStation extends BaseEntity {
         return distance;
     }
 
-    protected LineStation() {}
+    protected LineStation() {
+    }
 
     public LineStation(Long upStationId, Long downStationId, int distance) {
         this.upStationId = upStationId;

@@ -2,6 +2,8 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.line.LineStation;
+import nextstep.subway.domain.line.LineStationRepository;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.request.LineRequest;
 import nextstep.subway.dto.response.LineReponse;
@@ -17,11 +19,13 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
+    private LineStationRepository lineStationRepository;
 
     @Autowired
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, LineStationRepository lineStationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.lineStationRepository = lineStationRepository;
     }
 
     public LineService(LineRepository lineRepository) {
@@ -59,12 +63,10 @@ public class LineService {
     }
 
     private Line lineRequestToLine(LineRequest lineRequest) {
-        return new Line(
-                lineRequest.getName(),
-                lineRequest.getColor(),
-                stationRepository.getById(lineRequest.getUpStationId()),
-                stationRepository.getById(lineRequest.getDownStationId()),
-                lineRequest.getDistance()
-        );
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        LineStation lineStation = new LineStation(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        line.addLineStation(lineStation);
+
+        return line;
     }
 }

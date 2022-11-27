@@ -4,6 +4,8 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.BaseTest;
+import nextstep.subway.domain.line.LineStation;
+import nextstep.subway.domain.line.LineStationRepository;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.request.LineRequest;
@@ -25,10 +27,15 @@ public class LineAcceptanceTest extends BaseTest {
     @Autowired
     private StationRepository stationRepository;
 
+    @Autowired
+    private LineStationRepository lineStationRepository;
+
     @BeforeEach
     void setUp() {
-        stationRepository.save(new Station("강남역"));
-        stationRepository.save(new Station("서초역"));
+        Station gangNam = stationRepository.save(new Station("강남역"));
+        Station seocho = stationRepository.save(new Station("서초역"));
+
+        lineStationRepository.save( new LineStation(gangNam.getId(), seocho.getId(), 7) );
     }
 
     /**
@@ -42,11 +49,12 @@ public class LineAcceptanceTest extends BaseTest {
         LineRequest lineRequest = new LineRequest("신분당선", "red", Long.valueOf(1), Long.valueOf(2), 5);
 
         // When
-        reqeust_register_line(lineRequest);
-        List<String> lineNames = reqeust_get_line_names();
+        String name = reqeust_register_line(lineRequest)
+                .jsonPath()
+                .get("name");
 
         // Then
-        assertThat(lineNames).containsAnyOf("신분당선");
+        assertThat(name).isEqualTo("신분당선");
     }
 
     /**

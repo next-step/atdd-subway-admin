@@ -1,13 +1,9 @@
 package nextstep.subway.domain.line;
 
 import nextstep.subway.domain.BaseEntity;
-import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.request.LineRequest;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Entity
 public class Line extends BaseEntity {
@@ -21,31 +17,15 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
-    private int distance;
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
 
-    public Line(String name, String color, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
-    }
-
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
     }
 
     public void updateLine(LineRequest lineRequest) {
@@ -65,20 +45,15 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public LineStations getLineStations() {
+        return lineStations;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public void setLineStations(LineStations lineStations) {
+        this.lineStations = lineStations;
     }
 
-    public int getDistance() {
-        return distance;
-    }
-
-    public List<Station> getStations() {
-        return Stream.of(upStation, downStation)
-                .collect(Collectors.toList());
+    public void addLineStation(LineStation lineStation) {
+        this.lineStations.addLineStation(lineStation);
     }
 }
