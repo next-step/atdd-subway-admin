@@ -525,17 +525,21 @@ class LineAcceptanceTest {
         long 삼전역_id = 지하철역_생성("삼전역");
         long 강남역_id = 지하철역_생성("강남역");
         long 석촌고분역_id = 지하철역_생성("석촌고분역");
+        int firstDistance = 10;
+        int secondDistance = 10;
 
         // 분당선 생성, 및 조회
         // 삼전역 -> 강남역 -> 석촌고분역
-        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id);
-        노선_구간_생성(lineId, 구간_생성(강남역_id, 석촌고분역_id));
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id, firstDistance);
+        노선_구간_생성(lineId, 구간_생성(강남역_id, 석촌고분역_id, secondDistance));
 
         // when:
         // 강남역(가운데역) 삭제
         ExtractableResponse<Response> response = 구간_삭제(lineId, 강남역_id);
         // 갱신 된 노선
         Map<String, Integer> firstSection = getResultSection(response, FIRST_STATION_INDEX);
+        // 전체 구간 길이
+        int totalDistance = getLineDistance(response);
         // 구간 갯수
         int sectionSize = getSectionSize(response);
 
@@ -543,6 +547,7 @@ class LineAcceptanceTest {
         // 삼전역 -> 석촌고분역
         assertThat(firstSection.get("preStationId")).isEqualTo(삼전역_id);
         assertThat(firstSection.get("nextStationId")).isEqualTo(석촌고분역_id);
+        assertThat(totalDistance).isEqualTo(firstDistance + secondDistance);
         assertThat(sectionSize).isEqualTo(1);
     }
 
@@ -553,7 +558,7 @@ class LineAcceptanceTest {
      */
     @DisplayName("구간이 하나인 노선에서 역을 제거하는 경우")
     @Test
-    void 제거_실패_구간이_하나인_노선에서_역을_제거하는_꼉우(){
+    void 제거_실패_구간이_하나인_노선에서_역을_제거하는_꼉우() {
         // given:
         // 삼전역, 강남역
         long 삼전역_id = 지하철역_생성("삼전역");
@@ -579,7 +584,7 @@ class LineAcceptanceTest {
      */
     @DisplayName("구간에 포함되지 않은 역을 제거하는 경우")
     @Test
-    void 제거_실패_구간에_포함되지_않은_역을_제거하는_경우(){
+    void 제거_실패_구간에_포함되지_않은_역을_제거하는_경우() {
         // given:
         // 삼전역, 강남역
         long 삼전역_id = 지하철역_생성("삼전역");
@@ -674,7 +679,7 @@ class LineAcceptanceTest {
         return params;
     }
 
-    ExtractableResponse<Response> 구간_삭제(long  lineId, long stationId) {
+    ExtractableResponse<Response> 구간_삭제(long lineId, long stationId) {
         return RestAssured.given().log().all()
                 .param("stationId", stationId)
                 .when().delete("/lines/{id}/sections", lineId)
