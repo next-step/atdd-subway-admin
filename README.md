@@ -151,22 +151,64 @@ Vary: Access-Control-Request-Headers
 </pre>
 ![img.png](step2_api_desc.png)
 #### 기능 요구사항 및 인수조건
-- [ ] 지하철 노선 생성
+- [X] 지하철 노선 생성
   * When 지하철 노선을 생성하면
   * Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
-- [ ] 지하철 노선 목록 조회
+- [X] 지하철 노선 목록 조회
   * Given 2개의 지하철 노선을 생성하고
   * When 지하철 노선 목록을 조회하면
   * Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
-- [ ] 지하철 노선 조회
+- [X] 지하철 노선 조회
   * Given 지하철 노선을 생성하고
   * When 생성한 지하철 노선을 조회하면
   * Then 생성한 지하철 노선의 정보를 응답받을 수 있다.
-- [ ] 지하철 노선 수정
+- [X] 지하철 노선 수정
   * Given 지하철 노선을 생성하고
   * When 생성한 지하철 노선을 수정하면
   * Then 해당 지하철 노선 정보는 수정된다
-- [ ] 지하철 노선 삭제
+- [X] 지하철 노선 삭제
   * Given 지하철 노선을 생성하고
   * When 생성한 지하철 노선을 삭제하면
   * Then 해당 지하철 노선 정보는 삭제된다
+#### Step2 회고
+ * RestAssured의 body()의 파라미터는 map 형식이 아닌, controller에서 지정한 형식도 가능 
+   * 테스트 목적에 맞게 request 형식으로 활용
+ * given, when, then, given, when, then... 형식이면 TestFactory의 DynamicTest 활용
+    * 테스트가 좀 더 가독성이 좋아짐
+    * https://tecoble.techcourse.co.kr/post/2020-07-31-dynamic-test/
+ * @Transactional 대상이면, save, update 메서드를 호출할 필요가 없음
+    * using the findOne method call within a transactional method it has become managed from that point by the persistence provider.
+    * https://stackoverflow.com/questions/46708063/springboot-jpa-need-no-save-on-transactional
+### step3 - 구간 추가 기능
+#### 요구상항 기능목록
+- [ ] 역 사이에 새로운 역을 등록할 경우
+  * 새로운 길이를 뺸 나머지를 새롭게 추가된 역과의 길이로 설정
+  * ex) asis: A-7m-C -> A-4m-B 추가 -> tobe: A-4m-B-3m-C  
+- [ ] 새로운 역을 상행 종점으로 등록할 경우
+- [ ] 새로운 역을 하행 종점으로 등록할 경우
+- [ ] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+- [ ] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+- [ ] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+#### 구간등록 API명세
+HTTP request
+<pre>
+POST /lines/{id}/sections/ HTTP/1.1
+Accept: */*
+content-type: application/json; charset=UTF-8
+host: localhost:52165
+
+{
+    "downStationId": 4,
+    "upStationId": 2,
+    "distance": 10
+}
+</pre>
+#### JPA 관계 매핑
+* 다대다 보다는 매핑테이블을 엔티티로 두는 방법을 활용
+  * 기존에 Station과 Line이 있었다면 Line에 속하는 Station을 LineStation이라는 엔티티로 도출
+  * Line과 LineStation을 @ManyToOne 관계로 설정
+* 참고내용
+  * 다대다 이슈: https://ict-nroo.tistory.com/127
+  * 참고 코드: https://github.com/next-step/atdd-subway-map/blob/boorownie/src/main/java/nextstep/subway/line/domain/LineStations.java
+  * JPA @Embedded And @Embeddable 문서 참고: https://www.baeldung.com/jpa-embedded-embeddable
+  
