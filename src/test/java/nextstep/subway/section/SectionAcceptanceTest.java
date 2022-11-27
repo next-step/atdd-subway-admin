@@ -182,7 +182,7 @@ public class SectionAcceptanceTest {
     }
 
     @Test
-    @DisplayName("구간이 하나인 경우 상행역을 제거 한다.")
+    @DisplayName("구간이 하나인 경우 상행역을 제거하면 오류가 발생한다.")
     void deleteUpStationOnlyOneSectionExceptionTest() {
         //given
 
@@ -194,12 +194,25 @@ public class SectionAcceptanceTest {
     }
 
     @Test
-    @DisplayName("구간이 하나인 경우 하행역을 제거 한다.")
+    @DisplayName("구간이 하나인 경우 하행역을 제거하면 오류가 발생한다.")
     void deleteDownStationOnlyOneSectionExceptionTest() {
         //given
 
         //when
         final ExtractableResponse<Response> apiResponse = deleteStation(lineId, downStationId);
+
+        //then
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @Test
+    @DisplayName("호선에 존재하지 않는 역을 제거하면 오류가 발생한다.")
+    void deleteNotExistStationExceptionTest() {
+        //given
+        Long newStationId = StationAcceptanceTest.createStationAndGetId("양재역");
+
+        //when
+        final ExtractableResponse<Response> apiResponse = deleteStation(lineId, newStationId);
 
         //then
         assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
