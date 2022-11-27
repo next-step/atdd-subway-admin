@@ -41,13 +41,13 @@ class LineServiceTest {
         String color = "Red";
         Station 강남역 = new Station(1L, "강남역");
         Station 판교역 = new Station(2L, "판교역");
-        CreateLineDto dto = new CreateLineDto(name, color, 강남역.getId(), 판교역.getId(), 10);
+        CreateLineRequest request = new CreateLineRequest(name, color, 강남역.getId(), 판교역.getId(), 10);
 
         when(stationRepository.findById(1L)).thenReturn(Optional.of(강남역));
         when(stationRepository.findById(2L)).thenReturn(Optional.of(판교역));
         when(lineRepository.save(any(Line.class))).then(AdditionalAnswers.returnsFirstArg());
 
-        LineResponse response = lineService.register(dto);
+        LineResponse response = lineService.register(request);
         assertAll(
                 () -> assertThat(name).isEqualTo(response.getName()),
                 () -> assertThat(color).isEqualTo(response.getColor()),

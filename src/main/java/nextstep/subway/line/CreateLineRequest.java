@@ -1,6 +1,6 @@
 package nextstep.subway.line;
 
-class CreateLineDto {
+class CreateLineRequest {
 
     private String name;
 
@@ -12,7 +12,7 @@ class CreateLineDto {
 
     private long distance;
 
-    public CreateLineDto(String name, String color, long upStationId, long downStationId, long distance) {
+    public CreateLineRequest(String name, String color, long upStationId, long downStationId, long distance) {
         this.name = name;
         this.color = color;
         this.upStationId = upStationId;

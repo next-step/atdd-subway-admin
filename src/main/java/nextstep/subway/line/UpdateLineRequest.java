@@ -1,6 +1,6 @@
 package nextstep.subway.line;
 
-class UpdateLineDto {
+class UpdateLineRequest {
     private String name;
 
     private String color;

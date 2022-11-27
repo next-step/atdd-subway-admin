@@ -2,6 +2,7 @@ package nextstep.subway.line;
 
 import nextstep.subway.section.Distance;
 import nextstep.subway.section.Section;
+import nextstep.subway.section.CreateSectionRequest;
 import nextstep.subway.station.Station;
 import nextstep.subway.station.StationRepository;
 import org.springframework.stereotype.Service;
@@ -23,20 +24,32 @@ class LineService {
     }
 
     @Transactional
-    public LineResponse register(CreateLineDto dto) {
-        Station upStation = findStationById(dto.getUpStationId());
-        Station downStation = findStationById(dto.getDownStationId());
-        Distance distance = new Distance(dto.getDistance());
+    public LineResponse registerSection(long id, CreateSectionRequest request) {
+        Line line = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 노선입니다."));
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        Distance distance = new Distance(request.getDistance());
         Section section = new Section(upStation, downStation, distance);
-        Line line = dto.toLine();
+        line.addSection(section);
+        return LineResponse.of(line);
+    }
+
+    @Transactional
+    public LineResponse register(CreateLineRequest request) {
+        Line line = request.toLine();
+        Station upStation = findStationById(request.getUpStationId());
+        Station downStation = findStationById(request.getDownStationId());
+        Distance distance = new Distance(request.getDistance());
+        Section section = new Section(upStation, downStation, distance);
         line.addSection(section);
         return LineResponse.of(lineRepository.save(line));
     }
 
     @Transactional
-    public void update(long id, UpdateLineDto dto) {
+    public void update(long id, UpdateLineRequest request) {
         Line line = findLineById(id);
-        line.update(dto.toLine());
+        line.update(request.toLine());
     }
 
     @Transactional(readOnly = true)
