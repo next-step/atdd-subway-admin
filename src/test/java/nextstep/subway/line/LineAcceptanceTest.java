@@ -81,10 +81,9 @@ public class LineAcceptanceTest {
         // when
         List<String> lines = 지하철_노선_목록_조회();
         // then
-        assertAll(
-                () -> assertThat(lines.size()).isEqualTo(2),
-                () -> assertThat(lines).containsAnyOf("신분당선", "분당선")
-        );
+         assertThat(lines)
+                 .hasSize(2)
+                 .containsAnyOf("신분당선", "분당선");
     }
 
     /*
