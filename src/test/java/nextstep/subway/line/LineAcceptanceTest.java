@@ -4,12 +4,14 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.DatabaseClear;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -27,6 +29,9 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private DatabaseClear databaseClear;
+
     private Long upStationId;
     private Long downStationId;
 
@@ -37,9 +42,11 @@ public class LineAcceptanceTest {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+
+        databaseClear.execute();
+
         upStationId = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId();
         downStationId = StationAcceptanceTest.지하철역_생성("공릉역").as(StationResponse.class).getId();
-
         lineRequest = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
     }
 
@@ -105,17 +112,35 @@ public class LineAcceptanceTest {
      */
     @DisplayName("지하철 노선을 수정한다.")
     @Test
-    public void updateLine(){
+    public void updateLine() {
         // given
         ExtractableResponse<Response> response = 지하철_노선_생성(lineRequest);
         LineRequest updateLineRequest = new LineRequest("7호선", "green", upStationId, downStationId, 10);
         // when
-        JsonPath line = 지하철_노선_수정(updateLineRequest,response.jsonPath().getString("id"));
+        JsonPath line = 지하철_노선_수정(updateLineRequest, response.jsonPath().getString("id"));
         // then
         assertAll(
                 () -> assertThat(line.getString("name")).isEqualTo(updateLineRequest.getName()),
                 () -> assertThat(line.getString("color")).isEqualTo(updateLineRequest.getColor())
         );
+    }
+
+    /*
+     *   Given 지하철 노선을 생성하고
+     *   When 생성한 지하철 노선을 삭제하면
+     *   Then 해당 지하철 노선 정보는 삭제된다.
+     */
+    @DisplayName("지하철 노선을 삭제 한다")
+    @Test
+    public void deleteLine() {
+        // given
+        ExtractableResponse<Response> response = 지하철_노선_생성(lineRequest);
+        // when
+        지하철_노선_삭제(response.body().jsonPath().getInt("id"));
+        // then
+        List<String> lines = 지하철_노선_목록_조회();
+
+        assertThat(lines).isEmpty();
     }
 
     private String 지하철_노선_조회(String id) {
@@ -153,6 +178,15 @@ public class LineAcceptanceTest {
                 .when().put("/lines/{id}")
                 .then().log().all()
                 .extract().jsonPath();
+    }
+
+    private ExtractableResponse<Response> 지하철_노선_삭제(int id) {
+        return RestAssured.given().log().all()
+                .pathParam("id", id)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/{id}")
+                .then().log().all()
+                .extract();
     }
 
 }
