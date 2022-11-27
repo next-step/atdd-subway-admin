@@ -63,10 +63,6 @@ public class LineStation extends BaseEntity {
         }
     }
 
-    public void updateForDelete(LineStation downStation) {
-        this.upStation = downStation.upStation;
-    }
-
     private void updateDownStation(LineStation newStation) {
         this.downStation = newStation.upStation;
         this.distance = distance.minus(newStation.distance);

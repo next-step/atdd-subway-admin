@@ -17,13 +17,15 @@ public class LineStationAcceptanceFixture {
 
     private static final String SECTIONS_URL = "/sections";
 
+    private static final String SECTIONS_REQUEST_PARAM = "?stationId=";
+
     private static final String STATION_NAME = "stations.name";
 
     public static ExtractableResponse<Response> 지하철_구간을_추가한다(Long lineId, Long upStationId, Long downStationId, int distance) {
         return RestAssured.given().log().all()
                 .body(new SectionRequest(upStationId, downStationId, distance))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post(LINE_URL + lineId+ SECTIONS_URL)
+                .when().post(LINE_URL + lineId + SECTIONS_URL)
                 .then().log().all()
                 .extract();
     }
@@ -35,5 +37,13 @@ public class LineStationAcceptanceFixture {
     public static void 지하철_구간이_추가되었는지_체크한다(ExtractableResponse<Response> response, String... newStationName) {
         List<String> name = response.jsonPath().getList(STATION_NAME, String.class);
         assertThat(name).containsAll(Arrays.asList(newStationName));
+    }
+
+    public static ExtractableResponse<Response> 지하철_구간을_삭제한다(Long targetStationId, Long deleteStationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(LINE_URL + targetStationId + SECTIONS_URL + SECTIONS_REQUEST_PARAM + deleteStationId)
+                .then().log().all()
+                .extract();
     }
 }

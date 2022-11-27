@@ -11,7 +11,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.application.exception.type.AlreadyExceptionType.ALREADY_LINE_STATION;
-import static nextstep.subway.application.exception.type.LineExceptionType.NOT_FOUND_LINE;
 import static nextstep.subway.application.exception.type.LineStationExceptionType.NOT_FOUND_LINE_STATION_BOTH;
 
 @Embeddable
@@ -66,11 +65,28 @@ public class LineStations {
 
     public void delete(Station deleteStation) {
         checkMinLineStationSize();
-        LineStation upStation = getUpStation(deleteStation);
-        LineStation downStation = getDownStation(deleteStation);
 
-        renewalLineStation(upStation, downStation);
-        deleteExistLineStation(upStation, downStation);
+        Optional<LineStation> upStation = getUpStation(deleteStation);
+        Optional<LineStation> downStation = getDownStation(deleteStation);
+
+        if (upStation.isPresent() && downStation.isPresent()) {
+            LineStation upLineStation = upStation.get();
+            LineStation downLineStation = downStation.get();
+            deleteCenterLineStation(upLineStation, downLineStation);
+            return;
+        }
+
+        deleteEndLineStation(upStation, downStation);
+    }
+
+    private void deleteCenterLineStation(LineStation upLineStation, LineStation downLineStation) {
+        renewalLineStation(upLineStation, downLineStation);
+        deleteExistLineStation(upLineStation, downLineStation);
+    }
+
+    private void deleteEndLineStation(Optional<LineStation> upStation, Optional<LineStation> downStation) {
+        upStation.ifPresent(lineStation -> lineStations.remove(lineStation));
+        downStation.ifPresent(lineStation -> lineStations.remove(lineStation));
     }
 
     private void deleteExistLineStation(LineStation upStation, LineStation downStation) {
@@ -83,18 +99,16 @@ public class LineStations {
         lineStations.add(renewLineStation);
     }
 
-    private LineStation getUpStation(Station station) {
+    private Optional<LineStation> getUpStation(Station station) {
         return lineStations.stream()
-                .filter(lineStation -> lineStation.isSameDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundDataException(NOT_FOUND_LINE.getMessage()));
+                .filter(lineStation -> lineStation.isSameUpStation(station))
+                .findFirst();
     }
 
-    private LineStation getDownStation(Station station) {
+    private Optional<LineStation> getDownStation(Station station) {
         return lineStations.stream()
                 .filter(lineStation -> lineStation.isSameDownStation(station))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundDataException(NOT_FOUND_LINE.getMessage()));
+                .findFirst();
     }
 
     private void checkMinLineStationSize() {

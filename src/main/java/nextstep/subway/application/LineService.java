@@ -45,6 +45,8 @@ public class LineService {
     @Transactional(readOnly = true)
     public LineResponse findLine(Long lineId) {
         Line line = findByLineId(lineId);
+
+        System.out.println("=-------------");
         return LineResponse.of(line);
     }
 

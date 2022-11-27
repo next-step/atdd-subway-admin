@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import java.sql.SQLException;
 import java.util.List;
 
+import static nextstep.subway.acceptence.lineStation.LineStationAcceptanceFixture.지하철_구간이_추가되었는지_체크한다;
 import static nextstep.subway.acceptence.station.StationAcceptanceFixture.지하철역_생성후_ID_를_리턴한다;
 
 @DisplayName("노선 관련 기능")
