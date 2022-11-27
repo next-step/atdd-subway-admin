@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.DatabaseCleaner;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.StationResponse;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.AfterEach;
@@ -33,7 +34,7 @@ public class SectionAcceptanceTest {
     @Autowired
     private DatabaseCleaner databaseCleaner;
 
-    private static String lineId;
+    private static Long lineId;
     private static Long upStationId;
     private static Long downStationId;
 
@@ -127,10 +128,87 @@ public class SectionAcceptanceTest {
                 .containsExactly(newStationId);
     }
 
+    @Test
+    @DisplayName("가운데 역을 제거 한다.")
+    void deleteMiddleStationTest() {
+        //given
+        Long newStationId = StationAcceptanceTest.createStationAndGetId("양재역");
+        createSection(lineId,
+                new SectionRequest(newStationId, downStationId, 1));
+
+        //when
+        final ExtractableResponse<Response> apiResponse = deleteStation(lineId, newStationId);
+
+        //then
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(LineAcceptanceTest.retrieveLineResponse(lineId).getStations()
+                .stream().map(StationResponse::getId)).doesNotContain(newStationId);
+    }
+
+    @Test
+    @DisplayName("상행종점을 제거 한다.")
+    void deleteFirstStationTest() {
+        //given
+        Long newStationId = StationAcceptanceTest.createStationAndGetId("양재역");
+        createSection(lineId,
+                new SectionRequest(newStationId, downStationId, 1));
+
+        //when
+        final ExtractableResponse<Response> apiResponse = deleteStation(lineId, upStationId);
+
+        //then
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(LineAcceptanceTest.retrieveLineResponse(upStationId).getStations()
+                .stream().map(StationResponse::getId))
+                .doesNotContain(upStationId);
+    }
+
+    @Test
+    @DisplayName("하행종점을 제거 한다.")
+    void deleteLastStationTest() {
+        //given
+        Long newStationId = StationAcceptanceTest.createStationAndGetId("양재역");
+        createSection(lineId,
+                new SectionRequest(newStationId, downStationId, 1));
+
+        //when
+        final ExtractableResponse<Response> apiResponse = deleteStation(lineId, downStationId);
+
+        //then
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(LineAcceptanceTest.retrieveLineResponse(downStationId).getStations()
+                .stream().map(StationResponse::getId))
+                .doesNotContain(downStationId);
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 경우 상행역을 제거 한다.")
+    void deleteUpStationOnlyOneSectionExceptionTest() {
+        //given
+
+        //when
+        final ExtractableResponse<Response> apiResponse = deleteStation(lineId, upStationId);
+
+        //then
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @Test
+    @DisplayName("구간이 하나인 경우 하행역을 제거 한다.")
+    void deleteDownStationOnlyOneSectionExceptionTest() {
+        //given
+
+        //when
+        final ExtractableResponse<Response> apiResponse = deleteStation(lineId, downStationId);
+
+        //then
+        assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     /**
      * 구간생성 api 호출
      * */
-    ExtractableResponse<Response> createSection(String lineId, SectionRequest sectionRequest) {
+    ExtractableResponse<Response> createSection(Long lineId, SectionRequest sectionRequest) {
         final Map param = new HashMap();
         param.put("upStationId", sectionRequest.getUpStationId());
         param.put("downStationId", sectionRequest.getDownStationId());
@@ -140,6 +218,16 @@ public class SectionAcceptanceTest {
                 .body(param)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/" + lineId + "/sections")
+                .then().log().all().extract();
+    }
+
+    /**
+     * 구간삭제 api 호출
+     */
+    ExtractableResponse<Response> deleteStation(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
                 .then().log().all().extract();
     }
 }

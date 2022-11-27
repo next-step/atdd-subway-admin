@@ -89,7 +89,7 @@ public class LineAcceptanceTest {
         String lineName = "신분당선";
         Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
         Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
-        String lineId = createLineAndGetId(
+        Long lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
@@ -106,7 +106,7 @@ public class LineAcceptanceTest {
         String lineName = "신분당선";
         Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
         Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
-        String lineId = createLineAndGetId(
+        Long lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
@@ -127,7 +127,7 @@ public class LineAcceptanceTest {
         String lineName = "신분당선";
         Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
         Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
-        String lineId = createLineAndGetId(
+        Long lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
@@ -158,8 +158,8 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선 생성 후 id 조회
      */
-    public static String createLineAndGetId(LineRequest lineRequest) {
-        return createLine(lineRequest).jsonPath().get("id").toString();
+    public static Long createLineAndGetId(LineRequest lineRequest) {
+        return Long.parseLong(createLine(lineRequest).jsonPath().get("id").toString());
     }
 
     /**
@@ -184,7 +184,7 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선id로 정보 조회
      */
-    ExtractableResponse<Response> retrieveLine(String lineId) {
+    ExtractableResponse<Response> retrieveLine(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + lineId)
@@ -194,7 +194,7 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선id로 정보 조회
      */
-    LineResponse retrieveLineResponse(String lineId) {
+    public static LineResponse retrieveLineResponse(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + lineId)
@@ -205,14 +205,14 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선 Id로 지하철호선 이름 조회
      */
-    String retrieveLineName(String lineId) {
+    String retrieveLineName(Long lineId) {
         return retrieveLineResponse(lineId).getName();
     }
 
     /**
      * 지하철호선 정보 수정
      */
-    void updateLine(String lineId, LineUpdateRequest lineUpdateRequest) {
+    void updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
         final Map param = new HashMap();
         param.put("name", lineUpdateRequest.getName());
         param.put("color", lineUpdateRequest.getColor());
@@ -227,7 +227,7 @@ public class LineAcceptanceTest {
     /**
      * 지하철호선 정보 삭제
      */
-    private ExtractableResponse<Response> deleteLine(String lineId) {
+    private ExtractableResponse<Response> deleteLine(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/lines/" + lineId)
