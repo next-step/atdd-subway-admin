@@ -230,4 +230,22 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         // then
         구간_삭제에_성공한다(구간_삭제_응답.statusCode());
     }
+
+    /**
+     * Given 구간을 생성하고
+     * When 가운데 역을 제거하는 경우
+     * Then 구간이 재배치되고 거리는 두 구간의 거리의 합이 된다
+     */
+    @DisplayName("가운데 역을 제거하는 경우 구간이 재배치되고 거리는 두 구간의 거리의 합이 된다.")
+    @Test
+    void delete_success03() {
+        // given
+        구간_생성(신분당선.getId(), new SectionRequest(강남역.getId(), 양재역.getId(), 13));
+
+        // when
+        ExtractableResponse<Response> 구간_삭제_응답 = 구간_삭제(신분당선.getId(), 양재역.getId());
+
+        // then
+        구간_삭제에_성공한다(구간_삭제_응답.statusCode());
+    }
 }

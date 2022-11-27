@@ -60,6 +60,10 @@ public class Section extends BaseEntity {
         this.distance = this.distance.subtract(distance);
     }
 
+    public void plusDistance(int distance) {
+        this.distance = this.distance.add(distance);
+    }
+
     public void updateUpStation(Station station) {
         this.upStation = station;
     }

@@ -80,17 +80,41 @@ public class Sections {
         return Collections.unmodifiableList(sections);
     }
 
-    public void delete(Station station) {
-        validateHasSection(station);
-        validateSingleSection();
+    public void deleteSection(Station station) {
+        this.validateHasSection(station);
+        this.validateSingleSection();
 
         List<Section> targets = sections.stream()
                 .filter(section -> section.contains(station))
                 .collect(toList());
 
         if (targets.size() == 1) {
-            targets.forEach(sections::remove);
+            this.deleteSection(targets);
+            return;
         }
+
+        this.deleteAndUpdateSection(station, targets);
+    }
+
+    private void deleteSection(List<Section> targets) {
+        targets.forEach(sections::remove);
+    }
+
+    private void deleteAndUpdateSection(Station station, List<Section> targets) {
+        Section upSection = targets.stream()
+                .filter(target -> target.equalsDownStation(station))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_SECTION.getMessage()));
+
+        Section downSection = targets.stream()
+                .filter(target -> target.equalsUpStation(station))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_SECTION.getMessage()));
+
+        sections.remove(downSection);
+
+        upSection.updateDownStation(downSection.getDownStation());
+        upSection.plusDistance(downSection.getDistance().value());
     }
 
     private void validateHasSection(Station station) {

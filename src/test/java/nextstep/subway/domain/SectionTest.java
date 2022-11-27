@@ -86,4 +86,12 @@ public class SectionTest {
         assertThat(section.getUpStation()).isEqualTo(new Station("여의도역"));
         assertThat(section.getDownStation()).isEqualTo(new Station("당산역"));
     }
+
+    @DisplayName("구간 거리를 더한다.")
+    @Test
+    void plusDistance() {
+        Section section = new Section(upStation, downStation, new Distance(10));
+        section.plusDistance(5);
+        assertThat(section.getDistance().value()).isEqualTo(15);
+    }
 }
