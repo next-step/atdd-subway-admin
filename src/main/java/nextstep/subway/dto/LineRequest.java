@@ -11,6 +11,14 @@ public class LineRequest {
     private long downStationId;
     private long distance;
 
+    public LineRequest(String name, String color, long upStationId, long downStationId, long distance) {
+        this.name = name;
+        this.color = color;
+        this.upStationId = upStationId;
+        this.downStationId = downStationId;
+        this.distance = distance;
+    }
+
     public Line toLine(Station upStation, Station downStation) {
         return new Line(name, color, new Section(upStation, downStation,  distance));
     }

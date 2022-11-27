@@ -4,15 +4,14 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,7 +36,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStation() {
         // when
-        ExtractableResponse<Response> response = postStation(generateParams("강남역"));
+        ExtractableResponse<Response> response = postStation(generateRequest("강남역"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -56,10 +55,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        postStation(generateParams("강남역"));
+        postStation(generateRequest("강남역"));
 
         // when
-        ExtractableResponse<Response> response = postStation(generateParams("강남역"));
+        ExtractableResponse<Response> response = postStation(generateRequest("강남역"));
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -74,8 +73,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        postStation(generateParams("강남역"));
-        postStation(generateParams("서초역"));
+        postStation(generateRequest("강남역"));
+        postStation(generateRequest("서초역"));
 
         // when
         List<String> stationNames = showStationNames();
@@ -92,17 +91,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        ExtractableResponse saveResponse = postStation(generateParams("강남역"));
+        ExtractableResponse saveResponse = postStation(generateRequest("강남역"));
 
         long deleteTargetStationId = saveResponse.body().jsonPath().getLong("id");
         String deleteTargetStationName = saveResponse.body().jsonPath().getString("name");
 
         // when
-        RestAssured.given().log().all()
-                .body(generateParams("강남역"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/stations" + DELIMITER + deleteTargetStationId)
-                .then().log().all();
+        deleteStation(deleteTargetStationId);
 
         // then
         List<String> stationNames = showStationNames();
@@ -110,13 +105,11 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(stationNames).doesNotContain(deleteTargetStationName);
     }
 
-    public Map<String, String> generateParams(String name) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        return params;
+    public StationRequest generateRequest(String name) {
+        return new StationRequest(name);
     }
 
-    private ExtractableResponse postStation(Map<String, String> params) {
+    private ExtractableResponse postStation(StationRequest params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -130,5 +123,13 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .when().get("/stations")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
+    }
+
+    private void deleteStation(long deleteTargetStationId) {
+        RestAssured.given().log().all()
+                .body(generateRequest("강남역"))
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/stations" + DELIMITER + deleteTargetStationId)
+                .then().log().all();
     }
 }

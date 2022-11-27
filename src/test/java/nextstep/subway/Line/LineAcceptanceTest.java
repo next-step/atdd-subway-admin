@@ -4,23 +4,18 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.DatabaseCleaner;
 import nextstep.subway.application.StationService;
+import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -48,7 +43,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void createLine() {
         // when
-        ExtractableResponse<Response> response = createLine(generateParams("2호선", "green"));
+        ExtractableResponse<Response> response = createLine(generateRequest("2호선", "green"));
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         List<String> lineNames = showLines();
@@ -65,11 +60,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void showCreatedLines() {
         // given
-        Map<String, String> params1 = generateParams("2호선", "green");
-        Map<String, String> params2 = generateParams("3호선", "orange");
+        LineRequest request1 = generateRequest("2호선", "green");
+        LineRequest request2 = generateRequest("3호선", "orange");
 
-        ExtractableResponse<Response> response1 = createLine(params1);
-        ExtractableResponse<Response> response2 = createLine(params2);
+        ExtractableResponse<Response> response1 = createLine(request1);
+        ExtractableResponse<Response> response2 = createLine(request2);
 
 
         assertThat(response1.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -89,7 +84,7 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void retrieveTheLine() {
         // given
-        ExtractableResponse<Response> response = createLine(generateParams("2호선", "green"));
+        ExtractableResponse<Response> response = createLine(generateRequest("2호선", "green"));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // when
         ExtractableResponse<Response> retrieveResponse = retrieveLine(response.body().jsonPath().getLong("id"));
@@ -106,22 +101,17 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void modifyTheLine() {
         // given
-        ExtractableResponse<Response> response = createLine(generateParams("2호선", "green"));
+        ExtractableResponse<Response> response = createLine(generateRequest("2호선", "green"));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // when
-        Map<String, String> modifyParams = generateParams("3호선", "orange");
-        ExtractableResponse<Response> modifyResponse =
-                RestAssured.given().log().all()
-                        .body(modifyParams)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().put("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
-                        .then().log().all()
-                        .extract();
+        LineRequest modifyRequest = generateRequest("3호선", "orange");
+        ExtractableResponse<Response> modifyResponse = modifyLine(response, modifyRequest);
         assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
         // then
         ExtractableResponse<Response> retrieveResponse = retrieveLine(response.body().jsonPath().getLong("id"));
         assertThat(retrieveResponse.body().jsonPath().getString("name")).contains("3호선");
     }
+
     /**
      * Given 지하철 노선을 생성하고
      * When 생성한 지하철 노선을 삭제하면
@@ -131,17 +121,11 @@ class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteTheLine() {
         // given
-        Map params = generateParams("2호선", "green");
-        ExtractableResponse<Response> response = createLine(params);
+        LineRequest request = generateRequest("2호선", "green");
+        ExtractableResponse<Response> response = createLine(request);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         // when
-        ExtractableResponse<Response> modifyResponse =
-                RestAssured.given().log().all()
-                        .body(params)
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().delete("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> modifyResponse = deleteLine(request, response);
         assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
         // then
         ExtractableResponse<Response> retrieveResponse = retrieveLine(response.body().jsonPath().getLong("id"));
@@ -160,7 +144,7 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract().jsonPath().getList("name", String.class);
     }
 
-    private ExtractableResponse<Response> createLine(Map<String, String> params) {
+    private ExtractableResponse<Response> createLine(LineRequest params) {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -176,12 +160,25 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private Map<String, String> generateParams(String name, String color) {
-        Map<String, String> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
-        params.put("upStationId", "1");
-        params.put("downStationId", "2");
-        return params;
+    private ExtractableResponse<Response> modifyLine(ExtractableResponse<Response> response, LineRequest modifyParams) {
+        return RestAssured.given().log().all()
+                .body(modifyParams)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> deleteLine(LineRequest params, ExtractableResponse<Response> response) {
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines" + DELIMITER + response.body().jsonPath().getLong("id"))
+                .then().log().all()
+                .extract();
+    }
+
+    private LineRequest generateRequest(String name, String color) {
+        return new LineRequest(name, color, 1, 2, 1);
     }
 }
