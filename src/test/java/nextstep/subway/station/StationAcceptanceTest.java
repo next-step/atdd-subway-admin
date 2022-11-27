@@ -126,7 +126,7 @@ public class StationAcceptanceTest {
         );
     }
 
-    public ExtractableResponse<Response> 지하철역_생성(String stationName) {
+    public static ExtractableResponse<Response> 지하철역_생성(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
