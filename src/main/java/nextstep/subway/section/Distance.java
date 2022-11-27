@@ -38,4 +38,8 @@ public class Distance {
     public Long get() {
         return distance;
     }
+
+    public int compare(Distance distance) {
+        return Long.compare(this.distance, distance.distance);
+    }
 }

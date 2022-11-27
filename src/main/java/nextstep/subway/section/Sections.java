@@ -80,25 +80,25 @@ public class Sections {
             return false;
         }
         Distance distance = new Distance(section.getDistance());
-        sliceDownSection(section, distance, sections.indexOf(downSection));
+        int startIndex = sections.indexOf(downSection);
+        sliceDownSection(section, distance, startIndex);
         pushSequenceFromSlice(section);
         sections.add(section);
         return true;
     }
 
-    private void sliceDownSection(Section newSection, Distance distance, int matchIndex) {
+    private void sliceDownSection(Section newSection, Distance distance, int startIndex) {
+        validateDownSectionDistance(distance, startIndex);
         Section slice = null;
         while (slice == null) {
-            Section targetSection = sections.get(matchIndex);
+            Section targetSection = sections.get(startIndex);
             distance.subtract(targetSection.getDistance());
             slice = sliceDownSection(newSection, targetSection, distance);
-            matchIndex++;
+            startIndex++;
         }
-        validateExceedSection(slice);
     }
 
     private Section sliceDownSection(Section newSection, Section targetSection, Distance distance) {
-        validateLocatedStation(distance);
         if (distance.isNegative()) {
             newSection.syncUpStation(targetSection, distance);
             return newSection;
@@ -125,19 +125,18 @@ public class Sections {
         return true;
     }
 
-    private void sliceUpSection(Section newSection, Distance distance, int matchIndex) {
+    private void sliceUpSection(Section newSection, Distance distance, int endIndex) {
+        validateUpSectionDistance(distance, endIndex);
         Section slice = null;
         while (slice == null) {
-            Section targetSection = sections.get(matchIndex);
+            Section targetSection = sections.get(endIndex);
             distance.subtract(targetSection.getDistance());
             slice = sliceUpSection(newSection, targetSection, distance);
-            matchIndex--;
+            endIndex--;
         }
-        validateExceedSection(slice);
     }
 
     private Section sliceUpSection(Section newSection, Section targetSection, Distance distance) {
-        validateLocatedStation(distance);
         if (distance.isNegative()) {
             newSection.syncDownStation(targetSection, distance);
             return newSection;
@@ -167,18 +166,31 @@ public class Sections {
             throw new IllegalArgumentException("입력한 구간의 역은 모두 이미 등록되었습니다.");
         }
         if (!stations.contains(upStation) && !stations.contains(downStation)) {
-            throw new IllegalArgumentException("입력한 구간의 두 역 중 하나 이상은 이미 등록되어 있어야 합니다.");
+            throw new IllegalArgumentException("입력한 구간의 두 역 중 하나 이상은 등록되어 있어야 합니다.");
         }
     }
 
-    private void validateLocatedStation(Distance distance) {
-        if (distance.isZero()) {
+    private void validateDownSectionDistance(Distance distance, int startIndex) {
+        Distance totalDistance = new Distance(0L);
+        for (int index = startIndex; index < sections.size(); index++) {
+            totalDistance.add(sections.get(index).getDistance());
+        }
+        validateDistance(distance, totalDistance);
+    }
+
+    private void validateUpSectionDistance(Distance distance, int endIndex) {
+        Distance totalDistance = new Distance(0L);
+        for (int index = 0; index <= endIndex; index++) {
+            totalDistance.add(sections.get(index).getDistance());
+        }
+        validateDistance(distance, totalDistance);
+    }
+
+    private void validateDistance(Distance distance, Distance totalDistance) {
+        if (distance.compare(totalDistance) == 0) {
             throw new IllegalArgumentException("해당 거리에 이미 역이 등록되었습니다.");
         }
-    }
-
-    private void validateExceedSection(Section slice) {
-        if (slice == null) {
+        if (distance.compare(totalDistance) == 1) {
             throw new IllegalArgumentException("입력한 역의 길이가 종점까지의 거리를 초과했습니다.");
         }
     }
