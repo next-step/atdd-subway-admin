@@ -2,6 +2,7 @@ package nextstep.subway.domain.Line;
 
 import nextstep.subway.domain.BaseEntity;
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -71,4 +72,8 @@ public class Line extends BaseEntity {
         return distance;
     }
 
+    public void update(LineRequest lineRequest) {
+        this.name = lineRequest.getName();
+        this.color = lineRequest.getColor();
+    }
 }

@@ -34,4 +34,9 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
+    @PutMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<LineResponse> updateline(@PathVariable Long id, @RequestBody LineRequest lineRequest){
+        return ResponseEntity.ok().body(lineService.updateLine(id, lineRequest));
+    }
+
 }
