@@ -72,9 +72,7 @@ public class Sections {
     }
 
     private void validateNewSection(Section section) {
-        Set<Station> stations = this.sectionItems.stream()
-                .flatMap(sectionItem -> Stream.of(sectionItem.getUpStation(), sectionItem.getDownStation()))
-                .collect(Collectors.toSet());
+        List<Station> stations = getAllStations();
 
         if(isUpAndDownStationsAlreadyEnrolled(section, stations)) {
             throw new IllegalArgumentException(SectionMessage.ERROR_UP_AND_DOWN_STATIONS_ARE_ALREADY_ENROLLED.message());
@@ -85,11 +83,11 @@ public class Sections {
         }
     }
 
-    private boolean isUpAndDownStationsAlreadyEnrolled(Section section, Set<Station> stations) {
+    private boolean isUpAndDownStationsAlreadyEnrolled(Section section, List<Station> stations) {
         return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
     }
 
-    private boolean isUpAndDownStationsNotEnrolled(Section section, Set<Station> stations) {
+    private boolean isUpAndDownStationsNotEnrolled(Section section, List<Station> stations) {
         return !this.sectionItems.isEmpty()
                 && !stations.contains(section.getUpStation())
                 && !stations.contains(section.getDownStation());
@@ -170,7 +168,7 @@ public class Sections {
 
     public List<Station> getAllStations() {
         return this.sectionItems.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .flatMap(Section::stationsStream)
                 .distinct()
                 .collect(Collectors.toList());
     }

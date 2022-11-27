@@ -7,7 +7,10 @@ import nextstep.subway.domain.station.Station;
 import nextstep.subway.message.SectionMessage;
 
 import javax.persistence.*;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 
 @Entity
 @Table(name = "section")
@@ -80,12 +83,12 @@ public class Section extends BaseEntity {
         this.downStation = station;
     }
 
-    public void changeDistance(Section section) {
-        this.distance = section.distance;
-    }
-
     public Distance getDistance() {
         return this.distance;
+    }
+
+    public Stream<Station> stationsStream() {
+        return Stream.of(this.upStation, this.downStation);
     }
 
     @Override
