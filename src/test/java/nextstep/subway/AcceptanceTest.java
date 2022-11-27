@@ -50,15 +50,15 @@ public abstract class AcceptanceTest {
                 .extract();
     }
 
-    protected Long getId(ExtractableResponse<Response> response) {
+    protected Long extractId(ExtractableResponse<Response> response) {
         return response.body().jsonPath().getLong("id");
     }
 
-    protected String getString(ExtractableResponse<Response> response, String property) {
+    protected String extractString(ExtractableResponse<Response> response, String property) {
         return response.body().jsonPath().getString(property);
     }
 
-    protected <T> List<T> getList(ExtractableResponse<Response> response, String property, Class<T> classType) {
+    protected <T> List<T> extractList(ExtractableResponse<Response> response, String property, Class<T> classType) {
         return response.body().jsonPath().getList(property, classType);
     }
 }

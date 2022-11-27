@@ -27,15 +27,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        upStationId = getId(지하철역_등록("강남역"));
-        downStationId = getId(지하철역_등록("판교역"));
+        upStationId = extractId(지하철역_등록("강남역"));
+        downStationId = extractId(지하철역_등록("판교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
         params.put("distance", 10);
-        lineId = getId(지하철노선_등록(params));
+        lineId = extractId(지하철노선_등록(params));
     }
 
     private ExtractableResponse<Response> getLines() {
@@ -63,7 +63,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철노선_생성후_조회() {
         // when
         // then
-        List<String> stationNames = getList(getLines(), "name", String.class);
+        List<String> stationNames = extractList(getLines(), "name", String.class);
         assertThat(stationNames).containsAnyOf("신분당선");
     }
 
@@ -85,7 +85,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철노선_등록(params);
 
         // when
-        List<Long> ids = getList(getLines(), "id", Long.class);
+        List<Long> ids = extractList(getLines(), "id", Long.class);
 
         // then
         assertThat(ids).hasSize(2);
@@ -104,7 +104,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> extract = getLine(lineId);
 
         // then
-        assertThat(getString(extract, "name")).isEqualTo("신분당선");
+        assertThat(extractString(extract, "name")).isEqualTo("신분당선");
     }
 
     /**

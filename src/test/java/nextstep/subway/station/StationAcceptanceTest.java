@@ -40,7 +40,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         // then
-        List<String> stationNames = getList(getStations(), "name", String.class);
+        List<String> stationNames = extractList(getStations(), "name", String.class);
         assertThat(stationNames).containsAnyOf("강남역");
     }
 
@@ -78,7 +78,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> response = getStations();
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(getList(response, "id", Long.class)).hasSize(2)
+                () -> assertThat(extractList(response, "id", Long.class)).hasSize(2)
         );
     }
 
@@ -91,7 +91,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 생성한_지하철역_삭제_조회불가() {
         //given
-        Long id = getId(지하철역_등록("강남역"));
+        Long id = extractId(지하철역_등록("강남역"));
 
         //when
         ExtractableResponse<Response> deleteResponse =
@@ -103,7 +103,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
         assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         //then
-        List<Long> stationIds = getList(getStations(), "id", Long.class);
+        List<Long> stationIds = extractList(getStations(), "id", Long.class);
         assertThat(stationIds).isEmpty();
     }
 }

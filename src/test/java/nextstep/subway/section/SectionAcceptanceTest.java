@@ -64,7 +64,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 역_사이에_새로운_역_등록() {
         //when
-        Long 판교역id = getId(지하철역_등록("판교역"));
+        Long 판교역id = extractId(지하철역_등록("판교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 강남역.getId());
         params.put("downStationId", 판교역id);
@@ -85,7 +85,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 새로운_역을_상행_종점으로_등록() {
         //when
-        Long 신사역id = getId(지하철역_등록("신사역"));
+        Long 신사역id = extractId(지하철역_등록("신사역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 신사역id);
         params.put("downStationId", 강남역.getId());
@@ -105,7 +105,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 새로운_역을_하행_종점으로_등록() {
         //when
-        Long 광교역id = getId(지하철역_등록("광교역"));
+        Long 광교역id = extractId(지하철역_등록("광교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 정자역.getId());
         params.put("downStationId", 광교역id);
@@ -124,7 +124,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없다() {
         //when
-        Long 광교역id = getId(지하철역_등록("광교역"));
+        Long 광교역id = extractId(지하철역_등록("광교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 강남역.getId());
         params.put("downStationId", 광교역id);
@@ -143,7 +143,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
         //when
-        Long 광교역id = getId(지하철역_등록("광교역"));
+        Long 광교역id = extractId(지하철역_등록("광교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 강남역.getId());
         params.put("downStationId", 정자역.getId());
@@ -162,8 +162,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없음() {
         //when
-        Long 광교역id = getId(지하철역_등록("광교역"));
-        Long 미금역id = getId(지하철역_등록("미금역"));
+        Long 광교역id = extractId(지하철역_등록("광교역"));
+        Long 미금역id = extractId(지하철역_등록("미금역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 광교역id);
         params.put("downStationId", 미금역id);
