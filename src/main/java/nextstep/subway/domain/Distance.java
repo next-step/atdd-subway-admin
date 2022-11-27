@@ -6,27 +6,21 @@ import java.util.Objects;
 @Embeddable
 public class Distance {
 
+    private static final int TERMINAL_SECTION_DISTANCE = 0;
+    private static final int MINIMUM_DISTANCE = 0;
+
     private int distance;
 
-    public Distance(int distance) {
-        if (distance <= 0) {
-            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
-        }
-        this.distance = distance;
-    }
-
-    public Distance(int distance, boolean isZeroAllowed) {
-        if (isZeroAllowed && distance < 0) {
-            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
-        }
-        if (!isZeroAllowed && distance <= 0) {
-            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
-        }
-        this.distance = distance;
-    }
 
     protected Distance() {
 
+    }
+
+    public Distance(int distance) {
+        if (distance <= MINIMUM_DISTANCE) {
+            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
+        }
+        this.distance = distance;
     }
 
     public int getDistance() {
@@ -35,7 +29,7 @@ public class Distance {
 
     public Distance compareTo(Distance distance) {
         int newDistance = this.distance - distance.getDistance();
-        if (newDistance <= 0) {
+        if (newDistance <= MINIMUM_DISTANCE) {
             throw new IllegalArgumentException(ErrorMessage.EXCEED_SECTION_DISTANCE.getMessage());
         }
         return new Distance(newDistance);
@@ -54,12 +48,18 @@ public class Distance {
         return Objects.hash(distance);
     }
 
-    public void setEndDistance() {
-        this.distance = 0;
+    public void setEndSectionDistance() {
+        this.distance = TERMINAL_SECTION_DISTANCE;
     }
 
     public Distance addDistance(Distance distance) {
         this.distance += distance.getDistance();
         return this;
+    }
+
+    public static Distance getTerminalSectionDistance() {
+        Distance distance = new Distance();
+        distance.setEndSectionDistance();
+        return distance;
     }
 }

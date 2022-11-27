@@ -105,7 +105,7 @@ public class Sections {
                 .findFirst().get();
         if (isFirst(downStation)) {
             sections.remove(existingSection);
-            return new Section(null, newStation, new Distance(0, true));
+            return new Section(null, newStation, Distance.getTerminalSectionDistance());
         }
         sections.remove(existingSection);
         return new Section(existingSection.getUpStation(), newStation,
@@ -118,7 +118,7 @@ public class Sections {
                 .findFirst().get();
         if (isLast(upStation)) {
             sections.remove(existingSection);
-            return new Section(newStation, null, new Distance(0, true));
+            return new Section(newStation, null, Distance.getTerminalSectionDistance());
         }
         sections.remove(existingSection);
         return new Section(newStation, existingSection.getDownStation(),
@@ -127,8 +127,8 @@ public class Sections {
 
     public List<Section> init(Section section) {
         sections.add(section);
-        sections.add(new Section(null, section.getUpStation(), new Distance(0, true)));
-        sections.add(new Section(section.getDownStation(), null, new Distance(0, true)));
+        sections.add(new Section(null, section.getUpStation(), Distance.getTerminalSectionDistance()));
+        sections.add(new Section(section.getDownStation(), null, Distance.getTerminalSectionDistance()));
         return sections;
     }
 

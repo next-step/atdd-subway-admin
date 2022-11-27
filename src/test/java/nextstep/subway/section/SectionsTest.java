@@ -27,9 +27,9 @@ public class SectionsTest {
         upStation = new Station("강남역");
         downStation = new Station("광교역");
 
-        sections.add(new Section(null, upStation, new Distance(0, true)));
+        sections.add(new Section(null, upStation, Distance.getTerminalSectionDistance()));
         sections.add(new Section(upStation, downStation, new Distance(10)));
-        sections.add(new Section(downStation, null, new Distance(0, true)));
+        sections.add(new Section(downStation, null, Distance.getTerminalSectionDistance()));
 
         this.sections = new Sections(sections);
     }
