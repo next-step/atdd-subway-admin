@@ -35,7 +35,7 @@ public class LineAcceptanceTestUtil {
             .extract().jsonPath().getList(NAME, String.class);
     }
 
-    public static ExtractableResponse<Response> 지하철노선을_조회한다(ExtractableResponse<Response> response) {
+    public static ExtractableResponse<Response> 지하철노선을_조회(ExtractableResponse<Response> response) {
         return given().log().all()
             .pathParam(ID, response.jsonPath().getLong(ID))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
