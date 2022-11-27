@@ -167,6 +167,28 @@ class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(stationNames).contains("강남역", "판교역");
         assertThat(stationNames).doesNotContain("성수역");
     }
+    /**
+     * Given 지하철역과 노선에 구간이 2개 등록되어 있고
+     * When 기점을 제거하면
+     * Then 지하철 노선에 다음 역이 종점으로 확인된다.
+     */
+    @Test
+    @DisplayName("지하철 구간의 기점을 제거한다")
+    void deleteSection_first() {
+        Long gangnamStationId = getId(StationApi.createStation("강남역"));
+        Long seongsuStationId = getId(StationApi.createStation("성수역"));
+        Long lineId = getId(LineApi.createStationLine("신분당선", gangnamStationId, seongsuStationId, 10));
+
+        Long addedStationId = getId(StationApi.createStation("판교역"));
+        SectionApi.requestAddSection(lineId, gangnamStationId, addedStationId, 7);
+
+        ExtractableResponse<Response> response = LineApi.deleteSection(lineId, gangnamStationId);
+        assertThat(response.statusCode()).isEqualTo(200);
+
+        List<String> stationNames = LineApi.getStationLine(lineId).jsonPath().getList("stations.name");
+        assertThat(stationNames).contains("판교역", "성수역");
+        assertThat(stationNames).doesNotContain("강남역");
+    }
 
     /**
      * Given 지하철역과 노선에 구간이 2개 등록되어 있고
