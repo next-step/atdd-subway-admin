@@ -572,6 +572,33 @@ class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * given: 하나의 구간을 갖는 노선을 생성하고
+     * when:  구간에 포함되지 않은 역을 제거하면
+     * then:  구간이 제거되지 않는다
+     */
+    @DisplayName("구간에 포함되지 않은 역을 제거하는 경우")
+    @Test
+    void 제거_실패_구간에_포함되지_않은_역을_제거하는_경우(){
+        // given:
+        // 삼전역, 강남역
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
+        long 석촌고분역_id = 지하철역_생성("석촌고분역");
+
+        // 분당선 생성, 및 조회
+        // 삼전역 -> 강남역
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id);
+
+        // when:
+        // 석촌고분역 삭제
+        ExtractableResponse<Response> response = 구간_삭제(lineId, 석촌고분역_id);
+
+        // then:
+        // 구간 삭제 실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     long 지하철역_생성(String name) {
         final Map<String, String> param = new HashMap<>();
         param.put("name", name);
