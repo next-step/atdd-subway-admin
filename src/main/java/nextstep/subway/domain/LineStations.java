@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.application.exception.exception.NotFoundDataException;
+import nextstep.subway.application.exception.exception.NotValidDataException;
+import nextstep.subway.application.exception.type.ValidExceptionType;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -14,10 +16,16 @@ import static nextstep.subway.application.exception.type.LineStationExceptionTyp
 @Embeddable
 public class LineStations {
 
+    private static final int MIN_LINE_STATIONS_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     public List<LineStation> lineStations = new ArrayList<>();
 
     protected LineStations() {
+    }
+
+    public LineStations(List<LineStation> lineStations) {
+        this.lineStations = lineStations;
     }
 
     public List<Station> getStations() {
@@ -57,5 +65,59 @@ public class LineStations {
         return station.getRelationStation()
                 .stream()
                 .noneMatch(stations::contains);
+    }
+
+    public void delete(Station deleteStation) {
+        checkMinLineStationSize();
+
+        Optional<LineStation> upStation = getUpStation(deleteStation);
+        Optional<LineStation> downStation = getDownStation(deleteStation);
+
+        if (upStation.isPresent() && downStation.isPresent()) {
+            LineStation upLineStation = upStation.get();
+            LineStation downLineStation = downStation.get();
+            deleteCenterLineStation(upLineStation, downLineStation);
+            return;
+        }
+
+        deleteEndLineStation(upStation, downStation);
+    }
+
+    private void deleteCenterLineStation(LineStation upLineStation, LineStation downLineStation) {
+        renewalLineStation(upLineStation, downLineStation);
+        deleteExistLineStation(upLineStation, downLineStation);
+    }
+
+    private void deleteEndLineStation(Optional<LineStation> upStation, Optional<LineStation> downStation) {
+        upStation.ifPresent(lineStation -> lineStations.remove(lineStation));
+        downStation.ifPresent(lineStation -> lineStations.remove(lineStation));
+    }
+
+    private void deleteExistLineStation(LineStation upStation, LineStation downStation) {
+        lineStations.remove(upStation);
+        lineStations.remove(downStation);
+    }
+
+    private void renewalLineStation(LineStation upStation, LineStation downStation) {
+        LineStation renewLineStation = upStation.renewal(downStation);
+        lineStations.add(renewLineStation);
+    }
+
+    private Optional<LineStation> getUpStation(Station station) {
+        return lineStations.stream()
+                .filter(lineStation -> lineStation.isSameUpStation(station))
+                .findFirst();
+    }
+
+    private Optional<LineStation> getDownStation(Station station) {
+        return lineStations.stream()
+                .filter(lineStation -> lineStation.isSameDownStation(station))
+                .findFirst();
+    }
+
+    private void checkMinLineStationSize() {
+        if (lineStations.size() <= MIN_LINE_STATIONS_SIZE) {
+            throw new NotValidDataException(ValidExceptionType.MIN_LINE_STATIONS_SIZE.getMessage());
+        }
     }
 }

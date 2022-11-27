@@ -45,11 +45,11 @@ public class LineStation extends BaseEntity {
         return Arrays.asList(upStation, downStation);
     }
 
-    private boolean isSameUpStation(Station upStation) {
+    public boolean isSameUpStation(Station upStation) {
         return this.upStation.equals(upStation);
     }
 
-    private boolean isSameDownStation(Station downStation) {
+    public boolean isSameDownStation(Station downStation) {
         return this.downStation.equals(downStation);
     }
 
@@ -75,5 +75,13 @@ public class LineStation extends BaseEntity {
 
     public void addLine(Line line) {
         this.line = line;
+    }
+
+    public LineStation renewal(LineStation downStation) {
+        Distance renewDistance = this.distance.plus(downStation.distance);
+        LineStation renewLineStation
+                = LineStation.of(upStation, downStation.downStation, renewDistance.getDistance());
+        renewLineStation.addLine(line);
+        return renewLineStation;
     }
 }

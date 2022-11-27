@@ -1,4 +1,5 @@
-package nextstep.subway.exception;
+package nextstep.subway.acceptence.util;
+
 
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,17 +15,14 @@ import java.sql.SQLException;
 public class AcceptanceTest {
     @LocalServerPort
     int port;
-
     @Autowired
     private DataBaseCleanUp dataBaseCleanUp;
-
     @BeforeEach
     public void setUp() throws SQLException {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
             dataBaseCleanUp.afterPropertiesSet();
         }
-
         dataBaseCleanUp.execute();
     }
 }

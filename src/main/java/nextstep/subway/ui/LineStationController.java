@@ -22,4 +22,10 @@ public class LineStationController {
         LineResponse result = lineService.addLineStation(lineId, sectionRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<LineResponse> deleteLineStation(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.deleteLineStation(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -1,4 +1,4 @@
-package nextstep.subway;
+package nextstep.subway.acceptence;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -9,5 +9,4 @@ class SubwayApplicationTests {
     @Test
     void contextLoads() {
     }
-
 }
