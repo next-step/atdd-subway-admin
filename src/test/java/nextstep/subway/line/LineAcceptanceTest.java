@@ -1,6 +1,7 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
+import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
@@ -29,6 +30,8 @@ public class LineAcceptanceTest {
     private Long upStationId;
     private Long downStationId;
 
+    LineRequest lineRequest;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
@@ -36,6 +39,8 @@ public class LineAcceptanceTest {
         }
         upStationId = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId();
         downStationId = StationAcceptanceTest.지하철역_생성("공릉역").as(StationResponse.class).getId();
+
+        lineRequest = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
     }
 
     /*
@@ -45,8 +50,6 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     public void createLine() {
-        // given
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성(lineRequest);
 
@@ -93,16 +96,34 @@ public class LineAcceptanceTest {
 
         // then
         assertThat(lineName).isEqualTo(lineRequest.getName());
+    }
 
+    /*
+     *   Given 지하철 노선을 생성하고
+     *   When 생성한 지하철 노선을 수정하면
+     *   Then 해당 지하철 노선 정보는 수정된다.
+     */
+    @DisplayName("지하철 노선을 수정한다.")
+    @Test
+    public void updateLine(){
+        // given
+        ExtractableResponse<Response> response = 지하철_노선_생성(lineRequest);
+        LineRequest updateLineRequest = new LineRequest("7호선", "green", upStationId, downStationId, 10);
+        // when
+        JsonPath line = 지하철_노선_수정(updateLineRequest,response.jsonPath().getString("id"));
+        // then
+        assertAll(
+                () -> assertThat(line.getString("name")).isEqualTo(updateLineRequest.getName()),
+                () -> assertThat(line.getString("color")).isEqualTo(updateLineRequest.getColor())
+        );
     }
 
     private String 지하철_노선_조회(String id) {
         return RestAssured.given().log().all()
-                .when().get("/lines/" + id)
+                .when().get("/lines/{id}", id)
                 .then().log().all()
                 .extract().path("name");
     }
-
 
     public ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
 
@@ -122,6 +143,16 @@ public class LineAcceptanceTest {
                 .when().get("/lines")
                 .then().log().all()
                 .extract().jsonPath().getList("name", String.class);
+    }
+
+    private JsonPath 지하철_노선_수정(LineRequest updateLineRequest, String id) {
+        return RestAssured.given().log().all()
+                .pathParam("id", id)
+                .body(updateLineRequest)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines/{id}")
+                .then().log().all()
+                .extract().jsonPath();
     }
 
 }
