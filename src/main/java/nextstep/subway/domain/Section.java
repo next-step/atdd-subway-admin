@@ -40,6 +40,11 @@ public class Section {
         this.line = line;
     }
 
+    public static Section mergeByDelete(Section upSection, Section downSection) {
+        return new Section(upSection.getUpStation(), downSection.getDownStation(),
+                upSection.mergeDistance(downSection), upSection.getLine());
+    }
+
     private void validSameStation(Station upStation, Station downStationId) {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("상행역과 하행역은 같은 역일 수 없습니다. 지하철ID:" + downStationId);
@@ -52,6 +57,10 @@ public class Section {
 
     public Distance getDistance() {
         return distance;
+    }
+
+    public Distance mergeDistance(Section section) {
+        return distance.merge(section.getDistance());
     }
 
     public Distance minusDistance(Section section) {
@@ -144,5 +153,9 @@ public class Section {
             return;
         }
         this.updateDownStation(section.getUpStation());
+    }
+
+    public Line getLine() {
+        return this.line;
     }
 }
