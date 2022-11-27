@@ -10,6 +10,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간 목록 도메인 테스트")
 class SectionsTest {
@@ -97,6 +98,58 @@ class SectionsTest {
         Station 수지 = registerDownSection(동천, "수지", 10L);
         Station 판교 = registerUpSection(수지, "판교", 40L);
         assertStationNamesToDown(판교, 동천, 수지);
+    }
+
+    @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 오류 발생")
+    @Test
+    void duplicateStationError() {
+        Station 강남 = new Station("강남");
+        Station 양재 = new Station("양재");
+        Section 강남_양재_구간 = new Section(강남, 양재, new Distance(50L));
+
+        assertThatThrownBy(() -> {
+            sections.add(강남_양재_구간);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("입력한 구간의 역은 모두 이미 등록되었습니다.");
+    }
+
+    @DisplayName("상행역, 하행역 둘 모두 포함되지 않은 경우 등록 오류 발생")
+    @Test
+    void notRegisteredStationError() {
+        Station 판교 = new Station("판교");
+        Station 상현 = new Station("상현");
+        Section 판교_상현_구간 = new Section(판교, 상현, new Distance(30L));
+
+        assertThatThrownBy(() -> {
+            sections.add(판교_상현_구간);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("입력한 구간의 두 역 중 하나 이상은 등록되어 있어야 합니다.");
+    }
+
+    @DisplayName("역 사이 새로운 역을 등록하는 경우 기존 역 사이 길이와 같으면 오류 발생")
+    @Test
+    void alreadyLocatedStationError() {
+        Station 강남 = new Station("강남");
+        Station 판교 = new Station("판교");
+        Section 강남_판교_구간 = new Section(강남, 판교, new Distance(50L));
+
+        assertThatThrownBy(() -> {
+            sections.add(강남_판교_구간);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("해당 거리에 이미 역이 등록되었습니다.");
+    }
+
+    @DisplayName("역 사이 새로운 역을 등록하는 경우 기존 역 사이보다 크면 오류 발생")
+    @Test
+    void exceedStationError() {
+        Station 강남 = new Station("강남");
+        Station 판교 = new Station("판교");
+        Section 강남_판교_구간 = new Section(강남, 판교, new Distance(60L));
+
+        assertThatThrownBy(() -> {
+            sections.add(강남_판교_구간);
+        }).isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("입력한 역의 길이가 종점까지의 거리를 초과했습니다.");
     }
 
     private List<String> getStationNames() {
