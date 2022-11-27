@@ -4,9 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
@@ -28,11 +30,15 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    @Autowired
+    private DatabaseCleanup databaseCleanup;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        databaseCleanup.execute();
     }
 
     /**
@@ -46,11 +52,7 @@ public class LineAcceptanceTest {
         ExtractableResponse<Response> response = createLineRest(generateLineRequest("신분당선","bq-red-600","지하철역","새로운지하철역",10));
 
         // Then
-        ExtractableResponse<Response> lineNamesResponse =
-                RestAssured.given().log().all()
-                        .when().get(LINE_URL)
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> lineNamesResponse = linesNameGet();
 
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
@@ -145,11 +147,7 @@ public class LineAcceptanceTest {
         deletelineDelete(id);
 
         // then
-        ExtractableResponse<Response> lineNamesResponse =
-                RestAssured.given().log().all()
-                        .when().get(LINE_URL)
-                        .then().log().all()
-                        .extract();
+        ExtractableResponse<Response> lineNamesResponse = linesNameGet();
         assertThat(lineNamesResponse.jsonPath().getList("name", String.class)).doesNotContain("신분당선");
     }
 
