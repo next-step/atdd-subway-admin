@@ -18,15 +18,18 @@ public class Line extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
+    @Column(nullable = false)
+    private int distance;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.distance = distance;
     }
 
     public Long getId() {

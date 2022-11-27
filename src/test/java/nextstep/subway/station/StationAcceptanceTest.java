@@ -1,6 +1,8 @@
 package nextstep.subway.station;
 
 import io.restassured.RestAssured;
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,14 +36,14 @@ class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        // then
-        String 지하철역 = "삼성역";
-        지하철역_생성(지하철역, HttpStatus.CREATED);
+        String 지하철역 = "용산역";
 
         // then
-        List<String> returnStationNames = 지하철목록을_조회후_지하철_역명_리스트_반환(HttpStatus.OK);
-        // 첫 번째 변수는 실제 반환된 리스트, 두번째 부터는 검증할 지하철 역명을 입력한다.
-        지하철_목록_검증_입력된_지하철역이_존재(returnStationNames, 지하철역);
+        지하철역_생성_성공_확인(지하철역_생성(지하철역));
+
+        // then
+        List<String> 조회된_지하철역_목록 = 지하철_목록_조회();
+        지하철_목록_검증_입력된_지하철역이_존재(조회된_지하철역_목록, "용산역");
     }
 
     /**
@@ -53,12 +55,14 @@ class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        String 지하철역 = "강남역";
-        지하철역_생성(지하철역, HttpStatus.CREATED);
+        String 지하철역 = "노량진역";
+        지하철역_생성(지하철역);
 
         // when
+        ExtractableResponse<Response> 저장된_노량진역 = 지하철역_생성(지하철역);
+
         // then
-        지하철역_생성(지하철역, HttpStatus.BAD_REQUEST);
+        지하철역_생성_실패_확인(저장된_노량진역);
     }
 
     /**
@@ -70,16 +74,16 @@ class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        String 지하철역 = "잠실역";
-        String 지하철역2 = "몽촌토성역";
-        지하철역_생성(지하철역, HttpStatus.CREATED);
-        지하철역_생성(지하철역2, HttpStatus.CREATED);
+        String 지하철역 = "노량진역";
+        String 지하철역2 = "고속터미널역";
+        지하철역_생성(지하철역);
+        지하철역_생성(지하철역2);
 
         // when
-        List<String> returnStationNames = 지하철목록을_조회후_지하철_역명_리스트_반환(HttpStatus.OK);
+        List<String> 조회된_지하철역_목록 = 지하철_목록_조회();
 
         // then
-        지하철_목록_검증_입력된_지하철역이_존재(returnStationNames, 지하철역, 지하철역2);
+        지하철_목록_검증_입력된_지하철역이_존재(조회된_지하철역_목록, 지하철역, 지하철역2);
     }
 
     /**
@@ -91,14 +95,14 @@ class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        String 지하철역 = "잠실역";
-        Long stationId = 지하철역을_생성후_지하철_ID를_반환(지하철역, HttpStatus.CREATED);
+        String 지하철역 = "노량진역";
+        ExtractableResponse<Response> 저장된_노량진역 = 지하철역_생성(지하철역);
 
         // when
-        지하철역_제거(stationId, HttpStatus.NO_CONTENT);
+        지하철역_제거(저장된_노량진역);
 
         // then
-        List<String> returnStationNames = 지하철목록을_조회후_지하철_역명_리스트_반환(HttpStatus.OK);
-        지하철_목록_검증_입력된_지하철역이_존재하지_않음(returnStationNames, 지하철역);
+        List<String> 조회된_지하철역_목록 = 지하철_목록_조회();
+        지하철_목록_검증_입력된_지하철역이_존재하지_않음(조회된_지하철역_목록, 지하철역);
     }
 }
