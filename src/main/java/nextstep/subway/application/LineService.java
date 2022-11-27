@@ -65,4 +65,9 @@ public class LineService {
                 .stream().map(SectionResponse::of).collect(Collectors.toList()));
     }
 
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = getById(lineId);
+        line.checkStationExist(stationId);
+        line.removeSection(stationId);
+    }
 }

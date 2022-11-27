@@ -31,10 +31,22 @@ public class Sections {
                 .anyMatch(section -> section.getDownStation().equals(station));
     }
 
+    public boolean isFirstByStationId(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getUpStation() == null)
+                .anyMatch(section -> section.getDownStation().getId().equals(stationId));
+    }
+
     public boolean isLast(Station station) {
         return sections.stream()
                 .filter(section -> section.getDownStation() == null)
                 .anyMatch(section -> section.getUpStation().equals(station));
+    }
+
+    public boolean isLastByStationId(Long stationId) {
+        return sections.stream()
+                .filter(section -> section.getDownStation() == null)
+                .anyMatch(section -> section.getUpStation().getId().equals(stationId));
     }
 
     public boolean isContainStation(Station station) {
@@ -120,4 +132,32 @@ public class Sections {
         return sections;
     }
 
+    public Section removeAndGetNewSection(Long stationId) {
+        if(isFirstByStationId(stationId)) {
+            sections.remove(0);
+            return sections.get(0).deleteUpStation();
+        }
+
+        if(isLastByStationId(stationId)) {
+            sections.remove(sections.size()-1);
+            return sections.get(sections.size()-1).deleteDownStation();
+        }
+
+        Section upperSection = sections.stream()
+                .filter(section -> section.getDownStation() != null &&
+                        section.getDownStation().getId().equals(stationId))
+                .findFirst().get();
+        Section lowerSection = sections.stream()
+                .filter(section -> section.getUpStation() != null &&
+                        section.getUpStation().getId().equals(stationId))
+                .findFirst().get();
+        Section newSection = new Section(upperSection.getUpStation(), lowerSection.getDownStation(),
+                upperSection.getDistance().addDistance(lowerSection.getDistance()));
+
+        int index = sections.indexOf(upperSection);
+        sections.remove(upperSection);
+        sections.remove(lowerSection);
+        sections.add(index, newSection);
+        return newSection;
+    }
 }

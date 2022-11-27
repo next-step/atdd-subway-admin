@@ -53,4 +53,13 @@ public class Distance {
     public int hashCode() {
         return Objects.hash(distance);
     }
+
+    public void setEndDistance() {
+        this.distance = 0;
+    }
+
+    public Distance addDistance(Distance distance) {
+        this.distance += distance.getDistance();
+        return this;
+    }
 }

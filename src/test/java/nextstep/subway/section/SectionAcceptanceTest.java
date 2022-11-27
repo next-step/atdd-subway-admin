@@ -158,7 +158,7 @@ public class SectionAcceptanceTest {
 
         //then
         assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(LineAcceptanceTest.retrieveLineResponse(upStationId).getStations()
+        assertThat(LineAcceptanceTest.retrieveLineResponse(lineId).getStations()
                 .stream().map(StationResponse::getId))
                 .doesNotContain(upStationId);
     }
@@ -176,7 +176,7 @@ public class SectionAcceptanceTest {
 
         //then
         assertThat(apiResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
-        assertThat(LineAcceptanceTest.retrieveLineResponse(downStationId).getStations()
+        assertThat(LineAcceptanceTest.retrieveLineResponse(lineId).getStations()
                 .stream().map(StationResponse::getId))
                 .doesNotContain(downStationId);
     }
