@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.subway;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -42,14 +42,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> getLine(Long id) {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/lines/{id}", id)
                 .then().log().all()
                 .extract();
     }
@@ -101,7 +93,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철노선_조회() {
         // give
         // when
-        ExtractableResponse<Response> extract = getLine(lineId);
+        ExtractableResponse<Response> extract = 지하철노선_조회(lineId);
 
         // then
         assertThat(extractString(extract, "name")).isEqualTo("신분당선");
@@ -129,7 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        ExtractableResponse<Response> findResponse = getLine(lineId);
+        ExtractableResponse<Response> findResponse = 지하철노선_조회(lineId);
         assertAll(() -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(findResponse.body().jsonPath().getString("name")).isEqualTo("다른분당선"));
     }

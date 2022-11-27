@@ -63,12 +63,12 @@ public class Section {
         return stations;
     }
 
-    public boolean isEqualUpStation(Section section) {
-        return section.getUpStation().equals(upStation);
+    public boolean isEqualsUpStation(Station station) {
+        return upStation.equals(station);
     }
 
-    public boolean isEqualDownStation(Section section) {
-        return section.getDownStation().equals(downStation);
+    public boolean isEqualsDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public void updateUpStation(Section section) {
@@ -82,6 +82,10 @@ public class Section {
     }
 
     public void updateLineDistance(Section newSection) {
+        System.out.println("asis 노선길이 " + this.distance);
+        System.out.println("노선 연장 :" + newSection.distance);
+
         this.distance.add(newSection.distance);
     }
+
 }

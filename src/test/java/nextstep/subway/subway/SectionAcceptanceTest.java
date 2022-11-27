@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.subway;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -23,6 +23,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     StationResponse 강남역;
     StationResponse 정자역;
     LineResponse 신분당선;
+    final int 신분당선_노선_길이 = 10;
 
     private ExtractableResponse<Response> getStations() {
         return RestAssured.given().log().all()
@@ -42,7 +43,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-green-600");
         params.put("upStationId", 강남역.getId());
         params.put("downStationId", 정자역.getId());
-        params.put("distance", 10);
+        params.put("distance", 신분당선_노선_길이);
         신분당선 = 지하철노선_등록(params).as(LineResponse.class);
     }
 
@@ -50,7 +51,16 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/{lineId}/sections", lineId)
+                .when().post("/lines/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> 지하철구간_제거(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                //.body(params)
+                //.contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all()
                 .extract();
     }
@@ -73,6 +83,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(지하철구간_등록.body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이);
     }
 
     /**
@@ -93,6 +104,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철구간_등록 = 지하철구간_등록(params, 신분당선.getId());
         //then
         assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(지하철구간_등록.body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이 + 5);
     }
 
     /**
@@ -113,6 +125,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철구간_등록 = 지하철구간_등록(params, 신분당선.getId());
         //then
         assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(지하철구간_등록.body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이 + 4);
     }
 
     /**
@@ -172,4 +185,38 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         //then
         assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Given 지하철역, 노선, 구간을 등록하고
+     * When 종점을 제거하면
+     * Then 종점이 제거된다
+     * Then 노선 길이가 제거된 구간만큼 줄어든다
+     */
+    @Test
+    void 종점_제거() {
+        //given
+        Long 광교역id = extractId(지하철역_등록("광교역"));
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", 정자역.getId());
+        params.put("downStationId", 광교역id);
+        params.put("distance", 10);
+        ExtractableResponse<Response> 지하철구간_등록 = 지하철구간_등록(params, 신분당선.getId());
+        //when
+        ExtractableResponse<Response> 지하철구간_제거 = 지하철구간_제거(신분당선.getId(), 광교역id);
+        //then
+        assertThat(지하철구간_제거.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        //section 확인
+        assertThat(지하철노선_조회(신분당선.getId()).body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이);
+
+        RestAssured.given().log().all()
+                //.body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/linesection/{id}", 신분당선.getId())
+                .then().log().all()
+                .extract();
+    }
+
+
+
 }

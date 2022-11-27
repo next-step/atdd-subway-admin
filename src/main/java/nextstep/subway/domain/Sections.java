@@ -4,6 +4,7 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static nextstep.subway.constants.ErrorMessage.*;
@@ -35,15 +36,15 @@ public class Sections {
         validateNotExistsStations(newSection);
         validateDuplicateStations(newSection);
 
-        Optional<Section> upStation = sections.stream().filter(section -> section.isEqualUpStation(newSection)).findFirst();
-        Optional<Section> downStation = sections.stream().filter(section -> section.isEqualDownStation(newSection)).findFirst();
+        Optional<Section> upStation = sections.stream().filter(section -> section.isEqualsUpStation(newSection.getUpStation())).findFirst();
+        Optional<Section> downStation = sections.stream().filter(section -> section.isEqualsDownStation(newSection.getDownStation())).findFirst();
         if (upStation.isPresent() || downStation.isPresent()) {
             validateDistance(newSection);
         }
-        if (!upStation.isPresent() && !downStation.isPresent()) {
-            //상행 혹은 하행에 역 추가시 노선 길이 연장
-            updateLineDistance(newSection);
-        }
+//        if (!upStation.isPresent() && !downStation.isPresent()) {
+//            상행 혹은 하행에 역 추가시 노선 길이 연장
+//            updateLineDistance(newSection);
+//        }
 
         upStation.ifPresent(section -> section.updateUpStation(newSection));
         downStation.ifPresent(section -> section.updateDownStation(newSection));
@@ -55,10 +56,6 @@ public class Sections {
         if (!getStations().contains(newSection.getUpStation()) && !getStations().contains(newSection.getDownStation())) {
             throw new IllegalArgumentException(NOT_EXISTS_SECTION_STATION_MSG);
         }
-    }
-
-    private void updateLineDistance(Section newSection) {
-        newSection.updateLineDistance(newSection);
     }
 
     private void validateDuplicateStations(Section newSection) {
@@ -75,5 +72,21 @@ public class Sections {
 
     public List<Station> getStations() {
         return sections.stream().map(section -> section.getStations()).flatMap(Collection::stream).distinct().collect(Collectors.toList());
+    }
+
+    public void deleteSection(Station deleteStation) {
+        Optional<Section> upStation = sections.stream().filter(section -> section.isEqualsUpStation(deleteStation)).findFirst();
+        Optional<Section> downStation = sections.stream().filter(section -> section.isEqualsDownStation(deleteStation)).findFirst();
+
+        upStation.ifPresent(section -> removeSection(section));
+        downStation.ifPresent(section -> removeSection(section));
+    }
+
+    private void removeSection(Section deleteSection) {
+        sections.removeIf(section -> section.equals(deleteSection));
+    }
+
+    public Distance getTotalDistance() {
+        return new Distance(sections.stream().mapToInt(section -> section.getDistance().getDistance()).sum());
     }
 }

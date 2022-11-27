@@ -50,6 +50,14 @@ public abstract class AcceptanceTest {
                 .extract();
     }
 
+    protected ExtractableResponse<Response> 지하철노선_조회(Long id) {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
     protected Long extractId(ExtractableResponse<Response> response) {
         return response.body().jsonPath().getLong("id");
     }

@@ -25,10 +25,22 @@ public class SectionService {
 
     @Transactional
     public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION_MSG));
+        Line line = searchLine(lineId);
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(() -> new NoSuchElementException("존재하지 않는 상행역"));
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId()).orElseThrow(() -> new NoSuchElementException("존재하지 않는 하행역"));
         line.addSection(Section.of(line, upStation, downStation, new Distance(sectionRequest.getDistance())));
         return SectionResponse.from(line);
     }
+
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = searchLine(lineId);
+        Station station = stationRepository.findById(stationId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 지하철역"));
+        line.deleteSection(station);
+    }
+
+    private Line searchLine(Long lineId) {
+        return lineRepository.findById(lineId).orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION_MSG));
+    }
+
 }
