@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import nextstep.subway.consts.ErrorMessage;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
@@ -34,7 +35,7 @@ public class LineService {
 
     private Station findStationById(Long stationId) {
         return stationRepository.findById(stationId)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 지하철역은 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_STATION_NOT_EXIST));
     }
 
 
@@ -48,13 +49,13 @@ public class LineService {
     public LineResponse findLineByid(Long id) {
         return lineRepository.findById(id)
                 .map(line -> LineResponse.of(line))
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 노선은 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
     }
 
     @Transactional
     public void updateLine(Long id, LineRequest lineRequest) {
         Line originLine = lineRepository.findById(id)
-                .orElseThrow(() -> new NoSuchElementException("[ERROR] 해당 노선은 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
         originLine.update(lineRequest);
     }
 
