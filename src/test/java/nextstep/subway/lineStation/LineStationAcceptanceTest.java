@@ -2,7 +2,7 @@ package nextstep.subway.lineStation;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.exception.AcceptanceTest;
+import nextstep.subway.acceptence.util.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -10,9 +10,9 @@ import org.springframework.http.HttpStatus;
 
 import java.sql.SQLException;
 
-import static nextstep.subway.line.LineAcceptanceFixture.노선을_생성후_ID_를_리턴한다;
+import static nextstep.subway.acceptence.line.LineAcceptanceFixture.노선을_생성후_ID_를_리턴한다;
+import static nextstep.subway.acceptence.station.StationAcceptanceFixture.지하철역_생성후_ID_를_리턴한다;
 import static nextstep.subway.lineStation.LineStationAcceptanceFixture.*;
-import static nextstep.subway.station.StationAcceptanceFixture.지하철역_생성후_ID_를_리턴한다;
 
 @DisplayName("지하철구간 관련 기능")
 public class LineStationAcceptanceTest extends AcceptanceTest {

@@ -3,7 +3,6 @@ package nextstep.subway.acceptence.lineStation;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.acceptence.util.AcceptanceTest;
-import nextstep.subway.acceptence.line.LineAcceptanceFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
