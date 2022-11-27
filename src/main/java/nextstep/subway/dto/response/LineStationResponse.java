@@ -11,6 +11,12 @@ public class LineStationResponse {
 
     protected LineStationResponse() {}
 
+    public LineStationResponse(Long upStationId, Long downStationId, int distance) {
+        this.upStationId = upStationId;
+        this.downStationId  = downStationId;
+        this.distance = distance;
+    }
+
     public LineStationResponse(Long id, Long upStationId, Long downStationId, int distance) {
         this.id = id;
         this.upStationId = upStationId;

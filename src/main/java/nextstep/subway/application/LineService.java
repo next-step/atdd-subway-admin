@@ -6,6 +6,7 @@ import nextstep.subway.domain.line.LineStation;
 import nextstep.subway.domain.line.LineStationRepository;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.request.LineRequest;
+import nextstep.subway.dto.request.LineSectionRequest;
 import nextstep.subway.dto.response.LineReponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,5 +69,14 @@ public class LineService {
         line.addLineStation(lineStation);
 
         return line;
+    }
+
+    @Transactional
+    public LineReponse addLineSections(Long id, LineSectionRequest lineSectionRequest) {
+        Line line = lineRepository.getById(id);
+        LineStation toSaveLineStation = lineSectionRequest.toLineStation(lineSectionRequest);
+        line.addLineStation(toSaveLineStation);
+        lineRepository.save(line);
+        return LineReponse.of(line);
     }
 }
