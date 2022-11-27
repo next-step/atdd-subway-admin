@@ -59,8 +59,6 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
     protected ExtractableResponse<Response> 지하철구간_제거(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
-                //.body(params)
-                //.contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all()
                 .extract();
@@ -237,6 +235,40 @@ public class SectionAcceptanceTest extends AcceptanceTest {
                 () -> assertThat(extractList(지하철노선_조회, "sections.upStation", String.class)).hasSize(1),
                 () -> assertThat(extractString(지하철노선_조회, "sections.upStation[0]")).isEqualTo("강남역"),
                 () -> assertThat(extractString(지하철노선_조회, "sections.downStation[0]")).isEqualTo("광교역")
+        );
+    }
+
+    /**
+     * Given 지하철역, 노선, 구간을 등록하고
+     * When 구간이 하나인 노선에서 역을 제거하면
+     * Then 역이 제거되지 않는다. BadRequest(400) 리턴
+     */
+    @Test
+    void 구간이_하나인_노선에서_역을_제거() {
+        //when
+        ExtractableResponse<Response> 지하철구간_제거 = 지하철구간_제거(신분당선.getId(), 정자역.getId());
+        //then
+        ExtractableResponse<Response> 지하철노선_조회 = 지하철노선_조회(신분당선.getId());
+        assertAll(() -> assertThat(지하철구간_제거.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(extractList(지하철노선_조회, "sections.upStation", String.class)).hasSize(1)
+        );
+    }
+
+    /**
+     * Given 지하철역, 노선, 구간을 등록하고
+     * When 구간내에 존재하지 않는 역을 삭제하면
+     * Then 역이 제거되지 않는다. BadRequest(400) 리턴
+     */
+    @Test
+    void 구간_내에_존재하지_않는_역_제거() {
+        //given
+        Long 성수역id = extractId(지하철역_등록("성수역"));
+        //when
+        ExtractableResponse<Response> 지하철구간_제거 = 지하철구간_제거(신분당선.getId(), 성수역id);
+        //then
+        ExtractableResponse<Response> 지하철노선_조회 = 지하철노선_조회(신분당선.getId());
+        assertAll(() -> assertThat(지하철구간_제거.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(extractList(지하철노선_조회, "sections.upStation", String.class)).hasSize(1)
         );
     }
 }
