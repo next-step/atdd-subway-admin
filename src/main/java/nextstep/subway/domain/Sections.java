@@ -12,7 +12,6 @@ import static nextstep.subway.constants.ErrorMessage.*;
 public class Sections {
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.PERSIST, orphanRemoval = true)
-    //@JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
     private List<Section> sections = new ArrayList<>();
 
     protected Sections() {
