@@ -56,7 +56,7 @@ public class SectionLineUp {
     }
 
     private boolean isEndUpStation(Section section) {
-        //  출발지가 같은 노선이 없고, 도착지에서 출발하는 노선은 있지만, 도착지로 향하는 노선이 없는 경우
+        //  도착지에서 출발하는 노선은 있지만, 도착지로 향하는 노선이 없는 경우
         return notHasSameDownStation(section) && hasSameUpStationByDownStation(section);
     }
 
