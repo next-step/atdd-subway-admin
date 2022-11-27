@@ -84,4 +84,8 @@ public class Line extends BaseEntity {
     public List<Station> getLineStations() {
         return lineStations.getStations();
     }
+
+    public void delete(Station deleteStation) {
+        lineStations.delete(deleteStation);
+    }
 }
