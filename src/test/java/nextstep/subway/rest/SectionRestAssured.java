@@ -16,4 +16,13 @@ public class SectionRestAssured {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> 지하철_구간_제거(Long lineId, Long stationId) {
+        String url = RestResource.지하철_노선.uri() + "/{lineId}" + RestResource.지하철_구간.uri() + "?stationId={stationId}";
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(url, lineId, stationId)
+                .then().log().all()
+                .extract();
+    }
 }

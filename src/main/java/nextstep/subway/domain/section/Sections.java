@@ -9,7 +9,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -19,35 +18,6 @@ public class Sections {
 
     public Sections() {
         this.sectionItems = new ArrayList<>();
-    }
-
-    public Sections(List<Section> sectionItems) {
-        this.sectionItems = getOrderedStations(sectionItems);
-    }
-
-    private List<Section> getOrderedStations(List<Section> sections) {
-        if(sections.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<Section> orderedSections = new ArrayList<>();
-        Map<Station, Station> sectionUpStations = sections.stream()
-                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
-
-        Station upStation = getUpTerminalStation(sectionUpStations);
-        while(sectionUpStations.containsKey(upStation)) {
-            orderedSections.add(getSectionWithSameUpStation(upStation));
-            upStation = sectionUpStations.get(upStation);
-        }
-        return orderedSections;
-    }
-
-    private Station getUpTerminalStation(Map<Station, Station> sectionStations) {
-        Set<Station> downStations = new HashSet<>(sectionStations.values());
-        return sectionStations.keySet().stream()
-                .filter(station -> !downStations.contains(station))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundEntityException(SectionMessage.ERROR_NOT_FOUND_UP_TERMINAL_STATION.message()));
     }
 
     public Section getSectionWithSameUpStation(Station upStation) {
@@ -72,9 +42,7 @@ public class Sections {
     }
 
     private void validateNewSection(Section section) {
-        Set<Station> stations = this.sectionItems.stream()
-                .flatMap(sectionItem -> Stream.of(sectionItem.getUpStation(), sectionItem.getDownStation()))
-                .collect(Collectors.toSet());
+        List<Station> stations = getAllStations();
 
         if(isUpAndDownStationsAlreadyEnrolled(section, stations)) {
             throw new IllegalArgumentException(SectionMessage.ERROR_UP_AND_DOWN_STATIONS_ARE_ALREADY_ENROLLED.message());
@@ -85,11 +53,11 @@ public class Sections {
         }
     }
 
-    private boolean isUpAndDownStationsAlreadyEnrolled(Section section, Set<Station> stations) {
+    private boolean isUpAndDownStationsAlreadyEnrolled(Section section, List<Station> stations) {
         return stations.contains(section.getUpStation()) && stations.contains(section.getDownStation());
     }
 
-    private boolean isUpAndDownStationsNotEnrolled(Section section, Set<Station> stations) {
+    private boolean isUpAndDownStationsNotEnrolled(Section section, List<Station> stations) {
         return !this.sectionItems.isEmpty()
                 && !stations.contains(section.getUpStation())
                 && !stations.contains(section.getDownStation());
@@ -101,18 +69,31 @@ public class Sections {
             return;
         }
 
-        Section upTerminalStationSection = this.sectionItems.get(0);
+        Section upTerminalStationSection = getUpTerminalStationSection();
         if(upTerminalStationSection.isSameUpStation(section.getDownStation())) {
             this.sectionItems.add(0, section);
         }
     }
 
-    private void addDownTerminalStationSection(Section section) {
-        int sectionItemSize = this.sectionItems.size();
-        Section downTerminalStationSection = this.sectionItems.get(sectionItemSize - 1);
-        if(downTerminalStationSection.isSameDownStation(section.getUpStation())) {
-            this.sectionItems.add(sectionItemSize, section);
+    private Section getUpTerminalStationSection() {
+        if(this.sectionItems.isEmpty()) {
+            throw new IllegalArgumentException(SectionMessage.ERROR_EMPTY_SECTIONS.message());
         }
+        return this.sectionItems.get(0);
+    }
+
+    private void addDownTerminalStationSection(Section section) {
+        Section downTerminalStationSection = getDownTerminalStationSection();
+        if(downTerminalStationSection.isSameDownStation(section.getUpStation())) {
+            this.sectionItems.add(section);
+        }
+    }
+
+    private Section getDownTerminalStationSection() {
+        if(this.sectionItems.isEmpty()) {
+            throw new IllegalArgumentException(SectionMessage.ERROR_EMPTY_SECTIONS.message());
+        }
+        return this.sectionItems.get(this.sectionItems.size() - 1);
     }
 
     // 역 사이에 새로운 역이 등록된 경우 기존 구간의 거리, 상행역 및 하행역을 변경한다
@@ -170,8 +151,61 @@ public class Sections {
 
     public List<Station> getAllStations() {
         return this.sectionItems.stream()
-                .flatMap(section -> Stream.of(section.getUpStation(), section.getDownStation()))
+                .flatMap(Section::stationsStream)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void removeByStation(Station station) {
+        validateRemoveSection(station);
+        removeUpTerminalStationSectionBy(station);
+        removeDownTerminalStationSectionBy(station);
+        removeMiddleStationSectionBy(station);
+    }
+
+    private void validateRemoveSection(Station station) {
+        if(this.sectionItems.size() < 2) {
+            throw new IllegalArgumentException(SectionMessage.ERROR_SECTIONS_MORE_THAN_TWO_SECTIONS.message());
+        }
+
+        if(!hasStation(station)) {
+            throw new IllegalArgumentException(SectionMessage.ERROR_NOT_FOUND_STATION.message());
+        }
+    }
+
+    private void removeUpTerminalStationSectionBy(Station station) {
+        Section upTerminalSection = getUpTerminalStationSection();
+        if(upTerminalSection.isSameUpStation(station)) {
+            this.sectionItems.remove(upTerminalSection);
+        }
+    }
+
+    private void removeDownTerminalStationSectionBy(Station station) {
+        if(!hasStation(station)) {
+            return;
+        }
+
+        Section downTerminalSection = getDownTerminalStationSection();
+        if(downTerminalSection.isSameDownStation(station)) {
+            this.sectionItems.remove(downTerminalSection);
+        }
+    }
+
+    private void removeMiddleStationSectionBy(Station station) {
+        if(!hasStation(station)) {
+            return;
+        }
+
+        Section sectionWithSameUpStation = getSectionWithSameUpStation(station);
+        Section sectionWithSameDownStation = getSectionWithSameDownStation(station);
+
+        sectionWithSameDownStation.changeDownStation(sectionWithSameUpStation.getDownStation());
+        sectionWithSameDownStation.plusDistance(sectionWithSameUpStation);
+        this.sectionItems.remove(sectionWithSameUpStation);
+    }
+
+    private boolean hasStation(Station station) {
+        return this.sectionItems.stream()
+                .anyMatch(sectionItem -> sectionItem.hasStation(station));
     }
 }

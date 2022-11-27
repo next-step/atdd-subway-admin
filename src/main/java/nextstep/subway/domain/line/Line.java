@@ -63,12 +63,12 @@ public class Line {
         this.sections.add(section);
     }
 
-    public Sections getSections() {
-        return this.sections;
-    }
-
     public List<Station> getAllStations() {
         return this.sections.getAllStations();
+    }
+
+    public void removeSectionByStation(Station station) {
+        this.sections.removeByStation(station);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.line.Distance;
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.SectionCreateRequest;
@@ -35,5 +34,14 @@ public class SectionService {
 
         line.addSection(upStation, downStation, request.getDistance());
         return SectionResponse.of(upStation, downStation, request.getDistance());
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = lineRepository.findByIdWithSections(lineId)
+                .orElseThrow(EntityNotFoundException::new);
+        Station removeTargetStation = stationRepository.findById(stationId)
+                .orElseThrow(EntityNotFoundException::new);
+        line.removeSectionByStation(removeTargetStation);
     }
 }
