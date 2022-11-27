@@ -27,7 +27,7 @@ public class Section {
     @Embedded
     private Distance distance;
 
-    private int number = 1;
+    private int sequence = 1;
 
     protected Section() { }
 
@@ -49,15 +49,71 @@ public class Section {
         return downStation;
     }
 
-    public void increaseNumber() {
-        this.number += 1;
+    public Distance getDistance() {
+        return distance;
     }
 
-    public void addNumber(int number) {
-        this.number = number + 1;
+    public void increaseSequence() {
+        this.sequence += 1;
     }
 
-    public int getNumber() {
-        return number;
+    public void increaseSequence(int add) {
+        this.sequence = add + 1;
+    }
+
+    public int getSequence() {
+        return sequence;
+    }
+
+    public boolean isExtendDownStation(Section section) {
+        return this.downStation.equals(section.getUpStation());
+    }
+
+    public boolean isExtendUpStation(Section section) {
+        return this.upStation.equals(section.getDownStation());
+    }
+
+    public boolean isEqualUpStation(Section section) {
+        return this.upStation.equals(section.getUpStation());
+    }
+
+    public boolean isEqualDownStation(Section section) {
+        return this.downStation.equals(section.getDownStation());
+    }
+
+    public void replace(Section newSection, Distance totalSectionDistance) {
+        Distance excludeSectionDistance = totalSectionDistance.subtract(distance);
+        newSection.distance = newSection.distance.subtract(excludeSectionDistance);
+        newSection.upStation = upStation;
+        newSection.sequence = sequence;
+        upStation = newSection.downStation;
+        distance = distance.subtract(newSection.distance);
+    }
+
+    public void syncUpStation(Section other, Distance distance) {
+        this.upStation = other.upStation;
+        this.distance = new Distance(other.distance).add(distance);
+        this.sequence = other.sequence;
+        other.upStation = this.downStation;
+        other.distance = other.distance.subtract(this.distance);
+    }
+
+    public void syncDownStation(Section other, Distance distance) {
+        this.downStation = other.downStation;
+        this.distance = new Distance(other.distance).add(distance);
+        this.sequence = other.sequence + 1;
+        other.downStation = this.upStation;
+        other.distance = other.distance.subtract(this.distance);
+    }
+
+    @Override
+    public String toString() {
+        return "Section{" +
+                "id=" + id +
+                ", sequence=" + sequence +
+                ", upStation=" + upStation.getName() +
+                ", downStation=" + downStation.getName() +
+                ", distance=" + distance.get() +
+                '}';
     }
 }
