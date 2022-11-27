@@ -13,7 +13,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -22,11 +25,16 @@ public class LineAcceptanceTest {
     @LocalServerPort
     int port;
 
+    private Long upStationId;
+    private Long downStationId;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
+        upStationId = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId();
+        downStationId = StationAcceptanceTest.지하철역_생성("공릉역").as(StationResponse.class).getId();
     }
 
     /*
@@ -37,8 +45,6 @@ public class LineAcceptanceTest {
     @Test
     public void createLine() {
         // given
-        Long upStationId = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId();
-        Long downStationId = StationAcceptanceTest.지하철역_생성("공릉역").as(StationResponse.class).getId();
         LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성(lineRequest);
@@ -46,6 +52,30 @@ public class LineAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
+
+    /*
+     *   Given 2개의 지하철 노선을 생성하고
+     *   When 지하철 노선 목록을 조회하면
+     *   Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다.
+     */
+    @DisplayName("노선을 조회한다.")
+    @Test
+    public void getLines() {
+        // given
+        LineRequest firstLineRequest = new LineRequest("신분당선", "bg-red-600", upStationId, downStationId, 10);
+        LineRequest secondLineRequest = new LineRequest("분당선", "green", upStationId, downStationId, 10);
+
+        지하철_노선_생성(firstLineRequest);
+        지하철_노선_생성(secondLineRequest);
+        // when
+        List<String> lines = 지하철_노선_조회();
+        // then
+        assertAll(
+                () -> assertThat(lines.size()).isEqualTo(2),
+                () -> assertThat(lines).containsAnyOf("신분당선", "분당선")
+        );
+    }
+
 
     public ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
 
@@ -60,5 +90,11 @@ public class LineAcceptanceTest {
         return response;
     }
 
+    public List<String> 지하철_노선_조회() {
+        return RestAssured.given().log().all()
+                .when().get("/lines")
+                .then().log().all()
+                .extract().jsonPath().getList("name", String.class);
+    }
 
 }
