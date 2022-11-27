@@ -20,35 +20,6 @@ public class Sections {
         this.sectionItems = new ArrayList<>();
     }
 
-    public Sections(List<Section> sectionItems) {
-        this.sectionItems = getOrderedStations(sectionItems);
-    }
-
-    private List<Section> getOrderedStations(List<Section> sections) {
-        if(sections.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        List<Section> orderedSections = new ArrayList<>();
-        Map<Station, Station> sectionUpStations = sections.stream()
-                .collect(Collectors.toMap(Section::getUpStation, Section::getDownStation));
-
-        Station upStation = getUpTerminalStation(sectionUpStations);
-        while(sectionUpStations.containsKey(upStation)) {
-            orderedSections.add(getSectionWithSameUpStation(upStation));
-            upStation = sectionUpStations.get(upStation);
-        }
-        return orderedSections;
-    }
-
-    private Station getUpTerminalStation(Map<Station, Station> sectionStations) {
-        Set<Station> downStations = new HashSet<>(sectionStations.values());
-        return sectionStations.keySet().stream()
-                .filter(station -> !downStations.contains(station))
-                .findFirst()
-                .orElseThrow(() -> new NotFoundEntityException(SectionMessage.ERROR_NOT_FOUND_UP_TERMINAL_STATION.message()));
-    }
-
     public Section getSectionWithSameUpStation(Station upStation) {
         return this.sectionItems.stream()
                 .filter(sectionItem -> sectionItem.isSameUpStation(upStation))
@@ -98,18 +69,31 @@ public class Sections {
             return;
         }
 
-        Section upTerminalStationSection = this.sectionItems.get(0);
+        Section upTerminalStationSection = getUpTerminalStationSection();
         if(upTerminalStationSection.isSameUpStation(section.getDownStation())) {
             this.sectionItems.add(0, section);
         }
     }
 
-    private void addDownTerminalStationSection(Section section) {
-        int sectionItemSize = this.sectionItems.size();
-        Section downTerminalStationSection = this.sectionItems.get(sectionItemSize - 1);
-        if(downTerminalStationSection.isSameDownStation(section.getUpStation())) {
-            this.sectionItems.add(sectionItemSize, section);
+    private Section getUpTerminalStationSection() {
+        if(this.sectionItems.isEmpty()) {
+            throw new IllegalArgumentException(SectionMessage.ERROR_EMPTY_SECTIONS.message());
         }
+        return this.sectionItems.get(0);
+    }
+
+    private void addDownTerminalStationSection(Section section) {
+        Section downTerminalStationSection = getDownTerminalStationSection();
+        if(downTerminalStationSection.isSameDownStation(section.getUpStation())) {
+            this.sectionItems.add(section);
+        }
+    }
+
+    private Section getDownTerminalStationSection() {
+        if(this.sectionItems.isEmpty()) {
+            throw new IllegalArgumentException(SectionMessage.ERROR_EMPTY_SECTIONS.message());
+        }
+        return this.sectionItems.get(this.sectionItems.size() - 1);
     }
 
     // 역 사이에 새로운 역이 등록된 경우 기존 구간의 거리, 상행역 및 하행역을 변경한다
@@ -190,7 +174,7 @@ public class Sections {
     }
 
     private void removeUpTerminalStationSectionBy(Station station) {
-        Section upTerminalSection = this.sectionItems.get(0);
+        Section upTerminalSection = getUpTerminalStationSection();
         if(upTerminalSection.isSameUpStation(station)) {
             this.sectionItems.remove(upTerminalSection);
         }
@@ -201,7 +185,7 @@ public class Sections {
             return;
         }
 
-        Section downTerminalSection = this.sectionItems.get(this.sectionItems.size() - 1);
+        Section downTerminalSection = getDownTerminalStationSection();
         if(downTerminalSection.isSameDownStation(station)) {
             this.sectionItems.remove(downTerminalSection);
         }

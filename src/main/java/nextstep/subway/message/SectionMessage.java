@@ -11,7 +11,8 @@ public enum SectionMessage {
     ERROR_NOT_FOUND_UP_STATION("주어진 지하철역과 동일한 상행역을 찾을 수 없습니다."),
     ERROR_NOT_FOUND_DOWN_STATION("주어진 지하철역과 동일한 하행역을 찾을 수 없습니다."),
     ERROR_NOT_FOUND_STATION("주어진 지하철역과 동일한 역을 찾을 수 없습니다."),
-    ERROR_SECTIONS_MORE_THAN_TWO_SECTIONS("지하철역을 삭제하기 위해선 구간이 최소 2개 이상이여야 합니다.");
+    ERROR_SECTIONS_MORE_THAN_TWO_SECTIONS("지하철역을 삭제하기 위해선 구간이 최소 2개 이상이여야 합니다."),
+    ERROR_EMPTY_SECTIONS("구간이 등록되어 있지 않습니다.");
 
     private final String message;
 
