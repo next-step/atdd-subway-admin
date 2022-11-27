@@ -9,7 +9,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Embeddable
 public class Sections {
@@ -171,5 +170,58 @@ public class Sections {
                 .flatMap(Section::stationsStream)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void removeByStation(Station station) {
+        validateRemoveSection(station);
+        removeUpTerminalStationSectionBy(station);
+        removeDownTerminalStationSectionBy(station);
+        removeMiddleStationSectionBy(station);
+    }
+
+    private void validateRemoveSection(Station station) {
+        if(this.sectionItems.size() < 2) {
+            throw new IllegalArgumentException(SectionMessage.ERROR_SECTIONS_MORE_THAN_TWO_SECTIONS.message());
+        }
+
+        if(!hasStation(station)) {
+            throw new IllegalArgumentException(SectionMessage.ERROR_NOT_FOUND_STATION.message());
+        }
+    }
+
+    private void removeUpTerminalStationSectionBy(Station station) {
+        Section upTerminalSection = this.sectionItems.get(0);
+        if(upTerminalSection.isSameUpStation(station)) {
+            this.sectionItems.remove(upTerminalSection);
+        }
+    }
+
+    private void removeDownTerminalStationSectionBy(Station station) {
+        if(!hasStation(station)) {
+            return;
+        }
+
+        Section downTerminalSection = this.sectionItems.get(this.sectionItems.size() - 1);
+        if(downTerminalSection.isSameDownStation(station)) {
+            this.sectionItems.remove(downTerminalSection);
+        }
+    }
+
+    private void removeMiddleStationSectionBy(Station station) {
+        if(!hasStation(station)) {
+            return;
+        }
+
+        Section sectionWithSameUpStation = getSectionWithSameUpStation(station);
+        Section sectionWithSameDownStation = getSectionWithSameDownStation(station);
+
+        sectionWithSameDownStation.changeDownStation(sectionWithSameUpStation.getDownStation());
+        sectionWithSameDownStation.plusDistance(sectionWithSameUpStation);
+        this.sectionItems.remove(sectionWithSameUpStation);
+    }
+
+    private boolean hasStation(Station station) {
+        return this.sectionItems.stream()
+                .anyMatch(sectionItem -> sectionItem.hasStation(station));
     }
 }

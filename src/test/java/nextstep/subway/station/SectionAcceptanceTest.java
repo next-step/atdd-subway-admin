@@ -232,4 +232,96 @@ public class SectionAcceptanceTest {
                 () -> assertThat(response.jsonPath().getString("message")).isEqualTo(SectionMessage.ERROR_UP_AND_DOWN_STATIONS_ARE_NOT_ENROLLED.message())
         );
     }
+
+    /**
+     * When 상행 종점역이 포함 된 구간을 제거하면
+     * Then 구간 제거에 성공한다
+     */
+    @DisplayName("지하철 구간 제거 - 제거 되는 구간이 상행 종점역인 경우")
+    @Test
+    void remove_section_with_up_terminal_station_test() {
+        // when
+        // [강남역 -(5)-] 역삼역 -(5)- 선릉역
+        // --> 역삼역 -(5)- 선릉역
+        ExtractableResponse<Response> response = SectionRestAssured.지하철_구간_제거(이호선.getId(), 강남역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * When 상행 종점역이 포함 된 구간을 제거하면
+     * Then 구간 제거에 성공한다
+     */
+    @DisplayName("지하철 구간 제거 - 제거 되는 구간이 하행 종점역인 경우")
+    @Test
+    void remove_section_with_down_terminal_station_test() {
+        // when
+        // 강남역 -(5)- 역삼역 [-(5)- 선릉역]
+        // --> 강남역 -(5)- 역삼역
+        ExtractableResponse<Response> response = SectionRestAssured.지하철_구간_제거(이호선.getId(), 선릉역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * When 중간역이 포함 된 구간을 제거하면
+     * Then 구간 제거에 성공한다
+     */
+    @DisplayName("지하철 구간 제거 - 제거 되는 구간이 중간역인 경우")
+    @Test
+    void remove_section_with_middle_station_test() {
+        // when
+        // 강남역 [-(5)- 역삼역] -(5)- 선릉역
+        // --> 강남역 -(10)- 선릉역
+        ExtractableResponse<Response> response = SectionRestAssured.지하철_구간_제거(이호선.getId(), 역삼역.getId());
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    /**
+     * Given 노선에 등록되지 않은 역이 주어지면 경우
+     * When 구간을 제거하면
+     * Then 구간 제거에 실패한다
+     */
+    @DisplayName("지하철 구간 제거 예외 처리 - 노선에 등록되어있지 않은 역을 제거할려고 하는 경우")
+    @Test
+    void remove_station_not_enrolled_throw_exception() {
+        // given
+        Station 삼성역 = stationRepository.save(StationTestFixture.삼성역);
+
+        // when
+        ExtractableResponse<Response> response = SectionRestAssured.지하철_구간_제거(이호선.getId(), 삼성역.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.jsonPath().getString("message")).isEqualTo(SectionMessage.ERROR_NOT_FOUND_STATION.message())
+        );
+    }
+
+    /**
+     * Given 노선이 1개만 등록되어 있는 경우
+     * When 구간을 제거하면
+     * Then 구간 제거에 실패한다
+     */
+    @DisplayName("지하철 구간 제거 예외 처리 - 노선이 1개만 등록되어 있는 경우")
+    @Test
+    void remove_station_if_less_than_two_sections_throw_exception() {
+        // given
+        // 강남역 -(5)- 역삼역 -(5)- 선릉역
+        SectionRestAssured.지하철_구간_제거(이호선.getId(), 선릉역.getId());
+
+        // when
+        // 강남역 -(5)- 역삼역
+        ExtractableResponse<Response> response = SectionRestAssured.지하철_구간_제거(이호선.getId(), 역삼역.getId());
+
+        // then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(response.jsonPath().getString("message")).isEqualTo(SectionMessage.ERROR_SECTIONS_MORE_THAN_TWO_SECTIONS.message())
+        );
+    }
 }

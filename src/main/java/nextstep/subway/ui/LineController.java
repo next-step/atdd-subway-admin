@@ -58,6 +58,12 @@ public class LineController {
         return ResponseEntity.ok(sectionResponse);
     }
 
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<?> removeSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.removeSectionByStationId(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<?> handleIllegalArgsException(IllegalArgumentException ex) {
         Map<String, String> body = new HashMap<>();

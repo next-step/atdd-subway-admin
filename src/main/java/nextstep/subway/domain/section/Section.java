@@ -79,6 +79,10 @@ public class Section extends BaseEntity {
         this.distance = this.distance.minus(section.distance);
     }
 
+    public void plusDistance(Section section) {
+        this.distance = this.distance.plus(section.distance);
+    }
+
     public void changeDownStation(Station station) {
         this.downStation = station;
     }
@@ -89,6 +93,10 @@ public class Section extends BaseEntity {
 
     public Stream<Station> stationsStream() {
         return Stream.of(this.upStation, this.downStation);
+    }
+
+    public boolean hasStation(Station station) {
+        return this.isSameUpStation(station) || this.isSameDownStation(station);
     }
 
     @Override

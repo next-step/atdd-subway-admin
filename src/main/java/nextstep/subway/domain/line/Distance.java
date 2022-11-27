@@ -35,6 +35,10 @@ public class Distance {
         return this.distance >= other.distance;
     }
 
+    public Distance plus(Distance other) {
+        return new Distance(this.distance + other.distance);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -54,4 +58,5 @@ public class Distance {
     public String toString() {
         return String.valueOf(distance);
     }
+
 }
