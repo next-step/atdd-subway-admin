@@ -14,8 +14,7 @@ public class StationResponse {
         return new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate());
     }
 
-    public StationResponse() {
-    }
+    public StationResponse() {}
 
     public StationResponse(Long id, String name, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
@@ -32,11 +31,4 @@ public class StationResponse {
         return name;
     }
 
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public LocalDateTime getModifiedDate() {
-        return modifiedDate;
-    }
 }
