@@ -32,14 +32,8 @@ public class LineController {
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> findLine(@PathVariable Long id) {
+    public ResponseEntity<SectionResponse> findLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLine(id));
-    }
-
-    @GetMapping(value = "/linesection/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<SectionResponse> findLineSection(@PathVariable Long id) {
-        SectionResponse lineSection = lineService.findLineSection(id);
-        return ResponseEntity.ok().body(lineSection);
     }
 
     @PutMapping(value = "/lines/{id}")

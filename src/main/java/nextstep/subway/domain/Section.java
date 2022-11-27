@@ -81,11 +81,8 @@ public class Section {
         this.downStation = section.getDownStation();
     }
 
-    public void updateLineDistance(Section newSection) {
-        System.out.println("asis 노선길이 " + this.distance);
-        System.out.println("노선 연장 :" + newSection.distance);
-
-        this.distance.add(newSection.distance);
+    public Distance addDistance(Section newSection) {
+        return this.distance.add(newSection.distance);
     }
 
 }

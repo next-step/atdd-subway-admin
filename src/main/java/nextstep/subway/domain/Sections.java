@@ -77,7 +77,13 @@ public class Sections {
     public void deleteSection(Station deleteStation) {
         Optional<Section> upStation = sections.stream().filter(section -> section.isEqualsUpStation(deleteStation)).findFirst();
         Optional<Section> downStation = sections.stream().filter(section -> section.isEqualsDownStation(deleteStation)).findFirst();
-
+        if(upStation.isPresent() && downStation.isPresent()) {
+            //중간 역 삭제
+            //downStation 의 upStation 을 upStation 으로
+            //upStation 의 downStation 을 downStation 으로
+            Distance mergedDistance = downStation.get().getDistance().add(upStation.get().getDistance());
+            sections.add(Section.of(upStation.get().getLine(), downStation.get().getUpStation(), upStation.get().getDownStation(), mergedDistance));
+        }
         upStation.ifPresent(section -> removeSection(section));
         downStation.ifPresent(section -> removeSection(section));
     }

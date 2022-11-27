@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -200,23 +201,42 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("upStationId", 정자역.getId());
         params.put("downStationId", 광교역id);
         params.put("distance", 10);
-        ExtractableResponse<Response> 지하철구간_등록 = 지하철구간_등록(params, 신분당선.getId());
+        지하철구간_등록(params, 신분당선.getId());
         //when
         ExtractableResponse<Response> 지하철구간_제거 = 지하철구간_제거(신분당선.getId(), 광교역id);
         //then
-        assertThat(지하철구간_제거.statusCode()).isEqualTo(HttpStatus.OK.value());
-
-        //section 확인
-        assertThat(지하철노선_조회(신분당선.getId()).body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이);
-
-        RestAssured.given().log().all()
-                //.body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/linesection/{id}", 신분당선.getId())
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> 지하철노선_조회 = 지하철노선_조회(신분당선.getId());
+        assertAll(() -> assertThat(지하철구간_제거.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철노선_조회.body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이),
+                () -> assertThat(extractList(지하철노선_조회, "sections.upStation", String.class)).hasSize(1),
+                () -> assertThat(extractString(지하철노선_조회, "sections.upStation[0]")).isEqualTo("강남역"),
+                () -> assertThat(extractString(지하철노선_조회, "sections.downStation[0]")).isEqualTo("정자역"));
     }
 
-
-
+    /**
+     * Given 지하철역, 노선, 구간을 등록하고
+     * When 가운데 역을 제거하면
+     * Then 가운데 역을 하행역/상행역으로 하는 구간이 제거되고
+     * Then 가운데 역을 하행역/상행역으로 하는 구간이 합쳐진다.
+     */
+    @Test
+    void 가운데역_제거() {
+        //given
+        Long 광교역id = extractId(지하철역_등록("광교역"));
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", 정자역.getId());
+        params.put("downStationId", 광교역id);
+        params.put("distance", 10);
+        지하철구간_등록(params, 신분당선.getId());
+        //when
+        ExtractableResponse<Response> 지하철구간_제거 = 지하철구간_제거(신분당선.getId(), 정자역.getId());
+        //then
+        ExtractableResponse<Response> 지하철노선_조회 = 지하철노선_조회(신분당선.getId());
+        assertAll(() -> assertThat(지하철구간_제거.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철노선_조회.body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이 + 10),
+                () -> assertThat(extractList(지하철노선_조회, "sections.upStation", String.class)).hasSize(1),
+                () -> assertThat(extractString(지하철노선_조회, "sections.upStation[0]")).isEqualTo("강남역"),
+                () -> assertThat(extractString(지하철노선_조회, "sections.downStation[0]")).isEqualTo("광교역")
+        );
+    }
 }

@@ -43,12 +43,7 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(Long id) throws IllegalArgumentException {
-        Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION_MSG));
-        return LineResponse.from(line);
-    }
-
-    public SectionResponse findLineSection(Long id) throws IllegalArgumentException {
+    public SectionResponse findLine(Long id) throws IllegalArgumentException {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION_MSG));
         return SectionResponse.from(line);
     }
