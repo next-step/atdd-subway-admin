@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line extends BaseEntity {
@@ -12,12 +13,8 @@ public class Line extends BaseEntity {
     private Name name;
     @Embedded
     private Color color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_to_up_station"))
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false, foreignKey = @ForeignKey(name = "fk_line_to_down_station"))
-    private Station downStation;
+    @Embedded
+    private Sections sections;
 
     @Embedded
     private Distance distance;
@@ -28,8 +25,7 @@ public class Line extends BaseEntity {
     public Line(Name name, Color color, Station upStation, Station downStation, Distance distance) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
+        this.sections = Sections.from(Section.of(this, upStation, downStation, distance));
         this.distance = distance;
     }
 
@@ -45,20 +41,24 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
     public Distance getDistance() {
         return distance;
+    }
+
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
     public void update(String name, String color) {
         this.name = new Name(name);
         this.color = new Color(color);
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+    }
+
+    public Sections getSections() {
+        return sections;
     }
 }

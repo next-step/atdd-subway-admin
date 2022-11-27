@@ -22,26 +22,20 @@ public class LineAcceptanceTest extends AcceptanceTest {
 
     private Long upStationId;
     private Long downStationId;
+    private Long lineId;
 
     @BeforeEach
-    public void setUpStationData() {
-        upStationId = getId(createStation("강남역"));
-        downStationId = getId(createStation("판교역"));
-    }
-
-    private ExtractableResponse<Response> createLine(String name, String color) {
+    public void setUp() {
+        super.setUp();
+        upStationId = getId(지하철역_등록("강남역"));
+        downStationId = getId(지하철역_등록("판교역"));
         Map<String, Object> params = new HashMap<>();
-        params.put("name", name);
-        params.put("color", color);
+        params.put("name", "신분당선");
+        params.put("color", "bg-red-600");
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
         params.put("distance", 10);
-        return RestAssured.given().log().all()
-                .body(params)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/lines")
-                .then().log().all()
-                .extract();
+        lineId = getId(지하철노선_등록(params));
     }
 
     private ExtractableResponse<Response> getLines() {
@@ -68,8 +62,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철노선_생성후_조회() {
         // when
-        createLine("신분당선", "bg-red-600");
-
         // then
         List<String> stationNames = getList(getLines(), "name", String.class);
         assertThat(stationNames).containsAnyOf("신분당선");
@@ -84,8 +76,13 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철노선_목록_조회() {
         // given
-        createLine("신분당선", "bg-red-600");
-        createLine("2호선", "bg-green-600");
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", "2호선");
+        params.put("color", "bg-green-600");
+        params.put("upStationId", upStationId);
+        params.put("downStationId", downStationId);
+        params.put("distance", 10);
+        지하철노선_등록(params);
 
         // when
         List<Long> ids = getList(getLines(), "id", Long.class);
@@ -102,11 +99,9 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철노선을 조회한다.")
     @Test
     void 지하철노선_조회() {
-        // given
-        Long createdLineId = createLine("신분당선", "bg-red-600").body().jsonPath().getLong("id");
-
+        // give
         // when
-        ExtractableResponse<Response> extract = getLine(createdLineId);
+        ExtractableResponse<Response> extract = getLine(lineId);
 
         // then
         assertThat(getString(extract, "name")).isEqualTo("신분당선");
@@ -121,9 +116,6 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철노선_수정() {
         // given
-        Map<String, Object> params = new HashMap<>();
-        Long createdLineId = createLine("신분당선", "bg-red-600").body().jsonPath().getLong("id");
-
         // when
         Map<String, String> reqBody = new HashMap<>();
         reqBody.put("name", "다른분당선");
@@ -132,12 +124,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .body(reqBody)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
-                .put("/lines/{id}", createdLineId)
+                .put("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
 
         // then
-        ExtractableResponse<Response> findResponse = getLine(createdLineId);
+        ExtractableResponse<Response> findResponse = getLine(lineId);
         assertAll(() -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(findResponse.body().jsonPath().getString("name")).isEqualTo("다른분당선"));
     }
@@ -151,12 +143,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철노선_삭제() {
         // given
-        Long createdLineId = createLine("신분당선", "bg-red-600").body().jsonPath().getLong("id");
-
         // when
         ExtractableResponse<Response> deleteResponse = RestAssured.given().log().all()
                 .when()
-                .delete("/lines/{id}", createdLineId)
+                .delete("/lines/{id}", lineId)
                 .then().log().all()
                 .extract();
 

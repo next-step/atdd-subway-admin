@@ -19,4 +19,16 @@ public class Distance {
     public int getDistance() {
         return distance;
     }
+
+    public Distance subtract(Distance distance) {
+        return new Distance(this.distance - distance.distance);
+    }
+
+    public boolean isSameOrLonger(Distance distance) {
+        return subtract(distance).distance <= 0;
+    }
+
+    public void add(Distance distance) {
+        this.distance += distance.distance;
+    }
 }

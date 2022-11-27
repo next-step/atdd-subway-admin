@@ -11,7 +11,7 @@ import java.util.NoSuchElementException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)
-    protected ResponseEntity<Void> handleIllegalArgsException() {
+    protected ResponseEntity<Void> handleDataIntegrityViolationException() {
         return ResponseEntity.badRequest().build();
     }
 
@@ -19,4 +19,10 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<Void> handleNoSuchElementException() {
         return ResponseEntity.notFound().build();
     }
+
+    @ExceptionHandler({IllegalArgumentException.class})
+    protected ResponseEntity<Void> handleIllegalArgumentException() {
+        return ResponseEntity.badRequest().build();
+    }
+
 }

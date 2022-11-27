@@ -34,7 +34,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철역_생성후_조회() {
         // when
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = 지하철역_등록("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -53,10 +53,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 중복이름의_지하철역_생성_불가() {
         // given
-        createStation("강남역");
+        지하철역_등록("강남역");
 
         // when
-        ExtractableResponse<Response> response = createStation("강남역");
+        ExtractableResponse<Response> response = 지하철역_등록("강남역");
 
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
@@ -69,10 +69,10 @@ public class StationAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("지하철역을 조회한다.")
     @Test
-    void 지하철역_복수개_생성후_목록_조회() {
+    public void 지하철역_복수개_생성후_목록_조회() {
         //given
-        createStation("강남역");
-        createStation("잠실역");
+        지하철역_등록("강남역");
+        지하철역_등록("잠실역");
 
         //when
         ExtractableResponse<Response> response = getStations();
@@ -91,7 +91,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void 생성한_지하철역_삭제_조회불가() {
         //given
-        Long id = getId(createStation("강남역"));
+        Long id = getId(지하철역_등록("강남역"));
 
         //when
         ExtractableResponse<Response> deleteResponse =

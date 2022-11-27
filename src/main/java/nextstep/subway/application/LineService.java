@@ -32,19 +32,19 @@ public class LineService {
         Station upStation = findByStationId(lineRequest.getUpStationId());
         Station downStation = findByStationId(lineRequest.getDownStationId());
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        return LineResponse.from(persistLine);
     }
 
     public List<LineResponse> findAllLines() {
         List<Line> lines = lineRepository.findAll();
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(line -> LineResponse.from(line))
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLine(Long id) throws IllegalArgumentException {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION_MSG));
-        return LineResponse.of(line);
+        return LineResponse.from(line);
     }
 
     @Transactional
