@@ -133,16 +133,16 @@ public class Sections {
     }
 
     public Section removeAndGetNewSection(Long stationId) {
-        if(sections.size() == 3) {
+        if (sections.size() == 3) {
             throw new IllegalArgumentException(ErrorMessage.ONLY_ONE_SECTION.getMessage());
         }
 
-        if(isFirstByStationId(stationId)) {
+        if (isFirstByStationId(stationId)) {
             sections.remove(0);
             return sections.get(0).deleteUpStation();
         }
 
-        if(isLastByStationId(stationId)) {
+        if (isLastByStationId(stationId)) {
             sections.remove(sections.size()-1);
             return sections.get(sections.size()-1).deleteDownStation();
         }
