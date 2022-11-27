@@ -23,6 +23,8 @@ public class StationSteps {
     public static final String A_STATION = "A역";
     public static final String B_STATION = "B역";
     public static final String C_STATION = "C역";
+    public static final String D_STATION = "D역";
+    public static final String E_STATION = "E역";
 
     public static ExtractableResponse<Response> 지하철역_생성(String stationName) {
         Map<String, String> param = new HashMap<>();

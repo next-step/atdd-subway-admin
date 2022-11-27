@@ -22,6 +22,9 @@ class SectionTest {
     public static final int DISTANCE_A_B = 3;
     public static final int DISTANCE_B_C = 2;
     public static final int DISTANCE_A_C = 5;
+    public static final int DISTANCE_C_D = 2;
+    public static final int DISTANCE_D_E = 3;
+    public static final int DISTANCE_C_E = 5;
 
     @DisplayName("구간 생성")
     @Test
