@@ -1,23 +1,36 @@
 package nextstep.subway.domain.line;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.InvalidSectionAddException;
+import nextstep.subway.exception.InvalidSectionRemoveException;
 
 @Embeddable
 public class Sections {
 
 	private static final String NOT_INCLUDE_UP_DOWN_STATION_ERROR_MESSAGE = "등록할 수 없는 구간입니다.";
 	private static final String SAME_UP_DOWN_STATION_ERROR_MESSAGE = "이미 등록된 구간입니다.";
+	private static final int MINIMUM_SECTION_COUNT = 1;
+	private static final String STATION_NOT_EXIST_MESSAGE_FORMAT = "%s은 존재하지 없는 역입니다.";
+	private static final String INVALID_MINIMUM_SECTION_COUNT_MESSAGE = "구간이 하나인 노선에서는 제거할 수 없습니다.";
 	@OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Section> sections = new LinkedList<>();
+	private List<Section> sections = new ArrayList<>();
+
+	@Transient
+	private Map<Station, Section> sectionByUpStationMap;
+
+	@Transient
+	private Map<Station, Section> sectionByDownStationMap;
 
 	protected Sections() {
 	}
@@ -26,7 +39,7 @@ public class Sections {
 		this.sections = sections;
 	}
 
-	public static Sections initialSections(Section section) {
+	public static Sections from(Section section) {
 		List<Section> sections = new LinkedList<>();
 		sections.add(section);
 		return new Sections(sections);
@@ -66,6 +79,22 @@ public class Sections {
 			.orElseThrow(() -> new IllegalArgumentException("Section not exist"));
 	}
 
+	private Section sectionByUpStationMap(Station station) {
+		if (sectionByUpStationMap == null) {
+			sectionByUpStationMap = this.sections.stream()
+				.collect(Collectors.toMap(Section::getUpStation, section -> section));
+		}
+		return sectionByUpStationMap.get(station);
+	}
+
+	private Section sectionByDownStationMap(Station station) {
+		if (sectionByDownStationMap == null) {
+			sectionByDownStationMap = this.sections.stream()
+				.collect(Collectors.toMap(Section::getDownStation, section -> section));
+		}
+		return sectionByDownStationMap.get(station);
+	}
+
 	public Station firstUpStation() {
 		List<Station> stations = allUpStations();
 		stations.removeIf(station -> allDownStations().contains(station));
@@ -86,7 +115,63 @@ public class Sections {
 	}
 
 	public void remove(Station station) {
+		validateRemoveSection(station);
+		removeSection(station);
+		removeCache();
+	}
 
+	private void removeCache() {
+		sectionByUpStationMap = null;
+		sectionByDownStationMap = null;
+	}
+
+	private void removeSection(Station station) {
+		Section upSection = sectionByUpStationMap(station);
+		Section downSection = sectionByDownStationMap(station);
+
+		if (isMiddleSection(upSection, downSection)) {
+			downSection.connect(upSection);
+			sections.remove(upSection);
+		}
+		if (isLastSection(upSection, downSection)) {
+			sections.remove(upSection);
+		}
+		if (isFirstSection(upSection, downSection)) {
+			sections.remove(downSection);
+		}
+	}
+
+	private boolean isFirstSection(Section upSection, Section downSection) {
+		return upSection == null && downSection != null;
+	}
+
+	private boolean isLastSection(Section upSection, Section downSection) {
+		return upSection != null && downSection == null;
+	}
+
+	private boolean isMiddleSection(Section upSection, Section downSection) {
+		return upSection != null && downSection != null;
+	}
+
+	private void validateRemoveSection(Station station) {
+		if (isNotExistStation(station)) {
+			throw new InvalidSectionRemoveException(String.format(STATION_NOT_EXIST_MESSAGE_FORMAT, station.getName()));
+		}
+		if (invalidSectionMinimumSize()) {
+			throw new InvalidSectionRemoveException(INVALID_MINIMUM_SECTION_COUNT_MESSAGE);
+		}
+	}
+
+	private boolean isExistStation(Station station) {
+		return sectionByUpStationMap(station) != null || sectionByDownStationMap(station) != null;
+	}
+
+	private boolean isNotExistStation(Station station) {
+		return !isExistStation(station);
+	}
+
+	private boolean invalidSectionMinimumSize() {
+		return sections.size() <= MINIMUM_SECTION_COUNT;
 	}
 
 	private void validateAddSection(Section section) {

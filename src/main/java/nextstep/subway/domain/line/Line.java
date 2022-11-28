@@ -33,7 +33,7 @@ public class Line {
 	private Line(String name, String color, Station upStation, Station downStation, int distance) {
 		this.name = name;
 		this.color = color;
-		this.sections = Sections.initialSections(new Section(this, upStation, downStation, distance));
+		this.sections = Sections.from(new Section(this, upStation, downStation, distance));
 	}
 
 	public static Line of(String name, String color, Station upStation, Station downStation, int distance) {

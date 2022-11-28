@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.exception.InvalidSectionAddException;
+import nextstep.subway.exception.InvalidSectionRemoveException;
 
 @DisplayName("구간 테스트")
 class SectionsTest {
@@ -36,7 +37,7 @@ class SectionsTest {
 		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
 
 		// when
-		Sections sections = Sections.initialSections(구간);
+		Sections sections = Sections.from(구간);
 
 		// then
 		assertThat(sections.getSections()).hasSize(1);
@@ -49,7 +50,7 @@ class SectionsTest {
 		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
 		// Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 10);
 
-		Sections sections = Sections.initialSections(구간);
+		Sections sections = Sections.from(구간);
 		// sections.add(새로운_구간);
 
 		// when
@@ -66,7 +67,7 @@ class SectionsTest {
 		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
 		Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 10);
 
-		Sections sections = Sections.initialSections(구간);
+		Sections sections = Sections.from(구간);
 		sections.connect(새로운_구간, Collections.singletonList(구간));
 
 		// when
@@ -83,7 +84,7 @@ class SectionsTest {
 		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
 		Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 10);
 
-		Sections sections = Sections.initialSections(구간);
+		Sections sections = Sections.from(구간);
 		// sections.add(새로운_구간);
 		sections.connect(새로운_구간, Collections.singletonList(구간));
 
@@ -101,7 +102,7 @@ class SectionsTest {
 		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
 		Section 새로운_구간 = new Section(이호선, 강남역, 역삼역, 10);
 
-		Sections sections = Sections.initialSections(구간);
+		Sections sections = Sections.from(구간);
 
 		// when, then
 		assertThatThrownBy(() -> sections.connect(새로운_구간, Collections.singletonList(구간)))
@@ -116,7 +117,7 @@ class SectionsTest {
 		Station 삼성역 = Station.from("삼성역");
 		Section 새로운_구간 = new Section(이호선, 삼성역, 선릉역, 10);
 
-		Sections sections = Sections.initialSections(구간);
+		Sections sections = Sections.from(구간);
 
 		// when, then
 		assertThatThrownBy(() -> sections.connect(새로운_구간, Collections.singletonList(구간)))
@@ -130,7 +131,7 @@ class SectionsTest {
 		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
 		Section 새로운_구간 = new Section(이호선, 강남역, 선릉역, 5);
 
-		Sections sections = Sections.initialSections(구간);
+		Sections sections = Sections.from(구간);
 
 		// when
 		sections.connect(새로운_구간, Collections.singletonList(구간));
@@ -156,7 +157,7 @@ class SectionsTest {
 		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
 		Section 새로운_구간 = new Section(이호선, 선릉역, 역삼역, 5);
 
-		Sections sections = Sections.initialSections(구간);
+		Sections sections = Sections.from(구간);
 
 		// when
 		sections.connect(새로운_구간, Collections.singletonList(구간));
@@ -181,7 +182,7 @@ class SectionsTest {
 		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
 		Section 새로운_구간 = new Section(이호선, 선릉역, 강남역, 5);
 
-		Sections sections = Sections.initialSections(구간);
+		Sections sections = Sections.from(구간);
 
 		// when
 		sections.connect(새로운_구간, Collections.singletonList(구간));
@@ -207,7 +208,7 @@ class SectionsTest {
 		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
 		Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 5);
 
-		Sections sections = Sections.initialSections(구간);
+		Sections sections = Sections.from(구간);
 
 		// when
 		sections.connect(새로운_구간, Collections.singletonList(구간));
@@ -224,5 +225,107 @@ class SectionsTest {
 			() -> assertThat(sections.getSections().get(1).getDownStation()).isEqualTo(선릉역),
 			() -> assertThat(sections.lastDownStation()).isEqualTo(선릉역)
 		);
+	}
+
+	@DisplayName("구간 삭제 - 상행 종점 삭제")
+	@Test
+	void removeFirstUpStationTest() {
+		// given
+		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
+		Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 5);
+
+		Sections sections = Sections.from(구간);
+		sections.connect(새로운_구간, Collections.singletonList(구간));
+
+		// when
+		sections.remove(강남역);
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getSections()).hasSize(1),
+			() -> assertThat(sections.allStations()).containsExactly(역삼역, 선릉역),
+			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(5),
+			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(역삼역),
+			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(선릉역),
+			() -> assertThat(sections.firstUpStation()).isEqualTo(역삼역)
+		);
+	}
+
+	@DisplayName("구간 삭제 - 하행 종점 삭제")
+	@Test
+	void removeLastDownStationTest() {
+		// given
+		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
+		Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 5);
+
+		Sections sections = Sections.from(구간);
+		sections.connect(새로운_구간, Collections.singletonList(구간));
+
+		// when
+		sections.remove(선릉역);
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getSections()).hasSize(1),
+			() -> assertThat(sections.allStations()).containsExactly(강남역, 역삼역),
+			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(10),
+			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(강남역),
+			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(역삼역),
+			() -> assertThat(sections.lastDownStation()).isEqualTo(역삼역)
+		);
+	}
+
+	@DisplayName("구간 삭제 - 중간 역 삭제")
+	@Test
+	void removeMiddleStationTest() {
+		// given
+		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
+		Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 5);
+
+		Sections sections = Sections.from(구간);
+		sections.connect(새로운_구간, Collections.singletonList(구간));
+
+		// when
+		sections.remove(역삼역);
+
+		// then
+		assertAll(
+			() -> assertThat(sections.getSections()).hasSize(1),
+			() -> assertThat(sections.allStations()).containsExactly(강남역, 선릉역),
+			() -> assertThat(sections.getSections().get(0).getDistance()).isEqualTo(15),
+			() -> assertThat(sections.getSections().get(0).getUpStation()).isEqualTo(강남역),
+			() -> assertThat(sections.getSections().get(0).getDownStation()).isEqualTo(선릉역),
+			() -> assertThat(sections.firstUpStation()).isEqualTo(강남역),
+			() -> assertThat(sections.lastDownStation()).isEqualTo(선릉역)
+		);
+	}
+
+	@DisplayName("구간 삭제 시, 존재하지 않는 역 일 경우 예외 발생")
+	@Test
+	void removeNotExistStationTest() {
+		// given
+		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
+		Section 새로운_구간 = new Section(이호선, 역삼역, 선릉역, 5);
+
+		Sections sections = Sections.from(구간);
+		sections.connect(새로운_구간, Collections.singletonList(구간));
+
+		// when & then
+		Station 삼성역 = Station.from("삼성역");
+		assertThatThrownBy(() -> sections.remove(삼성역))
+			.isInstanceOf(InvalidSectionRemoveException.class)
+			.hasMessageContaining("삼성역은 존재하지 없는 역입니다.");
+	}
+
+	@DisplayName("구간 삭제 시, 구간이 하나인 경우 예외 발생")
+	void removeFromOnlyOneSectionTest() {
+		// given
+		Section 구간 = new Section(이호선, 강남역, 역삼역, 10);
+		Sections sections = Sections.from(구간);
+
+		// when & then
+		assertThatThrownBy(() -> sections.remove(강남역))
+			.isInstanceOf(InvalidSectionRemoveException.class)
+			.hasMessage("구간이 하나인 경우 삭제할 수 없습니다.");
 	}
 }
