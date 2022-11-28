@@ -19,7 +19,7 @@ import nextstep.subway.dto.line.LineResponse;
 import nextstep.subway.dto.line.section.SectionCreateRequest;
 
 @DisplayName("지하철 구간 삭제 기능")
-public class SectionRemoveAcceptanceTest extends BaseAcceptanceTest {
+class SectionRemoveAcceptanceTest extends BaseAcceptanceTest {
 
 	private Long 이호선;
 	private Long 강남역;
@@ -34,7 +34,7 @@ public class SectionRemoveAcceptanceTest extends BaseAcceptanceTest {
 	}
 
 	private void 지하철_구간_추가() {
-		Long 역삼역 = id(지하철역_생성_요청("역삼역"));
+		역삼역 = id(지하철역_생성_요청("역삼역"));
 		SectionCreateRequest request = new SectionCreateRequest(강남역, 역삼역, 100);
 		지하철_구간_등록_요청(이호선, request);
 	}
@@ -62,10 +62,9 @@ public class SectionRemoveAcceptanceTest extends BaseAcceptanceTest {
 
 		// then
 		assertAll(
-			() -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
+			() -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value()),
 			() -> assertThat(findResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-			() -> assertThat(findResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(역삼역, 선릉역),
-			() -> assertThat(findResponse.jsonPath().getInt("distance")).isEqualTo(100)
+			() -> assertThat(findResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(역삼역, 선릉역)
 		);
 	}
 
@@ -74,7 +73,6 @@ public class SectionRemoveAcceptanceTest extends BaseAcceptanceTest {
 	 * And 각 구간의 거리는 100 이다.
 	 * When 노선에서 "선릉역" 을 삭제한다.
 	 * Then 노선 조회 시, "강남역" - "역삼역" 구간을 확인할 수 있다.
-	 * And 노선 조회 시, "강남역" - "역삼역" 구간의 거리는 100 이다.
 	 */
 	@DisplayName("지하철 노선에서 하행 종점역을 삭제한다.")
 	@Test
@@ -84,10 +82,7 @@ public class SectionRemoveAcceptanceTest extends BaseAcceptanceTest {
 		ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(이호선);
 
 		// then
-		assertAll(
-			() -> assertThat(findResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 역삼역),
-			() -> assertThat(findResponse.jsonPath().getInt("distance")).isEqualTo(100)
-		);
+		assertThat(findResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 역삼역);
 	}
 
 	/**
@@ -105,10 +100,7 @@ public class SectionRemoveAcceptanceTest extends BaseAcceptanceTest {
 		ExtractableResponse<Response> findResponse = 지하철_노선_조회_요청(이호선);
 
 		// then
-		assertAll(
-			() -> assertThat(findResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 선릉역),
-			() -> assertThat(findResponse.jsonPath().getInt("distance")).isEqualTo(200)
-		);
+		assertThat(findResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(강남역, 선릉역);
 	}
 
 	/**

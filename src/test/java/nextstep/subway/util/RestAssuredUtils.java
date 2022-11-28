@@ -41,6 +41,11 @@ public class RestAssuredUtils {
 			.then().log().all();
 	}
 
+	public static ValidatableResponse delete(final String url, final Long path, final Long param) {
+		return RestAssured.delete(url, path, param)
+			.then().log().all();
+	}
+
 	public static <T> ValidatableResponse put(final String url, final T updateRequest) {
 		return requestSpecification
 			.body(updateRequest)

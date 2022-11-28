@@ -73,7 +73,7 @@ public class LineController {
 		@RequestParam(name = "stationId") Long stationId
 	) {
 		lineService.removeSection(lineId, stationId);
-		return ResponseEntity.ok().build();
+		return ResponseEntity.noContent().build();
 	}
 
 }
