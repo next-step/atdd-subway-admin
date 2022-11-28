@@ -57,7 +57,7 @@ public class LineAcceptanceTest {
         Station station1 = stations.save(new Station("신사역"));
         Station station2 = stations.save(new Station("광교중앙"));
 
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId());
         ExtractableResponse<Response> response = createLine(lineRequest);
 
         //then
@@ -82,10 +82,10 @@ public class LineAcceptanceTest {
         Station station2 = stations.save(new Station("광교중앙"));
         Station station3 = stations.save(new Station("정자"));
 
-        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId());
         ExtractableResponse<Response> response1 = createLine(lineRequest1);
 
-        LineRequest lineRequest2 = new LineRequest("분당선", "bg-red-600", station1.getId(), station3.getId(), 10);
+        LineRequest lineRequest2 = new LineRequest("분당선", "bg-red-600", station1.getId(), station3.getId());
         ExtractableResponse<Response> response2 = createLine(lineRequest2);
 
         // when
@@ -110,7 +110,7 @@ public class LineAcceptanceTest {
         Station station1 = stations.save(new Station("신사역"));
         Station station2 = stations.save(new Station("광교중앙"));
 
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId());
         ExtractableResponse<Response> response = createLine(lineRequest);
         String lineId = parseIdByLocation(response.header("Location"));
 
@@ -139,7 +139,7 @@ public class LineAcceptanceTest {
         Station station2 = stations.save(new Station("광교중앙"));
         Station station3 = stations.save(new Station("정자"));
 
-        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        LineRequest lineRequest1 = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId());
         ExtractableResponse<Response> response1 = createLine(lineRequest1);
         String lineId = parseIdByLocation(response1.header("Location"));
 
@@ -172,7 +172,7 @@ public class LineAcceptanceTest {
         Station station1 = stations.save(new Station("신사역"));
         Station station2 = stations.save(new Station("광교중앙"));
 
-        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId(), 10);
+        LineRequest lineRequest = new LineRequest("신분당선", "bg-red-600", station1.getId(), station2.getId());
         ExtractableResponse<Response> response1 = createLine(lineRequest);
 
         String lineId = parseIdByLocation(response1.header("Location"));
@@ -265,7 +265,6 @@ public class LineAcceptanceTest {
         params.put("color", lineRequest.getColor());
         params.put("upStationId", String.valueOf(lineRequest.getUpStationId()));
         params.put("downStationId", String.valueOf(lineRequest.getDownStationId()));
-        params.put("distance", String.valueOf(lineRequest.getDistance()));
 
         return params;
     }

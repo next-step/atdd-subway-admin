@@ -11,7 +11,6 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private int distance;
     private List<SectionResponse> sections = new ArrayList<>();
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
@@ -21,18 +20,17 @@ public class LineResponse {
                 .stream()
                 .map(section -> SectionResponse.of(section))
                 .collect(Collectors.toList());
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getDistance(), sectionResponses, line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), sectionResponses, line.getCreatedDate(), line.getModifiedDate());
     }
 
     public LineResponse() {
 
     }
 
-    public LineResponse(Long id, String name, String color, int distance, List<SectionResponse> sectionResponses, LocalDateTime createdDate, LocalDateTime modifiedDate) {
+    public LineResponse(Long id, String name, String color, List<SectionResponse> sectionResponses, LocalDateTime createdDate, LocalDateTime modifiedDate) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.distance = distance;
         this.sections = sectionResponses;
         this.createdDate = createdDate;
         this.modifiedDate = modifiedDate;
@@ -49,10 +47,6 @@ public class LineResponse {
 
     public String getColor() {
         return  color;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 
     public LocalDateTime getCreatedDate() {

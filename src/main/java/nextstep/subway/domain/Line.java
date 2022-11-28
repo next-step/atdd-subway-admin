@@ -17,8 +17,6 @@ public class Line extends BaseEntity {
     @Embedded
     Sections sections = new Sections();
 
-    private int distance;
-
     protected Line() {
 
     }
@@ -27,28 +25,20 @@ public class Line extends BaseEntity {
         this.name = name;
     }
 
-    public Line(String name, String color, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
     }
 
     public Line of(LineRequest lineRequest) {
         this.name = lineRequest.getName();
         this.color = lineRequest.getColor();
-        this.distance = lineRequest.getDistance();
-
         return this;
     }
 
     public Sections addSection(Section section) {
         return sections.addSection(section);
     }
-
-    public void updateDistance(int distance) {
-        this.distance = distance;
-    }
-
     public Long getId() {
         return id;
     }
@@ -65,7 +55,4 @@ public class Line extends BaseEntity {
         return sections;
     }
 
-    public int getDistance() {
-        return distance;
-    }
 }
