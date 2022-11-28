@@ -31,9 +31,6 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
         LineResponse lineResponse = getLineResponseWithStations(persistLine);
-
-        System.out.println("debug1 : " + lineResponse.getId());
-        System.out.println("debug1 : " + lineResponse.getName());
         return lineResponse;
     }
 
