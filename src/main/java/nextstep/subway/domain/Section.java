@@ -47,20 +47,6 @@ public class Section extends BaseEntity {
         return line.getId();
     }
 
-    public Long getUpStationId() {
-        if (upStation == null) {
-            return null;
-        }
-        return upStation.getId();
-    }
-
-    public Long getDownStationId() {
-        if (downStation == null) {
-            return null;
-        }
-        return downStation.getId();
-    }
-
     public Section switchDownStation(Section section) {
         this.downStation = section.getDownStation();
         return this;
