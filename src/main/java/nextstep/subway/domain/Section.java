@@ -40,9 +40,8 @@ public class Section {
         this.line = line;
     }
 
-    public static Section mergeByDelete(Section upSection, Section downSection) {
-        return new Section(upSection.getUpStation(), downSection.getDownStation(),
-                upSection.plusDistance(downSection), upSection.getLine());
+    public Section mergeSection(Section downSection) {
+        return new Section(this.upStation, downSection.getDownStation(), plusDistance(downSection), line);
     }
 
     private void validSameStation(Station upStation, Station downStationId) {

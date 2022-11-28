@@ -73,9 +73,9 @@ public class SectionLineUp {
     }
 
     private void deleteInternalStation(Station station) {
-        Section upSection = findSameDownStation(station);
-        Section downSection = findSameUpStation(station);
-        sectionList.add(Section.mergeByDelete(upSection, downSection));
+        final Section upSection = findSameDownStation(station);
+        final Section downSection = findSameUpStation(station);
+        sectionList.add(upSection.mergeSection(downSection));
         List<Section> deletedSections = Arrays.asList(upSection, downSection);
         sectionList.removeAll(deletedSections);
     }
