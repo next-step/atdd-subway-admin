@@ -117,14 +117,14 @@ public class Sections {
 	public void remove(Station station) {
 		validateRemoveSection(station);
 		removeSection(station);
-		removeCache();
+		clearCache();
 	}
 
 	public void removeSection(Section section) {
 		sections.remove(section);
 	}
 
-	private void removeCache() {
+	private void clearCache() {
 		sectionByUpStationMap = null;
 		sectionByDownStationMap = null;
 	}

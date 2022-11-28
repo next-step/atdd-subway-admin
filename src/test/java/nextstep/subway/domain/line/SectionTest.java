@@ -12,7 +12,7 @@ class SectionTest {
 
 	@Test
 	@DisplayName("구간 생성 검증")
-	public void createSection() {
+	void createSection() {
 		// When
 		Section 생성된_구간 = new Section(null, Station.from("논현역"), Station.from("신논현역"), 10);
 

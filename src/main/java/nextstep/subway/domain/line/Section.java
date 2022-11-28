@@ -121,7 +121,7 @@ public class Section {
 		return result;
 	}
 
-	public void connect(Section sectionByUpStation) {
+	public void extend(Section sectionByUpStation) {
 		this.downStation = sectionByUpStation.downStation;
 		this.distance = this.distance.add(sectionByUpStation.distance);
 	}

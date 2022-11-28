@@ -17,7 +17,7 @@ public class MiddleSectionRemoveStrategy implements SectionRemoveStrategy {
 
 	@Override
 	public void remove() {
-		sectionByDownStation.connect(sectionByUpStation);
+		sectionByDownStation.extend(sectionByUpStation);
 		sections.removeSection(sectionByUpStation);
 	}
 }
