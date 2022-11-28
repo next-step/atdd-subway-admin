@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.SectionService;
+import nextstep.subway.dto.ExceptionResponse;
 import nextstep.subway.dto.SectionRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,6 +30,7 @@ public class SectionController {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity IllegalArgumentException() {return ResponseEntity.badRequest().build();}
-
+    public ResponseEntity IllegalArgumentException(IllegalArgumentException ex) {
+        ExceptionResponse response =  ExceptionResponse.from(ex);
+        return ResponseEntity.badRequest().body(response);}
 }

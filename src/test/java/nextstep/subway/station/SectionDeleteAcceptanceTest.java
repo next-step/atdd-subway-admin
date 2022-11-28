@@ -3,6 +3,8 @@ package nextstep.subway.station;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.common.CommonAssert;
+import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.util.DatabaseCleaner;
@@ -21,7 +23,6 @@ import org.springframework.http.HttpStatus;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
-import static nextstep.subway.station.LineAcceptanceTest.요청이_실패한다;
 import static nextstep.subway.station.StationAcceptanceTest.지하철역을_생성한다;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,7 +65,12 @@ public class SectionDeleteAcceptanceTest {
 
         ExtractableResponse<Response> response = 노선에서_역을_삭제한다(기본노선정보.getId(), station);
 
-        요청이_실패한다(response);
+        요청이_실패한다(response, Line.MESSAGE_STATION_CAN_NOT_BE_DELETED);
+    }
+
+    private void 요청이_실패한다(ExtractableResponse<Response> response, String errorMessage) {
+        CommonAssert.요청이_실패한다(response);
+        assertThat(response.jsonPath().getString("errorMessage")).isEqualTo(errorMessage);
     }
 
     /**
@@ -76,7 +82,7 @@ public class SectionDeleteAcceptanceTest {
 
         ExtractableResponse<Response> response = 노선에서_역을_삭제한다(기본노선정보.getId(), 중간역);
 
-        요청이_실패한다(response);
+        CommonAssert.요청이_실패한다(response);
     }
 
     /**

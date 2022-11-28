@@ -14,19 +14,16 @@ class SectionsTest {
     @Test
     @DisplayName("중간에 있는 역을 삭제하면 Section이 수정됨.")
     void delete() {
+        Station middleStation = new Station(1L,"중간역");
+        Station upperStation = new Station(2L,"상행역");
+        Station downStation = new Station(3L,"하행역");
+        Line line = new Line("라인","색상",100L);
+
         Sections sections = new Sections();
-        Section mockSection1 = mock(Section.class);
-        Section mockSection2 = mock(Section.class);
-        sections.add(mockSection1);
-        sections.add(mockSection2);
+        sections.add(Section.of(line,upperStation,middleStation,40L));
+        sections.add(Section.of(line,middleStation,downStation,60L));
 
-        Station station = new Station(1L,"중간역");
-        given(mockSection1.hasUpStation(station)).willReturn(false);
-        given(mockSection1.hasDownStation(station)).willReturn(true);
-        given(mockSection2.hasUpStation(station)).willReturn(true);
-        given(mockSection2.hasDownStation(station)).willReturn(false);
-
-        sections.delete(station);
+        sections.delete(middleStation);
 
         assertThat(sections.hasOnlyOneSection()).isTrue();
     }

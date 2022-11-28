@@ -202,4 +202,5 @@ public class Line extends BaseEntity {
             throw new IllegalArgumentException(MESSAGE_STATION_CAN_NOT_BE_DELETED);
         }
     }
+
 }

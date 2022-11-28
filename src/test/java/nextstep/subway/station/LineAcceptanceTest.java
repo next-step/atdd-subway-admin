@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import java.util.Arrays;
 import java.util.List;
 
+import static nextstep.subway.common.CommonAssert.요청이_실패한다;
 import static nextstep.subway.station.StationAcceptanceTest.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -152,9 +153,7 @@ class LineAcceptanceTest {
         assertStatus(response,HttpStatus.NO_CONTENT);
     }
 
-    public static void 요청이_실패한다(ExtractableResponse<Response> response) {
-        assertStatus(response,HttpStatus.BAD_REQUEST);
-    }
+
 
     private ExtractableResponse<Response> 지하철_노선을_생성한다() {
         return 지하철_노선을_생성한다("노선", "색생", 1000L, "상행역", "하행역");
