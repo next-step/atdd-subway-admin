@@ -68,4 +68,8 @@ public class Line {
 	public void connectSection(Section section, List<Section> sectionsToUpdate) {
 		sections.connect(section, sectionsToUpdate);
 	}
+
+	public void removeSection(Station station) {
+		this.sections.remove(station);
+	}
 }

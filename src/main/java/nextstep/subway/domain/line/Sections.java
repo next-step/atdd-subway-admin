@@ -85,6 +85,10 @@ public class Sections {
 		sections.add(section);
 	}
 
+	public void remove(Station station) {
+
+	}
+
 	private void validateAddSection(Section section) {
 		validateSameUpDownStation(section);
 		validateNotIncludeUpDownStation(section);
@@ -119,4 +123,5 @@ public class Sections {
 			.filter(section -> section.isSameUpStation(newSection))
 			.anyMatch(section -> section.isSameDownStation(newSection));
 	}
+
 }

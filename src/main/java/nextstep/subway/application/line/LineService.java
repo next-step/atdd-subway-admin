@@ -68,6 +68,27 @@ public class LineService {
 		lineRepository.deleteById(id);
 	}
 
+	@Transactional
+	public LineResponse addSection(Long lineId, SectionCreateRequest request) {
+		Line line = findById(lineId);
+
+		Station upStation = findUpStation(request.getUpStationId());
+		Station downStation = findDownStation(request.getDownStationId());
+		List<Section> sectionsToUpdate = sectionService.findSectionsToUpdate(upStation, downStation);
+
+		Section section = new Section(line, upStation , downStation, request.getDistance());
+		line.connectSection(section, sectionsToUpdate);
+
+		return lineResponse(line);
+	}
+
+	@Transactional
+	public void removeSection(Long lineId, Long stationId) {
+		Station station = stationService.findById(stationId);
+		Line line = findById(lineId);
+		line.removeSection(station);
+	}
+
 	private Line findById(Long id) {
 		return lineRepository.findById(id)
 			.orElseThrow(() -> new LineNotFoundException(LINE_NOT_FOUND_MESSAGE + id));
@@ -86,19 +107,6 @@ public class LineService {
 		return line.allStations().stream()
 			.map(station -> new StationNameResponse(station.getId(), station.getName()))
 			.collect(Collectors.toList());
-	}
-
-	public LineResponse addSection(Long lineId, SectionCreateRequest request) {
-		Line line = findById(lineId);
-
-		Station upStation = findUpStation(request.getUpStationId());
-		Station downStation = findDownStation(request.getDownStationId());
-		List<Section> sectionsToUpdate = sectionService.findSectionsToUpdate(upStation, downStation);
-
-		Section section = new Section(line, upStation , downStation, request.getDistance());
-		line.connectSection(section, sectionsToUpdate);
-
-		return lineResponse(line);
 	}
 
 	private Station findUpStation(Long upStationId) {
