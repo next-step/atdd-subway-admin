@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -50,12 +51,10 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLines() {
-        List<Line> lines = lineRepository.findAll();
-        List<LineResponse> lineResponses = new ArrayList<>();
-        for (final Line line : lines) {
-            lineResponses.add(new LineResponse(line));
-        }
-        return lineResponses;
+        return lineRepository.findAll()
+                .stream()
+                .map(LineResponse::new)
+                .collect(Collectors.toList());
     }
 
     public LineResponse findById(long lineId) {
