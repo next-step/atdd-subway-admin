@@ -24,17 +24,19 @@ class LineRepositoryTest {
 
     @Test
     void 노선_역_fetch_join() {
-        insertLineStations();
+        insertLineAndStations();
         List<Line> allLines = lineRepository.findAllLines();
         assertThat(allLines).hasSize(1);
-        assertThat(allLines.get(0).getUpStation()).isNotNull();
-        assertThat(allLines.get(0).getDownStation()).isNotNull();
+        assertThat(allLines.get(0).getLineStations().getStationsInOrder().get(0)).isNotNull();
+        assertThat(allLines.get(0).getLineStations().getStationsInOrder().get(1)).isNotNull();
     }
 
-    private void insertLineStations() {
+    private void insertLineAndStations() {
         preDataUtil.line(1L, "노선1");
-        preDataUtil.station(1L, "역1", 1L);
-        preDataUtil.station(2L, "역2", 1L);
+        preDataUtil.station(1L, "역1");
+        preDataUtil.station(2L, "역2");
+        preDataUtil.lineStation(1L, 2L, 1L, 1L, 10);
+        preDataUtil.lineStation(2L, 1L, null, 1L, null);
     }
 
 }

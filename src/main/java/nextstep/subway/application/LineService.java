@@ -8,11 +8,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.LineStation;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineChange;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.exception.AlreadyDeletedException;
 import nextstep.subway.exception.NoStationException;
 import nextstep.subway.exception.NotFoundException;
@@ -22,11 +23,11 @@ import nextstep.subway.exception.SameStationException;
 @Transactional(readOnly = true)
 public class LineService {
     private LineRepository lineRepository;
-    private StationRepository stationRepository;
+    private StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
     }
 
     @Transactional
@@ -35,16 +36,12 @@ public class LineService {
             throw new SameStationException();
         }
 
-        Station upStation = findStationById(lineRequest.getUpStationId(),
-            new NoStationException(lineRequest.getUpStationId()));
-        Station downStation = findStationById(lineRequest.getDownStationId(),
-            new NoStationException(lineRequest.getDownStationId()));
+        validateStation(lineRequest.getUpStationId());
+        validateStation(lineRequest.getDownStationId());
 
-        Line persistLine = lineRepository.save(Line.of(lineRequest));
-        upStation.updateLine(persistLine);
-        downStation.updateLine(persistLine);
+        Line line = lineRepository.save(Line.of(lineRequest));
 
-        return LineResponse.of(persistLine);
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> findAllLines() {
@@ -54,7 +51,7 @@ public class LineService {
     }
 
     public LineResponse findLine(Long id) {
-        Line line = findLineById(id, new NotFoundException());
+        Line line = lineRepository.findLine(id).orElseThrow(NotFoundException::new);
         return LineResponse.of(line);
     }
 
@@ -71,11 +68,22 @@ public class LineService {
         lineRepository.delete(line);
     }
 
-    private Station findStationById(Long id, RuntimeException exception) {
-        return stationRepository.findById(id).orElseThrow(() -> exception);
+    @Transactional
+    public void registerSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = lineRepository.findLine(lineId).orElseThrow(NotFoundException::new);
+        validateStation(sectionRequest.getUpStationId());
+        validateStation(sectionRequest.getDownStationId());
+        line.addLineStation(
+            new LineStation(new Station(sectionRequest.getDownStationId()), sectionRequest.getUpStationId(),
+                sectionRequest.getDistance()));
     }
 
     private Line findLineById(Long id, RuntimeException exception) {
         return lineRepository.findById(id).orElseThrow(() -> exception);
     }
+
+    private void validateStation(Long stationId) {
+        stationService.findStationById(stationId, new NoStationException(stationId));
+    }
+
 }

@@ -37,10 +37,10 @@ public class LineAcceptanceTest {
             RestAssured.port = port;
         }
         preDataUtil.truncate();
-        preDataUtil.station(1L, "역1", null);
-        preDataUtil.station(2L, "역2", null);
-        preDataUtil.station(3L, "역3", null);
-        preDataUtil.station(4L, "역4", null);
+        preDataUtil.station(1L, "역1");
+        preDataUtil.station(2L, "역2");
+        preDataUtil.station(3L, "역3");
+        preDataUtil.station(4L, "역4");
     }
 
     /**
@@ -105,7 +105,7 @@ public class LineAcceptanceTest {
      * When 존재하지 않는 노선을 조회하면
      * Then 404 응답코드를 받는다
      */
-    @DisplayName("존재하지 않는 노선을 조회한")
+    @DisplayName("존재하지 않는 노선을 조회한다")
     @Test
     void notFoundLine() {
         // when
@@ -225,7 +225,7 @@ public class LineAcceptanceTest {
             .extract();
     }
 
-    private ExtractableResponse<Response> fetchLine(Long id) {
+    public static ExtractableResponse<Response> fetchLine(Long id) {
         return RestAssured.given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().get("/lines/" + id)
