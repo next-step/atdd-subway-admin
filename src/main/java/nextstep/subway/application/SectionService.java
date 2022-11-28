@@ -32,7 +32,7 @@ public class SectionService {
         Station upStation = findStationById(sectionRequest.getUpStationId());
         Station downStation = findStationById(sectionRequest.getDownStationId());
 
-        Sections sections = line.addSection(sectionRequest.toSection(line, upStation, downStation, sectionRequest.getDistance()));
+        Sections sections = line.addSection(sectionRequest.toSection(line, upStation, downStation));
 
         List<Section> persistSections = sectionRepository.saveAll(sections.getSectionList());
 

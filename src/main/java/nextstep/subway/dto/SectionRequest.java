@@ -15,7 +15,7 @@ public class SectionRequest {
         this.distance = distance;
     }
 
-    public Section toSection(Line line, Station upStation, Station downStation, int distance) {
+    public Section toSection(Line line, Station upStation, Station downStation) {
         return new Section(line, upStation, downStation, distance);
     }
 
