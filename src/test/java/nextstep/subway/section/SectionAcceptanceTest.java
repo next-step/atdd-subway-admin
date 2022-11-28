@@ -52,7 +52,7 @@ public class SectionAcceptanceTest {
         StationResponse 당산역 = getSavedStation("당산역");
         StationResponse 합정역 = getSavedStation("합정역");
 
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 합정역.getId());
         ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
         LineResponse 이호선 = response.as(LineResponse.class);
 
@@ -84,7 +84,7 @@ public class SectionAcceptanceTest {
         StationResponse 당산역 = getSavedStation("당산역");
         StationResponse 홍대입구역 = getSavedStation("홍대입구역");
 
-        LineRequest lineRequest1 = new LineRequest("2호선", "bg-green-600");
+        LineRequest lineRequest1 = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 홍대입구역.getId());
         ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest1);
         LineResponse 이호선 = response.as(LineResponse.class);
 
@@ -123,7 +123,7 @@ public class SectionAcceptanceTest {
         StationResponse 당산역 = getSavedStation("당산역");
         StationResponse 홍대입구역 = getSavedStation("홍대입구역");
 
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 홍대입구역.getId());
         ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
         LineResponse 이호선 = response.as(LineResponse.class);
 
@@ -157,7 +157,7 @@ public class SectionAcceptanceTest {
         StationResponse 당산역 = getSavedStation("당산역");
         StationResponse 합정역 = getSavedStation("합정역");
 
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 합정역.getId());
         ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
         LineResponse 이호선 = response.as(LineResponse.class);
 
@@ -189,7 +189,7 @@ public class SectionAcceptanceTest {
         StationResponse 당산역 = getSavedStation("당산역");
         StationResponse 합정역 = getSavedStation("합정역");
 
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 합정역.getId());
         ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
         LineResponse 이호선 = response.as(LineResponse.class);
 
@@ -221,7 +221,7 @@ public class SectionAcceptanceTest {
         StationResponse 당산역 = getSavedStation("당산역");
         StationResponse 홍대입구역 = getSavedStation("홍대입구역");
 
-        LineRequest lineRequest1 = new LineRequest("2호선", "bg-green-600");
+        LineRequest lineRequest1 = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 홍대입구역.getId());
         ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest1);
         LineResponse 이호선 = response.as(LineResponse.class);
 
@@ -250,7 +250,7 @@ public class SectionAcceptanceTest {
         StationResponse 당산역 = getSavedStation("당산역");
         StationResponse 합정역 = getSavedStation("합정역");
 
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 합정역.getId());
         ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
         LineResponse 이호선 = response.as(LineResponse.class);
 
@@ -278,7 +278,7 @@ public class SectionAcceptanceTest {
         StationResponse 당산역 = getSavedStation("당산역");
         StationResponse 합정역 = getSavedStation("합정역");
 
-        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600");
+        LineRequest lineRequest = new LineRequest("2호선", "bg-green-600", 당산역.getId(), 합정역.getId());
         ExtractableResponse<Response> response = LineAcceptanceTest.createLine(lineRequest);
         LineResponse 이호선 = response.as(LineResponse.class);
 

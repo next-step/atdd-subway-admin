@@ -18,16 +18,22 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private LineRepository lineRepository;
+    private StationRepository stationRepository;
     private static final String NO_SUCH_LINE_EXCEPTION = "해당 ID의 노선 정보가 없습니다.";
+    private static final String NO_SUCH_STATION_EXCEPTION = "해당 ID의 역 정보가 없습니다.";
 
-    public LineService(LineRepository lineRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
+        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
-        LineResponse lineResponse = LineResponse.of(persistLine);
+        LineResponse lineResponse = getLineResponseWithStations(persistLine);
+
+        System.out.println("debug1 : " + lineResponse.getId());
+        System.out.println("debug1 : " + lineResponse.getName());
         return lineResponse;
     }
 
@@ -35,7 +41,7 @@ public class LineService {
         List<Line> lines = lineRepository.findAll();
 
         return lines.stream()
-                .map(line -> LineResponse.of(line))
+                .map(line -> getLineResponseWithStations(line))
                 .collect(Collectors.toList());
     }
 
@@ -43,7 +49,7 @@ public class LineService {
         Line line = lineRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION));
-        return LineResponse.of(line);
+        return getLineResponseWithStations(line);
     }
 
     @Transactional
@@ -61,6 +67,21 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION));
         Line persistLine = line.of(lineRequest);
 
-        return LineResponse.of(persistLine);
+        return getLineResponseWithStations(persistLine);
+    }
+
+    private LineResponse getLineResponseWithStations(Line line) {
+        List<StationResponse> stations = new ArrayList<>();
+
+        stations.add(StationResponse.of(stationRepository
+                .findById(line.getUpStationId())
+                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION))));
+        stations.add(StationResponse.of(stationRepository
+                .findById(line.getDownStationId())
+                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION))));
+
+        System.out.println(NO_SUCH_STATION_EXCEPTION);
+
+        return LineResponse.of(line).setStations(stations);
     }
 }

@@ -7,6 +7,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.StationResponse;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -258,14 +259,4 @@ public class LineAcceptanceTest {
         return location.substring(location.lastIndexOf("/")+1);
     }
 
-    public Map<String, String> setParams(LineRequest lineRequest) {
-
-        Map<String, String> params = new HashMap<>();
-        params.put("name", lineRequest.getName());
-        params.put("color", lineRequest.getColor());
-        params.put("upStationId", String.valueOf(lineRequest.getUpStationId()));
-        params.put("downStationId", String.valueOf(lineRequest.getDownStationId()));
-
-        return params;
-    }
 }
