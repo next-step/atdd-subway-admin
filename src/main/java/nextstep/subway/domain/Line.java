@@ -4,20 +4,18 @@ import javax.persistence.*;
 import java.util.List;
 
 @Entity
-public class Station extends BaseEntity {
+public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true)
     private String name;
-    @OneToMany(targetEntity = LineStation.class, mappedBy = "line", fetch = FetchType.LAZY)
+    private String color;
+    private Integer distance;
+    @OneToMany(targetEntity = LineStation.class, mappedBy = "station", fetch = FetchType.LAZY)
     private List<LineStation> lineStations;
 
-    public Station() {
-    }
-
-    public Station(String name) {
-        this.name = name;
+    public Line() {
     }
 
     public Long getId() {
@@ -26,6 +24,14 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public Integer getDistance() {
+        return distance;
     }
 
     public List<LineStation> getLineStations() {
