@@ -93,10 +93,7 @@ public class LineService {
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException("요청한 노선을 찾을 수 없습니다. 노선ID:" + lineId));
         Station station = stationService.findById(stationId);
-        List<Section> deletedSections = line.deleteSection(station);
-        sectionRepository.deleteAllById(deletedSections.stream()
-                .map(Section::getId)
-                .collect(Collectors.toList()));
+        line.deleteSection(station);
         stationService.deleteIfNotContainsAnySection(station);
         return LineSectionResponse.of(line, line.getSectionLineUpInOrder());
     }
