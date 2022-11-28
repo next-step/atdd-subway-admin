@@ -120,6 +120,10 @@ public class Sections {
 		removeCache();
 	}
 
+	public void removeSection(Section section) {
+		sections.remove(section);
+	}
+
 	private void removeCache() {
 		sectionByUpStationMap = null;
 		sectionByDownStationMap = null;
@@ -128,29 +132,7 @@ public class Sections {
 	private void removeSection(Station station) {
 		Section upSection = sectionByUpStationMap(station);
 		Section downSection = sectionByDownStationMap(station);
-
-		if (isMiddleSection(upSection, downSection)) {
-			downSection.connect(upSection);
-			sections.remove(upSection);
-		}
-		if (isLastSection(upSection, downSection)) {
-			sections.remove(upSection);
-		}
-		if (isFirstSection(upSection, downSection)) {
-			sections.remove(downSection);
-		}
-	}
-
-	private boolean isFirstSection(Section upSection, Section downSection) {
-		return upSection == null && downSection != null;
-	}
-
-	private boolean isLastSection(Section upSection, Section downSection) {
-		return upSection != null && downSection == null;
-	}
-
-	private boolean isMiddleSection(Section upSection, Section downSection) {
-		return upSection != null && downSection != null;
+		SectionRemover.of(this, upSection, downSection).remove();
 	}
 
 	private void validateRemoveSection(Station station) {
