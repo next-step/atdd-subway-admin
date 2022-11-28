@@ -84,24 +84,14 @@ public class Section {
 		return station.equals(newStation);
 	}
 
-	public void updateUpStation(Station downStation, Distance distance) {
-		this.upStation = downStation;
-		this.distance = this.distance.subtract(distance);
+	public void replaceUpStation(Section newSection) {
+		this.upStation = newSection.downStation;
+		this.distance = this.distance.subtract(newSection.distance);
 	}
 
-	public void updateDownStation(Station upStation, Distance distance) {
-		this.downStation = upStation;
-		this.distance = this.distance.subtract(distance);
-	}
-
-	public void rearrange(Section section) {
-		if (isSameUpStation(section)) {
-			updateUpStation(section.downStation, section.distance);
-			return;
-		}
-		if (isSameDownStation(section)) {
-			updateDownStation(section.upStation, section.distance);
-		}
+	public void replaceDownStation(Section newSection) {
+		this.downStation = newSection.upStation;
+		this.distance = this.distance.subtract(newSection.distance);
 	}
 
 	@Override

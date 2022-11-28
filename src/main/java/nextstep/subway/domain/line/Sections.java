@@ -80,15 +80,9 @@ public class Sections {
 
 	public void connect(Section section, List<Section> sectionsToRearrange) {
 		validateAddSection(section);
-		if (hasSectionsToRearrange(sectionsToRearrange)) {
-			sectionsToRearrange
-				.forEach(sectionToRearrange -> sectionToRearrange.rearrange(section));
-		}
+		SectionConnector connector = SectionConnector.of(section, sectionsToRearrange);
+		connector.connect();
 		sections.add(section);
-	}
-
-	private boolean hasSectionsToRearrange(List<Section> sectionsToRearrange) {
-		return !sectionsToRearrange.isEmpty();
 	}
 
 	private void validateAddSection(Section section) {
