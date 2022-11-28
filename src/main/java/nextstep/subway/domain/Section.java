@@ -42,7 +42,7 @@ public class Section {
 
     public static Section mergeByDelete(Section upSection, Section downSection) {
         return new Section(upSection.getUpStation(), downSection.getDownStation(),
-                upSection.mergeDistance(downSection), upSection.getLine());
+                upSection.plusDistance(downSection), upSection.getLine());
     }
 
     private void validSameStation(Station upStation, Station downStationId) {
@@ -59,8 +59,8 @@ public class Section {
         return distance;
     }
 
-    public Distance mergeDistance(Section section) {
-        return distance.merge(section.getDistance());
+    public Distance plusDistance(Section section) {
+        return distance.plus(section.getDistance());
     }
 
     public Distance minusDistance(Section section) {

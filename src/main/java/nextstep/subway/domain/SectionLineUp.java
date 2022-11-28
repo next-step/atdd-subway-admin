@@ -61,6 +61,7 @@ public class SectionLineUp {
         validOnlyOneSection();
         if (isInternalStation(station)) {
             deleteInternalStation(station);
+            return;
         }
         delete(station);
     }

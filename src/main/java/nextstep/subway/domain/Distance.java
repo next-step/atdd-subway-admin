@@ -58,7 +58,7 @@ public class Distance {
         return Objects.hash(distance);
     }
 
-    public Distance merge(Distance distance) {
+    public Distance plus(Distance distance) {
         return new Distance(this.distance + distance.getDistance());
     }
 }
