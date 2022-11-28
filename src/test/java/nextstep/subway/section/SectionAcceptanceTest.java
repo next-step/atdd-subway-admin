@@ -147,4 +147,23 @@ public class SectionAcceptanceTest {
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
+
+    /**
+     * Given 강남 - 광교역 뒤에 하행신설역을 추가한다.
+     * When 상행종점인 강남역을 제거한다.
+     * Then 광교역이 상행종점이 된다.
+     */
+    @DisplayName("상행종점을 제거하는 경우 다음역이 종점이 됨")
+    @Test
+    void deleteUpStation() {
+        // given
+        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 광교역.getId(), 하행신설역.getId(), 1);
+        // when
+        SectionTestFixture.requestRemoveSection(신분당선.getId().toString(), 강남역.getId());
+        // then
+        List<StationResponse> stations =
+                LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class).getStations();
+
+        assertThat(stations.get(0).getName()).isEqualTo(광교역.getName());
+    }
 }

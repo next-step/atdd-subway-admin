@@ -79,4 +79,8 @@ public class Line extends BaseEntity {
             throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어있지 않습니다.");
         }
     }
+
+    public void removeStation(Station station) {
+        sections.removeStation(station);
+    }
 }

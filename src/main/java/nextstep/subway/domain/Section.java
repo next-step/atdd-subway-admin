@@ -102,4 +102,8 @@ public class Section implements Comparable<Section> {
     public int compareTo(Section other) {
         return this.downStation == other.upStation ? -1 : 1;
     }
+
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
 }
