@@ -46,4 +46,14 @@ class DistanceTest {
         Distance minusDistance = new Distance(minus);
         assertThatIllegalArgumentException().isThrownBy(() -> sourceDistance.minus(minusDistance));
     }
+
+    @Test
+    void plus_distance_success() {
+        int source = 10;
+        int plus = 5;
+        int expect = 15;
+        Distance sourceDistance = new Distance(source);
+        Distance plusDistance = new Distance(plus);
+        assertThat(sourceDistance.plus(plusDistance)).isEqualTo(new Distance(expect));
+    }
 }

@@ -4,13 +4,13 @@ import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionRepository;
+import nextstep.subway.domain.Station;
 import nextstep.subway.domain.Stations;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineSectionResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionCreateRequest;
-import nextstep.subway.dto.SectionCreateResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,16 +24,12 @@ import static org.springframework.transaction.annotation.Isolation.READ_COMMITTE
 @Service
 public class LineService {
 
-    private LineRepository lineRepository;
-    private StationService stationService;
+    private final LineRepository lineRepository;
+    private final StationService stationService;
 
-    private SectionRepository sectionRepository;
-
-    public LineService(LineRepository lineRepository, StationService stationService,
-            SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional(isolation = READ_COMMITTED)
@@ -73,7 +69,7 @@ public class LineService {
     }
 
     @Transactional(isolation = READ_COMMITTED)
-    public SectionCreateResponse createSection(long id, SectionCreateRequest request) {
+    public LineSectionResponse createSection(long id, SectionCreateRequest request) {
         Line line = lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("요청한 노선을 찾을 수 없습니다. 노선ID:" + id));
         long upStationId = request.getUpStationId();
@@ -85,7 +81,16 @@ public class LineService {
                 upDownStations.findById(downStationId),
                 new Distance(request.getDistance()), line));
 
-        return SectionCreateResponse.of(line, line.getSectionLineUpInOrder());
+        return LineSectionResponse.of(line, line.getSectionLineUpInOrder());
+    }
+
+    @Transactional(isolation = READ_COMMITTED)
+    public LineSectionResponse deleteSection(long lineId, long stationId) {
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(() -> new IllegalArgumentException("요청한 노선을 찾을 수 없습니다. 노선ID:" + lineId));
+        Station station = stationService.findById(stationId);
+        line.deleteSection(station);
+        return LineSectionResponse.of(line, line.getSectionLineUpInOrder());
     }
 
     private Stations findStations(List<Long> stationIds) {

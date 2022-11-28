@@ -75,4 +75,8 @@ public class Line {
     public Stations getStationsInOrder() {
         return this.sectionLineUp.getStationsInOrder();
     }
+
+    public void deleteSection(Station station) {
+        sectionLineUp.deleteSection(station);
+    }
 }

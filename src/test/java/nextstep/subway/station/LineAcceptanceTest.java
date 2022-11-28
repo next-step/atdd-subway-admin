@@ -442,6 +442,168 @@ class LineAcceptanceTest {
         assertThat(makeLineStationResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
+    /**
+     * given: 두 개의 구간을 갖는 노선을 생성하고
+     * when:  상행 종점을 삭제하면
+     * then:  상행 종점이 삭제되고, 그 다음 역이 상행 종점이 된다
+     */
+    @DisplayName("상행 구간 종점 삭제")
+    @Test
+    void 상행_구간_종점_삭제() {
+        // given:
+        // 삼전역, 강남역, 석촌고분역
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
+        long 석촌고분역_id = 지하철역_생성("석촌고분역");
+
+        // 분당선 생성, 및 조회
+        // 삼전역 -> 강남역 -> 석촌고분역
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id);
+        노선_구간_생성(lineId, 구간_생성(강남역_id, 석촌고분역_id));
+
+        // when:
+        // 삼전역(상행 종점) 삭제
+        ExtractableResponse<Response> response = 구간_삭제(lineId, 삼전역_id);
+
+        // 신규 상행 종점
+        Map<String, Integer> firstSection = getResultSection(response, FIRST_STATION_INDEX);
+        // 구간 갯수
+        int sectionSize = getSectionSize(response);
+
+        // then:
+        // 강남역 -> 석촌고분역
+        assertThat(firstSection.get("preStationId")).isEqualTo(강남역_id);
+        assertThat(firstSection.get("nextStationId")).isEqualTo(석촌고분역_id);
+        assertThat(sectionSize).isEqualTo(1);
+    }
+
+    /**
+     * given: 두 개의 구간을 갖는 노선을 생성하고
+     * when:  하행 종점을 삭제하면
+     * then:  하행 종점이 삭제되고, 그 이전 역이 하행 종점이 된다
+     */
+    @DisplayName("하행 구간 종점 삭제")
+    @Test
+    void 하행_구간_종점_삭제() {
+        // given:
+        // 삼전역, 강남역, 석촌고분역
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
+        long 석촌고분역_id = 지하철역_생성("석촌고분역");
+
+        // 분당선 생성, 및 조회
+        // 삼전역 -> 강남역 -> 석촌고분역
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id);
+        노선_구간_생성(lineId, 구간_생성(강남역_id, 석촌고분역_id));
+
+        // when:
+        // 석촌 고분역(하행 종점) 삭제
+        ExtractableResponse<Response> response = 구간_삭제(lineId, 석촌고분역_id);
+
+        // 신규 하행 종점
+        Map<String, Integer> firstSection = getResultSection(response, FIRST_STATION_INDEX);
+        // 구간 갯수
+        int sectionSize = getSectionSize(response);
+
+        // then:
+        // 삼전역 -> 강남역
+        assertThat(firstSection.get("preStationId")).isEqualTo(삼전역_id);
+        assertThat(firstSection.get("nextStationId")).isEqualTo(강남역_id);
+        assertThat(sectionSize).isEqualTo(1);
+    }
+
+    /**
+     * given: 두 개의 구간을 갖는 노선을 생성하고
+     * when:  두 구간의 가운데 지점의 역을 삭제하면
+     * then:  가운데 역이 삭제되고, 삭제 된 역 기준 상행역, 하행역이 새로운 구간이 된다
+     */
+    @DisplayName("가운데 역 삭제")
+    @Test
+    void 가운데_역_제거() {
+        // given:
+        // 삼전역, 강남역, 석촌고분역
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
+        long 석촌고분역_id = 지하철역_생성("석촌고분역");
+        int firstDistance = 10;
+        int secondDistance = 10;
+
+        // 분당선 생성, 및 조회
+        // 삼전역 -> 강남역 -> 석촌고분역
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id, firstDistance);
+        노선_구간_생성(lineId, 구간_생성(강남역_id, 석촌고분역_id, secondDistance));
+
+        // when:
+        // 강남역(가운데역) 삭제
+        ExtractableResponse<Response> response = 구간_삭제(lineId, 강남역_id);
+        // 갱신 된 노선
+        Map<String, Integer> firstSection = getResultSection(response, FIRST_STATION_INDEX);
+        // 전체 구간 길이
+        int totalDistance = getLineDistance(response);
+        // 구간 갯수
+        int sectionSize = getSectionSize(response);
+
+        // then:
+        // 삼전역 -> 석촌고분역
+        assertThat(firstSection.get("preStationId")).isEqualTo(삼전역_id);
+        assertThat(firstSection.get("nextStationId")).isEqualTo(석촌고분역_id);
+        assertThat(totalDistance).isEqualTo(firstDistance + secondDistance);
+        assertThat(sectionSize).isEqualTo(1);
+    }
+
+    /**
+     * given: 하나의 구간을 갖는 노선을 생성하고
+     * when:  구간에 포함 된 역을 제거하면
+     * then:  구간이 제거되지 않는다
+     */
+    @DisplayName("구간이 하나인 노선에서 역을 제거하는 경우")
+    @Test
+    void 제거_실패_구간이_하나인_노선에서_역을_제거하는_꼉우() {
+        // given:
+        // 삼전역, 강남역
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
+
+        // 분당선 생성, 및 조회
+        // 삼전역 -> 강남역
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id);
+
+        // when:
+        // 삼전역 삭제
+        ExtractableResponse<Response> response = 구간_삭제(lineId, 삼전역_id);
+
+        // then:
+        // 구간 삭제 실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * given: 하나의 구간을 갖는 노선을 생성하고
+     * when:  구간에 포함되지 않은 역을 제거하면
+     * then:  구간이 제거되지 않는다
+     */
+    @DisplayName("구간에 포함되지 않은 역을 제거하는 경우")
+    @Test
+    void 제거_실패_구간에_포함되지_않은_역을_제거하는_경우() {
+        // given:
+        // 삼전역, 강남역
+        long 삼전역_id = 지하철역_생성("삼전역");
+        long 강남역_id = 지하철역_생성("강남역");
+        long 석촌고분역_id = 지하철역_생성("석촌고분역");
+
+        // 분당선 생성, 및 조회
+        // 삼전역 -> 강남역
+        Long lineId = 노선생성_상행종점_하행종점_등록_id응답("boondangLine", "bg-red-600", 삼전역_id, 강남역_id);
+
+        // when:
+        // 석촌고분역 삭제
+        ExtractableResponse<Response> response = 구간_삭제(lineId, 석촌고분역_id);
+
+        // then:
+        // 구간 삭제 실패
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     long 지하철역_생성(String name) {
         final Map<String, String> param = new HashMap<>();
         param.put("name", name);
@@ -505,12 +667,24 @@ class LineAcceptanceTest {
         return response.body().jsonPath().getLong("id");
     }
 
+    Map<String, Object> 구간_생성(long upStationId, long downStationId) {
+        return 구간_생성(upStationId, downStationId, 10);
+    }
+
     Map<String, Object> 구간_생성(long upStationId, long downStationId, int distance) {
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
         params.put("distance", distance);
         return params;
+    }
+
+    ExtractableResponse<Response> 구간_삭제(long lineId, long stationId) {
+        return RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .when().delete("/lines/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
     }
 
     Integer getLineDistance(ExtractableResponse<Response> response) {
@@ -520,5 +694,9 @@ class LineAcceptanceTest {
 
     Map<String, Integer> getResultSection(ExtractableResponse<Response> response, int resultIndex) {
         return (Map<String, Integer>) response.body().jsonPath().getList("sectionResponseList").get(resultIndex);
+    }
+
+    int getSectionSize(ExtractableResponse<Response> response) {
+        return response.body().jsonPath().getList("sectionResponseList").size();
     }
 }

@@ -6,7 +6,7 @@ import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionCreateRequest;
-import nextstep.subway.dto.SectionCreateResponse;
+import nextstep.subway.dto.LineSectionResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.net.URI;
@@ -26,8 +27,8 @@ import java.util.Optional;
 @RequestMapping(value = "/lines")
 public class LineController {
 
-    private LineService lineService;
-    private LineRepository lineRepository;
+    private final LineService lineService;
+    private final LineRepository lineRepository;
 
     public LineController(LineService lineService, LineRepository lineRepository) {
         this.lineService = lineService;
@@ -72,10 +73,18 @@ public class LineController {
 
     /* 노선 구간 생성 */
     @PostMapping(value = "/{id}/sections")
-    public ResponseEntity<SectionCreateResponse> createSection(@PathVariable(value = "id") long id,
+    public ResponseEntity<LineSectionResponse> createSection(@PathVariable(value = "id") long id,
             @RequestBody SectionCreateRequest request) {
-        SectionCreateResponse response = lineService.createSection(id, request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(lineService.createSection(id, request));
+    }
+
+    /* 구간 삭제 */
+    @DeleteMapping(value = "/{id}/sections")
+    public ResponseEntity<LineSectionResponse> deleteSection(
+            @PathVariable(value = "id") long id,
+            @RequestParam(value = "stationId") long stationId) {
+
+        return ResponseEntity.ok(lineService.deleteSection(id, stationId));
     }
 
     @ExceptionHandler({ IllegalArgumentException.class, IllegalStateException.class })

@@ -19,10 +19,10 @@ public class Section {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station downStation;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     private Station upStation;
 
     @Embedded
@@ -40,6 +40,10 @@ public class Section {
         this.line = line;
     }
 
+    public Section mergeSection(Section downSection) {
+        return new Section(this.upStation, downSection.getDownStation(), plusDistance(downSection), line);
+    }
+
     private void validSameStation(Station upStation, Station downStationId) {
         if (upStation.equals(downStation)) {
             throw new IllegalArgumentException("상행역과 하행역은 같은 역일 수 없습니다. 지하철ID:" + downStationId);
@@ -54,8 +58,16 @@ public class Section {
         return distance;
     }
 
+    public Distance plusDistance(Section section) {
+        return distance.plus(section.getDistance());
+    }
+
     public Distance minusDistance(Section section) {
         return this.distance.minus(section.getDistance());
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public int getDistanceIntValue() {
@@ -135,5 +147,18 @@ public class Section {
 
     public boolean sameDownStationByUpStation(Section section) {
         return this.downStation.equals(section.upStation);
+    }
+
+    public void updateBy(Section section) {
+        this.updateDistance(this.minusDistance(section));
+        if (hasSameUpStation(section)) {
+            this.updateUpStation(section.getDownStation());
+            return;
+        }
+        this.updateDownStation(section.getUpStation());
+    }
+
+    public Line getLine() {
+        return this.line;
     }
 }
