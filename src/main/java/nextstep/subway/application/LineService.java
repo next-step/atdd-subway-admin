@@ -36,10 +36,8 @@ public class LineService {
             throw new SameStationException();
         }
 
-        stationService.findStationById(lineRequest.getUpStationId(),
-            new NoStationException(lineRequest.getUpStationId()));
-        stationService.findStationById(lineRequest.getDownStationId(),
-            new NoStationException(lineRequest.getDownStationId()));
+        validateStation(lineRequest.getUpStationId());
+        validateStation(lineRequest.getDownStationId());
 
         Line line = lineRepository.save(Line.of(lineRequest));
 
@@ -73,14 +71,19 @@ public class LineService {
     @Transactional
     public void registerSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findLine(lineId).orElseThrow(NotFoundException::new);
+        validateStation(sectionRequest.getUpStationId());
+        validateStation(sectionRequest.getDownStationId());
         line.addLineStation(
             new LineStation(new Station(sectionRequest.getDownStationId()), sectionRequest.getUpStationId(),
                 sectionRequest.getDistance()));
-
     }
 
     private Line findLineById(Long id, RuntimeException exception) {
         return lineRepository.findById(id).orElseThrow(() -> exception);
+    }
+
+    private void validateStation(Long stationId) {
+        stationService.findStationById(stationId, new NoStationException(stationId));
     }
 
 }

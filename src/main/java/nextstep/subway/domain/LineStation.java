@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,18 +14,22 @@ public class LineStation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "station_id", nullable = false)
-    private Station station;
-    private Long preStationId;
+    private Station downLineStation;
+
+    @Column(name = "pre_station_id")
+    private Long upLineStationId;
+
     private Integer distance;
 
     protected LineStation() {
     }
 
-    public LineStation(Station station, Long preStationId, Integer distance) {
-        this.station = station;
-        this.preStationId = preStationId;
+    public LineStation(Station downLineStation, Long upLineStationId, Integer distance) {
+        this.downLineStation = downLineStation;
+        this.upLineStationId = upLineStationId;
         this.distance = distance;
     }
 
@@ -32,23 +37,24 @@ public class LineStation {
         return id;
     }
 
-    public Station getStation() {
-        return station;
+    public Station getDownLineStation() {
+        return downLineStation;
     }
 
-    public Long getPreStationId() {
-        return preStationId;
+    public Long getUpLineStationId() {
+        return upLineStationId;
     }
 
     public Integer getDistance() {
         return distance;
     }
 
-    public void updateFirstNode(Long preStationId) {
-        this.station = new Station(preStationId);
+    public void updateFirstNode(Long stationId) {
+        this.downLineStation = new Station(stationId);
     }
 
-    public void updatePreStationId(Long id) {
-        this.preStationId = id;
+    public void updatePreStationAndDistance(Long id, Integer distance) {
+        this.upLineStationId = id;
+        this.distance = this.distance - distance;
     }
 }

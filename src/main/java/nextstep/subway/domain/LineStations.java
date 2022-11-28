@@ -29,25 +29,26 @@ public class LineStations {
     }
 
     public List<LineStation> getStationsInOrder() {
-        Optional<LineStation> preLineStation = findPreStation(null);
+        Optional<LineStation> preLineStation = findByPreStationId(null);
 
         List<LineStation> list = new ArrayList<>();
         while (preLineStation.isPresent()) {
             LineStation lineStation = preLineStation.get();
             list.add(lineStation);
-            preLineStation = findPreStation(lineStation.getStation().getId());
+            preLineStation = findByPreStationId(lineStation.getDownLineStation().getId());
         }
         return list;
     }
 
     public void add(LineStation newLineStation) {
-        validate(newLineStation.getPreStationId(), newLineStation.getStation().getId());
-        findStation(newLineStation.getStation().getId())
-            .ifPresent(ls -> ls.updateFirstNode(newLineStation.getPreStationId()));
-        findPreStation(newLineStation.getPreStationId())
+        validate(newLineStation.getUpLineStationId(), newLineStation.getDownLineStation().getId());
+        findStation(newLineStation.getDownLineStation().getId())
+            .ifPresent(ls -> ls.updateFirstNode(newLineStation.getUpLineStationId()));
+        findByPreStationId(newLineStation.getUpLineStationId())
             .ifPresent(ls -> {
                 validateDistance(newLineStation.getDistance(), ls.getDistance());
-                ls.updatePreStationId(newLineStation.getStation().getId());
+                ls.updatePreStationAndDistance(newLineStation.getDownLineStation().getId(),
+                    newLineStation.getDistance());
             });
         lineStations.add(newLineStation);
     }
@@ -71,15 +72,15 @@ public class LineStations {
         }
     }
 
-    private Optional<LineStation> findPreStation(Long id) {
+    private Optional<LineStation> findByPreStationId(Long id) {
         return lineStations.stream()
-            .filter(lineStation -> lineStation.getPreStationId() == id)
+            .filter(lineStation -> lineStation.getUpLineStationId() == id)
             .findFirst();
     }
 
     private Optional<LineStation> findStation(Long id) {
         return lineStations.stream()
-            .filter(lineStation -> lineStation.getStation().getId() == id)
+            .filter(lineStation -> lineStation.getDownLineStation().getId() == id)
             .findFirst();
     }
 

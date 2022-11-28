@@ -172,6 +172,27 @@ public class SectionAcceptanceTest {
             "상행역/하행역 모두 노선에 추가되어있지 않습니다.");
     }
 
+    /**
+     * When 존재하지 않는 역을 구간에 추가하려고할 때
+     * Then Bad Request 응답을 받는다.
+     */
+    @DisplayName("존재하는 역만 구간에 추가할 수 있다.")
+    @Test
+    void noStation() {
+        // when
+        ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
+            .body(new SectionRequestDto(1L, 99L, 1))
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .when().post("/lines/1/sections")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(BAD_REQUEST);
+        assertThat(sectionsResponse.jsonPath().getString("message")).isEqualTo(
+            "존재하지 않는 역입니다. station id = 99");
+    }
+
     static class SectionRequestDto {
         private Long upStationId;
         private Long downStationId;
