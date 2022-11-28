@@ -6,7 +6,6 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -58,12 +57,12 @@ public class SectionLineUp {
         return new Stations(stations.stream().distinct().collect(Collectors.toList()));
     }
 
-    public List<Section> deleteSection(Station station) {
+    public void deleteSection(Station station) {
         validOnlyOneSection();
         if (isInternalStation(station)) {
-            return deleteInternalStation(station);
+            deleteInternalStation(station);
         }
-        return delete(station);
+        delete(station);
     }
 
     private void validOnlyOneSection() {
@@ -72,13 +71,12 @@ public class SectionLineUp {
         }
     }
 
-    private List<Section> deleteInternalStation(Station station) {
+    private void deleteInternalStation(Station station) {
         Section upSection = findSameDownStation(station);
         Section downSection = findSameUpStation(station);
         sectionList.add(Section.mergeByDelete(upSection, downSection));
         List<Section> deletedSections = Arrays.asList(upSection, downSection);
         sectionList.removeAll(deletedSections);
-        return deletedSections;
     }
 
     private Section findSameDownStation(Station station) {
@@ -93,12 +91,10 @@ public class SectionLineUp {
                 .orElseThrow(() -> new IllegalStateException("상행역이 같은 구간을 찾을 수 없습니다"));
     }
 
-    private List<Section> delete(Station station) {
-        Section deletedSection = sectionList.stream().filter(section -> section.isKnownStation(station))
+    private void delete(Station station) {
+        sectionList.remove(sectionList.stream().filter(section -> section.isKnownStation(station))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("노선에 포함되지 않은 역입니다. 요청id:" + station.getId()));
-        sectionList.remove(deletedSection);
-        return Collections.singletonList(deletedSection);
+                .orElseThrow(() -> new IllegalArgumentException("노선에 포함되지 않은 역입니다. 요청id:" + station.getId())));
     }
 
     private boolean isInternalStation(Station station) {
