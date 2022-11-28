@@ -47,4 +47,44 @@ public class SectionsTest {
         assertThatIllegalArgumentException().isThrownBy(() -> sections.updateSection(new Station("여의도역"), new Station("당산역"), 15));
     }
 
+    @DisplayName("구간이 하나인 노선에서 역을 제거하는 경우 예외가 발생한다.")
+    @Test
+    void exception03() {
+        sections = new Sections();
+        sections.add(section);
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.deleteSection(upStation));
+    }
+
+    @DisplayName("노선에 등록되어 있지 않은 역을 제거하는 경우 예외가 발생한다.")
+    @Test
+    void exception04() {
+        sections = new Sections();
+        sections.add(section);
+        sections.add(new Section(1L, downStation, new Station(3L, "광교역"), new Distance(13)));
+        assertThatIllegalArgumentException().isThrownBy(() -> sections.deleteSection(new Station(4L, "수원역")));
+    }
+
+    @DisplayName("종점을 제거하는 경우")
+    @Test
+    void delete_success01() {
+        Section newSection = new Section(2L, downStation, new Station(3L, "광교역"), new Distance(13));
+        sections = new Sections();
+        sections.add(section);
+        sections.add(newSection);
+        sections.deleteSection(new Station(3L, "광교역"));
+
+        assertThat(sections.values()).hasSize(1);
+    }
+
+    @DisplayName("가운데 역을 제거하는 경우")
+    @Test
+    void delete_success02() {
+        Section newSection = new Section(2L, new Station(3L, "광교역"), downStation, new Distance(13));
+        sections = new Sections();
+        sections.add(section);
+        sections.add(newSection);
+        sections.deleteSection(new Station(3L, "광교역"));
+
+        assertThat(sections.values()).hasSize(1);
+    }
 }

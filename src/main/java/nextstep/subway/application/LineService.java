@@ -43,20 +43,27 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public Line findById(Long id) {
-        return lineRepository.findById(id)
+    public Line findById(Long lineId) {
+        return lineRepository.findById(lineId)
                 .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
     }
 
     @Transactional
-    public void updateLine(Long id, LineUpdateRequest request) {
-        Line line = lineRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND.getMessage()));
+    public void updateLine(Long lineId, LineUpdateRequest request) {
+        Line line = this.findById(lineId);
         line.update(request.getName(), request.getColor());
     }
 
     @Transactional
-    public void deleteById(Long id) {
-        lineRepository.deleteById(id);
+    public void deleteById(Long lineId) {
+        lineRepository.deleteById(lineId);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = this.findById(lineId);
+        Station station = stationService.findById(stationId);
+
+        line.removeSection(station);
     }
 }

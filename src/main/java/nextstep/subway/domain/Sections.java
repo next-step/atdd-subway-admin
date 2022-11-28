@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.StationResponse;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -10,10 +8,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static nextstep.subway.common.ErrorMessage.DUPLICATE_SECTION;
-import static nextstep.subway.common.ErrorMessage.NOT_ALLOW_ADD_SECTION;
+import static java.util.stream.Collectors.toList;
+import static nextstep.subway.common.ErrorMessage.*;
 
 @Embeddable
 public class Sections {
@@ -72,21 +69,72 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException(NOT_ALLOW_ADD_SECTION.getMessage()));
     }
 
-    private static boolean isEqualsStation(Station upStation, Station downStation, Section section) {
+    private boolean isEqualsStation(Station upStation, Station downStation, Section section) {
         return section.equalsUpStation(downStation)
                 || section.equalsUpStation(upStation)
                 || section.equalsDownStation(upStation)
                 || section.equalsDownStation(downStation);
     }
 
-    public List<StationResponse> toResponse() {
-        return sections.stream()
-                .flatMap(section -> section.getStations().stream()).distinct()
-                .map(station -> new StationResponse(station.getId(), station.getName(), station.getCreatedDate(), station.getModifiedDate()))
-                .collect(Collectors.toList());
-    }
-
     public List<Section> values() {
         return Collections.unmodifiableList(sections);
+    }
+
+    public void deleteSection(Station station) {
+        this.validateHasSection(station);
+        this.validateSingleSection();
+
+        List<Section> targets = sections.stream()
+                .filter(section -> section.contains(station))
+                .collect(toList());
+
+        if (targets.size() == 1) {
+            this.deleteSection(targets);
+            return;
+        }
+
+        this.deleteAndUpdateSection(station, targets);
+    }
+
+    private void deleteSection(List<Section> targets) {
+        targets.forEach(sections::remove);
+    }
+
+    private void deleteAndUpdateSection(Station station, List<Section> targets) {
+        Section upSection = targets.stream()
+                .filter(target -> target.equalsDownStation(station))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_SECTION.getMessage()));
+
+        Section downSection = targets.stream()
+                .filter(target -> target.equalsUpStation(station))
+                .findAny()
+                .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_SECTION.getMessage()));
+
+        sections.remove(downSection);
+
+        upSection.updateDownStation(downSection.getDownStation());
+        upSection.plusDistance(downSection.getDistance().value());
+    }
+
+    private void validateHasSection(Station station) {
+        if (!this.hasStation(station)) {
+            throw new IllegalArgumentException(CANNOT_REMOVE_STATION_NOT_INCLUDE_LINE.getMessage());
+        }
+    }
+
+    private boolean hasStation(Station station) {
+        return sections.stream()
+                .anyMatch(section -> section.contains(station));
+    }
+
+    private void validateSingleSection() {
+        if (this.isSingleSection()) {
+            throw new IllegalArgumentException(CANNOT_REMOVE_STATION_ONLY_ONE_SECTION.getMessage());
+        }
+    }
+
+    private boolean isSingleSection() {
+        return this.sections.size() == 1;
     }
 }
