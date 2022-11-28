@@ -4,14 +4,13 @@ import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.Stations;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineSectionResponse;
 import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.dto.SectionCreateRequest;
-import nextstep.subway.dto.LineSectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +26,10 @@ public class LineService {
 
     private final LineRepository lineRepository;
     private final StationService stationService;
-    private final SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationService stationService,
-            SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationService stationService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional(isolation = READ_COMMITTED)
@@ -94,7 +90,6 @@ public class LineService {
                 .orElseThrow(() -> new IllegalArgumentException("요청한 노선을 찾을 수 없습니다. 노선ID:" + lineId));
         Station station = stationService.findById(stationId);
         line.deleteSection(station);
-        stationService.deleteIfNotContainsAnySection(station);
         return LineSectionResponse.of(line, line.getSectionLineUpInOrder());
     }
 

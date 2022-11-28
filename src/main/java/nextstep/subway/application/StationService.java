@@ -1,6 +1,5 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.domain.Stations;
@@ -16,11 +15,9 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class StationService {
     private final StationRepository stationRepository;
-    private final SectionRepository sectionRepository;
 
-    public StationService(StationRepository stationRepository, SectionRepository sectionRepository) {
+    public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     @Transactional
@@ -54,12 +51,5 @@ public class StationService {
     public Station findById(long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 지하철역입니다. 요청ID:" + stationId));
-    }
-
-    public void deleteIfNotContainsAnySection(Station station) {
-        /* 역이 어떤 구간에도 포함되어 있지 않은 경우 삭제 */
-        if (!sectionRepository.existsAllByUpStationOrDownStation(station, station)) {
-            stationRepository.delete(station);
-        }
     }
 }
