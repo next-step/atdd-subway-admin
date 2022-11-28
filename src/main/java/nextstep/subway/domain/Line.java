@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import com.sun.istack.NotNull;
 import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
@@ -10,7 +11,9 @@ public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     private String name;
+    @NotNull
     private String color;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "upStationId")
@@ -20,7 +23,7 @@ public class Line {
     private Station downStation;
     private int distance;
 
-    public Line() {
+    private Line() {
     }
 
     public Line(String name, String color, Station upStation, Station downStation, int distance) {

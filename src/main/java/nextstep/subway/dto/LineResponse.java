@@ -10,9 +10,7 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-//    private Station upStationId;
-//    private Station downStationId;
-//    private int distance;
+
     private List<StationResponse> stations = new ArrayList<>();
 
     public static LineResponse of(Line line) {
