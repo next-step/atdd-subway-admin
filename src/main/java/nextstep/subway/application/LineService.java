@@ -56,23 +56,31 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private Station findStation(Long stationId) {
+    private Station findStation(final Long stationId) {
         return stationRepository.findById(stationId)
                 .orElseThrow(() -> new IllegalArgumentException(String.format("존재하지 않는 역입니다. id=%d", stationId)));
     }
 
-    private Line findById(Long id) {
+    private Line findById(final Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 노선이 존재하지 않습니다. id=" + id));
     }
 
     @Transactional
-    public void addSection(Long id, SectionCreateRequest request) {
+    public void addSection(final Long id, final SectionCreateRequest request) {
         final Line line = findById(id);
         final Station upStation = findStation(request.getUpStationId());
         final Station downStation = findStation(request.getDownStationId());
 
         Section section = request.toSection(upStation, downStation, line);
         line.addSection(section);
+    }
+
+    @Transactional
+    public void deleteSection(final Long lineId, final Long stationId) {
+        final Line line = findById(lineId);
+        final Station station = findStation(stationId);
+
+        line.removeStation(station);
     }
 }
