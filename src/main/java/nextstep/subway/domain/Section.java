@@ -5,6 +5,8 @@ import javax.persistence.*;
 @Entity
 public class Section extends BaseEntity {
 
+    private static final String INVALID_DISTANCE_EXCEPTION = "유효하기 않은 거리로는 구간을 생성할 수 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,30 +37,42 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public boolean hasUpStation(Station upStation) {
-        return upStation.equals(this.upStation);
+    public boolean hasUpStation(Section newSection) {
+        return this.upStation.equals(newSection.getUpStation());
     }
 
-    public boolean hasDownStation(Station downStation) {
-        return downStation.equals(this.downStation);
+    public boolean hasDownStation(Section newSection) {
+        return this.downStation.equals(newSection.getDownStation());
+    }
+
+    public boolean containsStation(Station station) {
+        return this.upStation.equals(station) || this.downStation.equals(station);
     }
 
     public Long getLineId() {
         return line.getId();
     }
 
-    public Section switchDownStation(Section section) {
-        this.downStation = section.getDownStation();
-        return this;
+    public void switchValue(Section newSection) {
+
+        if (upStation == newSection.upStation) {
+            upStation = newSection.downStation;
+            setValidateDistance(newSection.distance);
+        }
+
+        if (downStation == newSection.downStation) {
+            downStation = newSection.upStation;
+            setValidateDistance(newSection.distance);
+        }
     }
 
-    public Section switchUpStation(Section section){
-        this.upStation = section.getUpStation();
-        return this;
-    }
+    public void setValidateDistance(int newDistance) {
+        distance -= newDistance;
 
-    public void updateDistance(int distance) {
-        this.distance = distance;
+        if (distance <= 0) {
+            System.out.println(INVALID_DISTANCE_EXCEPTION);
+            throw new IllegalArgumentException(INVALID_DISTANCE_EXCEPTION);
+        }
     }
 
     public Line getLine() {

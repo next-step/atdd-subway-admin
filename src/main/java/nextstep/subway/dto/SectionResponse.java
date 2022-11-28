@@ -42,17 +42,10 @@ public class SectionResponse {
     }
 
     public boolean findSpecificSection(StationResponse upStation, StationResponse downStation) {
-        if (getStationId(this.upStation) == getStationId(upStation) && getStationId(this.downStation) == getStationId(downStation)) {
+        if (this.upStation.getId() == upStation.getId() && this.downStation.getId() == downStation.getId()) {
             return true;
         }
 
         return false;
-    }
-
-    private Long getStationId(StationResponse station) {
-        if (station == null) {
-            return null;
-        }
-        return station.getId();
     }
 }

@@ -62,12 +62,13 @@ public class SectionAcceptanceTest {
         List<SectionResponse> responses = getSectionResponses(addSectionResponse);
 
         // then
+        ExtractableResponse<Response> findResponse = retrieveAllSectionByLine(response.header("Location"));
+        List<SectionResponse> sections = getSectionResponses(findResponse);
+
         assertAll(
                 () -> assertThat(addSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(responses).hasSize(3),
-                () -> assertThat(responses.get(1).getLineId()).isEqualTo(이호선.getId()),
-                () -> assertThat(responses.get(1).getUpStation().getId()).isEqualTo(당산역.getId()),
-                () -> assertThat(responses.get(1).getDownStation().getId()).isEqualTo(합정역.getId())
+                () -> assertThat(findSpecificSection(sections, 당산역, 합정역)).isNotNull(),
+                () -> assertThat(findSpecificSection(sections, 당산역, 합정역).getLineId()).isEqualTo(이호선.getId())
         );
     }
 
@@ -102,7 +103,7 @@ public class SectionAcceptanceTest {
 
         assertAll(
                 () -> assertThat(sectionResponse2.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(sections).hasSize(4),
+                () -> assertThat(sections).hasSize(2),
                 () -> assertThat(findSpecificSection(sections, 당산역, 합정역)).isNotNull(),
                 () -> assertThat(findSpecificSection(sections, 당산역, 합정역).getDistance()).isEqualTo(4),
                 () -> assertThat(findSpecificSection(sections, 합정역, 홍대입구역).getDistance()).isEqualTo(6)
@@ -140,7 +141,7 @@ public class SectionAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(responses.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(getSectionResponses(responses)).hasSize(4)
+                () -> assertThat(getSectionResponses(responses)).hasSize(2)
         );
     }
 
@@ -172,7 +173,7 @@ public class SectionAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(addFirstSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(findSpecificSection(getSectionResponses(addFirstSectionResponse),null, 영등포구청역)).isNotNull()
+                () -> assertThat(findSpecificSection(getSectionResponses(addFirstSectionResponse),영등포구청역, 당산역)).isNotNull()
         );
     }
 
@@ -204,7 +205,7 @@ public class SectionAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(addFirstSectionResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
-                () -> assertThat(findSpecificSection(getSectionResponses(addFirstSectionResponse),홍대입구역, null)).isNotNull()
+                () -> assertThat(findSpecificSection(getSectionResponses(addFirstSectionResponse),합정역, 홍대입구역)).isNotNull()
         );
     }
 
