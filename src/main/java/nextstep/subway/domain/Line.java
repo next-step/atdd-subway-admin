@@ -18,6 +18,17 @@ public class Line extends BaseEntity {
     public Line() {
     }
 
+    public Line(Long id, String name, String color, Integer distance) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.distance = distance;
+    }
+
+    public Line(Long id, String name, String color) {
+        this(id, name, color, 0);
+    }
+
     public Long getId() {
         return id;
     }
@@ -36,5 +47,9 @@ public class Line extends BaseEntity {
 
     public List<LineStation> getLineStations() {
         return lineStations;
+    }
+
+    public void setLineStations(List<LineStation> lineStations) {
+        this.lineStations = lineStations;
     }
 }

@@ -17,6 +17,11 @@ public class LineStation extends BaseEntity {
     public LineStation() {
     }
 
+    public LineStation(Station station, Line line) {
+        this.station = station;
+        this.line = line;
+    }
+
     public Long getId() {
         return id;
     }
