@@ -124,7 +124,7 @@ public class StationAcceptanceTest {
         assertThat(stationNames).doesNotContain(targetStationName);
     }
 
-    private Response createStationResponse(String value) {
+    public static Response createStationResponse(String value) {
         final Map<String, String> params = new HashMap<>();
         params.put("name", value);
         return RestAssured.given().log().all()

@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
@@ -27,9 +26,10 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineCreateRequest lineCreateRequest) {
         Optional<Line> lineOptional = lineRepository.findByName(lineCreateRequest.getName());
-        if (!lineOptional.isPresent()) {
+        if (lineOptional.isPresent()) {
             throw new IllegalArgumentException();
         }
         Optional<Station> upStationOptional = stationRepository.findById(lineCreateRequest.getUpStationId());
@@ -50,10 +50,12 @@ public class LineService {
     }
 
     public List<LineResponse> findAllLines() {
-        return lineRepository.findAll()
-                .stream()
-                .map(LineResponse::new)
-                .collect(Collectors.toList());
+        List<Line> lines = lineRepository.findAll();
+        List<LineResponse> lineResponses = new ArrayList<>();
+        for (final Line line : lines) {
+            lineResponses.add(new LineResponse(line));
+        }
+        return lineResponses;
     }
 
     public LineResponse findById(long lineId) {
@@ -64,6 +66,7 @@ public class LineService {
         return new LineResponse(lineOptional.get());
     }
 
+    @Transactional
     public void updateLine(long lineId, LineUpdateRequest lineUpdateRequest) {
         Optional<Line> lineOptional = lineRepository.findById(lineId);
         if (!lineOptional.isPresent()) {
@@ -74,6 +77,7 @@ public class LineService {
         lineRepository.save(saveLine);
     }
 
+    @Transactional
     public void removeById(long lineId) {
         lineRepository.deleteById(lineId);
     }
