@@ -18,7 +18,7 @@ public class PreDataUtil {
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY FALSE", new EmptySqlParameterSource());
         jdbcTemplate.update("truncate table station", new EmptySqlParameterSource());
         jdbcTemplate.update("truncate table line", new EmptySqlParameterSource());
-        jdbcTemplate.update("truncate table line_station", new EmptySqlParameterSource());
+        jdbcTemplate.update("truncate table section", new EmptySqlParameterSource());
         jdbcTemplate.update("SET REFERENTIAL_INTEGRITY TRUE", new EmptySqlParameterSource());
     }
 
@@ -40,7 +40,7 @@ public class PreDataUtil {
 
     public void lineStation(Long id, Long stationId, Long preStationId, Long lineId, Integer distance) {
         jdbcTemplate.update(
-            "insert into line_station (id, station_id, pre_station_id, distance, line_id) values (:id, :stationId, :preStationId, :distance, :lineId)",
+            "insert into section (id, down_station_id, up_station_id, distance, line_id) values (:id, :stationId, :preStationId, :distance, :lineId)",
             new MapSqlParameterSource()
                 .addValue("id", id)
                 .addValue("stationId", stationId)

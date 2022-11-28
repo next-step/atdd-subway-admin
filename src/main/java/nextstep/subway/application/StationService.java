@@ -37,7 +37,11 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public Station findStationById(Long id, RuntimeException exception) {
-        return stationRepository.findById(id).orElseThrow(() -> exception);
+    public boolean notExistsById(Long stationId) {
+        return !stationRepository.existsById(stationId);
+    }
+
+    public Station findStation(Long stationId) {
+        return stationRepository.findById(stationId).orElse(null);
     }
 }

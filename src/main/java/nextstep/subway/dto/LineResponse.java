@@ -19,7 +19,7 @@ public class LineResponse {
         response.name = line.getName();
         response.color = line.getColor();
         response.stations = line.getLineStations().getStationsInOrder()
-            .stream().map(lineStation -> StationResponse.of(lineStation.getDownLineStation())).collect(toList());
+            .stream().map(lineStation -> StationResponse.of(lineStation.getDownStation())).collect(toList());
         return response;
     }
 

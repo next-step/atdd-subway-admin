@@ -22,16 +22,16 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private LineStations lineStations = new LineStations();
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public static Line of(LineRequest lineRequest) {
+    public static Line of(LineRequest lineRequest, Station upStation, Station downStation) {
         Line line = new Line();
         line.name = lineRequest.getName();
         line.color = lineRequest.getColor();
-        line.lineStations.init(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        line.sections.init(upStation, downStation, lineRequest.getDistance());
         return line;
     }
 
@@ -45,7 +45,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeStations() {
-        this.lineStations.remove();
+        this.sections.remove();
     }
 
     public Long getId() {
@@ -60,11 +60,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public LineStations getLineStations() {
-        return lineStations;
+    public Sections getLineStations() {
+        return sections;
     }
 
-    public void addLineStation(LineStation lineStation) {
-        lineStations.add(lineStation);
+    public void addLineStation(Section section) {
+        sections.add(section);
     }
 }
