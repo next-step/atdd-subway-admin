@@ -1,7 +1,5 @@
 package nextstep.subway.domain;
 
-import org.springframework.util.CollectionUtils;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -9,13 +7,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    private static final String MESSAGE_SECTIONS_HAS_NOT_UPPER_STATION = "해당 역을 가지는 구간이 없습니다";
+
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
 
-    protected Sections(){
+    protected Sections() {
     }
 
     public boolean insertInsideFromUpStation(Station upStation, Station newStation, long distance) {
@@ -67,5 +68,39 @@ public class Sections {
     @Override
     public int hashCode() {
         return Objects.hash(sections);
+    }
+
+    public boolean hasOnlyOneSection() {
+        return this.sections.size() == 1;
+    }
+
+    public void delete(Station station) {
+        Section upperSection = popSectionBy(section -> section.hasUpStation(station));
+        Section downSection = popSectionBy(section -> section.hasDownStation(station));
+        this.sections.add(Section.merge(upperSection, downSection));
+        makeOrphan(downSection);
+        makeOrphan(upperSection);
+    }
+
+    private Section popSectionBy(Predicate<Section> sectionFilter) {
+        Section first = this.sections.stream()
+                .filter(sectionFilter)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(MESSAGE_SECTIONS_HAS_NOT_UPPER_STATION));
+        this.sections.remove(first);
+        return first;
+    }
+
+    private void makeOrphan(Section section) {
+        this.sections.remove(section);
+        section.setLine(null);
+    }
+
+    public Section popUpperStationIs(Station station) {
+        return popSectionBy(section -> section.hasUpStation(station));
+    }
+
+    public Section popDownStationIs(Station station) {
+        return popSectionBy(section -> section.hasDownStation(station));
     }
 }

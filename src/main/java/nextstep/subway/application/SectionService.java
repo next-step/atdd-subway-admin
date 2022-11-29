@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.List;
 
 @Service
 @Transactional
 public class SectionService {
-
     private static final String MESSAGE_CAN_NOT_ADD_SECTION = "구간을 등록하지 못했습니다";
     private final LineService lineService;
     private final LineRepository lineRepository;
@@ -41,5 +41,12 @@ public class SectionService {
             return;
         }
         throw new IllegalArgumentException(MESSAGE_CAN_NOT_ADD_SECTION);
+    }
+
+    public void deleteStation(Long lineId, Long stationId) {
+        Line line = lineService.findLineOrThrowException(lineId);
+        Station station = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
+        line.delete(station);
+        lineRepository.save(line);
     }
 }

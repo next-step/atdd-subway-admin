@@ -88,4 +88,20 @@ class LineTest {
 
         assertTrue(hasSame);
     }
+
+    @Test
+    @DisplayName("상행역 종점을 삭제함")
+    void delete() {
+        Station upStation = new Station(1L,"테스트 상행역");
+        Station downStation = new Station(2L,"테스트 하행역");
+        Station middleStation = new Station(3L,"테스트 하행역");
+        line.setStations(upStation,downStation);
+        line.addSection(Section.of(line,upStation,downStation,line.getDistance()));
+        line.insert(upStation,middleStation,40L);
+
+        line.delete(upStation);
+
+        assertThat(line.getUpStation()).isEqualTo(middleStation);
+        assertThat(line.getDistance()).isEqualTo(60);
+    }
 }

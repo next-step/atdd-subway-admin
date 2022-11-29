@@ -27,7 +27,11 @@ public class LineResponse {
         StationResponse upStation = StationResponse.of(save.getUpStation());
         StationResponse downStation = StationResponse.of(save.getDownStation());
         List<StationResponse> stations = Arrays.asList(upStation, downStation);
-        return new LineResponse(save.getId(),save.getName(),save.getColor(),save.getDistance(),stations);
+        return new LineResponse(save.getId(), save.getName(), save.getColor(), save.getDistance(), stations);
+    }
+
+    public static LineResponse of(Long id, String name, String color, Long distance, List<StationResponse> stations) {
+        return new LineResponse(id, name, color, distance, stations);
     }
 
     public Long getId() {

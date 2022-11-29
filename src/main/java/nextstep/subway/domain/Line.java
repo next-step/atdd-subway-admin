@@ -1,11 +1,8 @@
 package nextstep.subway.domain;
 
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -14,6 +11,7 @@ public class Line extends BaseEntity {
     public static final String MESSAGE_STATION_SHOULD_NOT_EMPTY = "지하철역은 비어있을 수 없습니다";
     public static final String MESSAGE_STATION_SHOULD_HAS_ID = "지하철역은 식별자가 있어야 합니다.";
     public static final String MESSAGE_STATION_SHOULD_BE_DIFFERENT = "상/하행역은 같을 수 없습니다";
+    public static final String MESSAGE_STATION_CAN_NOT_BE_DELETED = "노선과 구간이 일치할 때는 삭제할 수 없습니다";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -171,4 +169,38 @@ public class Line extends BaseEntity {
     public boolean insert(Station upStation, Station downStation, Long distance) {
         return this.sections.insert(upStation,downStation,distance);
     }
+
+    public void delete(Station station) {
+        throwIfLineHasOnlyOneSection();
+        if(upStation.equals(station)){
+            deleteUpStation(station);
+            return;
+        }
+        if(downStation.equals(station)){
+            deleteDownStation(station);
+            return;
+        }
+        this.sections.delete(station);
+    }
+
+    private void deleteDownStation(Station station) {
+        Section section = this.sections.popDownStationIs(station);
+        downStation = section.getUpperStation();
+        distance = distance.minus(section.getDistance());
+        section.setLine(null);
+    }
+
+    private void deleteUpStation(Station station) {
+        Section section = this.sections.popUpperStationIs(station);
+        upStation = section.getDownStation();
+        distance = distance.minus(section.getDistance());
+        section.setLine(null);
+    }
+
+    private void throwIfLineHasOnlyOneSection() {
+        if(this.sections.hasOnlyOneSection()){
+            throw new IllegalArgumentException(MESSAGE_STATION_CAN_NOT_BE_DELETED);
+        }
+    }
+
 }
