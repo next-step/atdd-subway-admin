@@ -81,6 +81,12 @@ public class LineService {
                 sectionRequest.getDistance()));
     }
 
+    @Transactional
+    public void deleteSection(Long lineId, Long stationId) {
+        Line line = findLineById(lineId, new NotFoundException());
+        line.deleteSection(stationId);
+    }
+
     private Line findLineById(Long id, RuntimeException exception) {
         return lineRepository.findById(id).orElseThrow(() -> exception);
     }
@@ -90,5 +96,4 @@ public class LineService {
             throw new NoStationException(stationId);
         }
     }
-
 }

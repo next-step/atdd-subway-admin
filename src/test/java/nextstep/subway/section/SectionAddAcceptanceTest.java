@@ -18,9 +18,9 @@ import io.restassured.response.Response;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.util.PreDataUtil;
 
-@DisplayName("지하철구간 관련 기능")
+@DisplayName("지하철구간 추 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class SectionAcceptanceTest {
+public class SectionAddAcceptanceTest {
     @LocalServerPort
     int port;
     @Autowired
@@ -52,7 +52,7 @@ public class SectionAcceptanceTest {
     void createSectionLowest() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .body(new SectionRequestDto(2L, 3L, 5))
+            .body(new SectionAddRequestDto(2L, 3L, 5))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/1/sections")
             .then().log().all()
@@ -74,7 +74,7 @@ public class SectionAcceptanceTest {
     void createSectionHighest() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .body(new SectionRequestDto(4L, 1L, 5))
+            .body(new SectionAddRequestDto(4L, 1L, 5))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/1/sections")
             .then().log().all()
@@ -96,7 +96,7 @@ public class SectionAcceptanceTest {
     void createSectionMiddle() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .body(new SectionRequestDto(1L, 5L, 5))
+            .body(new SectionAddRequestDto(1L, 5L, 5))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/1/sections")
             .then().log().all()
@@ -118,7 +118,7 @@ public class SectionAcceptanceTest {
     void longerThanNowDistance() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .body(new SectionRequestDto(1L, 5L, 10))
+            .body(new SectionAddRequestDto(1L, 5L, 10))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/1/sections")
             .then().log().all()
@@ -139,7 +139,7 @@ public class SectionAcceptanceTest {
     void alreadyRegisteredAllStations() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .body(new SectionRequestDto(2L, 1L, 10))
+            .body(new SectionAddRequestDto(2L, 1L, 10))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/1/sections")
             .then().log().all()
@@ -160,7 +160,7 @@ public class SectionAcceptanceTest {
     void stationsNull() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .body(new SectionRequestDto(3L, 4L, 10))
+            .body(new SectionAddRequestDto(3L, 4L, 10))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/1/sections")
             .then().log().all()
@@ -181,7 +181,7 @@ public class SectionAcceptanceTest {
     void noStation() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .body(new SectionRequestDto(1L, 99L, 1))
+            .body(new SectionAddRequestDto(1L, 99L, 1))
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/lines/1/sections")
             .then().log().all()
@@ -193,15 +193,15 @@ public class SectionAcceptanceTest {
             "존재하지 않는 역입니다. station id = 99");
     }
 
-    static class SectionRequestDto {
+    static class SectionAddRequestDto {
         private Long upStationId;
         private Long downStationId;
         private int distance;
 
-        public SectionRequestDto() {
+        public SectionAddRequestDto() {
         }
 
-        public SectionRequestDto(Long upStationId, Long downStationId, int distance) {
+        public SectionAddRequestDto(Long upStationId, Long downStationId, int distance) {
             this.upStationId = upStationId;
             this.downStationId = downStationId;
             this.distance = distance;

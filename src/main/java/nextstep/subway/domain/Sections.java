@@ -28,22 +28,22 @@ public class Sections {
     }
 
     public List<Section> getStationsInOrder() {
-        Optional<Section> preLineStation = findByPreStationId(null);
+        Optional<Section> preLineStation = findByUpStation(null);
 
         List<Section> list = new ArrayList<>();
         while (preLineStation.isPresent()) {
             Section section = preLineStation.get();
             list.add(section);
-            preLineStation = findByPreStationId(section.getDownStation().getId());
+            preLineStation = findByUpStation(section.getDownStation().getId());
         }
         return list;
     }
 
     public void add(Section newSection) {
         validate(newSection.getUpStationId(), newSection.getDownStation().getId());
-        findStation(newSection.getDownStation().getId())
+        findByDownStation(newSection.getDownStation().getId())
             .ifPresent(section -> section.updateFirstNode(newSection.getUpStationId()));
-        findByPreStationId(newSection.getUpStationId())
+        findByUpStation(newSection.getUpStationId())
             .ifPresent(section -> {
                 section.updatePreStationAndDistance(newSection.getDownStation().getId(),
                     newSection.getDistance());
@@ -51,9 +51,18 @@ public class Sections {
         sections.add(newSection);
     }
 
+    public void deleteSection(Long stationId) {
+        findByDownStation(stationId)
+            .ifPresent(section -> {
+                findByUpStation(stationId).ifPresent(
+                    downSection -> downSection.updateUpStation(section.getUpStationId(), section.getDistance()));
+                this.sections.remove(section);
+            });
+    }
+
     private void validate(Long upStationId, Long downStationId) {
-        boolean isPresentUpStation = findStation(upStationId).isPresent();
-        boolean isPresentDownStation = findStation(downStationId).isPresent();
+        boolean isPresentUpStation = findByDownStation(upStationId).isPresent();
+        boolean isPresentDownStation = findByDownStation(downStationId).isPresent();
 
         if (isPresentUpStation && isPresentDownStation) {
             throw new AllRegisteredStationsException();
@@ -64,13 +73,13 @@ public class Sections {
         }
     }
 
-    private Optional<Section> findByPreStationId(Long id) {
+    private Optional<Section> findByUpStation(Long id) {
         return sections.stream()
             .filter(section -> section.getUpStationId() == id)
             .findFirst();
     }
 
-    private Optional<Section> findStation(Long id) {
+    private Optional<Section> findByDownStation(Long id) {
         return sections.stream()
             .filter(section -> section.getDownStation().getId() == id)
             .findFirst();

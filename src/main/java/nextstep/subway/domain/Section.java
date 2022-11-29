@@ -59,9 +59,17 @@ public class Section {
         this.distance = this.distance - newDistance;
     }
 
+    public void updateUpStation(Long upStationId, Integer distance) {
+        this.upStationId = upStationId;
+        if (distance != null) {
+            this.distance += distance;
+        }
+    }
+
     private void validateDistance(Integer newDistance, Integer nowDistance) {
         if (nowDistance <= newDistance) {
             throw new ShortDistanceException(nowDistance, newDistance);
         }
     }
+
 }

@@ -65,6 +65,12 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
+    @DeleteMapping("/lines/{lineId}/stationId={stationId}")
+    public ResponseEntity<?> deleteSection(@PathVariable Long lineId, @PathVariable Long stationId) {
+        lineService.deleteSection(lineId, stationId);
+        return ResponseEntity.ok().build();
+    }
+
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<?> handleNotFoundException() {
         return ResponseEntity.notFound().build();
