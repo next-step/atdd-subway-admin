@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
@@ -18,22 +19,16 @@ import java.util.stream.Collectors;
 public class LineService {
 
     private LineRepository lineRepository;
-    private StationRepository stationRepository;
     private static final String NO_SUCH_LINE_EXCEPTION = "해당 ID의 노선 정보가 없습니다.";
-    private static final String NO_SUCH_STATION_EXCEPTION = "해당 ID의 역 정보가 없습니다.";
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Line persistLine = lineRepository.save(lineRequest.toLine());
         LineResponse lineResponse = getLineResponseWithStations(persistLine);
-
-        System.out.println("debug1 : " + lineResponse.getId());
-        System.out.println("debug1 : " + lineResponse.getName());
         return lineResponse;
     }
 
@@ -73,14 +68,10 @@ public class LineService {
     private LineResponse getLineResponseWithStations(Line line) {
         List<StationResponse> stations = new ArrayList<>();
 
-        stations.add(StationResponse.of(stationRepository
-                .findById(line.getUpStationId())
-                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION))));
-        stations.add(StationResponse.of(stationRepository
-                .findById(line.getDownStationId())
-                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_STATION_EXCEPTION))));
+        int lastIndex = line.getSections().getSectionList().size() -1;
 
-        System.out.println(NO_SUCH_STATION_EXCEPTION);
+        stations.add(StationResponse.of(line.getSections().getSectionList().get(0).getUpStation()));
+        stations.add(StationResponse.of(line.getSections().getSectionList().get(lastIndex).getDownStation()));
 
         return LineResponse.of(line).setStations(stations);
     }

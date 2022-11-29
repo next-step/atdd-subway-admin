@@ -27,7 +27,4 @@ public class SectionRequest {
         return downStationId;
     }
 
-    public int getDistance() {
-        return distance;
-    }
 }
