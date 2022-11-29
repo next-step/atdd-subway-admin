@@ -6,7 +6,6 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.application.StationService;
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.StationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
@@ -14,7 +13,6 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -163,11 +161,6 @@ class LineAcceptanceTest extends AcceptanceTest {
                     assertThat(retrieveResponse.body().jsonPath().getString("name")).isNull();
                 })
         );
-    }
-
-    @Transactional
-    public void creatStation(String name) {
-        stationService.saveStation(new StationRequest(name));
     }
 
     private List<String> showLines() {
