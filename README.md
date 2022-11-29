@@ -187,7 +187,7 @@ Vary: Access-Control-Request-Headers
   * 기존 Section 사이로 새로운 Section이 들어오는 경우
     * upstation 끼리 동일한 경우 / downstation 끼리 동일한 경우
       * distance 비교(요청온 distance가 작아야 함
-      * 기존 Section, 새로 들어온 Section 기반 2개의 Section 생성 후 기존 Section 삭제 
+      * 기존 Section, 새로 들어온 Section 아래 기준으로 update 
       * upStation이 같으면, 기존 Section의 downStation을 새로 들어온 downStation 설정 
         -> 새로 들어온 Section의 upStation을 기존 Section의 downStation으로 설정
       * downStation이 같으면, 기존 Section의 upStation을 새로 들어온 upStation 설정 
