@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,10 +28,6 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineCreateRequest lineCreateRequest) {
-        Optional<Line> lineOptional = lineRepository.findByName(lineCreateRequest.getName());
-        if (lineOptional.isPresent()) {
-            return null;
-        }
         Station upStation = stationRepository.findById(lineCreateRequest.getUpStationId())
                 .orElseThrow(IllegalArgumentException::new);
         Station downStation = stationRepository.findById(lineCreateRequest.getDownStationId())
@@ -60,25 +55,16 @@ public class LineService {
     }
 
     @Transactional
-    public Line updateLine(long id, LineUpdateRequest lineUpdateRequest) {
-        Optional<Line> lineOptional = lineRepository.findByName(lineUpdateRequest.getName());
-        if (lineOptional.isPresent()) {
-            return null;
-        }
-        Line line = new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
-        return lineRepository.save(line);
+    public void updateLine(long id, LineUpdateRequest lineUpdateRequest) {
+        Line line = lineRepository.findById(id)
+                .map(found -> new Line(found.getId(), lineUpdateRequest.getName(), lineUpdateRequest.getColor()))
+                .orElseThrow(IllegalArgumentException::new);
+        lineRepository.save(line);
     }
 
     @Transactional
     public void removeById(long id) {
-        Optional<Line> lineOptional = lineRepository.findById(id);
-        if (!lineOptional.isPresent()) {
-            return;
-        }
-        lineOptional.get()
-                .getLineStations().stream()
-                .map(LineStation::getId)
-                .forEach(lineStationRepository::deleteById);
-        lineRepository.deleteById(id);
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        lineRepository.deleteById(line.getId());
     }
 }

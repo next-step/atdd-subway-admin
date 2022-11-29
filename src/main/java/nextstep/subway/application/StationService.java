@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,12 +27,9 @@ public class StationService {
 
     @Transactional
     public StationResponse upsert(StationRequest stationRequest) {
-        Optional<Station> stationOptional = stationRepository.findByName(stationRequest.getName());
-        if (stationOptional.isPresent()) {
-            return new StationResponse(stationOptional.get());
-        }
-        Station station = stationRepository.save(new Station(stationRequest.getName()));
-        return new StationResponse(station);
+        return stationRepository.findByName(stationRequest.getName())
+                .map(StationResponse::new)
+                .orElseGet(() -> new StationResponse(stationRepository.save(new Station(stationRequest.getName()))));
     }
 
     public List<StationResponse> findAllStations() {
@@ -45,6 +41,7 @@ public class StationService {
 
     @Transactional
     public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
+        Station station = stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        stationRepository.deleteById(station.getId());
     }
 }
