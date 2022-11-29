@@ -68,8 +68,8 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void removeSection(Long stationId) {
-        Section newSection = sections.removeAndGetNewSection(stationId);
+    public void removeStation(Station station) {
+        Section newSection = sections.removeSectionByStationAndGetNewSection(station);
         newSection.setLine(this);
     }
 }

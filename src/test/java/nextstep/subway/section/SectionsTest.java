@@ -72,7 +72,7 @@ public class SectionsTest {
         this.sections.addAndGetSections(newUpStation, downStation, new Distance(5));
 
         //when
-        Section newSection = this.sections.removeAndGetNewSection(newUpStation.getId());
+        Section newSection = this.sections.removeSectionByStationAndGetNewSection(newUpStation);
 
         //then
         assertThat(newSection.getDistance()).isEqualTo(FIRST_SECTION_DISTANCE);

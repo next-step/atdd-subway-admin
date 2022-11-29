@@ -25,28 +25,16 @@ public class Sections {
         return sections;
     }
 
-    public boolean isFirst(Station station) {
+    public boolean isFirstStation(Station station) {
         return sections.stream()
                 .filter(section -> section.getUpStation() == null)
                 .anyMatch(section -> section.getDownStation().equals(station));
     }
 
-    public boolean isFirstByStationId(Long stationId) {
-        return sections.stream()
-                .filter(section -> section.getUpStation() == null)
-                .anyMatch(section -> section.getDownStation().getId().equals(stationId));
-    }
-
-    public boolean isLast(Station station) {
+    public boolean isLastStation(Station station) {
         return sections.stream()
                 .filter(section -> section.getDownStation() == null)
                 .anyMatch(section -> section.getUpStation().equals(station));
-    }
-
-    public boolean isLastByStationId(Long stationId) {
-        return sections.stream()
-                .filter(section -> section.getDownStation() == null)
-                .anyMatch(section -> section.getUpStation().getId().equals(stationId));
     }
 
     public boolean isContainStation(Station station) {
@@ -103,7 +91,7 @@ public class Sections {
         Section existingSection = sections.stream()
                 .filter(section -> downStation.equals(section.getDownStation()))
                 .findFirst().get();
-        if (isFirst(downStation)) {
+        if (isFirstStation(downStation)) {
             sections.remove(existingSection);
             return new Section(null, newStation, Distance.getTerminalSectionDistance());
         }
@@ -116,7 +104,7 @@ public class Sections {
         Section existingSection = sections.stream()
                 .filter(section -> upStation.equals(section.getUpStation()))
                 .findFirst().get();
-        if (isLast(upStation)) {
+        if (isLastStation(upStation)) {
             sections.remove(existingSection);
             return new Section(newStation, null, Distance.getTerminalSectionDistance());
         }
@@ -132,28 +120,28 @@ public class Sections {
         return sections;
     }
 
-    public Section removeAndGetNewSection(Long stationId) {
+    public Section removeSectionByStationAndGetNewSection(Station station) {
         if (sections.size() == 3) {
             throw new IllegalArgumentException(ErrorMessage.ONLY_ONE_SECTION.getMessage());
         }
 
-        if (isFirstByStationId(stationId)) {
+        if (isFirstStation(station)) {
             sections.remove(0);
             return sections.get(0).deleteUpStation();
         }
 
-        if (isLastByStationId(stationId)) {
+        if (isLastStation(station)) {
             sections.remove(sections.size()-1);
             return sections.get(sections.size()-1).deleteDownStation();
         }
 
         Section upperSection = sections.stream()
                 .filter(section -> section.getDownStation() != null &&
-                        section.getDownStation().getId().equals(stationId))
+                        section.getDownStation().equals(station))
                 .findFirst().get();
         Section lowerSection = sections.stream()
                 .filter(section -> section.getUpStation() != null &&
-                        section.getUpStation().getId().equals(stationId))
+                        section.getUpStation().equals(station))
                 .findFirst().get();
         Section newSection = new Section(upperSection.getUpStation(), lowerSection.getDownStation(),
                 upperSection.getDistance().add(lowerSection.getDistance()));
