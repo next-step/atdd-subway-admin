@@ -1,6 +1,7 @@
 package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
+import nextstep.subway.domain.Line;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
@@ -22,6 +23,9 @@ public class LineController {
     @PostMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
         LineResponse lineResponse = lineService.saveLine(lineCreateRequest);
+        if (lineResponse == null) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.created(URI.create("/lines" + lineResponse.getId())).body(lineResponse);
     }
 
@@ -32,20 +36,23 @@ public class LineController {
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> getLine(@PathVariable long lineId) {
-        LineResponse lineResponse = lineService.findById(lineId);
+    public ResponseEntity<LineResponse> getLine(@PathVariable long id) {
+        LineResponse lineResponse = lineService.findById(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 
     @PutMapping("/lines/{id}")
-    public ResponseEntity editLine(@PathVariable long lineId, @RequestBody LineUpdateRequest lineUpdateRequest) {
-        lineService.updateLine(lineId, lineUpdateRequest);
+    public ResponseEntity editLine(@PathVariable long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
+        Line line = lineService.updateLine(id, lineUpdateRequest);
+        if (line == null) {
+            return ResponseEntity.badRequest().build();
+        }
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/lines/{id}")
-    public ResponseEntity removeLine(@PathVariable long lineId) {
-        lineService.removeById(lineId);
+    public ResponseEntity removeLine(@PathVariable long id) {
+        lineService.removeById(id);
         return ResponseEntity.noContent().build();
     }
 }

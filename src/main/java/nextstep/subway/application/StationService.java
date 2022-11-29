@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,11 +26,19 @@ public class StationService {
         return StationResponse.of(persistStation);
     }
 
-    public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
+    public StationResponse upsert(StationRequest stationRequest) {
+        Optional<Station> stationOptional = stationRepository.findByName(stationRequest.getName());
+        if (stationOptional.isPresent()) {
+            return StationResponse.of(stationOptional.get());
+        }
+        Station station = stationRepository.save(new Station(stationRequest.getName()));
+        return StationResponse.of(station);
+    }
 
-        return stations.stream()
-                .map(station -> StationResponse.of(station))
+    public List<StationResponse> findAllStations() {
+        return stationRepository.findAll()
+                .stream()
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 

@@ -25,6 +25,12 @@ public class StationController {
         return ResponseEntity.created(URI.create("/stations/" + station.getId())).body(station);
     }
 
+    @PutMapping("/stations")
+    public ResponseEntity<StationResponse> upsertStation(@RequestBody StationRequest stationRequest) {
+        StationResponse stationResponse = stationService.upsert(stationRequest);
+        return ResponseEntity.ok().body(stationResponse);
+    }
+
     @GetMapping(value = "/stations", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<StationResponse>> showStations() {
         return ResponseEntity.ok().body(stationService.findAllStations());

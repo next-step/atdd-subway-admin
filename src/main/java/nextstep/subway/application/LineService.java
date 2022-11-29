@@ -31,7 +31,7 @@ public class LineService {
     public LineResponse saveLine(LineCreateRequest lineCreateRequest) {
         Optional<Line> lineOptional = lineRepository.findByName(lineCreateRequest.getName());
         if (lineOptional.isPresent()) {
-            throw new IllegalArgumentException();
+            return null;
         }
         Optional<Station> upStationOptional = stationRepository.findById(lineCreateRequest.getUpStationId());
         Optional<Station> downStationOptional = stationRepository.findById(lineCreateRequest.getDownStationId());
@@ -57,8 +57,8 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findById(long lineId) {
-        Optional<Line> lineOptional = lineRepository.findById(lineId);
+    public LineResponse findById(long id) {
+        Optional<Line> lineOptional = lineRepository.findById(id);
         if (!lineOptional.isPresent()) {
             throw new IllegalArgumentException();
         }
@@ -66,18 +66,25 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLine(long lineId, LineUpdateRequest lineUpdateRequest) {
-        Optional<Line> lineOptional = lineRepository.findById(lineId);
-        if (!lineOptional.isPresent()) {
-            throw new IllegalArgumentException();
+    public Line updateLine(long id, LineUpdateRequest lineUpdateRequest) {
+        Optional<Line> lineOptional = lineRepository.findByName(lineUpdateRequest.getName());
+        if (lineOptional.isPresent()) {
+            return null;
         }
-        Line foundLine = lineOptional.get();
-        Line saveLine = new Line(foundLine.getId(), lineUpdateRequest.getName(), lineUpdateRequest.getColor());
-        lineRepository.save(saveLine);
+        Line line = new Line(id, lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+        return lineRepository.save(line);
     }
 
     @Transactional
-    public void removeById(long lineId) {
-        lineRepository.deleteById(lineId);
+    public void removeById(long id) {
+        Optional<Line> lineOptional = lineRepository.findById(id);
+        if (!lineOptional.isPresent()) {
+            return;
+        }
+        Line line = lineOptional.get();
+        line.getLineStations().stream()
+                .map(LineStation::getId)
+                .forEach(lineStationRepository::deleteById);
+        lineRepository.deleteById(id);
     }
 }

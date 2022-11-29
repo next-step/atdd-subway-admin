@@ -1,10 +1,13 @@
 package nextstep.subway.line;
 
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
 import nextstep.subway.domain.Station;
+import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.LineUpdateRequest;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,8 +21,11 @@ import org.springframework.test.annotation.DirtiesContext;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철 노선 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -41,12 +47,8 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     public void createLine_success() {
         // given
-        final long upStationId = StationAcceptanceTest.createStationResponse("강남역").as(Station.class).getId();
-        final long downStationId = StationAcceptanceTest.createStationResponse("잠실역").as(Station.class).getId();
-
-        // given
         final String lineName = "2호선";
-        createLineResponse(lineName, "bg-green-600", upStationId, downStationId, 10);
+        createLine("강남역", "잠실역", lineName, "bg-green-600", 10);
 
         // when
         final ExtractableResponse<Response> response = getLines().extract();
@@ -59,6 +61,28 @@ public class LineAcceptanceTest {
         assertThat(lineNames).contains(lineName);
     }
 
+
+    /**
+     * Given 특정한 이름으로 지하철 노선을 만든 뒤
+     * When 동일한 이름으로 지하철 노선을 생성하려고 시도하면
+     * Then 지하철 노선 생성 요청이 실패한다
+     */
+    @Test
+    @DisplayName("중복되는 이름으로 지하철 노선을 생성할 수 없다.")
+    public void createLineWithDuplicateName_badRequest() {
+        // given
+        final String lineName = "2호선";
+        createLine("강남역", "잠실역", lineName, "bg-green-600", 10);
+
+        // when
+        final ExtractableResponse<Response> response =
+                createLine("강남역", "서초역", lineName, "bg-green-600",25)
+                        .extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
     /**
      * Given 2개의 지하철 노선을 생성하고
      * When 지하철 노선 목록을 조회하면
@@ -67,6 +91,24 @@ public class LineAcceptanceTest {
     @Test
     @DisplayName("지하철 노선 목록을 조회한다.")
     public void getLines_ok() {
+        // given
+        final String station1 = "강남역";
+        final String station2 = "잠실역";
+        final String station3 = "판교역";
+        final String lineName1 = "2호선";
+        final String lineName2 = "신분당선";
+        createLine(station1, station2, lineName1, "bg-green-600", 10);
+        createLine(station1, station3, lineName2, "bg-green-600", 10);
+
+        // when
+        final ExtractableResponse<Response> response = getLines().extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        final List<String> lineNames = getLineNames();
+        assertThat(lineNames).contains(lineName1, lineName2);
     }
 
     /**
@@ -77,6 +119,25 @@ public class LineAcceptanceTest {
     @Test
     @DisplayName("지하철 노선을 조회한다.")
     public void getLine_ok() {
+        // given
+        final String upStation = "강남역";
+        final String downStation = "잠실역";
+        final String lineName = "2호선";
+        final String color = "bg-green-600";
+        final int distance = 10;
+        final ExtractableResponse<Response> createdResponse =
+                createLine(upStation, downStation, lineName, color, distance).extract();
+        final LineResponse createdLineResponse = createdResponse.as(LineResponse.class);
+
+        // when
+        final ExtractableResponse<Response> response = getLine(createdLineResponse.getId()).extract();
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // then
+        final LineResponse lineResponse = response.as(LineResponse.class);
+        assertThat(lineResponse).isEqualTo(createdLineResponse);
     }
 
     /**
@@ -87,6 +148,56 @@ public class LineAcceptanceTest {
     @Test
     @DisplayName("지하철 노선을 수정한다.")
     public void editLine_ok() {
+        // given
+        final String lineName = "2호선";
+        final long lineId = createLine("강남역", "잠실역", lineName, "bg-green-600", 10)
+                .extract().as(LineResponse.class).getId();
+
+        // when
+        final String editStationName = "8호선";
+        final String editStationColor = "bg-red-600";
+        final LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(editStationName, editStationColor);
+        final ExtractableResponse<Response> editResponse = editLine(lineId, lineUpdateRequest).extract();
+
+        // then
+        assertThat(editResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        // when
+        final ExtractableResponse<Response> getResponse = getLine(lineId).extract();
+
+        // then
+        final LineResponse lineResponse = getResponse.as(LineResponse.class);
+        assertAll(
+                () -> assertThat(lineResponse.getName()).isEqualTo(editStationName),
+                () -> assertThat(lineResponse.getColor()).isEqualTo(editStationColor)
+        );
+    }
+
+    /**
+     * Given 지하철 노선을 2개 생성하고
+     * When 하나의 노선의 이름을 다른 노선의 이름으로 수정하려고 시도하면
+     * Then 수정 요청이 실패한다
+     */
+    @Test
+    @DisplayName("중복되는 이름으로 지하철 노선 수정을 시도하면 실패한다.")
+    public void editLineWithDuplicateName_badRequest() {
+        // given
+        final String lineName1 = "2호선";
+        final long lineId1 = createLine("강남역", "잠실역", lineName1, "bg-green-600", 10)
+                .extract().as(LineResponse.class).getId();
+
+        // given
+        final String lineName2 = "5호선";
+        final long lineId2 = createLine("올림픽공원역", "천호역", lineName2, "bg-violet-600", 30)
+                .extract().as(LineResponse.class).getId();
+
+        // when
+        final String editStationColor = "bg-red-600";
+        final LineUpdateRequest lineUpdateRequest = new LineUpdateRequest(lineName2, editStationColor);
+        final ExtractableResponse<Response> editResponse = editLine(lineId1, lineUpdateRequest).extract();
+
+        // then
+        assertThat(editResponse.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -97,15 +208,33 @@ public class LineAcceptanceTest {
     @Test
     @DisplayName("지하철 노선을 삭제한다.")
     public void deleteLine_noContent() {
+        // given
+        final String lineName = "2호선";
+        final long lineId = createLine("강남역", "잠실역", lineName, "bg-green-600", 10)
+                .extract().as(LineResponse.class).getId();
+
+        // when
+        deleteLine(lineId);
+
+        // when
+        final List<String> lineNames = getLineNames();
+
+        // then
+        assertThat(lineNames).doesNotContain(lineName);
     }
 
-    private Response createLineResponse(String name, String color, long upStationId, long downStationId,
+    private Response createLineResponse(String upStationName, String downStationName, String name, String color,
                                         int distance) {
+        final List<Long> stationIds = Stream.of(upStationName, downStationName)
+                .map(StationAcceptanceTest::upsertStationResponse)
+                .map(response -> response.as(Station.class))
+                .map(Station::getId)
+                .collect(Collectors.toList());
         final Map<String, Object> params = new HashMap<>();
         params.put("name", name);
         params.put("color", color);
-        params.put("upStationId", upStationId);
-        params.put("downStationId", downStationId);
+        params.put("upStationId", stationIds.get(0));
+        params.put("downStationId", stationIds.get(1));
         params.put("distance", distance);
         return RestAssured.given().log().all()
                 .body(params)
@@ -113,9 +242,44 @@ public class LineAcceptanceTest {
                 .when().post("/lines");
     }
 
+    private ValidatableResponse createLine(String upStationName, String downStationName, String name, String color,
+                                           int distance) {
+        return createLineResponse(upStationName, downStationName, name, color, distance).then().log().all();
+    }
+
     private ValidatableResponse getLines() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
+                .then().log().all();
+    }
+
+    private List<String> getLineNames() {
+        return getLines().extract().jsonPath().getList("name", String.class);
+    }
+
+    private ValidatableResponse getLine(long id) {
+        return RestAssured.given().log().all()
+                .pathParam("id", id)
+                .when().get("/lines/{id}")
+                .then().log().all();
+    }
+
+    private ValidatableResponse editLine(long id, LineUpdateRequest lineUpdateRequest) {
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", lineUpdateRequest.getName());
+        params.put("color", lineUpdateRequest.getColor());
+        return RestAssured.given().log().all()
+                .contentType(ContentType.JSON)
+                .body(params)
+                .pathParam("id", id)
+                .when().put("/lines/{id}")
+                .then().log().all();
+    }
+
+    private ValidatableResponse deleteLine(long id) {
+        return RestAssured.given().log().all()
+                .pathParam("id", id)
+                .when().delete("/lines/{id}")
                 .then().log().all();
     }
 }

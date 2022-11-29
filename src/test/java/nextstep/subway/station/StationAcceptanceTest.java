@@ -137,7 +137,16 @@ public class StationAcceptanceTest {
         return createStationResponse(value).then().log().all();
     }
 
-    private ValidatableResponse getStations() {
+    public static Response upsertStationResponse(String value) {
+        final Map<String, String> params = new HashMap<>();
+        params.put("name", value);
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/stations");
+    }
+
+    private static ValidatableResponse getStations() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all();
