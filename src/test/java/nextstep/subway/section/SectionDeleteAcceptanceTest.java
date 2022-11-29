@@ -38,6 +38,12 @@ public class SectionDeleteAcceptanceTest {
         preDataUtil.lineStation(1L, 1L, null, 1L, null);
         preDataUtil.lineStation(2L, 2L, 1L, 1L, 1);
         preDataUtil.lineStation(3L, 3L, 2L, 1L, 2);
+
+        preDataUtil.line(2L, "3호선");
+        preDataUtil.station(4L, "양재역");
+        preDataUtil.station(5L, "남부터미널역");
+        preDataUtil.lineStation(4L, 4L, null, 2L, null);
+        preDataUtil.lineStation(5L, 5L, 4L, 2L, 1);
     }
 
     /**
@@ -49,7 +55,7 @@ public class SectionDeleteAcceptanceTest {
     void deleteEdgeUpStation() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .when().delete("/lines/1/stationId=1")
+            .when().delete("/lines/1/sections?stationId=1")
             .then().log().all()
             .extract();
         assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(OK);
@@ -69,7 +75,7 @@ public class SectionDeleteAcceptanceTest {
     void deleteEdgeDownStation() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .when().delete("/lines/1/stationId=3")
+            .when().delete("/lines/1/sections?stationId=3")
             .then().log().all()
             .extract();
         assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(OK);
@@ -89,7 +95,7 @@ public class SectionDeleteAcceptanceTest {
     void deleteMiddleSection() {
         // when
         ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
-            .when().delete("/lines/1/stationId=2")
+            .when().delete("/lines/1/sections?stationId=2")
             .then().log().all()
             .extract();
         assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(OK);
@@ -98,6 +104,40 @@ public class SectionDeleteAcceptanceTest {
         ExtractableResponse<Response> fetchResponse = LineAcceptanceTest.fetchLine(1L);
         assertThat(HttpStatus.valueOf(fetchResponse.statusCode())).isEqualTo(OK);
         assertThat(fetchResponse.jsonPath().getList("stations.id", Long.class)).containsExactly(1L, 3L);
+    }
+
+    /**
+     * When 노선에 등록되어 있지 않은 역을 제거할 때
+     * Then BadRequest 응답을 받는다
+     */
+    @DisplayName("존재하지 않는 역을 제거할 때")
+    @Test
+    void deleteInvalidStation() {
+        // when
+        ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
+            .when().delete("/lines/1/sections?stationId=99")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(BAD_REQUEST);
+    }
+
+    /**
+     * When 구간이 하나인 노선의 역을 제거할 때
+     * Then BadRequest 응답을 받는다
+     */
+    @DisplayName("구간이 하나인 노선의 역을 제거할 때")
+    @Test
+    void deleteOnlyOneSection() {
+        // when
+        ExtractableResponse<Response> sectionsResponse = RestAssured.given().log().all()
+            .when().delete("/lines/2/sections?stationId=4")
+            .then().log().all()
+            .extract();
+
+        // then
+        assertThat(HttpStatus.valueOf(sectionsResponse.statusCode())).isEqualTo(BAD_REQUEST);
     }
 
 }

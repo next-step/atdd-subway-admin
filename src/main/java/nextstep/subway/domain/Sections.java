@@ -10,6 +10,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 
 import nextstep.subway.exception.AllRegisteredStationsException;
+import nextstep.subway.exception.LastSectionException;
 import nextstep.subway.exception.NotAllIncludedStationsException;
 
 @Embeddable
@@ -52,6 +53,9 @@ public class Sections {
     }
 
     public void deleteSection(Long stationId) {
+        if (sections.size() == 2) {
+            throw new LastSectionException();
+        }
         findByDownStation(stationId)
             .ifPresent(section -> {
                 findByUpStation(stationId).ifPresent(

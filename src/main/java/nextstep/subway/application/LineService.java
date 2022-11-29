@@ -84,6 +84,7 @@ public class LineService {
     @Transactional
     public void deleteSection(Long lineId, Long stationId) {
         Line line = findLineById(lineId, new NotFoundException());
+        validateStation(stationId);
         line.deleteSection(stationId);
     }
 
