@@ -69,6 +69,9 @@ public class LineResponse {
         if (o == null || getClass() != o.getClass()) return false;
         LineResponse that = (LineResponse) o;
         boolean stationsSame = stations.size() != that.stations.size();
+        if (!stationsSame) {
+            return false;
+        }
         for (int i = 0; i < stations.size(); ++i) {
             if (
                     stations.get(i).getId() != that.stations.get(i).getId() ||
