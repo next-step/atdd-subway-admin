@@ -1,7 +1,6 @@
 package nextstep.subway.domain;
 
 import com.sun.istack.NotNull;
-import nextstep.subway.dto.LineRequest;
 
 import javax.persistence.*;
 
@@ -59,8 +58,8 @@ public class Line {
         return distance;
     }
 
-    public void update(LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+    public void update(Line newLine) {
+        this.name = newLine.getName();
+        this.color = newLine.getColor();
     }
 }

@@ -56,7 +56,7 @@ public class LineService {
     public void updateLine(Long id, LineRequest lineRequest) {
         Line originLine = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
-        originLine.update(lineRequest);
+        originLine.update(lineRequest.toLine(originLine.getUpStation(), originLine.getDownStation()));
     }
 
     @Transactional
