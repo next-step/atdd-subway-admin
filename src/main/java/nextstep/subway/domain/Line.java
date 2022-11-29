@@ -43,13 +43,13 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
+    public Sections getSections() {
+        return sections;
+    }
+
     public void updateNameAndColor(String name, String color) {
         this.name = name;
         this.color = color;
-    }
-
-    public Sections getSections() {
-        return sections;
     }
 
     public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, Distance distance) {

@@ -17,11 +17,7 @@ public class Distance {
     }
 
     private Distance(int distance, boolean isTerminalSection) {
-        if(isTerminalSection) {
-            this.distance = distance;
-            return;
-        }
-        if (distance <= MINIMUM_LIMIT_VALUE) {
+        if (!isTerminalSection && distance <= MINIMUM_LIMIT_VALUE) {
             throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
         }
         this.distance = distance;

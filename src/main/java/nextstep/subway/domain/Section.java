@@ -88,5 +88,4 @@ public class Section extends BaseEntity {
         this.distance.setEndSectionDistance();
         return this;
     }
-
 }

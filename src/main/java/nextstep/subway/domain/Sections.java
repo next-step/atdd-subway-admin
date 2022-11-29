@@ -4,7 +4,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Embeddable
@@ -61,15 +60,9 @@ public class Sections {
     public List<Section> addAndGetSections(Station requestUpStation, Station requestDownStation, Distance distance) {
         checkRequestSectionContainsValidStations(requestUpStation, requestDownStation);
         if (isNewStation(requestUpStation)) {
-            List<Section> sections = Arrays.asList(getNewUpperSection(requestUpStation, requestDownStation, distance),
-                    new Section(requestUpStation, requestDownStation, distance));
-            this.sections.addAll(sections);
-            return sections;
+            return getNewUpperSections(requestUpStation, requestDownStation, distance);
         }
-        List<Section> sections = Arrays.asList(new Section(requestUpStation, requestDownStation, distance),
-                getNewLowerSection(requestUpStation, requestDownStation, distance));
-        this.sections.addAll(sections);
-        return sections;
+        return getNewLowerSections(requestUpStation, requestDownStation, distance);
     }
 
     private void checkRequestSectionContainsValidStations(Station requestUpStation, Station requestDownStation) {
@@ -87,35 +80,51 @@ public class Sections {
         return !this.isContainStation(station);
     }
 
-    private Section getNewUpperSection(Station newStation, Station downStation, Distance distance) {
-        Section existingSection = sections.stream()
-                .filter(section -> downStation.equals(section.getDownStation()))
+    private List<Section> getNewUpperSections(Station requestUpStation, Station requestDownStation, Distance distance) {
+        List<Section> sections = new ArrayList<>();
+        Section existingSection = this.sections.stream()
+                .filter(section -> requestDownStation.equals(section.getDownStation()))
                 .findFirst().get();
-        if (isFirstStation(downStation)) {
-            sections.remove(existingSection);
-            return new Section(null, newStation, Distance.getTerminalSectionDistance());
+        int addIndex = this.sections.indexOf(existingSection);
+        if (isFirstStation(requestDownStation)) {
+            this.sections.remove(existingSection);
+            sections.add(new Section(null, requestUpStation, Distance.getTerminalSectionDistance()));
+            sections.add(new Section(requestUpStation, requestDownStation, distance));
+            this.sections.addAll(addIndex, sections);
+            return sections;
         }
-        sections.remove(existingSection);
-        return new Section(existingSection.getUpStation(), newStation,
-                existingSection.getDistance().subtract(distance));
+        this.sections.remove(existingSection);
+        sections.add(new Section(existingSection.getUpStation(), requestUpStation,
+                existingSection.getDistance().subtract(distance)));
+        sections.add(new Section(requestUpStation, requestDownStation, distance));
+        this.sections.addAll(addIndex, sections);
+        return sections;
     }
 
-    private Section getNewLowerSection(Station upStation, Station newStation, Distance distance) {
-        Section existingSection = sections.stream()
-                .filter(section -> upStation.equals(section.getUpStation()))
+    private List<Section> getNewLowerSections(Station requestUpStation, Station requestDownStation, Distance distance) {
+        List<Section> sections = new ArrayList<>();
+        Section existingSection = this.sections.stream()
+                .filter(section -> requestUpStation.equals(section.getUpStation()))
                 .findFirst().get();
-        if (isLastStation(upStation)) {
-            sections.remove(existingSection);
-            return new Section(newStation, null, Distance.getTerminalSectionDistance());
+        int addIndex = this.sections.indexOf(existingSection);
+        if (isLastStation(requestUpStation)) {
+            this.sections.remove(existingSection);
+            sections.add(new Section(requestUpStation, requestDownStation, distance));
+            sections.add(new Section(requestDownStation, null, Distance.getTerminalSectionDistance()));
+            this.sections.addAll(addIndex, sections);
+            return sections;
         }
-        sections.remove(existingSection);
-        return new Section(newStation, existingSection.getDownStation(),
-                existingSection.getDistance().subtract(distance));
+        this.sections.remove(existingSection);
+        sections.add(new Section(requestUpStation, requestDownStation, distance));
+        sections.add(new Section(requestDownStation, existingSection.getDownStation(),
+                existingSection.getDistance().subtract(distance)));
+        this.sections.addAll(addIndex, sections);
+        return sections;
     }
 
     public List<Section> init(Section section) {
-        sections.add(section);
         sections.add(new Section(null, section.getUpStation(), Distance.getTerminalSectionDistance()));
+        sections.add(section);
         sections.add(new Section(section.getDownStation(), null, Distance.getTerminalSectionDistance()));
         return sections;
     }
