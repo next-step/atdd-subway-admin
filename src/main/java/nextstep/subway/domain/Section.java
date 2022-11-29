@@ -37,16 +37,16 @@ public class Section extends BaseEntity {
         this.distance = distance;
     }
 
-    public boolean hasUpStation(Section newSection) {
-        return this.upStation.equals(newSection.getUpStation());
+    public boolean hasUpStation(Station station) {
+        return this.upStation == station;
     }
 
-    public boolean hasDownStation(Section newSection) {
-        return this.downStation.equals(newSection.getDownStation());
+    public boolean hasDownStation(Station station) {
+        return this.downStation == station;
     }
 
     public boolean containsStation(Station station) {
-        return this.upStation.equals(station) || this.downStation.equals(station);
+        return this.upStation == station || this.downStation == station;
     }
 
     public Long getLineId() {
