@@ -16,10 +16,6 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    private Long upStationId;
-
-    private Long downStationId;
-
     @Embedded
     Sections sections = new Sections();
 
@@ -31,18 +27,16 @@ public class Line extends BaseEntity {
         this.name = name;
     }
 
-    public Line(String name, String color, Long upStationId, Long downStationId) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        addSection(new Section(this, upStation, downStation, distance));
     }
 
-    public Line of(LineRequest lineRequest) {
+    public Line of (LineRequest lineRequest) {
         this.name = lineRequest.getName();
         this.color = lineRequest.getColor();
-        this.upStationId = lineRequest.getUpStationId();
-        this.upStationId = lineRequest.getDownStationId();
+
         return this;
     }
 
@@ -62,14 +56,7 @@ public class Line extends BaseEntity {
     }
 
     public Sections getSections() {
-        return sections;
+        return sections.getSortedSections();
     }
 
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
 }

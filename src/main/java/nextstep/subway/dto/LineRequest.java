@@ -7,18 +7,20 @@ public class LineRequest {
 
     private String name;
     private String color;
-    private Long upStationId;
-    private Long downStationId;
+    private Station upStation;
+    private Station downStation;
+    private int distance;
 
     public LineRequest() {
 
     }
 
-    public LineRequest(String name, String color, Long upStationId, Long downStationId) {
+    public LineRequest(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
+        this.upStation = upStation;
+        this.downStation = downStation;
+        this.distance = distance;
     }
 
     public String getName() {
@@ -29,23 +31,12 @@ public class LineRequest {
         return color;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
-    }
-
     public Line toLine() {
-        return new Line(name, color, upStationId, downStationId);
+        return new Line(name, color, upStation, downStation, distance);
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setDownStationId(Long downStationId) {
-        this.downStationId = downStationId;
-    }
 }

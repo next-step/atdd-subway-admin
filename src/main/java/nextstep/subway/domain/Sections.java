@@ -24,9 +24,10 @@ public class Sections {
 
         validateNewSection(newSection);
 
-        Section previousSection = getPreviousSection(newSection);
-        switchSectionValue(previousSection, newSection);
+        Section switchSection = getSwitchTarget(newSection);
+        switchSectionValue(switchSection, newSection);
         sections.add(newSection);
+        sortSections();
 
         return this;
     }
@@ -37,7 +38,7 @@ public class Sections {
         }
     }
 
-    private Section getPreviousSection(Section newSection) {
+    private Section getSwitchTarget(Section newSection) {
 
         Section previousSection = findSectionWithUpStation(newSection);
 
@@ -51,14 +52,14 @@ public class Sections {
 
     private Section findSectionWithUpStation(Section newSection) {
         return sections.stream()
-                .filter(section -> section.hasUpStation(newSection))
+                .filter(section -> section.hasUpStation(newSection.getUpStation()))
                 .findFirst()
                 .orElse(null);
     }
 
     private Section findSectionWithDownStation(Section newSection) {
         return sections.stream()
-                .filter(section -> section.hasDownStation(newSection))
+                .filter(section -> section.hasDownStation(newSection.getDownStation()))
                 .findFirst()
                 .orElse(null);
     }
@@ -70,14 +71,10 @@ public class Sections {
     public void validateNewSection(Section newSection) {
 
         boolean containsUpStation = sections.stream()
-                .filter(section -> section.containsStation(newSection.getUpStation()))
-                .findAny()
-                .isPresent();
+                .anyMatch(section -> section.containsStation(newSection.getUpStation()));
 
         boolean containsDownStation = sections.stream()
-                .filter(section -> section.containsStation(newSection.getDownStation()))
-                .findAny()
-                .isPresent();
+                .anyMatch(section -> section.containsStation(newSection.getDownStation()));
 
         if (containsUpStation && containsDownStation) {
             System.out.println(STATIONS_ALREADY_EXIT_EXCEPTION);
@@ -88,5 +85,49 @@ public class Sections {
             System.out.println(STATIONS_DO_NOT_EXIST_EXCEPTION);
             throw new IllegalArgumentException(STATIONS_DO_NOT_EXIST_EXCEPTION);
         }
+    }
+
+    private void sortSections() {
+        //상행종점역 찾기
+        Section firstSection = sections.stream()
+                .filter(section -> getPreviousSection(section) == null)
+                .findAny()
+                .get();
+
+        //상행종점역부터 정렬
+        List<Section> sortedSections = new ArrayList<>();
+        sortedSections.add(firstSection);
+
+        Section previousSection = firstSection;
+
+        while (sortedSections.size() != sections.size()) {
+            Section nextSection = getNextSection(previousSection);
+            sortedSections.add(nextSection);
+            previousSection = nextSection;
+
+        }
+
+        sections = sortedSections;
+    }
+
+    private Section getPreviousSection(Section tmp) {
+        return sections.stream()
+                .filter(section -> section.hasDownStation(tmp.getUpStation()))
+                .findAny()
+                .orElse(null);
+    }
+
+    private Section getNextSection(Section tmp) {
+        Section nextSection = sections.stream()
+                .filter(section -> section.hasUpStation(tmp.getDownStation()))
+                .findAny()
+                .orElse(null);
+
+        return nextSection;
+    }
+
+    public Sections getSortedSections() {
+        sortSections();
+        return this;
     }
 }
