@@ -4,6 +4,7 @@ import nextstep.subway.constants.ErrorCode;
 import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -61,5 +62,13 @@ public class LineService {
         return lineRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
+    }
+
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = getLine(lineId);
+        line.addSection(new Section(getStation(sectionRequest.getUpStationId())
+                            , getStation(sectionRequest.getDownStationId())
+                            , sectionRequest.getDistance()));
+        return LineResponse.from(line);
     }
 }
