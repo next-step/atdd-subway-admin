@@ -18,7 +18,7 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    public Section() {
+    protected Section() {
     }
 
     public Section(int distance, Station upStation, Station downStation) {
