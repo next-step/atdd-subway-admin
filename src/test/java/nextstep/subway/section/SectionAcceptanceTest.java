@@ -120,7 +120,7 @@ public class SectionAcceptanceTest {
     /**
      * Given 기존 노선 뒤에 새로운 역을 하행 종점으로 등록한다.
      * When 기존 노선의 상행역과 신규 하행역으로 등록을 한다.
-     * Then Then BAD_REQUEST 를 응답한다.
+     * Then BAD_REQUEST 를 응답한다.
      */
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
@@ -206,4 +206,17 @@ public class SectionAcceptanceTest {
         assertThat(stations.get(1).getName()).isEqualTo(하행신설역.getName());
     }
 
+    /**
+     * When 유일 구간인 노선에서 역을 제거한다.
+     * Then BAD_REQUEST 를 응답한다.
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간은 제거할 수 없음")
+    @Test
+    void deleteLastStation() {
+        // given
+        ExtractableResponse<Response> response =
+                SectionTestFixture.requestRemoveSection(신분당선.getId().toString(), 광교역.getId());
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
 }

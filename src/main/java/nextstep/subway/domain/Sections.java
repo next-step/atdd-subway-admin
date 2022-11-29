@@ -77,4 +77,10 @@ public class Sections {
                 .filter(section -> section.isDownStation(station))
                 .findFirst();
     }
+
+    public void validateSections() {
+        if (sections.size() == 1) {
+            throw new IllegalArgumentException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
+        }
+    }
 }

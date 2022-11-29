@@ -81,6 +81,7 @@ public class Line extends BaseEntity {
     }
 
     public void removeStation(Station station) {
+        sections.validateSections();
         sections.removeStation(station);
     }
 }
