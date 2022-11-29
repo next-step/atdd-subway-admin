@@ -25,15 +25,25 @@ public class Sections {
     }
 
     public boolean isFirstStation(Station station) {
+        return isFirstStationById(station.getId());
+    }
+
+    public boolean isFirstStationById(Long stationId) {
         return sections.stream()
                 .filter(section -> section.getUpStation() == null)
-                .anyMatch(section -> section.getDownStation().equals(station));
+                .map(section -> section.getDownStation().getId())
+                .anyMatch(stationId::equals);
     }
 
     public boolean isLastStation(Station station) {
+        return isLastStationById(station.getId());
+    }
+
+    public boolean isLastStationById(Long stationId) {
         return sections.stream()
                 .filter(section -> section.getDownStation() == null)
-                .anyMatch(section -> section.getUpStation().equals(station));
+                .map(section -> section.getUpStation().getId())
+                .anyMatch(stationId::equals);
     }
 
     public boolean isContainStation(Station station) {
@@ -129,40 +139,65 @@ public class Sections {
         return sections;
     }
 
-    public Section removeSectionByStationAndGetNewSection(Station station) {
+    public Section removeSectionByStationAndGetNewSection(Long stationId) {
+        checkStationExist(stationId);
+        checkOnlyOneSection();
+
+        if (isFirstStationById(stationId)) {
+            return removeFirstSection(stationId);
+        }
+
+        if (isLastStationById(stationId)) {
+            return removeLastSection(stationId);
+        }
+
+        return removeNonTerminalSection(stationId);
+    }
+
+    public void checkStationExist(Long stationId) {
+        if (!getStations().stream().map(Station::getId).anyMatch(stationId::equals)) {
+            throw new IllegalArgumentException(ErrorMessage.LINE_NOT_CONTAIN_STATION.getMessage());
+        }
+    }
+
+    public void checkOnlyOneSection() {
         if (sections.size() == 3) {
             throw new IllegalArgumentException(ErrorMessage.ONLY_ONE_SECTION.getMessage());
         }
+    }
 
-        if (isFirstStation(station)) {
-            sections.remove(sections.stream()
-                    .filter(section -> section.getUpStation() == null)
-                    .findFirst().get());
-            return sections.stream()
-                    .filter(section -> section.getUpStation() != null &&
-                            section.getUpStation().equals(station))
-                    .findFirst().get()
-                    .deleteUpStation();
-        }
+    private Section removeFirstSection(Long stationId) {
+        sections.remove(sections.stream()
+                .filter(section -> section.getUpStation() == null)
+                .findFirst().get());
 
-        if (isLastStation(station)) {
-            sections.remove(sections.stream()
-                    .filter(section -> section.getDownStation() == null)
-                    .findFirst().get());
-            return sections.stream()
-                    .filter(section -> section.getDownStation() != null &&
-                            section.getDownStation().equals(station))
-                    .findFirst().get()
-                    .deleteDownStation();
-        }
+        return sections.stream()
+                .filter(section -> section.getUpStation() != null &&
+                        section.getUpStation().getId().equals(stationId))
+                .findFirst().get()
+                .deleteUpStation();
+    }
 
+    private Section removeLastSection(Long stationId) {
+        sections.remove(sections.stream()
+                .filter(section -> section.getDownStation() == null)
+                .findFirst().get());
+
+        return sections.stream()
+                .filter(section -> section.getDownStation() != null &&
+                        section.getDownStation().getId().equals(stationId))
+                .findFirst().get()
+                .deleteDownStation();
+    }
+
+    private Section removeNonTerminalSection(Long stationId) {
         Section upperSection = sections.stream()
                 .filter(section -> section.getDownStation() != null &&
-                        section.getDownStation().equals(station))
+                        section.getDownStation().getId().equals(stationId))
                 .findFirst().get();
         Section lowerSection = sections.stream()
                 .filter(section -> section.getUpStation() != null &&
-                        section.getUpStation().equals(station))
+                        section.getUpStation().getId().equals(stationId))
                 .findFirst().get();
         Section newSection = new Section(upperSection.getUpStation(), lowerSection.getDownStation(),
                 upperSection.getDistance().add(lowerSection.getDistance()));

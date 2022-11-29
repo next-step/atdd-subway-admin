@@ -62,14 +62,8 @@ public class Line extends BaseEntity {
         sections.init(section).stream().forEach(newSection -> newSection.setLine(this));
     }
 
-    public void checkStationExist(Long stationId) {
-        if (!getStations().stream().map(Station::getId).anyMatch(stationId::equals)) {
-            throw new IllegalArgumentException(ErrorMessage.LINE_NOT_CONTAIN_STATION.getMessage());
-        }
-    }
-
-    public void removeStation(Station station) {
-        Section newSection = sections.removeSectionByStationAndGetNewSection(station);
+    public void removeStation(Long stationId) {
+        Section newSection = sections.removeSectionByStationAndGetNewSection(stationId);
         newSection.setLine(this);
     }
 }
