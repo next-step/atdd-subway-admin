@@ -4,7 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import io.restassured.response.ValidatableResponse;
-import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,8 +46,7 @@ public class LineAcceptanceTest {
 
         // given
         final String lineName = "2호선";
-        final long lineId = createLineResponse(lineName, "bg-green-600", upStationId, downStationId, 10)
-                .as(Line.class).getId();
+        createLineResponse(lineName, "bg-green-600", upStationId, downStationId, 10);
 
         // when
         final ExtractableResponse<Response> response = getLines().extract();
@@ -57,7 +55,7 @@ public class LineAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         // then
-        final List<String> lineNames = response.jsonPath().getList("names", String.class);
+        final List<String> lineNames = response.jsonPath().getList("name", String.class);
         assertThat(lineNames).contains(lineName);
     }
 

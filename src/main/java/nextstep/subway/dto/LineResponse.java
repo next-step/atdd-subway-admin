@@ -29,6 +29,18 @@ public class LineResponse {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public List<StationOfLineResponse> getStations() {
+        return stations;
+    }
+
     public static class StationOfLineResponse {
         private Long id;
         private String name;
@@ -36,6 +48,14 @@ public class LineResponse {
         public StationOfLineResponse(Long id, String name) {
             this.id = id;
             this.name = name;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
         }
     }
 }
