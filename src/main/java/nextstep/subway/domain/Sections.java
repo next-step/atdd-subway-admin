@@ -135,13 +135,25 @@ public class Sections {
         }
 
         if (isFirstStation(station)) {
-            sections.remove(0);
-            return sections.get(0).deleteUpStation();
+            sections.remove(sections.stream()
+                    .filter(section -> section.getUpStation() == null)
+                    .findFirst().get());
+            return sections.stream()
+                    .filter(section -> section.getUpStation() != null &&
+                            section.getUpStation().equals(station))
+                    .findFirst().get()
+                    .deleteUpStation();
         }
 
         if (isLastStation(station)) {
-            sections.remove(sections.size()-1);
-            return sections.get(sections.size()-1).deleteDownStation();
+            sections.remove(sections.stream()
+                    .filter(section -> section.getDownStation() == null)
+                    .findFirst().get());
+            return sections.stream()
+                    .filter(section -> section.getDownStation() != null &&
+                            section.getDownStation().equals(station))
+                    .findFirst().get()
+                    .deleteDownStation();
         }
 
         Section upperSection = sections.stream()
@@ -155,10 +167,10 @@ public class Sections {
         Section newSection = new Section(upperSection.getUpStation(), lowerSection.getDownStation(),
                 upperSection.getDistance().add(lowerSection.getDistance()));
 
-        int index = sections.indexOf(upperSection);
+        int addIndex = sections.indexOf(upperSection);
         sections.remove(upperSection);
         sections.remove(lowerSection);
-        sections.add(index, newSection);
+        sections.add(addIndex, newSection);
         return newSection;
     }
 }
