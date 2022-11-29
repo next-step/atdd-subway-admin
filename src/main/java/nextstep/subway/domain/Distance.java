@@ -6,33 +6,55 @@ import java.util.Objects;
 @Embeddable
 public class Distance {
 
-    private static final int TERMINAL_SECTION_DISTANCE = 0;
-    private static final int MINIMUM_DISTANCE = 0;
+    private static final int TERMINAL_SECTION_DISTANCE_VALUE = 0;
+    private static final int MINIMUM_DISTANCE = 1;
+    private static final Distance TERMINAL_SECTION_DISTANCE = new Distance(TERMINAL_SECTION_DISTANCE_VALUE, true);
 
     private int distance;
-
 
     protected Distance() {
 
     }
 
-    public Distance(int distance) {
-        if (distance <= MINIMUM_DISTANCE) {
+    private Distance(int distance, boolean isTerminalSectionDistance) {
+        if(isTerminalSectionDistance) {
+            this.distance = distance;
+            return;
+        }
+        if (distance < MINIMUM_DISTANCE) {
             throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
         }
         this.distance = distance;
+    }
+
+    public Distance(int distance) {
+        this(distance, false);
     }
 
     public int getDistance() {
         return distance;
     }
 
-    public Distance compareTo(Distance distance) {
+    public Distance subtract(Distance distance) {
         int newDistance = this.distance - distance.getDistance();
-        if (newDistance <= MINIMUM_DISTANCE) {
+        if (newDistance < MINIMUM_DISTANCE) {
             throw new IllegalArgumentException(ErrorMessage.EXCEED_SECTION_DISTANCE.getMessage());
         }
-        return new Distance(newDistance);
+        this.distance = newDistance;
+        return this;
+    }
+
+    public void setEndSectionDistance() {
+        this.distance = TERMINAL_SECTION_DISTANCE_VALUE;
+    }
+
+    public Distance add(Distance distance) {
+        this.distance += distance.getDistance();
+        return this;
+    }
+
+    public static Distance getTerminalSectionDistance() {
+        return TERMINAL_SECTION_DISTANCE;
     }
 
     @Override
@@ -48,18 +70,4 @@ public class Distance {
         return Objects.hash(distance);
     }
 
-    public void setEndSectionDistance() {
-        this.distance = TERMINAL_SECTION_DISTANCE;
-    }
-
-    public Distance addDistance(Distance distance) {
-        this.distance += distance.getDistance();
-        return this;
-    }
-
-    public static Distance getTerminalSectionDistance() {
-        Distance distance = new Distance();
-        distance.setEndSectionDistance();
-        return distance;
-    }
 }

@@ -109,7 +109,7 @@ public class Sections {
         }
         sections.remove(existingSection);
         return new Section(existingSection.getUpStation(), newStation,
-                existingSection.getDistance().compareTo(distance));
+                existingSection.getDistance().subtract(distance));
     }
 
     private Section getNewLowerSection(Station upStation, Station newStation, Distance distance) {
@@ -122,7 +122,7 @@ public class Sections {
         }
         sections.remove(existingSection);
         return new Section(newStation, existingSection.getDownStation(),
-                existingSection.getDistance().compareTo(distance));
+                existingSection.getDistance().subtract(distance));
     }
 
     public List<Section> init(Section section) {
@@ -156,7 +156,7 @@ public class Sections {
                         section.getUpStation().getId().equals(stationId))
                 .findFirst().get();
         Section newSection = new Section(upperSection.getUpStation(), lowerSection.getDownStation(),
-                upperSection.getDistance().addDistance(lowerSection.getDistance()));
+                upperSection.getDistance().add(lowerSection.getDistance()));
 
         int index = sections.indexOf(upperSection);
         sections.remove(upperSection);
