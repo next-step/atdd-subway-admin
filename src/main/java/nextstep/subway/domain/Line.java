@@ -65,6 +65,10 @@ public class Line extends BaseEntity{
         return this.color;
     }
 
+    public Sections getSections() {
+        return sections;
+    }
+
     public void modify(String name, String color) {
         this.name = name;
         this.color = color;

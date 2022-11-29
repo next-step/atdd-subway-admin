@@ -24,8 +24,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = getStation(lineRequest.getUpStationId());
-        Station downStation = getStation(lineRequest.getDownStationId());
+        Station upStation = findStation(lineRequest.getUpStationId());
+        Station downStation = findStation(lineRequest.getDownStationId());
         return LineResponse.from(lineRepository.save(lineRequest.toLine(upStation, downStation)));
     }
 
@@ -37,38 +37,50 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        Line line = getLine(id);
+        Line line = findLine(id);
         return LineResponse.from(line);
     }
 
     @Transactional
     public LineResponse modifyLine(Long id, LineRequest lineRequest) {
-        Line line = getLine(id);
+        Line line = findLine(id);
         line.modify(lineRequest.getName(), lineRequest.getColor());
         return LineResponse.from(line);
     }
 
     @Transactional
     public void deleteLine(Long id) {
-        Line line = getLine(id);
+        Line line = findLine(id);
         lineRepository.delete(line);
     }
 
-    private Station getStation(long stationId) {
+    @Transactional
+    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
+        Line line = findLine(lineId);
+        line.addSection(new Section(findStation(sectionRequest.getUpStationId())
+                            , findStation(sectionRequest.getDownStationId())
+                            , sectionRequest.getDistance()));
+        return LineResponse.from(line);
+    }
+
+    public LineResponse findLineByName(String name) {
+        Line line = findLine(name);
+        return LineResponse.from(line);
+    }
+
+    private Station findStation(long stationId) {
         return stationRepository.getById(stationId);
     }
 
-    private Line getLine(Long id) {
+    public Line findLine(Long id) {
         return lineRepository
                 .findById(id)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
     }
 
-    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = getLine(lineId);
-        line.addSection(new Section(getStation(sectionRequest.getUpStationId())
-                            , getStation(sectionRequest.getDownStationId())
-                            , sectionRequest.getDistance()));
-        return LineResponse.from(line);
+    public Line findLine(String name) {
+        return lineRepository
+                .findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_LINE_EXCEPTION.getErrorMessage()));
     }
 }
