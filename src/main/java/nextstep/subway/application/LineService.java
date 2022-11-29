@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Transactional(readOnly = true)
 @Service
 public class LineService {
     private static final String NOT_FOUND_STATION_MESSAGE = "해당하는 역을 찾을 수 없습니다.";
@@ -27,6 +28,7 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
+    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new NotFoundStationException(NOT_FOUND_STATION_MESSAGE));
         Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new NotFoundStationException(NOT_FOUND_STATION_MESSAGE));
@@ -58,6 +60,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
+    @Transactional
     public void deleteLine(Long id) {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NotFoundLineException(NOT_FOUND_LINE_MESSAGE));
         lineRepository.delete(line);
