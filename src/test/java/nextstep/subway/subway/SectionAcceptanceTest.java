@@ -1,4 +1,4 @@
-package nextstep.subway.section;
+package nextstep.subway.subway;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("구간 관련 기능")
 public class SectionAcceptanceTest extends AcceptanceTest {
@@ -23,6 +24,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     StationResponse 강남역;
     StationResponse 정자역;
     LineResponse 신분당선;
+    final int 신분당선_노선_길이 = 10;
 
     private ExtractableResponse<Response> getStations() {
         return RestAssured.given().log().all()
@@ -42,7 +44,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         params.put("color", "bg-green-600");
         params.put("upStationId", 강남역.getId());
         params.put("downStationId", 정자역.getId());
-        params.put("distance", 10);
+        params.put("distance", 신분당선_노선_길이);
         신분당선 = 지하철노선_등록(params).as(LineResponse.class);
     }
 
@@ -50,7 +52,14 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/{lineId}/sections", lineId)
+                .when().post("/lines/{lineId}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> 지하철구간_제거(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
                 .then().log().all()
                 .extract();
     }
@@ -64,7 +73,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 역_사이에_새로운_역_등록() {
         //when
-        Long 판교역id = getId(지하철역_등록("판교역"));
+        Long 판교역id = extractId(지하철역_등록("판교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 강남역.getId());
         params.put("downStationId", 판교역id);
@@ -73,6 +82,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         //then
         assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(지하철구간_등록.body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이);
     }
 
     /**
@@ -85,7 +95,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 새로운_역을_상행_종점으로_등록() {
         //when
-        Long 신사역id = getId(지하철역_등록("신사역"));
+        Long 신사역id = extractId(지하철역_등록("신사역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 신사역id);
         params.put("downStationId", 강남역.getId());
@@ -93,6 +103,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철구간_등록 = 지하철구간_등록(params, 신분당선.getId());
         //then
         assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(지하철구간_등록.body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이 + 5);
     }
 
     /**
@@ -105,7 +116,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 새로운_역을_하행_종점으로_등록() {
         //when
-        Long 광교역id = getId(지하철역_등록("광교역"));
+        Long 광교역id = extractId(지하철역_등록("광교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 정자역.getId());
         params.put("downStationId", 광교역id);
@@ -113,6 +124,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철구간_등록 = 지하철구간_등록(params, 신분당선.getId());
         //then
         assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(지하철구간_등록.body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이 + 4);
     }
 
     /**
@@ -124,7 +136,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 역_사이에_새로운_역을_등록할_경우_기존_역_사이_길이보다_크거나_같으면_등록을_할_수_없다() {
         //when
-        Long 광교역id = getId(지하철역_등록("광교역"));
+        Long 광교역id = extractId(지하철역_등록("광교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 강남역.getId());
         params.put("downStationId", 광교역id);
@@ -143,7 +155,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 상행역과_하행역이_이미_노선에_모두_등록되어_있다면_추가할_수_없음() {
         //when
-        Long 광교역id = getId(지하철역_등록("광교역"));
+        Long 광교역id = extractId(지하철역_등록("광교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 강남역.getId());
         params.put("downStationId", 정자역.getId());
@@ -162,8 +174,8 @@ public class SectionAcceptanceTest extends AcceptanceTest {
     @Test
     void 행역과_하행역_둘_중_하나도_포함되어있지_않으면_추가할_수_없음() {
         //when
-        Long 광교역id = getId(지하철역_등록("광교역"));
-        Long 미금역id = getId(지하철역_등록("미금역"));
+        Long 광교역id = extractId(지하철역_등록("광교역"));
+        Long 미금역id = extractId(지하철역_등록("미금역"));
         Map<String, Object> params = new HashMap<>();
         params.put("upStationId", 광교역id);
         params.put("downStationId", 미금역id);
@@ -171,5 +183,92 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         ExtractableResponse<Response> 지하철구간_등록 = 지하철구간_등록(params, 신분당선.getId());
         //then
         assertThat(지하철구간_등록.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 지하철역, 노선, 구간을 등록하고
+     * When 종점을 제거하면
+     * Then 종점이 제거된다
+     * Then 노선 길이가 제거된 구간만큼 줄어든다
+     */
+    @Test
+    void 종점_제거() {
+        //given
+        Long 광교역id = extractId(지하철역_등록("광교역"));
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", 정자역.getId());
+        params.put("downStationId", 광교역id);
+        params.put("distance", 10);
+        지하철구간_등록(params, 신분당선.getId());
+        //when
+        ExtractableResponse<Response> 지하철구간_제거 = 지하철구간_제거(신분당선.getId(), 광교역id);
+        //then
+        ExtractableResponse<Response> 지하철노선_조회 = 지하철노선_조회(신분당선.getId());
+        assertAll(() -> assertThat(지하철구간_제거.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철노선_조회.body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이),
+                () -> assertThat(extractList(지하철노선_조회, "sections.upStation", String.class)).hasSize(1),
+                () -> assertThat(extractString(지하철노선_조회, "sections.upStation[0]")).isEqualTo("강남역"),
+                () -> assertThat(extractString(지하철노선_조회, "sections.downStation[0]")).isEqualTo("정자역"));
+    }
+
+    /**
+     * Given 지하철역, 노선, 구간을 등록하고
+     * When 가운데 역을 제거하면
+     * Then 가운데 역을 하행역/상행역으로 하는 구간이 제거되고
+     * Then 가운데 역을 하행역/상행역으로 하는 구간이 합쳐진다.
+     */
+    @Test
+    void 가운데역_제거() {
+        //given
+        Long 광교역id = extractId(지하철역_등록("광교역"));
+        Map<String, Object> params = new HashMap<>();
+        params.put("upStationId", 정자역.getId());
+        params.put("downStationId", 광교역id);
+        params.put("distance", 10);
+        지하철구간_등록(params, 신분당선.getId());
+        //when
+        ExtractableResponse<Response> 지하철구간_제거 = 지하철구간_제거(신분당선.getId(), 정자역.getId());
+        //then
+        ExtractableResponse<Response> 지하철노선_조회 = 지하철노선_조회(신분당선.getId());
+        assertAll(() -> assertThat(지하철구간_제거.statusCode()).isEqualTo(HttpStatus.OK.value()),
+                () -> assertThat(지하철노선_조회.body().jsonPath().getInt("distance")).isEqualTo(신분당선_노선_길이 + 10),
+                () -> assertThat(extractList(지하철노선_조회, "sections.upStation", String.class)).hasSize(1),
+                () -> assertThat(extractString(지하철노선_조회, "sections.upStation[0]")).isEqualTo("강남역"),
+                () -> assertThat(extractString(지하철노선_조회, "sections.downStation[0]")).isEqualTo("광교역")
+        );
+    }
+
+    /**
+     * Given 지하철역, 노선, 구간을 등록하고
+     * When 구간이 하나인 노선에서 역을 제거하면
+     * Then 역이 제거되지 않는다. BadRequest(400) 리턴
+     */
+    @Test
+    void 구간이_하나인_노선에서_역을_제거() {
+        //when
+        ExtractableResponse<Response> 지하철구간_제거 = 지하철구간_제거(신분당선.getId(), 정자역.getId());
+        //then
+        ExtractableResponse<Response> 지하철노선_조회 = 지하철노선_조회(신분당선.getId());
+        assertAll(() -> assertThat(지하철구간_제거.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(extractList(지하철노선_조회, "sections.upStation", String.class)).hasSize(1)
+        );
+    }
+
+    /**
+     * Given 지하철역, 노선, 구간을 등록하고
+     * When 구간내에 존재하지 않는 역을 삭제하면
+     * Then 역이 제거되지 않는다. BadRequest(400) 리턴
+     */
+    @Test
+    void 구간_내에_존재하지_않는_역_제거() {
+        //given
+        Long 성수역id = extractId(지하철역_등록("성수역"));
+        //when
+        ExtractableResponse<Response> 지하철구간_제거 = 지하철구간_제거(신분당선.getId(), 성수역id);
+        //then
+        ExtractableResponse<Response> 지하철노선_조회 = 지하철노선_조회(신분당선.getId());
+        assertAll(() -> assertThat(지하철구간_제거.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value()),
+                () -> assertThat(extractList(지하철노선_조회, "sections.upStation", String.class)).hasSize(1)
+        );
     }
 }

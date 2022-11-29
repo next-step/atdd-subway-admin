@@ -63,12 +63,12 @@ public class Section {
         return stations;
     }
 
-    public boolean isEqualUpStation(Section section) {
-        return section.getUpStation().equals(upStation);
+    public boolean isEqualsUpStation(Station station) {
+        return upStation.equals(station);
     }
 
-    public boolean isEqualDownStation(Section section) {
-        return section.getDownStation().equals(downStation);
+    public boolean isEqualsDownStation(Station station) {
+        return downStation.equals(station);
     }
 
     public void updateUpStation(Section section) {
@@ -81,7 +81,8 @@ public class Section {
         this.downStation = section.getDownStation();
     }
 
-    public void updateLineDistance(Section newSection) {
-        this.distance.add(newSection.distance);
+    public Distance addDistance(Section newSection) {
+        return this.distance.add(newSection.distance);
     }
+
 }

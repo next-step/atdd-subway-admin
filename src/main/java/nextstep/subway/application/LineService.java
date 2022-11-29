@@ -7,6 +7,7 @@ import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineCreateRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.LineUpdateRequest;
+import nextstep.subway.dto.SectionResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,9 +43,9 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public LineResponse findLine(Long id) throws IllegalArgumentException {
+    public SectionResponse findLine(Long id) throws IllegalArgumentException {
         Line line = lineRepository.findById(id).orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION_MSG));
-        return LineResponse.from(line);
+        return SectionResponse.from(line);
     }
 
     @Transactional

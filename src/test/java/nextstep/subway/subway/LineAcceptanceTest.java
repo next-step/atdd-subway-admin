@@ -1,4 +1,4 @@
-package nextstep.subway.line;
+package nextstep.subway.subway;
 
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
@@ -27,29 +27,21 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @BeforeEach
     public void setUp() {
         super.setUp();
-        upStationId = getId(지하철역_등록("강남역"));
-        downStationId = getId(지하철역_등록("판교역"));
+        upStationId = extractId(지하철역_등록("강남역"));
+        downStationId = extractId(지하철역_등록("판교역"));
         Map<String, Object> params = new HashMap<>();
         params.put("name", "신분당선");
         params.put("color", "bg-red-600");
         params.put("upStationId", upStationId);
         params.put("downStationId", downStationId);
         params.put("distance", 10);
-        lineId = getId(지하철노선_등록(params));
+        lineId = extractId(지하철노선_등록(params));
     }
 
     private ExtractableResponse<Response> getLines() {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines")
-                .then().log().all()
-                .extract();
-    }
-
-    private ExtractableResponse<Response> getLine(Long id) {
-        return RestAssured.given().log().all()
-                .when()
-                .get("/lines/{id}", id)
                 .then().log().all()
                 .extract();
     }
@@ -63,7 +55,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철노선_생성후_조회() {
         // when
         // then
-        List<String> stationNames = getList(getLines(), "name", String.class);
+        List<String> stationNames = extractList(getLines(), "name", String.class);
         assertThat(stationNames).containsAnyOf("신분당선");
     }
 
@@ -85,7 +77,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         지하철노선_등록(params);
 
         // when
-        List<Long> ids = getList(getLines(), "id", Long.class);
+        List<Long> ids = extractList(getLines(), "id", Long.class);
 
         // then
         assertThat(ids).hasSize(2);
@@ -101,10 +93,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void 지하철노선_조회() {
         // give
         // when
-        ExtractableResponse<Response> extract = getLine(lineId);
+        ExtractableResponse<Response> extract = 지하철노선_조회(lineId);
 
         // then
-        assertThat(getString(extract, "name")).isEqualTo("신분당선");
+        assertThat(extractString(extract, "name")).isEqualTo("신분당선");
     }
 
     /**
@@ -129,7 +121,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
 
         // then
-        ExtractableResponse<Response> findResponse = getLine(lineId);
+        ExtractableResponse<Response> findResponse = 지하철노선_조회(lineId);
         assertAll(() -> assertThat(updateResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(findResponse.body().jsonPath().getString("name")).isEqualTo("다른분당선"));
     }

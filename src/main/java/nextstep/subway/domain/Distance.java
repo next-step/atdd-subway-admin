@@ -28,7 +28,7 @@ public class Distance {
         return subtract(distance).distance <= 0;
     }
 
-    public void add(Distance distance) {
-        this.distance += distance.distance;
+    public Distance add(Distance distance) {
+        return new Distance(this.distance + distance.distance);
     }
 }

@@ -50,15 +50,23 @@ public abstract class AcceptanceTest {
                 .extract();
     }
 
-    protected Long getId(ExtractableResponse<Response> response) {
+    protected ExtractableResponse<Response> 지하철노선_조회(Long id) {
+        return RestAssured.given().log().all()
+                .when()
+                .get("/lines/{id}", id)
+                .then().log().all()
+                .extract();
+    }
+
+    protected Long extractId(ExtractableResponse<Response> response) {
         return response.body().jsonPath().getLong("id");
     }
 
-    protected String getString(ExtractableResponse<Response> response, String property) {
+    protected String extractString(ExtractableResponse<Response> response, String property) {
         return response.body().jsonPath().getString(property);
     }
 
-    protected <T> List<T> getList(ExtractableResponse<Response> response, String property, Class<T> classType) {
+    protected <T> List<T> extractList(ExtractableResponse<Response> response, String property, Class<T> classType) {
         return response.body().jsonPath().getList(property, classType);
     }
 }
