@@ -33,20 +33,16 @@ public class LineService {
         if (lineOptional.isPresent()) {
             return null;
         }
-        Optional<Station> upStationOptional = stationRepository.findById(lineCreateRequest.getUpStationId());
-        Optional<Station> downStationOptional = stationRepository.findById(lineCreateRequest.getDownStationId());
-        if (!upStationOptional.isPresent() || !downStationOptional.isPresent()) {
-            throw new IllegalArgumentException();
-        }
+        Station upStation = stationRepository.findById(lineCreateRequest.getUpStationId())
+                .orElseThrow(IllegalArgumentException::new);
+        Station downStation = stationRepository.findById(lineCreateRequest.getDownStationId())
+                .orElseThrow(IllegalArgumentException::new);
         Line line = lineRepository.save(
                 new Line(null, lineCreateRequest.getName(), lineCreateRequest.getColor(),
                         lineCreateRequest.getDistance()));
-        Station upStation = upStationOptional.get();
         LineStation lineStationUp = lineStationRepository.save(new LineStation(upStation, line));
-        Station downStation = downStationOptional.get();
         LineStation lineStationDown = lineStationRepository.save(new LineStation(downStation, line));
         line.setLineStations(new ArrayList<>(Arrays.asList(lineStationUp, lineStationDown)));
-        line = lineRepository.save(line);
         return new LineResponse(line);
     }
 
@@ -58,11 +54,9 @@ public class LineService {
     }
 
     public LineResponse findById(long id) {
-        Optional<Line> lineOptional = lineRepository.findById(id);
-        if (!lineOptional.isPresent()) {
-            throw new IllegalArgumentException();
-        }
-        return new LineResponse(lineOptional.get());
+        return lineRepository.findById(id)
+                .map(LineResponse::new)
+                .orElseThrow(IllegalArgumentException::new);
     }
 
     @Transactional
@@ -81,8 +75,8 @@ public class LineService {
         if (!lineOptional.isPresent()) {
             return;
         }
-        Line line = lineOptional.get();
-        line.getLineStations().stream()
+        lineOptional.get()
+                .getLineStations().stream()
                 .map(LineStation::getId)
                 .forEach(lineStationRepository::deleteById);
         lineRepository.deleteById(id);
