@@ -120,13 +120,8 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 조회한다.")
     public void getLine_ok() {
         // given
-        final String upStation = "강남역";
-        final String downStation = "잠실역";
-        final String lineName = "2호선";
-        final String color = "bg-green-600";
-        final int distance = 10;
         final ExtractableResponse<Response> createdResponse =
-                createLine(upStation, downStation, lineName, color, distance).extract();
+                createLine("강남역", "잠실역", "2호선", "bg-green-600", 10).extract();
         final LineResponse createdLineResponse = createdResponse.as(LineResponse.class);
 
         // when
