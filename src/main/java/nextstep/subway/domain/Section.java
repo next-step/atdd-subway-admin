@@ -106,4 +106,8 @@ public class Section implements Comparable<Section> {
     public boolean isUpStation(Station station) {
         return upStation.equals(station);
     }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
 }

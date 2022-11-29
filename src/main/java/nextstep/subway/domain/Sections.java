@@ -46,7 +46,9 @@ public class Sections {
 
     public void removeStation(Station station) {
         Optional<Section> upSection = findUpStation(station);
+        Optional<Section> downSection = findDownStation(station);
         upSection.ifPresent(this::removeSection);
+        downSection.ifPresent(this::removeSection);
     }
 
     private void removeSection(Section section) {
@@ -56,6 +58,12 @@ public class Sections {
     private Optional<Section> findUpStation(Station station) {
         return sections.stream()
                 .filter(section -> section.isUpStation(station))
+                .findFirst();
+    }
+
+    private Optional<Section> findDownStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.isDownStation(station))
                 .findFirst();
     }
 }
