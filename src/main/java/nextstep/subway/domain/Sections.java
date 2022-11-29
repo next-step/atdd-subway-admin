@@ -5,15 +5,17 @@ import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @ReadOnlyProperty
     private final List<Section> sections;
 
@@ -27,10 +29,13 @@ public class Sections {
 
     public void add(Section section) {
         checkValidation(section);
-        sections.stream()
+        Optional<Section> findSection = sections.stream()
                 .filter(it -> it.isSameUpStationId(section))
-                .findFirst()
-                .ifPresent(it -> it.updateAndCreateTwiceSection(it, section));
+                .findFirst();
+        if (findSection.isPresent()) {
+            findSection.get().updateAndCreateTwiceSection(section);
+            return;
+        }
         sections.add(section);
     }
 

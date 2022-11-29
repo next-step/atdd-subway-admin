@@ -64,14 +64,14 @@ public class Section extends BaseEntity{
         return downStation.getId() == section.findDownStationId();
     }
 
-    public void updateAndCreateTwiceSection(Section existingSection, Section newSection) {
-        checkDistanceValidation(existingSection.distance, newSection.distance);
+    public void updateAndCreateTwiceSection(Section newSection) {
+        checkDistanceValidation(this.distance, newSection.distance);
         Station tempStation = newSection.upStation;
-        newSection.modifyUpStation(existingSection.downStation);
-        existingSection.modifyDownStation(tempStation);
+        newSection.modifyUpStation(this.downStation);
+        this.modifyDownStation(tempStation);
 
-        long tempDistance = existingSection.distance;
-        existingSection.modifyDistance(newSection.distance);
+        long tempDistance = this.distance;
+        this.modifyDistance(newSection.distance);
         newSection.modifyDistance(tempDistance, newSection.distance);
     }
 
