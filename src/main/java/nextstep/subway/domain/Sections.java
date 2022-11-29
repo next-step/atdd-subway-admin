@@ -47,6 +47,7 @@ public class Sections {
     public void removeStation(Station station) {
         Optional<Section> upSection = findUpStation(station);
         Optional<Section> downSection = findDownStation(station);
+        validateSections(upSection, downSection);
 
         if(checkAndRemoveMiddleSection(upSection, downSection)) return;
 
@@ -78,9 +79,13 @@ public class Sections {
                 .findFirst();
     }
 
-    public void validateSections() {
+    public void validateSections(Optional<Section> upSection, Optional<Section> downSection) {
         if (sections.size() == 1) {
             throw new IllegalArgumentException("구간이 하나인 노선에서 마지막 구간을 제거할 수 없습니다.");
+        }
+
+        if (!upSection.isPresent() && !downSection.isPresent()) {
+            throw new IllegalArgumentException("노선에 등록되어있지 않은 역은 제거할 수 없습니다.");
         }
     }
 }

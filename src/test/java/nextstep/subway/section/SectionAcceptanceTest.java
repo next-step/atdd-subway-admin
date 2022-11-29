@@ -213,9 +213,25 @@ public class SectionAcceptanceTest {
     @DisplayName("구간이 하나인 노선에서 마지막 구간은 제거할 수 없음")
     @Test
     void deleteLastStation() {
-        // given
+        // when
         ExtractableResponse<Response> response =
                 SectionTestFixture.requestRemoveSection(신분당선.getId().toString(), 광교역.getId());
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 노선에 포함되지 않은 역을 제거한다.
+     * Then BAD_REQUEST 를 응답한다.
+     */
+    @DisplayName("노선에 없는 역을 제거하는 경우")
+    @Test
+    void deleteNotContainStation() {
+        // given
+        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 광교역.getId(), 하행신설역.getId(), 1);
+        // when
+        ExtractableResponse<Response> response =
+                SectionTestFixture.requestRemoveSection(신분당선.getId().toString(), 상행신설역.getId());
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
