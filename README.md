@@ -183,9 +183,21 @@ Vary: Access-Control-Request-Headers
 #### 요구상항 기능목록
 - [ ] 역 사이에 새로운 역을 등록할 경우
   * 새로운 길이를 뺸 나머지를 새롭게 추가된 역과의 길이로 설정
-  * ex) asis: A-7m-C -> A-4m-B 추가 -> tobe: A-4m-B-3m-C  
+  * ex) asis: A-7m-C -> A-4m-B 추가 -> tobe: A-4m-B-3m-C
+  * 기존 Section 사이로 새로운 Section이 들어오는 경우
+    * upstation 끼리 동일한 경우 / downstation 끼리 동일한 경우
+      * distance 비교(요청온 distance가 작아야 함
+      * 기존 Section, 새로 들어온 Section 기반 2개의 Section 생성 후 기존 Section 삭제 
+      * upStation이 같으면, 기존 Section의 downStation을 새로 들어온 downStation 설정 
+        -> 새로 들어온 Section의 upStation을 기존 Section의 downStation으로 설정
+      * downStation이 같으면, 기존 Section의 upStation을 새로 들어온 upStation 설정 
+        -> 새로 들어온  Section의 downStation을 기존 Section의 upStation으로 설정
 - [ ] 새로운 역을 상행 종점으로 등록할 경우
+  * 새로 들어온 Section의 upStation이 Null인 경우
+  * 기존 upStation이 Null인 Section의 upStation을 새로 들어온 Section의 downStation으로 설정 
 - [ ] 새로운 역을 하행 종점으로 등록할 경우
+  * 새로 들어온 Section의 downStation이 Null인 경우
+  * 기존 downStation이 Null인 Section의 downStation을 새로 들어온 Section의 upStation으로 설정
 - [ ] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
 - [ ] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
 - [ ] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
