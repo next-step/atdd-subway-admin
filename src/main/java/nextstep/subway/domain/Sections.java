@@ -47,8 +47,19 @@ public class Sections {
     public void removeStation(Station station) {
         Optional<Section> upSection = findUpStation(station);
         Optional<Section> downSection = findDownStation(station);
+
+        if(checkAndRemoveMiddleSection(upSection, downSection)) return;
+
         upSection.ifPresent(this::removeSection);
         downSection.ifPresent(this::removeSection);
+    }
+    private boolean checkAndRemoveMiddleSection(Optional<Section> upSection, Optional<Section> downSection){
+        if(upSection.isPresent() && downSection.isPresent()){
+            downSection.get().union(upSection.get());
+            removeSection(upSection.get());
+            return true;
+        }
+        return false;
     }
 
     private void removeSection(Section section) {

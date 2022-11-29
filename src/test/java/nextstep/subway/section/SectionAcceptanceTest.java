@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-@DisplayName("노선 관련 기능")
+@DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest {
     @LocalServerPort
@@ -185,4 +185,25 @@ public class SectionAcceptanceTest {
 
         assertThat(stations.get(stations.size() - 1).getName()).isEqualTo(강남역.getName());
     }
+
+    /**
+     * Given 강남 - 광교역 뒤에 하행신설역을 추가한다.
+     * When 중간역인 광교역을 제거한다.
+     * Then 강남역과 하행신설역이 구간으로 재배치 됨
+     */
+    @DisplayName("중간역이 제거될 경우 재배치를 함")
+    @Test
+    void deleteMiddleStation() {
+        // given
+        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 광교역.getId(), 하행신설역.getId(), 1);
+        // when
+        SectionTestFixture.requestRemoveSection(신분당선.getId().toString(), 광교역.getId());
+        // then
+        List<StationResponse> stations =
+                LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class).getStations();
+
+        assertThat(stations.get(0).getName()).isEqualTo(강남역.getName());
+        assertThat(stations.get(1).getName()).isEqualTo(하행신설역.getName());
+    }
+
 }
