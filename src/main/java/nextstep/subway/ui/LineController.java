@@ -13,6 +13,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
+@RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
 
@@ -20,7 +21,7 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> createLine(@RequestBody LineCreateRequest lineCreateRequest) {
         LineResponse lineResponse = lineService.saveLine(lineCreateRequest);
         if (lineResponse == null) {
@@ -29,19 +30,19 @@ public class LineController {
         return ResponseEntity.created(URI.create("/lines" + lineResponse.getId())).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> getLines() {
         List<LineResponse> lineResponses = lineService.findAllLines();
         return ResponseEntity.ok().body(lineResponses);
     }
 
-    @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> getLine(@PathVariable long id) {
         LineResponse lineResponse = lineService.findById(id);
         return ResponseEntity.ok().body(lineResponse);
     }
 
-    @PutMapping("/lines/{id}")
+    @PutMapping("{id}")
     public ResponseEntity editLine(@PathVariable long id, @RequestBody LineUpdateRequest lineUpdateRequest) {
         Line line = lineService.updateLine(id, lineUpdateRequest);
         if (line == null) {
@@ -50,7 +51,7 @@ public class LineController {
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity removeLine(@PathVariable long id) {
         lineService.removeById(id);
         return ResponseEntity.noContent().build();
