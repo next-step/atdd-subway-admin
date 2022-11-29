@@ -1,5 +1,6 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.constants.ErrorCode;
 import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.CascadeType;
@@ -25,7 +26,18 @@ public class Sections {
     }
 
     public void add(Section section) {
+        checkValidation(section);
+        sections.stream()
+                .filter(it -> it.isSameUpStationId(section))
+                .findFirst()
+                .ifPresent(it -> it.updateAndCreateTwiceSection(it, section));
         sections.add(section);
+    }
+
+    private void checkValidation(Section section) {
+        if (sections.stream().anyMatch(s -> s.equals(section))) {
+            throw new IllegalArgumentException(ErrorCode.NO_SAME_SECTION_EXCEPTION.getErrorMessage());
+        }
     }
 
     public List<Section> asList() {
