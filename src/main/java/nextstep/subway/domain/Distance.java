@@ -6,39 +6,29 @@ import java.util.Objects;
 @Embeddable
 public class Distance {
 
+    private static final int TERMINAL_SECTION_VALUE = 0;
+    private static final int MINIMUM_LIMIT_VALUE = 0;
+    private static final Distance TERMINAL_SECTION_DISTANCE = new Distance(TERMINAL_SECTION_VALUE, true);
+
     private int distance;
-
-    public Distance(int distance) {
-        if(distance <= 0) {
-            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
-        }
-        this.distance = distance;
-    }
-
-    public Distance(int distance, boolean isZeroAllowed) {
-        if(isZeroAllowed && distance < 0) {
-            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
-        }
-        if(!isZeroAllowed && distance <=0) {
-            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
-        }
-        this.distance = distance;
-    }
 
     protected Distance() {
 
     }
 
-    public int getDistance() {
-        return distance;
+    private Distance(int distance, boolean isTerminalSection) {
+        if (!isTerminalSection && distance <= MINIMUM_LIMIT_VALUE) {
+            throw new IllegalArgumentException(ErrorMessage.INVALID_DISTANCE_VALUE.getMessage());
+        }
+        this.distance = distance;
     }
 
-    public Distance getNewSectionDistance(Distance distance) {
-        int newSectionDistance = this.distance - distance.getDistance();
-        if(newSectionDistance < 0) {
-            throw new IllegalArgumentException(ErrorMessage.EXCEED_SECTION_DISTANCE.getMessage());
-        }
-        return new Distance(newSectionDistance);
+    public Distance(int distance) {
+        this(distance, false);
+    }
+
+    public int getDistance() {
+        return distance;
     }
 
     @Override
@@ -53,4 +43,27 @@ public class Distance {
     public int hashCode() {
         return Objects.hash(distance);
     }
+
+    public Distance subtract(Distance distance) {
+        int newDistance = this.distance - distance.getDistance();
+        if (newDistance <= MINIMUM_LIMIT_VALUE) {
+            throw new IllegalArgumentException(ErrorMessage.EXCEED_SECTION_DISTANCE.getMessage());
+        }
+        this.distance = newDistance;
+        return this;
+    }
+
+    public void setEndSectionDistance() {
+        this.distance = TERMINAL_SECTION_VALUE;
+    }
+
+    public Distance add(Distance distance) {
+        this.distance += distance.getDistance();
+        return this;
+    }
+
+    public static Distance getTerminalSectionDistance() {
+        return TERMINAL_SECTION_DISTANCE;
+    }
+
 }

@@ -77,4 +77,15 @@ public class Section extends BaseEntity {
         return Objects.hash(id, upStation, downStation, line, distance);
     }
 
+    public Section deleteUpStation() {
+        this.upStation = null;
+        this.distance.setEndSectionDistance();
+        return this;
+    }
+
+    public Section deleteDownStation() {
+        this.downStation = null;
+        this.distance.setEndSectionDistance();
+        return this;
+    }
 }

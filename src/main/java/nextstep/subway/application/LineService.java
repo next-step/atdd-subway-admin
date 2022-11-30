@@ -22,7 +22,7 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
-        Line persistLine = lineRepository.save(lineRequestToLine(lineRequest));
+        Line persistLine = lineRepository.save(lineRequest.toLine());
         Station upStation = stationService.getStationById(lineRequest.getUpStationId());
         Station downStation = stationService.getStationById(lineRequest.getDownStationId());
         persistLine.initSection(new Section(persistLine, upStation, downStation, new Distance(lineRequest.getDistance())));
@@ -34,13 +34,13 @@ public class LineService {
                 .collect(Collectors.toList());
     }
 
-    public Line getLineDomainById(Long id) {
+    public Line getById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.LINE_NO_FIND_BY_ID.getMessage()));
     }
 
-    public LineResponse getLineById(Long id) {
-        return LineResponse.of(getLineDomainById(id));
+    public LineResponse getLineResponseById(Long id) {
+        return LineResponse.of(getById(id));
     }
 
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
@@ -54,12 +54,8 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
-    private Line lineRequestToLine(LineRequest lineRequest) {
-        return new Line(lineRequest.getName(), lineRequest.getColor());
-    }
-
     public SectionsResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = getLineDomainById(lineId);
+        Line line = getById(lineId);
         Distance distance = new Distance(sectionRequest.getDistance());
 
         Station requestUpStation = stationService.getStationById(sectionRequest.getUpStationId());
@@ -69,4 +65,8 @@ public class LineService {
                 .stream().map(SectionResponse::of).collect(Collectors.toList()));
     }
 
+    public void removeStation(Long lineId, Long stationId) {
+        Line line = getById(lineId);
+        line.removeStation(stationId);
+    }
 }

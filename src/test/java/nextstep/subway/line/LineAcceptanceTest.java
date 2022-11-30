@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@DisplayName("지하철호선 관리 기능")
+@DisplayName("지하철노선 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
 
@@ -46,7 +46,7 @@ public class LineAcceptanceTest {
     }
 
     @Test
-    @DisplayName("지하철호선 생성 테스트")
+    @DisplayName("지하철노선 생성 테스트")
     void createLineTest() {
         //given
         String lineName = "신분당선";
@@ -64,7 +64,7 @@ public class LineAcceptanceTest {
     }
 
     @Test
-    @DisplayName("지하철호선 두개 생성 후 목록조회 테스트")
+    @DisplayName("지하철노선 두개 생성 후 목록조회 테스트")
     void getLinesTest() {
         //given
         String lineName1 = "신분당선";
@@ -83,13 +83,13 @@ public class LineAcceptanceTest {
     }
 
     @Test
-    @DisplayName("하나의 지하철호선을 생성 후 조회해 본다.")
+    @DisplayName("하나의 지하철노선을 생성 후 조회해 본다.")
     void retrieveOneLineTest() {
         //given
         String lineName = "신분당선";
         Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
         Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
-        String lineId = createLineAndGetId(
+        Long lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
@@ -100,13 +100,13 @@ public class LineAcceptanceTest {
     }
 
     @Test
-    @DisplayName("지하철호선 정보를 수정한다.")
+    @DisplayName("지하철노선 정보를 수정한다.")
     void updateLineTest() {
         //given
         String lineName = "신분당선";
         Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
         Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
-        String lineId = createLineAndGetId(
+        Long lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
@@ -121,13 +121,13 @@ public class LineAcceptanceTest {
     }
 
     @Test
-    @DisplayName("지하철호선 정보를 삭제한다.")
+    @DisplayName("지하철노선 정보를 삭제한다.")
     void deleteLineTest() {
         //given
         String lineName = "신분당선";
         Long upStationId = StationAcceptanceTest.createStationAndGetId("지하철역");
         Long downStationId = StationAcceptanceTest.createStationAndGetId("새로운지하철역");
-        String lineId = createLineAndGetId(
+        Long lineId = createLineAndGetId(
                 new LineRequest(lineName, "bg-red-600", upStationId, downStationId, 10));
 
         //when
@@ -138,7 +138,7 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * 지하철호선 생성
+     * 지하철노선 생성
      */
     static ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         final Map param = new HashMap();
@@ -156,14 +156,14 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * 지하철호선 생성 후 id 조회
+     * 지하철노선 생성 후 id 조회
      */
-    public static String createLineAndGetId(LineRequest lineRequest) {
-        return createLine(lineRequest).jsonPath().get("id").toString();
+    public static Long createLineAndGetId(LineRequest lineRequest) {
+        return Long.parseLong(createLine(lineRequest).jsonPath().get("id").toString());
     }
 
     /**
-     * 지하철전체호선 목록조회
+     * 지하철전체노선 목록조회
      */
     List<LineResponse> retrieveAllLines() {
         return RestAssured.given().log().all()
@@ -174,7 +174,7 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * 지하철전체호선 이름 목록조회
+     * 지하철전체노선 이름 목록조회
      */
     List<String> retrieveAllLineNames() {
         return retrieveAllLines().stream().map(LineResponse::getName).collect(Collectors.toList());
@@ -182,9 +182,9 @@ public class LineAcceptanceTest {
 
 
     /**
-     * 지하철호선id로 정보 조회
+     * 지하철노선id로 정보 조회
      */
-    ExtractableResponse<Response> retrieveLine(String lineId) {
+    ExtractableResponse<Response> retrieveLine(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + lineId)
@@ -192,9 +192,9 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * 지하철호선id로 정보 조회
+     * 지하철노선id로 정보 조회
      */
-    LineResponse retrieveLineResponse(String lineId) {
+    public static LineResponse retrieveLineResponse(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + lineId)
@@ -203,16 +203,16 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * 지하철호선 Id로 지하철호선 이름 조회
+     * 지하철노선 Id로 지하철노선 이름 조회
      */
-    String retrieveLineName(String lineId) {
+    String retrieveLineName(Long lineId) {
         return retrieveLineResponse(lineId).getName();
     }
 
     /**
-     * 지하철호선 정보 수정
+     * 지하철노선 정보 수정
      */
-    void updateLine(String lineId, LineUpdateRequest lineUpdateRequest) {
+    void updateLine(Long lineId, LineUpdateRequest lineUpdateRequest) {
         final Map param = new HashMap();
         param.put("name", lineUpdateRequest.getName());
         param.put("color", lineUpdateRequest.getColor());
@@ -225,9 +225,9 @@ public class LineAcceptanceTest {
     }
 
     /**
-     * 지하철호선 정보 삭제
+     * 지하철노선 정보 삭제
      */
-    private ExtractableResponse<Response> deleteLine(String lineId) {
+    private ExtractableResponse<Response> deleteLine(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/lines/" + lineId)
