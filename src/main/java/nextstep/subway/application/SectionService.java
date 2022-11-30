@@ -1,22 +1,30 @@
 package nextstep.subway.application;
 
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Section;
-import nextstep.subway.domain.SectionRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
+import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class SectionService {
 
-    private SectionRepository sectionRepository;
+    private StationRepository stationRepository;
+    private LineRepository lineRepository;
 
-    public SectionService(SectionRepository sectionRepository) {
-        this.sectionRepository = sectionRepository;
+    public SectionService(StationRepository stationRepository, LineRepository lineRepository) {
+        this.stationRepository = stationRepository;
+        this.lineRepository = lineRepository;
     }
 
-    @Transactional
-    public void saveStation(Section section) {
-        sectionRepository.save(section);
+    public void addSection(long lineId, SectionRequest section) {
+        Line line = lineRepository.getById(lineId);
+        Station upStation = stationRepository.getById(section.getUpStationId());
+        Station downStation = stationRepository.getById(section.getDownStationId());
+        line.addSection(Section.of(upStation, downStation, section.getDistance()));
     }
 }
