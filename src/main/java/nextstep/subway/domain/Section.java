@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -34,7 +36,11 @@ public class Section extends BaseEntity{
 
     protected Section() {}
 
-    public Section(Station upStation, Station downStation, long distance) {
+    public static Section of(Station upStation, Station downStation, long distance) {
+        return new Section(upStation, downStation, distance);
+    }
+
+    private Section(Station upStation, Station downStation, long distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -64,15 +70,18 @@ public class Section extends BaseEntity{
         return downStation.getId() == section.findDownStationId();
     }
 
-    public void updateAndCreateTwiceSection(Section newSection) {
+    public void updateAndCreateTwiceSectionWhenUpStationSame(Section newSection) {
         checkDistanceValidation(this.distance, newSection.distance);
-        Station tempStation = newSection.upStation;
-        newSection.modifyUpStation(this.downStation);
-        this.modifyDownStation(tempStation);
+        this.modifyUpStation(newSection.downStation);
 
-        long tempDistance = this.distance;
-        this.modifyDistance(newSection.distance);
-        newSection.modifyDistance(tempDistance, newSection.distance);
+        this.modifyDistance(this.distance, newSection.distance);
+    }
+
+    public void updateAndCreateTwiceSectionWhenDownStationSame(Section newSection) {
+        checkDistanceValidation(this.distance, newSection.distance);
+        this.modifyDownStation(newSection.upStation);
+
+        newSection.modifyDistance(this.distance, newSection.distance);
     }
 
     private void modifyDownStation(Station tempStation) {
@@ -85,10 +94,6 @@ public class Section extends BaseEntity{
 
     private void modifyDistance(long existingDistance, Long distance) {
         this.distance = existingDistance - distance;
-    }
-
-    private void modifyDistance(Long distance) {
-        this.distance = distance;
     }
 
     private void checkDistanceValidation(Long existingDistance, Long newDistance) {
@@ -122,4 +127,15 @@ public class Section extends BaseEntity{
         return Objects.hash(id, upStation, downStation, line, distance);
     }
 
+    public List<Station> toStations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
+    public boolean isSameDownStationId(Station station) {
+        return this.downStation.getId() == station.getId();
+    }
+
+    public boolean isSameUpStationId(Station station) {
+        return this.upStation.getId() == station.getId();
+    }
 }

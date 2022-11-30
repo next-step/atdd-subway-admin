@@ -50,6 +50,7 @@ public class Line extends BaseEntity{
     }
 
     public void addSection(Section section) {
+        section.belongLine(this);
         this.sections.add(section);
     }
 

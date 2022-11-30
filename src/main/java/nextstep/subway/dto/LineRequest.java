@@ -20,7 +20,7 @@ public class LineRequest {
     }
 
     public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, new Section(upStation, downStation,  distance));
+        return new Line(name, color, Section.of(upStation, downStation, distance));
     }
 
     public String getName() {

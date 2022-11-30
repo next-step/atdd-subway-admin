@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
@@ -22,7 +22,6 @@ public class LineService {
         this.stationRepository = stationRepository;
     }
 
-    @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = findStation(lineRequest.getUpStationId());
         Station downStation = findStation(lineRequest.getDownStationId());
@@ -41,26 +40,15 @@ public class LineService {
         return LineResponse.from(line);
     }
 
-    @Transactional
     public LineResponse modifyLine(Long id, LineRequest lineRequest) {
         Line line = findLine(id);
         line.modify(lineRequest.getName(), lineRequest.getColor());
         return LineResponse.from(line);
     }
 
-    @Transactional
     public void deleteLine(Long id) {
         Line line = findLine(id);
         lineRepository.delete(line);
-    }
-
-    @Transactional
-    public LineResponse addSection(Long lineId, SectionRequest sectionRequest) {
-        Line line = findLine(lineId);
-        line.addSection(new Section(findStation(sectionRequest.getUpStationId())
-                            , findStation(sectionRequest.getDownStationId())
-                            , sectionRequest.getDistance()));
-        return LineResponse.from(line);
     }
 
     public LineResponse findLineByName(String name) {
