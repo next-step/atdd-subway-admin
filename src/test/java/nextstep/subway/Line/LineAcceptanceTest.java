@@ -27,11 +27,9 @@ class LineAcceptanceTest extends AcceptanceTest {
     StationService stationService;
 
     @BeforeEach
+    @Override
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleaner.execute();
+        super.setUp();
         creatStation("강남역");
         creatStation("서초역");
     }
@@ -45,7 +43,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createLine() {
         return Stream.of(
                 dynamicTest("지하철 노선 생성 요청을 통해 새로운 지하철 노선을 생성", () -> {
-                    ExtractableResponse<Response> response = createLine(generateRequest("2호선", "green"));
+                    ExtractableResponse<Response> response = createLine(
+                            generateLineRequest("2호선", "green"));
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
                 }),
 
@@ -66,8 +65,8 @@ class LineAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> showCreatedLines() {
         return Stream.of(
             dynamicTest("지하철 노선 생성 요청을 통해 새로운 지하철 노선 2 건 생성", () -> {
-                LineRequest request1 = generateRequest("2호선", "green");
-                LineRequest request2 = generateRequest("3호선", "orange");
+                LineRequest request1 = generateLineRequest("2호선", "green");
+                LineRequest request2 = generateLineRequest("3호선", "orange");
 
                 ExtractableResponse<Response> response1 = createLine(request1);
                 ExtractableResponse<Response> response2 = createLine(request2);
@@ -93,7 +92,8 @@ class LineAcceptanceTest extends AcceptanceTest {
         final long[] id = new long[1];
         return Stream.of(
                 dynamicTest("지하철 노선 생성 요청을 통해 새로운 노선 생성", () -> {
-                    ExtractableResponse<Response> response = createLine(generateRequest("2호선", "green"));
+                    ExtractableResponse<Response> response = createLine(
+                            generateLineRequest("2호선", "green"));
                     id[0] = response.body().jsonPath().getLong("id");
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
                 }),
@@ -116,13 +116,14 @@ class LineAcceptanceTest extends AcceptanceTest {
         final long[] id = new long[1];
         return Stream.of(
                 dynamicTest("지하철 노선을 생성하고", () -> {
-                    ExtractableResponse<Response> response = createLine(generateRequest("2호선", "green"));
+                    ExtractableResponse<Response> response = createLine(
+                            generateLineRequest("2호선", "green"));
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
                     id[0] = response.body().jsonPath().getLong("id");
                 }),
 
                 dynamicTest("생성한 지하철 노선의 id를 통해 수정요청을 하여 노선 정보 수정", () -> {
-                    LineRequest modifyRequest = generateRequest("3호선", "orange");
+                    LineRequest modifyRequest = generateLineRequest("3호선", "orange");
                     ExtractableResponse<Response> modifyResponse = modifyLine(modifyRequest, id[0]);
                     assertThat(modifyResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
                 }),
@@ -145,7 +146,7 @@ class LineAcceptanceTest extends AcceptanceTest {
         final long[] id = new long[1];
         return Stream.of(
                 dynamicTest("지하철 노선을 생성", () -> {
-                    LineRequest request = generateRequest("2호선", "green");
+                    LineRequest request = generateLineRequest("2호선", "green");
                     ExtractableResponse<Response> response = createLine(request);
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
                     id[0] = response.body().jsonPath().getLong("id");
@@ -201,9 +202,5 @@ class LineAcceptanceTest extends AcceptanceTest {
                 .when().delete("/lines" + DELIMITER + id)
                 .then().log().all()
                 .extract();
-    }
-
-    private LineRequest generateRequest(String name, String color) {
-        return new LineRequest(name, color, 1, 2, 1);
     }
 }

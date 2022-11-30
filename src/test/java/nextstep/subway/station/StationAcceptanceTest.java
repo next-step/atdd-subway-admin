@@ -5,7 +5,6 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.StationRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -23,14 +22,6 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 @DisplayName("지하철역 관련 기능")
 public class StationAcceptanceTest extends AcceptanceTest {
 
-    @BeforeEach
-    public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleaner.execute();
-    }
-
     /**
      * When 지하철역을 생성하면
      * Then 지하철역이 생성된다
@@ -41,7 +32,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createStation() {
         return Stream.of(
             dynamicTest("지하철역을 생성하는 요청으로 새로운 지하철역을 생성", () -> {
-                ExtractableResponse<Response> response = postStation(generateRequest("강남역"));
+                ExtractableResponse<Response> response = postStation(generateStationRequest("강남역"));
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             }),
 
@@ -62,12 +53,12 @@ public class StationAcceptanceTest extends AcceptanceTest {
     Stream<DynamicTest> createStationWithDuplicateName() {
         return Stream.of(
             dynamicTest("지하철역을 생성하는 요청으로 새로운 지하철역을 생성", () -> {
-                ExtractableResponse<Response> response = postStation(generateRequest("강남역"));
+                ExtractableResponse<Response> response = postStation(generateStationRequest("강남역"));
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
             }),
 
             dynamicTest("지하철역을 기존 생성했던 동일 이름으로 생성하면 예외 발생", () -> {
-                ExtractableResponse<Response> response = postStation(generateRequest("강남역"));
+                ExtractableResponse<Response> response = postStation(generateStationRequest("강남역"));
                 assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
             })
         );
@@ -82,8 +73,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
     @Test
     void getStations() {
         // given
-        postStation(generateRequest("강남역"));
-        postStation(generateRequest("서초역"));
+        postStation(generateStationRequest("강남역"));
+        postStation(generateStationRequest("서초역"));
 
         // when
         List<String> stationNames = showStationNames();
@@ -105,7 +96,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
         return Stream.of(
                 dynamicTest("지하철역을 생성하는 요청으로 새로운 지하철역을 생성", () -> {
-                    ExtractableResponse saveResponse = postStation(generateRequest("강남역"));
+                    ExtractableResponse saveResponse = postStation(generateStationRequest("강남역"));
                     assertThat(saveResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
                     deleteTargetStationId[0] = saveResponse.body().jsonPath().getLong("id");
@@ -118,10 +109,6 @@ public class StationAcceptanceTest extends AcceptanceTest {
                     assertThat(stationNames).doesNotContain(deleteTargetStationName[0]);
                 })
         );
-    }
-
-    public StationRequest generateRequest(String name) {
-        return new StationRequest(name);
     }
 
     private ExtractableResponse postStation(StationRequest params) {
@@ -142,7 +129,7 @@ public class StationAcceptanceTest extends AcceptanceTest {
 
     private void deleteStation(long deleteTargetStationId) {
         RestAssured.given().log().all()
-                .body(generateRequest("강남역"))
+                .body(generateStationRequest("강남역"))
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().delete("/stations" + DELIMITER + deleteTargetStationId)
                 .then().log().all();

@@ -15,7 +15,7 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @ReadOnlyProperty
     private final List<Section> sections;
 
