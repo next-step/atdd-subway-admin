@@ -125,14 +125,14 @@ public class Sections {
     }
 
     private void deleteBetweenStation(Station removeStation) {
-        Section removeSection = getRemoveSection(removeStation);
+        Section removeSection = findRemoveSection(removeStation);
         sections.remove(removeSection);
         sections.stream()
                 .findFirst()
                 .ifPresent(inner -> inner.removeSection(removeSection));
     }
 
-    private Section getRemoveSection(Station removeStation) {
+    private Section findRemoveSection(Station removeStation) {
         return sections.stream()
                 .filter(inner -> inner.isSameUpStation(removeStation) || inner.isSameDownStation(removeStation))
                 .findAny()
