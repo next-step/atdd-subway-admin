@@ -70,6 +70,14 @@ public class Section extends BaseEntity{
         return downStation.getId() == section.findDownStationId();
     }
 
+    public boolean isSameDownStationId(Station station) {
+        return this.downStation.getId() == station.getId();
+    }
+
+    public boolean isSameUpStationId(Station station) {
+        return this.upStation.getId() == station.getId();
+    }
+
     public void updateAndCreateTwiceSectionWhenUpStationSame(Section newSection) {
         checkDistanceValidation(this.distance, newSection.distance);
         this.modifyUpStation(newSection.downStation);
@@ -131,11 +139,11 @@ public class Section extends BaseEntity{
         return Arrays.asList(upStation, downStation);
     }
 
-    public boolean isSameDownStationId(Station station) {
-        return this.downStation.getId() == station.getId();
+    public Station getUpStation() {
+        return upStation;
     }
 
-    public boolean isSameUpStationId(Station station) {
-        return this.upStation.getId() == station.getId();
+    public Station getDownStation() {
+        return downStation;
     }
 }

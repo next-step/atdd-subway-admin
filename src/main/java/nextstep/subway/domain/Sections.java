@@ -5,15 +5,12 @@ import org.springframework.data.annotation.ReadOnlyProperty;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
@@ -39,6 +36,20 @@ public class Sections {
             updateStationWhenDownStationSame(section);
         }
         sections.add(section);
+    }
+
+    private boolean hasEndPointIssue(Section section) {
+        Station endUpStation = findEndUpStation(sections.get(sections.size()-1));
+        return true; // TODO
+    }
+
+    private Station findEndUpStation(Section section) {
+        Optional<Station> endUpStation = hasNotDownStation(section.getUpStation();
+        return null;
+    }
+
+    private Optional<Section> hasNotDownStation(Station station) {
+        return sections.stream().filter(it -> it.isSameDownStationId(station)).findFirst();
     }
 
     private void updateStationWhenDownStationSame(Section section) {
@@ -69,6 +80,9 @@ public class Sections {
         }
         if (this.sections.size() > 0 && isNoMatchStation(section)) {
             throw new IllegalArgumentException(ErrorCode.NO_MATCH_STATION_EXCEPTION.getErrorMessage());
+        }
+        if (hasEndPointIssue(section)) {
+            throw new IllegalArgumentException(ErrorCode.ADD_END_POINT_ISSUE.getErrorMessage());
         }
     }
 
