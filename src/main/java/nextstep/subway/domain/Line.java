@@ -1,11 +1,8 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.dto.LineRequest;
-import nextstep.subway.dto.LineResponse;
-
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -19,13 +16,10 @@ public class Line extends BaseEntity {
 
     private String color;
 
-    private Long upStationId;
+    @Embedded
+    Sections sections = new Sections();
 
-    private Long downStationId;
-
-    private Long distance;
-
-    public Line() {
+    protected Line() {
 
     }
 
@@ -33,24 +27,22 @@ public class Line extends BaseEntity {
         this.name = name;
     }
 
-    public Line(String name, String color, Long upStationId, Long downStationId, Long distance) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.upStationId = upStationId;
-        this.downStationId = downStationId;
-        this.distance = distance;
+        addSection(new Section(this, upStation, downStation, distance));
     }
 
     public Line of (LineRequest lineRequest) {
         this.name = lineRequest.getName();
         this.color = lineRequest.getColor();
-        this.upStationId = lineRequest.getUpStationId();
-        this.downStationId = lineRequest.getDownStationId();
-        this.distance = lineRequest.getDistance();
 
         return this;
     }
 
+    public Sections addSection(Section section) {
+        return sections.addSection(section);
+    }
     public Long getId() {
         return id;
     }
@@ -63,12 +55,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Long getUpStationId() {
-        return upStationId;
-    }
-
-    public Long getDownStationId() {
-        return downStationId;
+    public Sections getSections() {
+        return sections.getSortedSections();
     }
 
 }
