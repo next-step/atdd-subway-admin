@@ -16,4 +16,12 @@ public class SectionTestFixture {
                 .then().log().all()
                 .extract();
     }
+
+    public static ExtractableResponse<Response> requestRemoveSection(String lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/{lineId}/sections?stationId={stationId}", lineId, stationId)
+                .then().log().all()
+                .extract();
+    }
 }

@@ -102,4 +102,17 @@ public class Section implements Comparable<Section> {
     public int compareTo(Section other) {
         return this.downStation == other.upStation ? -1 : 1;
     }
+
+    public boolean isUpStation(Station station) {
+        return upStation.equals(station);
+    }
+
+    public boolean isDownStation(Station station) {
+        return downStation.equals(station);
+    }
+
+    public void union(Section downSection) {
+        this.downStation = downSection.downStation;
+        this.distance += downSection.distance;
+    }
 }

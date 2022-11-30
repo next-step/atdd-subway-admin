@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 
-@DisplayName("노선 관련 기능")
+@DisplayName("구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest {
     @LocalServerPort
@@ -120,7 +120,7 @@ public class SectionAcceptanceTest {
     /**
      * Given 기존 노선 뒤에 새로운 역을 하행 종점으로 등록한다.
      * When 기존 노선의 상행역과 신규 하행역으로 등록을 한다.
-     * Then Then BAD_REQUEST 를 응답한다.
+     * Then BAD_REQUEST 를 응답한다.
      */
     @DisplayName("상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음")
     @Test
@@ -144,6 +144,94 @@ public class SectionAcceptanceTest {
         // given
         ExtractableResponse<Response> response =
                 SectionTestFixture.requestAddSection(신분당선.getId().toString(), 상행신설역.getId(), 하행신설역.getId(), 1);
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 강남 - 광교역 뒤에 하행신설역을 추가한다.
+     * When 상행종점인 강남역을 제거한다.
+     * Then 광교역이 상행종점이 된다.
+     */
+    @DisplayName("상행종점을 제거하는 경우 다음역이 종점이 됨")
+    @Test
+    void deleteUpStation() {
+        // given
+        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 광교역.getId(), 하행신설역.getId(), 1);
+        // when
+        SectionTestFixture.requestRemoveSection(신분당선.getId().toString(), 강남역.getId());
+        // then
+        List<StationResponse> stations =
+                LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class).getStations();
+
+        assertThat(stations.get(0).getName()).isEqualTo(광교역.getName());
+    }
+
+    /**
+     * Given 상행신설역을 강남 - 광교 앞에 추가한다.
+     * When 하행종점인 광교역을 제거한다.
+     * Then 강남역이 하행종점이 된다.
+     */
+    @DisplayName("하행종점을 제거하는 경우 다음역이 종점이 됨")
+    @Test
+    void deleteDownStation() {
+        // given
+        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 상행신설역.getId(), 강남역.getId(), 1);
+        // when
+        SectionTestFixture.requestRemoveSection(신분당선.getId().toString(), 광교역.getId());
+        // then
+        List<StationResponse> stations =
+                LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class).getStations();
+
+        assertThat(stations.get(stations.size() - 1).getName()).isEqualTo(강남역.getName());
+    }
+
+    /**
+     * Given 강남 - 광교역 뒤에 하행신설역을 추가한다.
+     * When 중간역인 광교역을 제거한다.
+     * Then 강남역과 하행신설역이 구간으로 재배치 됨
+     */
+    @DisplayName("중간역이 제거될 경우 재배치를 함")
+    @Test
+    void deleteMiddleStation() {
+        // given
+        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 광교역.getId(), 하행신설역.getId(), 1);
+        // when
+        SectionTestFixture.requestRemoveSection(신분당선.getId().toString(), 광교역.getId());
+        // then
+        List<StationResponse> stations =
+                LineTestFixture.requestGetLine(신분당선.getId()).jsonPath().getObject(".",LineResponse.class).getStations();
+
+        assertThat(stations.get(0).getName()).isEqualTo(강남역.getName());
+        assertThat(stations.get(1).getName()).isEqualTo(하행신설역.getName());
+    }
+
+    /**
+     * When 유일 구간인 노선에서 역을 제거한다.
+     * Then BAD_REQUEST 를 응답한다.
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간은 제거할 수 없음")
+    @Test
+    void deleteLastStation() {
+        // when
+        ExtractableResponse<Response> response =
+                SectionTestFixture.requestRemoveSection(신분당선.getId().toString(), 광교역.getId());
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * When 노선에 포함되지 않은 역을 제거한다.
+     * Then BAD_REQUEST 를 응답한다.
+     */
+    @DisplayName("노선에 없는 역을 제거하는 경우")
+    @Test
+    void deleteNotContainStation() {
+        // given
+        SectionTestFixture.requestAddSection(신분당선.getId().toString(), 광교역.getId(), 하행신설역.getId(), 1);
+        // when
+        ExtractableResponse<Response> response =
+                SectionTestFixture.requestRemoveSection(신분당선.getId().toString(), 상행신설역.getId());
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
