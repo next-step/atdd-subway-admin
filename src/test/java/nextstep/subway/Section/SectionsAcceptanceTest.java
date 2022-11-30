@@ -21,6 +21,7 @@ import org.springframework.http.MediaType;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("지하철 노선 관련 기능")
@@ -43,19 +44,50 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
         신분당선 = registerLine("신분당선", "red", 강남역.getId(), 광교역.getId(), DEFAULT_DISTANCE).as(LineResponse.class);
     }
 
-    @DisplayName("지하철 노선을 조회하고 구간(Section) 추가 요청")
+    @DisplayName("구간(Section) 추가 테스트(상행과 일치)")
     @Test
     void addSectionWhenIsSameUpStation() {
-        Line line = findLine("신분당선");
         ExtractableResponse<Response> response =
-                addSection(
-                        generateSectionRequest(강남역.getId(), 정자역.getId(), 4), line.getId());
+                addSection(generateSectionRequest(강남역.getId(), 정자역.getId(), 4), 신분당선.getId());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
-    // "Section 추가 시 하행이 같을 때"
-    // "Section 추가 시 상행이 같을 때 역간 거리 예외"
-    // "Section 추가 시 하행이 같을 때 역간 거리 예외"
+    @DisplayName("구간(Section) 추가 테스트(하행과 일치)")
+    @Test
+    void addSectionWhenIsSameDownStation() {
+        ExtractableResponse<Response> response =
+                addSection(generateSectionRequest(정자역.getId(), 광교역.getId(), 4), 신분당선.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간(Section) 추가 시 구간 길이로 인한 예외 테스트(하행과 일치)")
+    @Test
+    void makeExceptionToAddSectionWhenIsSameDownStationDistanceException() {
+        ExtractableResponse<Response> response = addSection(generateSectionRequest(정자역.getId(), 광교역.getId(), DEFAULT_DISTANCE), 신분당선.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("구간(Section) 추가 시 구간 길이로 인한 예외 테스트(상행과 일치)")
+    @Test
+    void makeExceptionToAddSectionWhenIsSameUpStationDistanceException() {
+        ExtractableResponse<Response> response = addSection(generateSectionRequest(강남역.getId(), 광교역.getId(), DEFAULT_DISTANCE), 신분당선.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("구간(Section) 추가 시 일치하는 Station 없을 시 예외")
+    @Test
+    void makeExceptionWhenNoMatchBothStation() {
+        ExtractableResponse<Response> response = addSection(generateSectionRequest(광교중앙역.getId(), 정자역.getId(), 5), 신분당선.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("구간(Section) 추가 시 이미 있는 Section인 경우 예외")
+    @Test
+    void makeExceptionWhenMatchBothStation() {
+        ExtractableResponse<Response> response = addSection(generateSectionRequest(강남역.getId(), 광교역.getId(), 5), 신분당선.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     // "상행 종점에 추가할 때"
     // "하행 종점에 추가할 때"
 
