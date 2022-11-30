@@ -101,6 +101,10 @@ public class SectionAcceptanceTest extends DefaultAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
+    void 지하철_노선의_역이_삭제안됨(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
 
     @DisplayName("노선에 구간을 등록한다.")
     @Test
@@ -178,6 +182,31 @@ public class SectionAcceptanceTest extends DefaultAcceptanceTest {
 
         // then
         지하철_노선의_역이_삭제됨(response);
+    }
+
+    @DisplayName("지하철 노선에 없는 역을 삭제한다.")
+    @Test
+    void deleteLineSection_notContain() {
+        // given
+        LineResponse 이미_등록된_노선 =
+                노선에_지하철역_등록_요청(신분당선.getId(), 구간_등록_요청(강남역, 청계산역, 2))
+                        .as(LineResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = 지하철_노선의_역을_삭제함(이미_등록된_노선.getId(), 선릉역.getId());
+
+        // then
+        지하철_노선의_역이_삭제안됨(response);
+    }
+
+    @DisplayName("지하철 노선에 마지막 구간 역을 삭제한다.")
+    @Test
+    void deleteLineSection_lastOne() {
+        // given, when
+        ExtractableResponse<Response> response = 지하철_노선의_역을_삭제함(신분당선.getId(), 강남역.getId());
+
+        // then
+        지하철_노선의_역이_삭제안됨(response);
     }
 
 }
