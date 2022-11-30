@@ -16,7 +16,7 @@ class SectionsTest {
     void addSection() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(new Station("강남역"), new Station("보라매역"), 10);
+        Section section = Section.of(new Station("강남역"), new Station("보라매역"), 10);
         // when
         sections.add(section);
         // then
@@ -29,7 +29,7 @@ class SectionsTest {
     void shouldExceptionWhenUpDownStationAlreadyBeing() {
         // given
         Sections sections = new Sections();
-        Section section = new Section(new Station("강남역"), new Station("보라매역"), 10);
+        Section section = Section.of(new Station("강남역"), new Station("보라매역"), 10);
         sections.add(section);
         // when // then
         assertThatThrownBy(() -> sections.add(section))

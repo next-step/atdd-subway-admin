@@ -17,7 +17,7 @@ class SectionTest {
         // given
         Station upStation = new Station("강남역");
         Station downStation = new Station("서초역");
-        Section section = new Section(upStation, downStation, 10);
+        Section section = Section.of(upStation, downStation, 10);
         Line line = new Line("2호선", "green");
 
         //when
