@@ -109,16 +109,16 @@ public class Sections {
     }
 
     private boolean isBetweenStations(Station removeStation) {
-        return getUpStationList().contains(removeStation) && getDownStationList().contains(removeStation);
+        return getUpStations().contains(removeStation) && getDownStations().contains(removeStation);
     }
 
-    private List<Station> getUpStationList() {
+    private List<Station> getUpStations() {
         return sections.stream()
                 .map(Section::getUpStation)
                 .collect(Collectors.toList());
     }
 
-    private List<Station> getDownStationList() {
+    private List<Station> getDownStations() {
         return sections.stream()
                 .map(Section::getDownStation)
                 .collect(Collectors.toList());
