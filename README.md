@@ -181,26 +181,22 @@ Vary: Access-Control-Request-Headers
     * https://stackoverflow.com/questions/46708063/springboot-jpa-need-no-save-on-transactional
 ### step3 - 구간 추가 기능
 #### 요구상항 기능목록
-- [ ] 역 사이에 새로운 역을 등록할 경우
+- [X] 역 사이에 새로운 역을 등록할 경우
   * 새로운 길이를 뺸 나머지를 새롭게 추가된 역과의 길이로 설정
   * ex) asis: A-7m-C -> A-4m-B 추가 -> tobe: A-4m-B-3m-C
   * 기존 Section 사이로 새로운 Section이 들어오는 경우
     * upstation 끼리 동일한 경우 / downstation 끼리 동일한 경우
       * distance 비교(요청온 distance가 작아야 함
-      * 기존 Section, 새로 들어온 Section 아래 기준으로 update 
-      * upStation이 같으면, 기존 Section의 downStation을 새로 들어온 downStation 설정 
-        -> 새로 들어온 Section의 upStation을 기존 Section의 downStation으로 설정
-      * downStation이 같으면, 기존 Section의 upStation을 새로 들어온 upStation 설정 
-        -> 새로 들어온  Section의 downStation을 기존 Section의 upStation으로 설정
-- [ ] 새로운 역을 상행 종점으로 등록할 경우
-  * 새로 들어온 Section의 upStation이 Null인 경우
-  * 기존 upStation이 Null인 Section의 upStation을 새로 들어온 Section의 downStation으로 설정 
-- [ ] 새로운 역을 하행 종점으로 등록할 경우
-  * 새로 들어온 Section의 downStation이 Null인 경우
-  * 기존 downStation이 Null인 Section의 downStation을 새로 들어온 Section의 upStation으로 설정
-- [ ] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
-- [ ] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
-- [ ] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
+      * upStation이 같으면, 기존 Section의 upStation을 새로 들어온 downStation 설정
+      * downStation이 같으면, 기존 Section의 downStation을 새로 들어온 upStation 설정
+- [X] 새로운 역을 상행 종점으로 등록할 경우
+- [X] 새로운 역을 하행 종점으로 등록할 경우
+  * 상행/하행끼리 일치하는 케이스가 아니라, 신규: 하행 / 기존: 상행 과 같이 크로스로 일치하는 케이스
+  * 기존 upStation의 마지막 upStation과 신규 Sectoin의 downStation 일치 여부 확인
+  * 기존 downStation의 마지막 downStation과 신규 Section의 upStation 일치 여부 확인
+- [X] 역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록을 할 수 없음
+- [X] 상행역과 하행역이 이미 노선에 모두 등록되어 있다면 추가할 수 없음
+- [X] 상행역과 하행역 둘 중 하나도 포함되어있지 않으면 추가할 수 없음
 #### 구간등록 API명세
 HTTP request
 <pre>
