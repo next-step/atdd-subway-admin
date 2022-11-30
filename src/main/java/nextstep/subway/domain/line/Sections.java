@@ -132,7 +132,8 @@ public class Sections {
 	private void removeSection(Station station) {
 		Section upSection = sectionByUpStationMap(station);
 		Section downSection = sectionByDownStationMap(station);
-		SectionRemover.of(this, upSection, downSection).remove();
+		SectionRemover.of(upSection, downSection)
+			.remove(this, upSection, downSection);
 	}
 
 	private void validateRemoveSection(Station station) {

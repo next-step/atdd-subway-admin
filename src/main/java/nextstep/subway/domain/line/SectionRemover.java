@@ -9,30 +9,29 @@ public class SectionRemover {
 
 	private final SectionRemoveStrategy removeStrategy;
 
-	private SectionRemover(Sections sections, Section sectionByUpStation, Section sectionByDownStation) {
-		this.removeStrategy = strategy(sections, sectionByUpStation, sectionByDownStation);
+	private SectionRemover(Section sectionByUpStation, Section sectionByDownStation) {
+		this.removeStrategy = strategy(sectionByUpStation, sectionByDownStation);
 	}
 
-	public static SectionRemover of(Sections sections, Section sectionByUpStation, Section sectionByDownStation) {
-		return new SectionRemover(sections, sectionByUpStation, sectionByDownStation);
+	public static SectionRemover of(Section sectionByUpStation, Section sectionByDownStation) {
+		return new SectionRemover(sectionByUpStation, sectionByDownStation);
 	}
 
-	public void remove() {
-		removeStrategy.remove();
+	public void remove(Sections sections, Section sectionByUpStation, Section sectionByDownStation) {
+		removeStrategy.remove(sections, sectionByUpStation, sectionByDownStation);
 	}
 
 	private SectionRemoveStrategy strategy(
-		Sections sections,
 		Section sectionByUpStation,
 		Section sectionByDownStation
 	) {
 		if (isMiddleSection(sectionByUpStation, sectionByDownStation)) {
-			return new MiddleSectionRemoveStrategy(sections, sectionByUpStation, sectionByDownStation);
+			return new MiddleSectionRemoveStrategy();
 		}
 		if (isLastSection(sectionByUpStation, sectionByDownStation)) {
-			return new LastSectionRemoveStrategy(sections, sectionByUpStation);
+			return new LastSectionRemoveStrategy();
 		}
-		return new FirstSectionRemoveStrategy(sections, sectionByDownStation);
+		return new FirstSectionRemoveStrategy();
 	}
 
 	private boolean isMiddleSection(Section upSection, Section downSection) {

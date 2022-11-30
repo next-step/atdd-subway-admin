@@ -94,6 +94,11 @@ public class Section {
 		this.distance = this.distance.subtract(newSection.distance);
 	}
 
+	public void extend(Section sectionByUpStation) {
+		this.downStation = sectionByUpStation.downStation;
+		this.distance = this.distance.add(sectionByUpStation.distance);
+	}
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
@@ -119,10 +124,5 @@ public class Section {
 		result = 31 * result + (downStation != null ? downStation.hashCode() : 0);
 		result = 31 * result + (distance != null ? distance.hashCode() : 0);
 		return result;
-	}
-
-	public void extend(Section sectionByUpStation) {
-		this.downStation = sectionByUpStation.downStation;
-		this.distance = this.distance.add(sectionByUpStation.distance);
 	}
 }
