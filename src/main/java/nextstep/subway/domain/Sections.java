@@ -15,6 +15,14 @@ public class Sections {
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     List<Section> sections = new ArrayList<>();
 
+    public Sections() {
+
+    }
+
+    private Sections(List<Section> sections) {
+        this.sections = sections;
+    }
+
     public Sections addSection(Section newSection) {
 
         if (sections.isEmpty()) {
@@ -27,7 +35,6 @@ public class Sections {
         Section switchSection = getSwitchTarget(newSection);
         switchSectionValue(switchSection, newSection);
         sections.add(newSection);
-        sortSections();
 
         return this;
     }
@@ -87,10 +94,10 @@ public class Sections {
         }
     }
 
-    private void sortSections() {
+    private List<Section> sortSections() {
         //상행종점역 찾기
         Section firstSection = sections.stream()
-                .filter(section -> getPreviousSection(section) == null)
+                .filter(this::isFirstSection)
                 .findAny()
                 .get();
 
@@ -107,27 +114,29 @@ public class Sections {
 
         }
 
-        sections = sortedSections;
+        return sortedSections;
     }
 
-    private Section getPreviousSection(Section tmp) {
-        return sections.stream()
+    private boolean isFirstSection(Section tmp) {
+
+        return !sections.stream()
                 .filter(section -> section.hasDownStation(tmp.getUpStation()))
                 .findAny()
-                .orElse(null);
+                .isPresent();
     }
 
     private Section getNextSection(Section tmp) {
-        Section nextSection = sections.stream()
+        return sections.stream()
                 .filter(section -> section.hasUpStation(tmp.getDownStation()))
                 .findAny()
                 .orElse(null);
-
-        return nextSection;
     }
 
     public Sections getSortedSections() {
-        sortSections();
+        if (sections.size() > 1) {
+            return new Sections(sortSections());
+        }
+
         return this;
     }
 }

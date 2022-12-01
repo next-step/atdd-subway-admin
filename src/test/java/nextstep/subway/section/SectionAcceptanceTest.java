@@ -281,7 +281,7 @@ public class SectionAcceptanceTest {
      * when 새로운 지하철 구간들을 추가하고 조회하면
      * then 정렬된 구간이 조회된다.
      */
-    @DisplayName("구간에 새로운 역을 등록한다.")
+    @DisplayName("지하철 구간 정렬 테스트")
     @Test
     void 지하철_전체_구간_정렬_조회_테스트() {
         // given

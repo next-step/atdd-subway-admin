@@ -31,6 +31,18 @@ public class LineRequest {
         return color;
     }
 
+    public Station getUpStation()
+    {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
     public Line toLine() {
         return new Line(name, color, upStation, downStation, distance);
     }

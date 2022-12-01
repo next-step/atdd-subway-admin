@@ -1,9 +1,6 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.SectionRepository;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
@@ -68,10 +65,10 @@ public class LineService {
     private LineResponse getLineResponseWithStations(Line line) {
         List<StationResponse> stations = new ArrayList<>();
 
-        int lastIndex = line.getSections().getSectionList().size() -1;
-
-        stations.add(StationResponse.of(line.getSections().getSectionList().get(0).getUpStation()));
-        stations.add(StationResponse.of(line.getSections().getSectionList().get(lastIndex).getDownStation()));
+        for(Section section : line.getSections().getSectionList()) {
+            stations.add(StationResponse.of(section.getUpStation()));
+            stations.add(StationResponse.of(section.getDownStation()));
+        }
 
         return LineResponse.of(line).setStations(stations);
     }
