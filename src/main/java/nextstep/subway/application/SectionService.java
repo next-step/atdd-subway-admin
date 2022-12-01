@@ -43,6 +43,16 @@ public class SectionService {
         List<Section> sections = findLineById(lineId).getSections().getSectionList();
         return sections.stream().map(section -> SectionResponse.of(section)).collect(Collectors.toList());
     }
+    @Transactional
+    public SectionResponse deleteStationById(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station deleteStation = findStationById(stationId);
+
+        Section deletedSection = line.deleteStation(deleteStation);
+        sectionRepository.delete(deletedSection);
+
+        return SectionResponse.of(deletedSection);
+    }
 
     public Line findLineById(Long lineId) {
         return lineRepository.findById(lineId).orElseThrow(() -> new IllegalArgumentException(NO_SUCH_LINE_EXCEPTION));
