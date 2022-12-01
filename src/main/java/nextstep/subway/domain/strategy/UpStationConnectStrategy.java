@@ -1,6 +1,7 @@
 package nextstep.subway.domain.strategy;
 
 import nextstep.subway.domain.line.Section;
+import nextstep.subway.domain.line.Sections;
 
 public class UpStationConnectStrategy implements SectionConnectStrategy {
 
@@ -11,7 +12,12 @@ public class UpStationConnectStrategy implements SectionConnectStrategy {
 	}
 
 	@Override
-	public void connect(Section newSection) {
+	public void connect(Sections sections, Section newSection) {
+		rearrange(newSection);
+		sections.add(newSection);
+	}
+
+	private void rearrange(Section newSection) {
 		existingSection.replaceUpStation(newSection);
 	}
 }

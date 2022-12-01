@@ -1,6 +1,7 @@
 package nextstep.subway.domain.line;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ class SectionConnectorTest {
 	private Station 선릉역;
 	private Line 이호선;
 	private List<Section> 기존_구간_목록 = new ArrayList<>();
+	private Sections 기존_구간들;
 
 	@BeforeEach
 	void setUp() {
@@ -26,6 +28,7 @@ class SectionConnectorTest {
 		선릉역 = Station.from("선릉역");
 		이호선 = Line.of("2호선", "green", 강남역, 역삼역, 10);
 		기존_구간_목록.add(new Section(이호선, 강남역, 역삼역, 5));
+		기존_구간들 = mock(Sections.class);
 	}
 
 	@Test
@@ -46,8 +49,9 @@ class SectionConnectorTest {
 		Section 신규_구간 = new Section(이호선, 강남역, 선릉역, 3);
 		// when
 		SectionConnector connector = SectionConnector.of(신규_구간, 기존_구간_목록);
-		connector.connect();
+		connector.connect(기존_구간들);
 		// then
+
 		assertThat(기존_구간_목록.get(0).getUpStation()).isEqualTo(선릉역);
 	}
 
@@ -58,10 +62,9 @@ class SectionConnectorTest {
 		Section 신규_구간 = new Section(이호선, 선릉역, 역삼역, 3);
 		// when
 		SectionConnector connector = SectionConnector.of(신규_구간, 기존_구간_목록);
-		connector.connect();
+		connector.connect(기존_구간들);
 		// then
 		assertThat(기존_구간_목록.get(0).getDownStation()).isEqualTo(선릉역);
-
 	}
 
 }

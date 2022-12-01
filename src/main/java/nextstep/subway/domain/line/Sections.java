@@ -110,8 +110,18 @@ public class Sections {
 	public void connect(Section section, List<Section> sectionsToRearrange) {
 		validateAddSection(section);
 		SectionConnector connector = SectionConnector.of(section, sectionsToRearrange);
-		connector.connect();
-		sections.add(section);
+		connector.connect(this);
+		// SectionConnectStrategy strategy = ConnectStrategyFactory.decide(section, sectionsToRearrange);
+		// strategy.connect(this, section);
+
+	}
+
+	public void add(Sections sections, Section section) {
+		sections.getSections().add(section);
+	}
+
+	public void add(Section section) {
+		this.sections.add(section);
 	}
 
 	public void remove(Station station) {

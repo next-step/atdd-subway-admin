@@ -1,12 +1,8 @@
 package nextstep.subway.domain.line;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.util.Assert;
-
-import nextstep.subway.domain.strategy.DownStationConnectStrategy;
-import nextstep.subway.domain.strategy.UpStationConnectStrategy;
 
 public class SectionConnector {
 
@@ -25,29 +21,8 @@ public class SectionConnector {
 		return new SectionConnector(newSection, existingSections);
 	}
 
-	public void connect() {
-		if (existingSections.isEmpty()) {
-			return;
-		}
-		Optional<Section> sameUpStationSection = sameUpStationSection(newSection, existingSections);
-		if (sameUpStationSection.isPresent()) {
-			new UpStationConnectStrategy(sameUpStationSection.get()).connect(newSection);
-			return;
-		}
-		Optional<Section> sameDownStationSection = sameDownStationSection(newSection, existingSections);
-		sameDownStationSection.ifPresent(section -> new DownStationConnectStrategy(section).connect(newSection));
+	public void connect(Sections sections) {
+		ConnectStrategyFactory.decide(newSection, existingSections)
+			.connect(sections, newSection);
 	}
-
-	private Optional<Section> sameDownStationSection(Section newSection, List<Section> existingSections) {
-		return existingSections.stream()
-			.filter(it -> it.isSameDownStation(newSection))
-			.findFirst();
-	}
-
-	private Optional<Section> sameUpStationSection(Section newSection, List<Section> existingSections) {
-		return existingSections.stream()
-			.filter(section -> section.isSameUpStation(newSection))
-			.findFirst();
-	}
-
 }
