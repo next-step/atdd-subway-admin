@@ -186,7 +186,8 @@ public class Sections {
 
     public Sections getSortedSections() {
         if (sections.size() > 1) {
-            return new Sections(sortSections());
+            sections = sortSections();
+            return this;
         }
 
         return this;
