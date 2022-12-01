@@ -32,32 +32,30 @@ public class LineService {
                 .orElseThrow(IllegalArgumentException::new);
         Station downStation = stationRepository.findById(lineCreateRequest.getDownStationId())
                 .orElseThrow(IllegalArgumentException::new);
-        Line line = lineRepository.save(
-                new Line(null, lineCreateRequest.getName(), lineCreateRequest.getColor(),
-                        lineCreateRequest.getDistance()));
+        Line line = lineRepository.save(lineCreateRequest.toLine());
         LineStation lineStationUp = lineStationRepository.save(new LineStation(upStation, line));
         LineStation lineStationDown = lineStationRepository.save(new LineStation(downStation, line));
         line.setLineStations(new ArrayList<>(Arrays.asList(lineStationUp, lineStationDown)));
-        return new LineResponse(line);
+        return LineResponse.of(line);
     }
 
     public List<LineResponse> findAllLines() {
         return lineRepository.findAll()
                 .stream()
-                .map(LineResponse::new)
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findById(long id) {
         return lineRepository.findById(id)
-                .map(LineResponse::new)
+                .map(LineResponse::of)
                 .orElseThrow(IllegalArgumentException::new);
     }
 
     @Transactional
     public void updateLine(long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id)
-                .map(found -> new Line(found.getId(), lineUpdateRequest.getName(), lineUpdateRequest.getColor()))
+                .map(found -> lineUpdateRequest.toLine(found.getId()))
                 .orElseThrow(IllegalArgumentException::new);
         lineRepository.save(line);
     }

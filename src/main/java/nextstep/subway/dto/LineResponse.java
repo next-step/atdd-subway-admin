@@ -12,21 +12,29 @@ public class LineResponse {
     private String color;
     private List<StationOfLineResponse> stations;
 
-    public LineResponse() {
-    }
-
-    public LineResponse(Line line) {
-        id = line.getId();
-        name = line.getName();
-        color = line.getColor();
-        stations =
+    public static LineResponse of(Line line) {
+        return new LineResponse(
+                line.getId(),
+                line.getName(),
+                line.getColor(),
                 line.getLineStations()
                         .stream()
                         .map(lineStation -> new StationOfLineResponse(
                                 lineStation.getStation().getId(),
                                 lineStation.getStation().getName()
                         ))
-                        .collect(Collectors.toList());
+                        .collect(Collectors.toList())
+        );
+    }
+
+    public LineResponse() {
+    }
+
+    public LineResponse(long id, String name, String color, List<StationOfLineResponse> stations) {
+        this.id = id;
+        this.name = name;
+        this.color = color;
+        this.stations = stations;
     }
 
     public long getId() {

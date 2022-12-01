@@ -22,20 +22,20 @@ public class StationService {
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
         Station station = stationRepository.save(stationRequest.toStation());
-        return new StationResponse(station);
+        return StationResponse.of(station);
     }
 
     @Transactional
     public StationResponse upsert(StationRequest stationRequest) {
         return stationRepository.findByName(stationRequest.getName())
-                .map(StationResponse::new)
-                .orElseGet(() -> new StationResponse(stationRepository.save(new Station(stationRequest.getName()))));
+                .map(StationResponse::of)
+                .orElseGet(() -> StationResponse.of(stationRepository.save(stationRequest.toStation())));
     }
 
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll()
                 .stream()
-                .map(StationResponse::new)
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
