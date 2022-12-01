@@ -20,7 +20,6 @@ import org.springframework.http.MediaType;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,6 +36,7 @@ public class SectionAcceptanceTest {
     DatabaseCleanup databaseCleanup;
 
     private static final String BASE_URL = "/sections";
+    private static final String PARAMETER = "?stationId=";
 
     @BeforeEach
     public void setUp() {
@@ -391,7 +391,7 @@ public class SectionAcceptanceTest {
         // then
         assertAll(
                 () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(findSpecificSection(sections, 영등포구청역, 당산역)).isNull()
+                () -> assertThat(findSpecificSection(sections, 합정역, 홍대입구역)).isNull()
         );
     }
 
@@ -428,7 +428,8 @@ public class SectionAcceptanceTest {
         assertAll(
                 () -> assertThat(deleteResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
                 () -> assertThat(findSpecificSection(sections, 합정역, 홍대입구역)).isNull(),
-                () -> assertThat(findSpecificSection(sections, 당산역, 홍대입구역)).isNotNull()
+                () -> assertThat(findSpecificSection(sections, 당산역, 홍대입구역)).isNotNull(),
+                () -> assertThat(findSpecificSection(sections, 당산역, 홍대입구역).getDistance()).isEqualTo(20)
         );
     }
 
@@ -514,6 +515,18 @@ public class SectionAcceptanceTest {
         return response;
     }
 
+    private ExtractableResponse<Response> deleteStationById(String location, String stationId) {
+
+        ExtractableResponse<Response> response =
+                RestAssured.given().log().all()
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .when().delete(location + BASE_URL + PARAMETER + stationId)
+                        .then().log().all()
+                        .extract();
+
+        return response;
+    }
+
     private Station getSavedStation(String stationName) {
         return StationAcceptanceTest.createStation(stationName).as(Station.class);
     }
@@ -523,7 +536,10 @@ public class SectionAcceptanceTest {
     }
 
     private SectionResponse findSpecificSection(List<SectionResponse> sections, Station upStation, Station downStation) {
-        return sections.stream().filter(res -> res.findSpecificSection(StationResponse.of(upStation), StationResponse.of(downStation))).findAny().get();
+        return sections.stream()
+                .filter(res -> res.findSpecificSection(StationResponse.of(upStation), StationResponse.of(downStation)))
+                .findAny()
+                .orElse(null);
     }
 
     private String getStationId(Station station) {
