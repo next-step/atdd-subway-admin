@@ -1,10 +1,7 @@
 package nextstep.subway.application;
 
 import nextstep.subway.consts.ErrorMessage;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
+import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -29,8 +26,13 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = findStationById(lineRequest.getUpStationId());
         Station downStation = findStationById(lineRequest.getDownStationId());
-        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        /*Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        return LineResponse.of(persistLine);*/
+        Line line = lineRequest.toLine();
+        Sections sections = new Sections();
+        sections.add(new Section(upStation, downStation, lineRequest.getDistance(), line));
+        line.addSections(sections);
+        return LineResponse.of(line);
     }
 
     private Station findStationById(Long stationId) {
@@ -56,7 +58,8 @@ public class LineService {
     public void updateLine(Long id, LineRequest lineRequest) {
         Line originLine = lineRepository.findById(id)
                 .orElseThrow(() -> new NoSuchElementException(ErrorMessage.ERROR_LINE_NOT_EXIST));
-        originLine.update(lineRequest.toLine(originLine.getUpStation(), originLine.getDownStation()));
+        //originLine.update(lineRequest.toLine(originLine.getSections()));
+        originLine.update(lineRequest.toLine());
     }
 
     @Transactional

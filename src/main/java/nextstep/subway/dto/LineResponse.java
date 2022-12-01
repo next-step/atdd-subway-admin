@@ -5,6 +5,7 @@ import nextstep.subway.domain.Station;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
@@ -14,18 +15,19 @@ public class LineResponse {
     private List<StationResponse> stations = new ArrayList<>();
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getUpStation(), line.getDownStation());
+        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getStations());
     }
 
     public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, Station upStation, Station downStation) {
+    public LineResponse(Long id, String name, String color, List<Station> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.stations.add(StationResponse.of(upStation));
-        this.stations.add(StationResponse.of(downStation));
+        /*this.stations.add(StationResponse.of(upStation));
+        this.stations.add(StationResponse.of(downStation));*/
+        this.stations = stations.stream().map(StationResponse::of).collect(Collectors.toList());
     }
 
     public Long getId() {
@@ -40,7 +42,7 @@ public class LineResponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
+    /*public List<StationResponse> getStations() {
         return stations;
-    }
+    }*/
 }

@@ -2,6 +2,7 @@ package nextstep.subway.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import nextstep.subway.domain.Line;
+import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
@@ -24,8 +25,8 @@ public class LineRequest {
         return new LineRequest(name, color, upStationId, downStationId, distance);
     }
 
-    public Line toLine(Station upStation, Station downStation) {
-        return new Line(name, color, upStation, downStation, distance);
+    public Line toLine() {
+        return new Line(name, color);
     }
 
     public String getName() {
@@ -42,5 +43,9 @@ public class LineRequest {
 
     public Long getDownStationId() {
         return downStationId;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }

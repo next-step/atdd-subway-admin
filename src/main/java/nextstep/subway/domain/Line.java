@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import com.sun.istack.NotNull;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line {
@@ -14,23 +15,16 @@ public class Line {
     private String name;
     @NotNull
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "upStationId")
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "downStationId")
-    private Station downStation;
-    private int distance;
+
+    @Embedded
+    private Sections sections;
 
     private Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
     }
 
 
@@ -46,16 +40,16 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public Sections getSections() {
+        return sections;
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
-    public int getDistance() {
-        return distance;
+    public void addSections(Sections sections) {
+        this.sections = sections;
     }
 
     public void update(Line newLine) {
