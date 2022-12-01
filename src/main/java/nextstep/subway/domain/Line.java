@@ -32,6 +32,10 @@ public class Line extends BaseEntity {
         this.name = name;
         this.color = color;
     }
+    
+    public Sections getSections() {
+        return sections;
+    }
 
     public List<StationResponse> getStations() {
         return sections.getStations();
