@@ -21,20 +21,27 @@ public class StationService {
 
     @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
-        Station persistStation = stationRepository.save(stationRequest.toStation());
-        return StationResponse.of(persistStation);
+        Station station = stationRepository.save(stationRequest.toStation());
+        return StationResponse.of(station);
+    }
+
+    @Transactional
+    public StationResponse upsert(StationRequest stationRequest) {
+        return stationRepository.findByName(stationRequest.getName())
+                .map(StationResponse::of)
+                .orElseGet(() -> StationResponse.of(stationRepository.save(stationRequest.toStation())));
     }
 
     public List<StationResponse> findAllStations() {
-        List<Station> stations = stationRepository.findAll();
-
-        return stations.stream()
-                .map(station -> StationResponse.of(station))
+        return stationRepository.findAll()
+                .stream()
+                .map(StationResponse::of)
                 .collect(Collectors.toList());
     }
 
     @Transactional
     public void deleteStationById(Long id) {
-        stationRepository.deleteById(id);
+        Station station = stationRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        stationRepository.deleteById(station.getId());
     }
 }
