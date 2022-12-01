@@ -32,6 +32,12 @@ public class SectionController {
         return ResponseEntity.ok().body(sectionResponse);
     }
 
+    @DeleteMapping("/sections")
+    public ResponseEntity<SectionResponse> deleteStationById(@PathVariable Long lineId, @RequestParam(value = "stationId") Long stationId) {
+        SectionResponse sectionResponses = sectionService.deleteStationById(lineId, stationId);
+        return ResponseEntity.ok().body(sectionResponses);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
