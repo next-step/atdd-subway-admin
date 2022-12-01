@@ -84,40 +84,45 @@ public class Section {
 		return station.equals(newStation);
 	}
 
-	public void updateUpStation(Station downStation, Distance distance) {
-		this.upStation = downStation;
-		this.distance = this.distance.subtract(distance);
+	public void replaceUpStation(Section newSection) {
+		this.upStation = newSection.downStation;
+		this.distance = this.distance.subtract(newSection.distance);
 	}
 
-	public void updateDownStation(Station upStation, Distance distance) {
-		this.downStation = upStation;
-		this.distance = this.distance.subtract(distance);
+	public void replaceDownStation(Section newSection) {
+		this.downStation = newSection.upStation;
+		this.distance = this.distance.subtract(newSection.distance);
 	}
 
-	public void rearrange(Section section) {
-		if (isSameUpStation(section)) {
-			updateUpStation(section.downStation, section.distance);
-			return;
-		}
-		if (isSameDownStation(section)) {
-			updateDownStation(section.upStation, section.distance);
-		}
+	public void extend(Section sectionByUpStation) {
+		this.downStation = sectionByUpStation.downStation;
+		this.distance = this.distance.add(sectionByUpStation.distance);
 	}
 
 	@Override
 	public boolean equals(Object o) {
-		if (this == o) {
+		if (this == o)
 			return true;
-		}
-		if (o == null || getClass() != o.getClass()) {
+		if (o == null || getClass() != o.getClass())
 			return false;
-		}
+
 		Section section = (Section)o;
-		return Objects.equals(id, section.id);
+
+		if (!Objects.equals(id, section.id))
+			return false;
+		if (!Objects.equals(upStation, section.upStation))
+			return false;
+		if (!Objects.equals(downStation, section.downStation))
+			return false;
+		return Objects.equals(distance, section.distance);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(id);
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (upStation != null ? upStation.hashCode() : 0);
+		result = 31 * result + (downStation != null ? downStation.hashCode() : 0);
+		result = 31 * result + (distance != null ? distance.hashCode() : 0);
+		return result;
 	}
 }

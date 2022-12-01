@@ -51,5 +51,9 @@ public class Distance {
 	public Distance subtract(Distance distance) {
 		return new Distance(this.value - distance.value);
 	}
+
+	public Distance add(Distance distance) {
+		return new Distance(this.value + distance.value);
+	}
 }
 
