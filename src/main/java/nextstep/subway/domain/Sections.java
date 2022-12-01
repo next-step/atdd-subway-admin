@@ -38,19 +38,17 @@ public class Sections {
         sections.add(section);
     }
 
-    private boolean hasEndPointIssue(Section section) {
-        Station endUpStation = findEndUpStation(sections.get(sections.size()-1));
-        return true; // TODO
+    private boolean hasEndPointIssue(Section newSection) {
+        boolean hasIssue = false;
+        Section firstSection = findFirstSection();
+        Section lastSection = findLastSection();
+        if (firstSection.isEqualUpStationNewSectionDownStation(newSection)
+                && lastSection.isEqualDownStationNewSectionUpStation(newSection)) {
+            hasIssue = true;
+        }
+        return hasIssue;
     }
 
-    private Station findEndUpStation(Section section) {
-        Optional<Station> endUpStation = hasNotDownStation(section.getUpStation();
-        return null;
-    }
-
-    private Optional<Section> hasNotDownStation(Station station) {
-        return sections.stream().filter(it -> it.isSameDownStationId(station)).findFirst();
-    }
 
     private void updateStationWhenDownStationSame(Section section) {
         Optional<Section> findSection = sections.stream().filter(it -> it.isSameDownStationId(section)).findFirst();
@@ -81,7 +79,7 @@ public class Sections {
         if (this.sections.size() > 0 && isNoMatchStation(section)) {
             throw new IllegalArgumentException(ErrorCode.NO_MATCH_STATION_EXCEPTION.getErrorMessage());
         }
-        if (hasEndPointIssue(section)) {
+        if (this.sections.size() > 0 && !isSameUpStation(section) && !isSameDownStation(section) && hasEndPointIssue(section)) {
             throw new IllegalArgumentException(ErrorCode.ADD_END_POINT_ISSUE.getErrorMessage());
         }
     }
@@ -97,5 +95,54 @@ public class Sections {
 
     public List<Section> asList() {
         return Collections.unmodifiableList(sections);
+    }
+
+    public List<Station> getSortedStations() {
+        List<Station> sortedStations = new ArrayList<>();
+        Section firstSection = findFirstSection();
+        firstSection.addStations(sortedStations);
+        addNextStation(sortedStations, firstSection);
+        return sortedStations;
+    }
+
+    private void addNextStation(List<Station> stations, Section previousSection) {
+        Optional<Section> nextSection = findNextSection(previousSection);
+        while (nextSection.isPresent()) {
+            Section currentSection = nextSection.get();
+            currentSection.addNextStation(stations);
+            nextSection = findNextSection(currentSection);
+        }
+    }
+
+    private Optional<Section> findNextSection(Section previousSection) {
+        return sections.stream()
+                .filter(section -> section.isEqualUpStationNewSectionDownStation(previousSection))
+                .findFirst();
+    }
+
+    private Section findLastSection() {
+        Section lastSection = sections.get(0);
+        Optional<Section> nextSection = findNextSection(lastSection);
+        while (nextSection.isPresent()) {
+            lastSection = nextSection.get();
+            nextSection = findNextSection(lastSection);
+        }
+        return lastSection;
+    }
+
+    private Section findFirstSection() {
+        Section firstSection = sections.get(0);
+        Optional<Section> previousSection = findPreviousSection(firstSection);
+        while (previousSection.isPresent()) {
+            firstSection = previousSection.get();
+            previousSection = findPreviousSection(firstSection);
+        }
+        return firstSection;
+    }
+
+    private Optional<Section> findPreviousSection(Section currentSection) {
+        return sections.stream()
+                .filter(section -> section.isEqualDownStationNewSectionUpStation(currentSection))
+                .findFirst();
     }
 }

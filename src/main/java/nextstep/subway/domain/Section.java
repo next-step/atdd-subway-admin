@@ -122,6 +122,35 @@ public class Section extends BaseEntity{
         return downStation.getId();
     }
 
+    public Station getUpStation() {
+        return upStation;
+    }
+
+    public Station getDownStation() {
+        return downStation;
+    }
+
+    public void addStations(List<Station> stations) {
+        stations.add(upStation);
+        stations.add(downStation);
+    }
+
+    public List<Station> toStations() {
+        return Arrays.asList(upStation, downStation);
+    }
+
+    public void addNextStation(List<Station> stations) {
+        stations.add(downStation);
+    }
+
+    public boolean isEqualUpStationNewSectionDownStation(Section section) {
+        return upStation.equals(section.getDownStation());
+    }
+
+    public boolean isEqualDownStationNewSectionUpStation(Section section) {
+        return downStation.equals(section.getUpStation());
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -133,17 +162,5 @@ public class Section extends BaseEntity{
     @Override
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, line, distance);
-    }
-
-    public List<Station> toStations() {
-        return Arrays.asList(upStation, downStation);
-    }
-
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
     }
 }
