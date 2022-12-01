@@ -88,8 +88,19 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
-    // "상행 종점에 추가할 때"
-    // "하행 종점에 추가할 때"
+    @DisplayName("상행 종점 추가 테스트 ")
+    @Test
+    void addSectionWhenIsSameUpEndStation() {
+        ExtractableResponse<Response> response = addSection(generateSectionRequest(정자역.getId(), 강남역.getId(), 5), 신분당선.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("하행 종점 추가 테스트 ")
+    @Test
+    void addSectionWhenIsSameDownEndStation() {
+        ExtractableResponse<Response> response = addSection(generateSectionRequest(광교역.getId(), 광교중앙역.getId(), 5), 신분당선.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
 
     private ExtractableResponse<Response> addSection(SectionRequest sectionRequest, long id) {
         return RestAssured.given().log().all()
