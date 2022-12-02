@@ -74,11 +74,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture{
         int lineId = 지하철_노선_생성("2호선").jsonPath().get("id");
 
         //When
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/" + lineId)
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_노선_조회(lineId);
 
         //Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -114,11 +110,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture{
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //Then
-        String lineName = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/" + lineId)
-                .then().log().all()
-                .extract().jsonPath().get("name");
+        String lineName = 지하철_노선_조회(lineId).jsonPath().get("name");
         assertThat(lineName).isEqualTo("3호선");
     }
 

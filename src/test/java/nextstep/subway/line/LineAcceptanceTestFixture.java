@@ -49,4 +49,17 @@ class LineAcceptanceTestFixture {
                 .then().log().all()
                 .extract();
     }
+
+    /**
+     * 지하철 노선 정보 조회
+     *
+     * @return 지하철 노선 정보 조회 Response
+     */
+    protected static ExtractableResponse<Response> 지하철_노선_조회(int lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines/" + lineId)
+                .then().log().all()
+                .extract();
+    }
 }
