@@ -37,8 +37,8 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         //Then
-        List<String> lineNames = 지하철_노선_목록_조회().jsonPath().getList("name", String.class);
-        assertThat(lineNames).containsAnyOf("2호선");
+        List<Line> 조회된_노선_목록 = 노선목록(지하철_노선_목록_조회());
+        assertThat(조회된_노선_목록).containsAnyOf(노선정보(response));
     }
 
     /**
@@ -50,14 +50,9 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
     @Test
     void 지하철_노선_목록_조회_확인() {
         //Given
-        List<Line> createLines = new ArrayList<>();
-        createLines.add(new Line("2호선", "green"));
-        createLines.add(new Line("3호선", "orange"));
         List<Line> 생성된_노선_목록 = new ArrayList<>();
-        createLines.forEach(line -> {
-            Line 생성된_노선 = 지하철_노선_생성(line.getName(), line.getColor()).jsonPath().getObject("", Line.class);
-            생성된_노선_목록.add(생성된_노선);
-        });
+        생성된_노선_목록.add(노선정보(지하철_노선_생성("2호선", "green")));
+        생성된_노선_목록.add(노선정보(지하철_노선_생성("3호선", "orange")));
 
         //When
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
@@ -66,8 +61,8 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //Then
-        List<Line> lines = response.jsonPath().getList("", Line.class);
-        생성된_노선_목록.forEach(l -> assertThat(lines.contains(l)).isTrue());
+        List<Line> 조회된_노선_목록 = 노선목록(response);
+        생성된_노선_목록.forEach(l -> assertThat(조회된_노선_목록.contains(l)).isTrue());
     }
 
     /**
@@ -79,17 +74,17 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
     @Test
     void 지하철_노선_조회_확인() {
         //Given
-        int lineId = 지하철_노선_생성("2호선", "green").jsonPath().get("id");
+        Line 생성된_노선 = 노선정보(지하철_노선_생성("2호선", "green"));
 
         //When
-        ExtractableResponse<Response> response = 지하철_노선_조회(lineId);
+        ExtractableResponse<Response> response = 지하철_노선_조회(생성된_노선.getId());
 
         //Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //Then
-        String lineName = response.jsonPath().get("name");
-        assertThat(lineName).isEqualTo("2호선");
+        Line 조회된_노선 = 노선정보(response);
+        assertThat(조회된_노선).isEqualTo(생성된_노선);
     }
 
     /**
@@ -101,7 +96,8 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
     @Test
     void 지하철_노선_수정_확인() {
         //Given
-        int lineId = 지하철_노선_생성("2호선", "green").jsonPath().get("id");
+        Line 생성된_노선 = 노선정보(지하철_노선_생성("2호선", "green"));
+        Long lineId = 생성된_노선.getId();
 
         //When
         Map<String, String> patchParams = new HashMap<>();
@@ -119,11 +115,10 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
 
         //Then
-        String lineName = 지하철_노선_조회(lineId).jsonPath().get("name");
-        String lineColor = 지하철_노선_조회(lineId).jsonPath().get("color");
+        Line 조회된_노선 = 노선정보(지하철_노선_조회(lineId));
         assertAll(
-                () -> assertThat(lineName).isEqualTo("3호선"),
-                () -> assertThat(lineColor).isEqualTo("orange")
+                () -> assertThat(조회된_노선.getName()).isEqualTo("3호선"),
+                () -> assertThat(조회된_노선.getColor()).isEqualTo("orange")
         );
     }
 
@@ -136,13 +131,13 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
     @Test
     void 지하철_노선_삭제_확인() {
         //Given
-        int lineId = 지하철_노선_생성("2호선", "green").jsonPath().get("id");
+        Line 생성된_노선 = 노선정보(지하철_노선_생성("2호선", "green"));
 
         //When
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().delete("/lines/" + lineId)
+                        .when().delete("/lines/" + 생성된_노선.getId())
                         .then().log().all()
                         .extract();
 
@@ -150,7 +145,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         //Then
-        List<String> lineNames = 지하철_노선_목록_조회().jsonPath().getList("name", String.class);
-        assertThat(lineNames.contains("2호선")).isFalse();
+        List<Line> 조회된_노선_목록 = 노선목록(지하철_노선_목록_조회());
+        assertThat(조회된_노선_목록.contains(생성된_노선)).isFalse();
     }
 }

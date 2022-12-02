@@ -4,7 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import nextstep.subway.domain.Line;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
@@ -56,11 +58,19 @@ class LineAcceptanceTestFixture {
      *
      * @return 지하철 노선 정보 조회 Response
      */
-    protected static ExtractableResponse<Response> 지하철_노선_조회(int lineId) {
+    protected static ExtractableResponse<Response> 지하철_노선_조회(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/" + lineId)
                 .then().log().all()
                 .extract();
+    }
+
+    protected static Line 노선정보(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject("", Line.class);
+    }
+
+    protected static List<Line> 노선목록(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("", Line.class);
     }
 }
