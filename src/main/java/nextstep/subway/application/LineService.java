@@ -30,13 +30,12 @@ public class LineService {
     public List<LineResponse> findAllLines() {
         List<Line> findResults = lineRepository.findAll();
         return findResults.stream()
-                .map(l -> LineResponse.of(l))
+                .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
 
     public LineResponse findLineById(Long id) {
-        Line findResult = lineRepository.findById(id).get();
-        return LineResponse.of(findResult);
+        return LineResponse.of(lineRepository.findById(id).get());
     }
 
     @Transactional
@@ -44,7 +43,6 @@ public class LineService {
         Line line = lineRepository.findById(id)
                 .orElseThrow(NoSuchElementException::new);
         line.update(request);
-        lineRepository.save(line);
         return LineResponse.of(line);
     }
 
