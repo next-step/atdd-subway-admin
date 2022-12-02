@@ -63,7 +63,7 @@ public class LineController {
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
-        //지하철 노선 삭제
+        lineRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
