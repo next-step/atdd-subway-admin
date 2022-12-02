@@ -35,20 +35,17 @@ public class LineController {
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<LineResponse> lines = lineService.findAllLines();
-        return ResponseEntity.ok().body(lines);
+        return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        LineResponse line = lineService.findLineById(id);
-        return ResponseEntity.ok().body(line);
+        return ResponseEntity.ok().body(lineService.findLineById(id));
     }
 
     @PatchMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody UpdateLine request) {
-        LineResponse response = lineService.updateLine(id, request);
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(lineService.updateLine(id, request));
     }
 
     @DeleteMapping("/lines/{id}")
