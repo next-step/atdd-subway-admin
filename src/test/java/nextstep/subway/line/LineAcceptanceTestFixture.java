@@ -36,4 +36,17 @@ class LineAcceptanceTestFixture {
                 .then().log().all()
                 .extract();
     }
+
+    /**
+     * 지하철 노선 목록 조회
+     *
+     * @return 지하철 노선 목록 조회 Response
+     */
+    protected static ExtractableResponse<Response> 지하철_노선_목록_조회() {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines")
+                .then().log().all()
+                .extract();
+    }
 }

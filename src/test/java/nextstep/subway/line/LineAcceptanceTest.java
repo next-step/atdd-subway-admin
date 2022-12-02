@@ -35,11 +35,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture{
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
 
         //Then
-        List<String> lineNames = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+        List<String> lineNames = 지하철_노선_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lineNames).containsAnyOf("2호선");
     }
 
@@ -56,11 +52,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture{
         createLines.forEach(LineAcceptanceTestFixture::지하철_노선_생성);
 
         //When
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = 지하철_노선_목록_조회();
 
         //Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
@@ -153,11 +145,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture{
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
 
         //Then
-        List<String> lineNames = RestAssured.given().log().all()
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines")
-                .then().log().all()
-                .extract().jsonPath().getList("name", String.class);
+        List<String> lineNames = 지하철_노선_목록_조회().jsonPath().getList("name", String.class);
         assertThat(lineNames.contains("2호선")).isFalse();
     }
 }
