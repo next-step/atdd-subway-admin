@@ -19,7 +19,7 @@ import org.springframework.test.annotation.DirtiesContext;
 @DisplayName("지하철 노선 관련 기능")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest extends LineAcceptanceTestFixture{
+public class LineAcceptanceTest extends LineAcceptanceTestFixture {
 
     /**
      * When 지하철 노선을 생성하면
