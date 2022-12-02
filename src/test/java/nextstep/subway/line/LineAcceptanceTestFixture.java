@@ -25,9 +25,10 @@ class LineAcceptanceTestFixture {
      * @param lineName 생성할 지하철 노선 이름
      * @return 생성된 지하철 노선 id
      */
-    protected static ExtractableResponse<Response> 지하철_노선_생성(String lineName) {
+    protected static ExtractableResponse<Response> 지하철_노선_생성(String lineName, String lineColor) {
         Map<String, String> params = new HashMap<>();
         params.put("name", lineName);
+        params.put("color", lineColor);
 
         return RestAssured.given().log().all()
                 .body(params)
