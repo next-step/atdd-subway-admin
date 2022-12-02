@@ -10,6 +10,10 @@ public class Station extends BaseEntity {
     @Column(unique = true)
     private String name;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id")
+    private Line line;
+
     public Station() {
     }
 
@@ -23,5 +27,16 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+        if (!line.getStations().contains(this)) {
+            line.getStations().add(this);
+        }
     }
 }
