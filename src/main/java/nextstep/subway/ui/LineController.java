@@ -2,10 +2,7 @@ package nextstep.subway.ui;
 
 import java.net.URI;
 import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.stream.Collectors;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
+import nextstep.subway.application.LineService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.UpdateLine;
@@ -24,52 +21,39 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class LineController {
 
-    private LineRepository lineRepository;
+    private LineService lineService;
 
-    public LineController(LineRepository lineRepository) {
-        this.lineRepository = lineRepository;
+    public LineController(LineService lineService) {
+        this.lineService = lineService;
     }
 
     @PostMapping("/lines")
     public ResponseEntity<LineResponse> createLine(@RequestBody LineRequest lineRequest) {
-
-        Line persistLine = lineRepository.save(lineRequest.toLine());
-        LineResponse line = LineResponse.of(persistLine);
-
+        LineResponse line = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping(value = "/lines", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<LineResponse>> showLines() {
-        List<Line> findResults = lineRepository.findAll();
-        List<LineResponse> lines = findResults.stream()
-                .map(l -> LineResponse.of(l))
-                .collect(Collectors.toList());
+        List<LineResponse> lines = lineService.findAllLines();
         return ResponseEntity.ok().body(lines);
     }
 
     @GetMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> showLine(@PathVariable Long id) {
-        Line findResult = lineRepository.findById(id).get();
-        LineResponse line = LineResponse.of(findResult);
+        LineResponse line = lineService.findLineById(id);
         return ResponseEntity.ok().body(line);
     }
 
     @PatchMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody UpdateLine request) {
-
-        Line line = lineRepository.findById(id)
-                .orElseThrow(NoSuchElementException::new);
-        line.update(request);
-        lineRepository.save(line);
-        LineResponse response = LineResponse.of(line);
-
+        LineResponse response = lineService.updateLine(id, request);
         return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/lines/{id}")
     public ResponseEntity deleteLine(@PathVariable Long id) {
-        lineRepository.deleteById(id);
+        lineService.deleteLineById(id);
         return ResponseEntity.noContent().build();
     }
 
