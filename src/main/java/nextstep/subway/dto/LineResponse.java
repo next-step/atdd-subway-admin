@@ -12,8 +12,13 @@ public class LineResponse {
     private LocalDateTime modifiedDate;
 
     public static LineResponse of(Line line) {
-        return new LineResponse(line.getId(), line.getName(), line.getColor(), line.getCreatedDate(), line.getModifiedDate());
+        return new LineResponse(line.getId()
+                , line.getName()
+                , line.getColor()
+                , line.getCreatedDate()
+                , line.getModifiedDate());
     }
+
     private LineResponse() {
     }
 
