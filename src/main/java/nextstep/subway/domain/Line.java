@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import nextstep.subway.dto.UpdateLine;
 
 @Entity
 public class Line extends BaseEntity {
@@ -45,5 +46,9 @@ public class Line extends BaseEntity {
 
     public List<Station> getStations() {
         return stations;
+    }
+
+    public void update(UpdateLine request) {
+        this.name = request.getName();
     }
 }

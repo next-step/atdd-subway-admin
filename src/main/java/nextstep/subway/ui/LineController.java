@@ -2,13 +2,13 @@ package nextstep.subway.ui;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
-import nextstep.subway.domain.Station;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.StationResponse;
+import nextstep.subway.dto.UpdateLine;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -56,9 +56,15 @@ public class LineController {
     }
 
     @PatchMapping(value = "/lines/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
-        LineResponse line = null; // 지하철 노선 수정
-        return ResponseEntity.ok().body(line);
+    public ResponseEntity<LineResponse> updateLine(@PathVariable Long id, @RequestBody UpdateLine request) {
+
+        Line line = lineRepository.findById(id)
+                .orElseThrow(NoSuchElementException::new);
+        line.update(request);
+        lineRepository.save(line);
+        LineResponse response = LineResponse.of(line);
+
+        return ResponseEntity.ok().body(response);
     }
 
     @DeleteMapping("/lines/{id}")
