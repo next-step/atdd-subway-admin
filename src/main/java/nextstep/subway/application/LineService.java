@@ -36,13 +36,11 @@ public class LineService {
             throw new SameStationException();
         }
 
-        validateStation(lineRequest.getUpStationId());
-        validateStation(lineRequest.getDownStationId());
-
-        Line line = lineRepository.save(Line.of(lineRequest,
-            stationService.findStation(lineRequest.getUpStationId()),
-            stationService.findStation(lineRequest.getDownStationId())
-        ));
+        Line line = lineRepository.save(
+            Line.of(lineRequest.getName(), lineRequest.getColor(), lineRequest.getDistance(),
+                stationService.findStation(lineRequest.getUpStationId()),
+                stationService.findStation(lineRequest.getDownStationId())
+            ));
 
         return LineResponse.of(line);
     }

@@ -53,13 +53,13 @@ public class Section {
         this.downStation = new Station(stationId);
     }
 
-    public void updatePreStationAndDistance(Long id, Integer newDistance) {
+    public void updateUpStationAndDistance(Long id, Integer newDistance) {
         validateDistance(newDistance, this.distance);
         this.upStationId = id;
         this.distance = this.distance - newDistance;
     }
 
-    public void updateUpStation(Long upStationId, Integer distance) {
+    public void updateUpStationAndMergeDistance(Long upStationId, Integer distance) {
         this.upStationId = upStationId;
         if (distance != null) {
             this.distance += distance;

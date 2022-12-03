@@ -3,6 +3,7 @@ package nextstep.subway.domain;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -24,18 +25,14 @@ public class Sections {
         sections.add(new Section(downStation, upStation.getId(), distance));
     }
 
-    public void remove() {
-        sections.clear();
-    }
-
     public List<Section> getStationsInOrder() {
-        Optional<Section> preLineStation = findByUpStation(null);
+        Optional<Section> findSection = findByUpStation(null);
 
         List<Section> list = new ArrayList<>();
-        while (preLineStation.isPresent()) {
-            Section section = preLineStation.get();
+        while (findSection.isPresent()) {
+            Section section = findSection.get();
             list.add(section);
-            preLineStation = findByUpStation(section.getDownStation().getId());
+            findSection = findByUpStation(section.getDownStation().getId());
         }
         return list;
     }
@@ -46,22 +43,35 @@ public class Sections {
             .ifPresent(section -> section.updateFirstNode(newSection.getUpStationId()));
         findByUpStation(newSection.getUpStationId())
             .ifPresent(section -> {
-                section.updatePreStationAndDistance(newSection.getDownStation().getId(),
+                section.updateUpStationAndDistance(newSection.getDownStation().getId(),
                     newSection.getDistance());
             });
         sections.add(newSection);
     }
 
     public void deleteSection(Long stationId) {
+        validateLastSection();
+        findByDownStation(stationId)
+            .ifPresent(updateUpStation(stationId));
+    }
+
+    public void remove() {
+        sections.clear();
+    }
+
+    private Consumer<Section> updateUpStation(Long stationId) {
+        return section -> {
+            findByUpStation(stationId).ifPresent(
+                downSection -> downSection.updateUpStationAndMergeDistance(section.getUpStationId(),
+                    section.getDistance()));
+            this.sections.remove(section);
+        };
+    }
+
+    private void validateLastSection() {
         if (sections.size() == 2) {
             throw new LastSectionException();
         }
-        findByDownStation(stationId)
-            .ifPresent(section -> {
-                findByUpStation(stationId).ifPresent(
-                    downSection -> downSection.updateUpStation(section.getUpStationId(), section.getDistance()));
-                this.sections.remove(section);
-            });
     }
 
     private void validate(Long upStationId, Long downStationId) {
