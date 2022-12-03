@@ -12,24 +12,17 @@ public class Line extends BaseEntity {
     private String name;
     @Column(unique = true, nullable = false)
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
-    @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Sections sections;
 
     protected Line() {
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        sections.addSection(section);
+        section.addLine(this);
     }
 
     public void updateLine(String name, String color) {
@@ -49,11 +42,7 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return this.upStation;
-    }
-
-    public Station getDownStation() {
-        return this.downStation;
+    public Sections getSections() {
+        return sections;
     }
 }
