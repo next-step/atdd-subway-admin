@@ -15,6 +15,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class LineService {
+
+    private final String NOT_FOUND_BY_ID ="ID로 찾을 수 없습니다.";
     private final LineRepository lineRepository;
     private final StationService stationService;
 
@@ -51,9 +53,11 @@ public class LineService {
     }
 
     @Transactional
-    public void updateLineById(Long id, LineUpdateRequest lineUpdateRequest) {
-        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
-        lineUpdateRequest.updateLine(line);
+    public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
+        Line line = lineRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_BY_ID));
+        line.updateLine(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
+        lineRepository.save(line);
     }
 
     @Transactional
