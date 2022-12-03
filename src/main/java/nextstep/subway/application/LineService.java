@@ -40,21 +40,19 @@ public class LineService {
         return LineResponse.from(line);
     }
 
+    @Transactional
     public LineResponse modifyLine(Long id, LineRequest lineRequest) {
         Line line = findLine(id);
         line.modify(lineRequest.getName(), lineRequest.getColor());
         return LineResponse.from(line);
     }
 
+    @Transactional
     public void deleteLine(Long id) {
         Line line = findLine(id);
         lineRepository.delete(line);
     }
 
-    public LineResponse findLineByName(String name) {
-        Line line = findLine(name);
-        return LineResponse.from(line);
-    }
 
     private Station findStation(long stationId) {
         return stationRepository.getById(stationId);
