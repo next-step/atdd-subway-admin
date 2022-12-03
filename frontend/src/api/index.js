@@ -25,7 +25,7 @@ const ApiService = {
     })
   },
   update(uri, params) {
-    return Vue.axios.put(uri, params, {
+    return Vue.axios.patch(uri, params, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}` || ''
       }
