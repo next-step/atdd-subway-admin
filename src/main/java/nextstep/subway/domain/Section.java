@@ -63,19 +63,19 @@ public class Section extends BaseEntity{
     }
 
     public boolean isSameUpStationId(Section section) {
-        return upStation.getId() == section.findUpStationId();
+        return upStation.equals(section.getUpStation());
     }
 
     public boolean isSameDownStationId(Section section) {
-        return downStation.getId() == section.findDownStationId();
+        return downStation.equals(section.getDownStation());
     }
 
     public boolean isSameDownStationId(Station station) {
-        return this.downStation.getId() == station.getId();
+        return this.downStation.equals(station);
     }
 
     public boolean isSameUpStationId(Station station) {
-        return this.upStation.getId() == station.getId();
+        return this.upStation.equals(station);
     }
 
     public void updateAndCreateTwiceSectionWhenUpStationSame(Section newSection) {
@@ -105,7 +105,7 @@ public class Section extends BaseEntity{
     }
 
     private void checkDistanceValidation(Long existingDistance, Long newDistance) {
-        if (existingDistance < newDistance || existingDistance == newDistance) {
+        if (existingDistance <= newDistance) {
             throw new IllegalArgumentException(ErrorCode.ADD_SECTION_DISTANCE_EXCEPTION.getErrorMessage());
         }
     }

@@ -23,35 +23,12 @@ public class AcceptanceTest {
     @Autowired
     protected DatabaseCleaner databaseCleaner;
 
-    @Autowired
-    StationService stationService;
-
-    @Autowired
-    LineService lineService;
-
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
         }
         databaseCleaner.execute();
-    }
-    @Transactional
-    public long creatStation(String name) {
-        return stationService.saveStation(new StationRequest(name)).getId();
-    }
-
-    @Transactional
-    public void createLine(String name, String color, long upStationId, long downStationId, long distance) {
-        lineService.saveLine(new LineRequest(name, color, upStationId, downStationId, distance));
-    }
-
-    public Line findLine(String name) {
-        return lineService.findLine(name);
-    }
-
-    public Station findStation(String name) {
-        return stationService.findStation(name);
     }
 
     public StationRequest generateStationRequest(String name) {

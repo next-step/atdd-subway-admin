@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.application.StationService;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.station.StationAcceptanceFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 @DisplayName("지하철 노선 관련 기능")
-class LineAcceptanceTest extends AcceptanceTest {
+class LineAcceptanceTest extends StationAcceptanceFixture {
 
     @Autowired
     StationService stationService;

@@ -51,24 +51,24 @@ public class Sections {
 
 
     private void updateStationWhenDownStationSame(Section section) {
-        Optional<Section> findSection = sections.stream().filter(it -> it.isSameDownStationId(section)).findFirst();
+        Optional<Section> findSection = sections.stream().filter(eachSection -> eachSection.isSameDownStationId(section)).findFirst();
         findSection.get().updateAndCreateTwiceSectionWhenDownStationSame(section);
     }
 
     private void updateStationWhenUpStationSame(Section section) {
-        Optional<Section> findSection = sections.stream().filter(it -> it.isSameUpStationId(section)).findFirst();
+        Optional<Section> findSection = sections.stream().filter(eachSection -> eachSection.isSameUpStationId(section)).findFirst();
         findSection.get().updateAndCreateTwiceSectionWhenUpStationSame(section);
     }
 
     private boolean isSameUpStation(Section section) {
         return sections.stream()
-                .filter(it -> it.isSameUpStationId(section))
+                .filter(eachSection -> eachSection.isSameUpStationId(section))
                 .findFirst().isPresent();
     }
 
     private boolean isSameDownStation(Section section) {
         return sections.stream()
-                .filter(it -> it.isSameDownStationId(section))
+                .filter(eachSection -> eachSection.isSameDownStationId(section))
                 .findFirst().isPresent();
     }
 
