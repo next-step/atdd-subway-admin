@@ -15,6 +15,8 @@ import java.util.Optional;
 @Embeddable
 public class Sections {
 
+    private final static int ZERO = 0;
+
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     @ReadOnlyProperty
     private final List<Section> sections;
@@ -73,13 +75,36 @@ public class Sections {
     }
 
     private void checkValidation(Section section) {
-        if (sections.stream().anyMatch(s -> s.equals(section))) {
+        checkDuplicatedBothStation(section);
+        checkDuplicatedSection(section);
+        checkNoMatchSection(section);
+        checkAddEndPointIssue(section);
+    }
+
+    private void checkDuplicatedBothStation(Section section) {
+        if (isSectionsSizeZero()) {
+            return;
+        }
+        List<Station> allStation = getSortedStations();
+        if (allStation.contains(section.getUpStation()) && allStation.contains(section.getDownStation())) {
+            throw new IllegalArgumentException(ErrorCode.BOTH_STATION_ALREADY_EXIST_EXCEPTION.getErrorMessage());
+        }
+    }
+
+    private void checkDuplicatedSection(Section section) {
+        if (sections.stream().anyMatch(eachSection -> eachSection.equals(section))) {
             throw new IllegalArgumentException(ErrorCode.NO_SAME_SECTION_EXCEPTION.getErrorMessage());
         }
-        if (this.sections.size() > 0 && isNoMatchStation(section)) {
+    }
+
+    private void checkNoMatchSection(Section section) {
+        if (isSectionsNotEmpty() && isNoMatchStation(section)) {
             throw new IllegalArgumentException(ErrorCode.NO_MATCH_STATION_EXCEPTION.getErrorMessage());
         }
-        if (this.sections.size() > 0 && !isSameUpStation(section) && !isSameDownStation(section) && hasEndPointIssue(section)) {
+    }
+
+    private void checkAddEndPointIssue(Section section) {
+        if (isSectionsNotEmpty() && !isSameUpStation(section) && !isSameDownStation(section) && hasEndPointIssue(section)) {
             throw new IllegalArgumentException(ErrorCode.ADD_END_POINT_ISSUE.getErrorMessage());
         }
     }
@@ -144,5 +169,13 @@ public class Sections {
         return sections.stream()
                 .filter(section -> section.isEqualDownStationNewSectionUpStation(currentSection))
                 .findFirst();
+    }
+
+    private boolean isSectionsNotEmpty() {
+        return this.sections.size() > ZERO;
+    }
+
+    private boolean isSectionsSizeZero() {
+        return this.sections.size() == ZERO;
     }
 }

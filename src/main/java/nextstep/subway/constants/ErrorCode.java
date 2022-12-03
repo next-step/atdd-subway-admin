@@ -9,6 +9,7 @@ public enum ErrorCode {
     NO_SAME_SECTION_EXCEPTION("[ERROR] 같은 Section을 추가할 수 없습니다."),
     NO_MATCH_STATION_EXCEPTION("[ERROR] 일치하는 STATION이 없어 구간(SECTION)을 추가할 수 없습니다."),
     ADD_END_POINT_ISSUE("[ERROR] 종점에 추가할 수 없는 SECTION입니다."),
+    BOTH_STATION_ALREADY_EXIST_EXCEPTION("[ERROR] 추가하고자 하는 SECTION의 STATION이 이미 존재합니다."),
     ADD_SECTION_DISTANCE_EXCEPTION("[ERROR] 기존 구간 사이보다 추가할 구간의 거리가 크거나 같아서 추가할 수 없습니다.");
 
     private final String errorMessage;
