@@ -83,7 +83,7 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
 
     @DisplayName("구간(Section) 추가 시 이미 있는 Section인 경우 예외")
     @Test
-    void makeExceptionWhenMatchBothStation() {
+    void makeExceptionWhenAddSameSection() {
         ExtractableResponse<Response> response = addSection(generateSectionRequest(강남역.getId(), 광교역.getId(), 5), 신분당선.getId());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
@@ -100,6 +100,21 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
     void addSectionWhenIsSameDownEndStation() {
         ExtractableResponse<Response> response = addSection(generateSectionRequest(광교역.getId(), 광교중앙역.getId(), 5), 신분당선.getId());
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    @DisplayName("구간(section) 추가 시 station이 모두 존재하면 예외")
+    @TestFactory
+    Stream<DynamicTest> makeExceptionWhenMatchBothStation() {
+        return Stream.of(
+                dynamicTest("테스트를 위한 section 추가", () -> {
+                    ExtractableResponse<Response> response = addSection(generateSectionRequest(강남역.getId(), 정자역.getId(), 5), 신분당선.getId());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+                dynamicTest("기존 존재하는 station으로 section 추가하여 예외 발생", () -> {
+                    ExtractableResponse<Response> response = addSection(generateSectionRequest(강남역.getId(), 광교역.getId(), 5), 신분당선.getId());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                })
+        );
     }
 
     private ExtractableResponse<Response> addSection(SectionRequest sectionRequest, long id) {
