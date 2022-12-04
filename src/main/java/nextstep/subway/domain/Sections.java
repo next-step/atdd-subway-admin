@@ -22,7 +22,32 @@ public class Sections {
     }
 
     public void addSection(Section addSection) {
+        validDuplicateSection(addSection);
+        validNotContainSection(addSection);
         sections.add(addSection);
+    }
+
+    private void validDuplicateSection(Section compareSection) {
+        if (isContainsAllStation(compareSection)) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+    private boolean isContainsAllStation(Section compareSection) {
+        return sections.stream().map(Section::stations)
+            .flatMap(Collection::stream)
+            .collect(Collectors.toSet())
+            .containsAll(compareSection.stations());
+    }
+
+    private void validNotContainSection(Section compareSection) {
+        if (sections.isEmpty()) {
+            return;
+        }
+
+        if (getStations().stream().noneMatch(station -> compareSection.stations().contains(station))) {
+            throw new IllegalArgumentException();
+        }
     }
 
     public List<Station> getStations() {
