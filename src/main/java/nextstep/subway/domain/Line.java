@@ -11,6 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 
 @Entity
 public class Line extends BaseEntity {
+    private static final String ERROR_MESSAGE_IS_BLANK_NAME = "노선 이름은 필수입니다.";
+    private static final String ERROR_MESSAGE_IS_BLANK_COLOR = "노선 색상은 필수입니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,8 +45,12 @@ public class Line extends BaseEntity {
     }
 
     private void validNameAndColor(String name, String color) {
-        if (StringUtils.isBlank(name) || StringUtils.isBlank(color)) {
-            throw new IllegalArgumentException();
+        if (StringUtils.isBlank(name)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_IS_BLANK_NAME);
+        }
+
+        if (StringUtils.isBlank(color)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_IS_BLANK_COLOR);
         }
     }
 
@@ -70,7 +77,7 @@ public class Line extends BaseEntity {
     }
 
     public List<Station> getStations() {
-        return sections.getStations();
+        return sections.getSortStation();
     }
 
     public int totalDistance() {

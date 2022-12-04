@@ -14,6 +14,9 @@ import javax.persistence.ManyToOne;
 
 @Entity
 public class Section {
+    private static final String ERROR_MESSAGE_NOT_NULL_UP_STATION = "상행선은 필수입니다.";
+    private static final String ERROR_MESSAGE_NOT_NULL_DOWN_STATION = "하행선은 필수입니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -42,11 +45,11 @@ public class Section {
 
     private void validEmptyStation(Station upStation, Station downStation) {
         if (Objects.isNull(upStation)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_NULL_UP_STATION);
         }
 
         if (Objects.isNull(downStation)) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_NULL_DOWN_STATION);
         }
     }
 

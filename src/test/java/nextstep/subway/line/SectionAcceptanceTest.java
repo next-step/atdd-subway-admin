@@ -114,4 +114,26 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             () -> 지하철노선_저장된_지하철역_목록_검증(조회된_구호선, "동작역", "언주역","봉은사역")
         );
     }
+
+    /**
+     *  When 노선에 여러구간을 등록하면
+     *  Then 지하철역 목록이 순서대로 반환된다.
+     */
+    @Test
+    @DisplayName("노선을 등록하면 순서대로 반환된다.")
+    void addStationBetweenLineExactly() {
+        // when
+        지하철노선에_지하철역을_등록한다(구호선ID, 동작역ID, 고속터미널역ID, SAFE_DISTANCE);
+        지하철노선에_지하철역을_등록한다(구호선ID, 언주역ID, 봉은사역ID, SAFE_DISTANCE);
+        ExtractableResponse<Response> 추가된_구호선 = 지하철노선에_지하철역을_등록한다(구호선ID, 노량진역ID, 동작역ID, SAFE_DISTANCE);
+
+        // then
+        ExtractableResponse<Response> 조회된_구호선 = 지하철노선을_조회(추가된_구호선);
+
+        assertAll(
+            () -> 노선_새로운_지하철역_등록_성공_검증(추가된_구호선),
+            () -> 지하철노선_거리_검증(조회된_구호선, 20),
+            () -> 지하철노선_저장된_지하철역_목록_순서_검증(조회된_구호선, "노량진역", "동작역", "고속터미널역", "언주역", "봉은사역")
+        );
+    }
 }
