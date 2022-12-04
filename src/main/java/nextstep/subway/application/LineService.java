@@ -29,9 +29,8 @@ public class LineService {
     public LineResponse saveLine(LineRequest lineRequest) {
         Station upStation = stationService.findById(lineRequest.getUpStationId());
         Station downStation = stationService.findById(lineRequest.getDownStationId());
-
-        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
-        return LineResponse.of(persistLine);
+        Line saveLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        return LineResponse.of(saveLine);
     }
 
     @Transactional(readOnly = true)
@@ -56,8 +55,7 @@ public class LineService {
     public void updateLine(Long id, LineUpdateRequest lineUpdateRequest) {
         Line line = lineRepository.findById(id)
             .orElseThrow(() -> new IllegalArgumentException(NOT_FOUND_BY_ID));
-        line.updateLine(lineUpdateRequest.getName(), lineUpdateRequest.getColor());
-        lineRepository.save(line);
+        line.updateLine(Line.of(lineUpdateRequest.getName(), lineUpdateRequest.getColor()));
     }
 
     @Transactional
