@@ -30,8 +30,10 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(() -> new NotFoundStationException(NOT_FOUND_STATION_MESSAGE));
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(() -> new NotFoundStationException(NOT_FOUND_STATION_MESSAGE));
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
+                .orElseThrow(() -> new NotFoundStationException(NOT_FOUND_STATION_MESSAGE));
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
+                .orElseThrow(() -> new NotFoundStationException(NOT_FOUND_STATION_MESSAGE));
 
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
 
