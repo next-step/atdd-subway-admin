@@ -16,7 +16,6 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
-
     private final StationRepository stationRepository;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
@@ -26,8 +25,8 @@ public class LineService {
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElse(null);
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElse(null);
+        Station upStation = stationRepository.findById(lineRequest.getUpStationId()).orElseThrow(IllegalArgumentException::new);
+        Station downStation = stationRepository.findById(lineRequest.getDownStationId()).orElseThrow(IllegalArgumentException::new);
         Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
         return LineResponse.of(persistLine);
     }
@@ -46,8 +45,9 @@ public class LineService {
 
     @Transactional
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        Line line = lineRepository.findById(id).orElse(null);
-        line.update(lineRequest);
+        Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+        line.changeName(lineRequest.getName());
+        line.changeColor(lineRequest.getColor());
         return LineResponse.of(lineRepository.save(line));
     }
 

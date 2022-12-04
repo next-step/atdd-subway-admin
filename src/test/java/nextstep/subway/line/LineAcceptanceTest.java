@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("노선 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
-
     @LocalServerPort
     int port;
 
@@ -81,9 +80,9 @@ public class LineAcceptanceTest {
         // when
         List<String> lines = 지하철_노선_목록_조회();
         // then
-         assertThat(lines)
-                 .hasSize(2)
-                 .containsAnyOf("신분당선", "분당선");
+        assertThat(lines)
+                .hasSize(2)
+                .containsAnyOf("신분당선", "분당선");
     }
 
     /*
