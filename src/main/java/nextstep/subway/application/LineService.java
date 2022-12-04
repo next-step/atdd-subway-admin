@@ -42,7 +42,7 @@ public class LineService {
     }
 
     public LineResponse getLine(Long id) {
-        return LineResponse.of(lineRepository.getById(id));
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(EntityNotFoundException::new));
     }
 
     @Transactional
