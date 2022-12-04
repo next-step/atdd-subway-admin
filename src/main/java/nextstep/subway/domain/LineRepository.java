@@ -10,11 +10,11 @@ import org.springframework.data.repository.query.Param;
 public interface LineRepository extends JpaRepository<Line, Long> {
 
     @Query("select distinct l from Line l"
-        + " join fetch l.lineStations.lineStations ls")
+        + " join fetch l.sections.sections s")
     List<Line> findAllLines();
 
     @Query("select distinct l from Line l"
-        + " join fetch l.lineStations.lineStations ls"
+        + " join fetch l.sections.sections s"
         + " where l.id = :id")
     Optional<Line> findLine(@Param("id") Long id);
 

@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import nextstep.subway.application.LineService;
@@ -24,6 +26,7 @@ import nextstep.subway.exception.BadRequestException;
 import nextstep.subway.exception.NotFoundException;
 
 @RestController
+@RequestMapping("/lines")
 public class LineController {
     private final LineService lineService;
 
@@ -31,37 +34,43 @@ public class LineController {
         this.lineService = lineService;
     }
 
-    @PostMapping("/lines")
+    @PostMapping
     public ResponseEntity<LineResponse> createStation(@RequestBody LineRequest lineRequest) {
         LineResponse lineResponse = lineService.saveLine(lineRequest);
         return ResponseEntity.created(URI.create("/lines/" + lineResponse.getId())).body(lineResponse);
     }
 
-    @GetMapping(value = "/lines")
+    @GetMapping
     public ResponseEntity<List<LineResponse>> fetchLines() {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
-    @GetMapping("/lines/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<LineResponse> fetchLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLine(id));
     }
 
-    @PutMapping("/lines/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<?> changeLine(@PathVariable Long id, @RequestBody LineChange lineChange) {
         lineService.changeLine(id, lineChange);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("/lines/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<?> removeLine(@PathVariable Long id) {
         lineService.removeLine(id);
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping("/lines/{id}/sections")
+    @PostMapping("/{id}/sections")
     public ResponseEntity<?> registerSection(@PathVariable Long id, @RequestBody SectionRequest sectionRequest) {
         lineService.registerSection(id, sectionRequest);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{lineId}/sections")
+    public ResponseEntity<?> deleteSection(@PathVariable Long lineId, @RequestParam Long stationId) {
+        lineService.deleteSection(lineId, stationId);
         return ResponseEntity.ok().build();
     }
 

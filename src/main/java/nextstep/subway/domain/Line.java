@@ -10,7 +10,6 @@ import javax.persistence.Id;
 import org.springframework.util.StringUtils;
 
 import nextstep.subway.dto.LineChange;
-import nextstep.subway.dto.LineRequest;
 
 @Entity
 public class Line extends BaseEntity {
@@ -22,16 +21,16 @@ public class Line extends BaseEntity {
     private String color;
 
     @Embedded
-    private LineStations lineStations = new LineStations();
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public static Line of(LineRequest lineRequest) {
+    public static Line of(String name, String color, int distance, Station upStation, Station downStation) {
         Line line = new Line();
-        line.name = lineRequest.getName();
-        line.color = lineRequest.getColor();
-        line.lineStations.init(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        line.name = name;
+        line.color = color;
+        line.sections.init(upStation, downStation, distance);
         return line;
     }
 
@@ -45,7 +44,11 @@ public class Line extends BaseEntity {
     }
 
     public void removeStations() {
-        this.lineStations.remove();
+        this.sections.remove();
+    }
+
+    public void deleteSection(Long stationId) {
+        this.sections.deleteSection(stationId);
     }
 
     public Long getId() {
@@ -60,11 +63,12 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public LineStations getLineStations() {
-        return lineStations;
+    public Sections getLineStations() {
+        return sections;
     }
 
-    public void addLineStation(LineStation lineStation) {
-        lineStations.add(lineStation);
+    public void addLineStation(Section section) {
+        sections.add(section);
     }
+
 }

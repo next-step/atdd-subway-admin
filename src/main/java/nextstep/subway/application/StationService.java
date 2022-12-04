@@ -10,6 +10,7 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
+import nextstep.subway.exception.NoStationException;
 
 @Service
 @Transactional(readOnly = true)
@@ -37,7 +38,11 @@ public class StationService {
         stationRepository.deleteById(id);
     }
 
-    public Station findStationById(Long id, RuntimeException exception) {
-        return stationRepository.findById(id).orElseThrow(() -> exception);
+    public boolean notExistsById(Long stationId) {
+        return !stationRepository.existsById(stationId);
+    }
+
+    public Station findStation(Long stationId) {
+        return stationRepository.findById(stationId).orElseThrow(() -> new NoStationException(stationId));
     }
 }
