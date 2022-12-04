@@ -18,7 +18,7 @@ import io.restassured.response.Response;
 import nextstep.subway.line.LineAcceptanceTest;
 import nextstep.subway.util.PreDataUtil;
 
-@DisplayName("지하철구간 추 기능")
+@DisplayName("지하철구간 추가 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAddAcceptanceTest {
     @LocalServerPort

@@ -49,9 +49,9 @@ class SectionsTest {
         assertThat(findSections).hasSize(2);
         Section firstSection = findSections.get(0);
         Section secondSection = findSections.get(1);
-        assertThat(firstSection.getUpStationId()).isEqualTo(null);
+        assertThat(firstSection.getUpStation()).isEqualTo(null);
         assertThat(firstSection.getDownStation().getName()).isEqualTo("교대역");
-        assertThat(secondSection.getUpStationId()).isEqualTo(1L);
+        assertThat(secondSection.getUpStation().getId()).isEqualTo(1L);
         assertThat(secondSection.getDownStation().getName()).isEqualTo("역삼역");
     }
 
@@ -61,7 +61,7 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.init(교대역, 역삼역, 5);
 
-        sections.add(new Section(강남역, 교대역.getId(), 3));
+        sections.add(new Section(강남역, 교대역, 3));
 
         List<Section> findSections = sections.getStationsInOrder();
         assertThat(findSections).hasSize(3);
@@ -78,7 +78,7 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.init(교대역, 역삼역, 5);
 
-        assertThatThrownBy(() -> sections.add(new Section(역삼역, 교대역.getId(), 3)))
+        assertThatThrownBy(() -> sections.add(new Section(역삼역, 교대역, 3)))
             .isInstanceOf(AllRegisteredStationsException.class)
             .hasMessage("이미 상행역/하행역 모두 노선에 추가되어 있습니다.");
     }
@@ -89,9 +89,26 @@ class SectionsTest {
         Sections sections = new Sections();
         sections.init(교대역, 역삼역, 5);
 
-        assertThatThrownBy(() -> sections.add(new Section(강남역, 99L, 3)))
+        assertThatThrownBy(() -> sections.add(new Section(강남역, new Station(99L), 3)))
             .isInstanceOf(NotAllIncludedStationsException.class)
             .hasMessage("상행역/하행역 모두 노선에 추가되어있지 않습니다.");
+    }
+
+    @DisplayName("하행역이 일치하고 상행역이 추가되는 구간 추가")
+    @Test
+    void addSection5() {
+        Sections sections = new Sections();
+        sections.init(교대역, 역삼역, 5);
+
+        sections.add(new Section(역삼역, 강남역, 3));
+
+        List<Section> findSections = sections.getStationsInOrder();
+        assertThat(findSections).hasSize(3);
+        assertThat(
+            findSections.stream().map(section -> section.getDownStation().getName()).collect(Collectors.toList()))
+            .containsExactly("교대역", "강남역", "역삼역");
+        assertThat(findSections.get(1).getDistance()).isEqualTo(2);
+        assertThat(findSections.get(2).getDistance()).isEqualTo(3);
     }
 
     @DisplayName("구간 중간의 역 삭제")
@@ -99,7 +116,7 @@ class SectionsTest {
     void removeSection1() {
         Sections sections = new Sections();
         sections.init(교대역, 역삼역, 5);
-        sections.add(new Section(강남역, 교대역.getId(), 3));
+        sections.add(new Section(강남역, 교대역, 3));
 
         sections.deleteSection(강남역.getId());
 
@@ -116,7 +133,7 @@ class SectionsTest {
     void removeSection2() {
         Sections sections = new Sections();
         sections.init(교대역, 역삼역, 5);
-        sections.add(new Section(강남역, 교대역.getId(), 3));
+        sections.add(new Section(강남역, 교대역, 3));
 
         sections.deleteSection(교대역.getId());
 
@@ -133,7 +150,7 @@ class SectionsTest {
     void removeSection3() {
         Sections sections = new Sections();
         sections.init(교대역, 역삼역, 5);
-        sections.add(new Section(강남역, 교대역.getId(), 3));
+        sections.add(new Section(강남역, 교대역, 3));
 
         sections.deleteSection(역삼역.getId());
 
@@ -150,7 +167,7 @@ class SectionsTest {
     void removeSection4() {
         Sections sections = new Sections();
         sections.init(교대역, 역삼역, 5);
-        sections.add(new Section(강남역, 교대역.getId(), 3));
+        sections.add(new Section(강남역, 교대역, 3));
 
         sections.remove();
 

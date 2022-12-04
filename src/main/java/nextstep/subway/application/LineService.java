@@ -72,11 +72,9 @@ public class LineService {
     @Transactional
     public void registerSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findLine(lineId).orElseThrow(NotFoundException::new);
-        validateStation(sectionRequest.getUpStationId());
-        validateStation(sectionRequest.getDownStationId());
-        line.addLineStation(
-            new Section(new Station(sectionRequest.getDownStationId()), sectionRequest.getUpStationId(),
-                sectionRequest.getDistance()));
+        Station downStation = stationService.findStation(sectionRequest.getDownStationId());
+        Station upStation = stationService.findStation(sectionRequest.getUpStationId());
+        line.addLineStation(new Section(downStation, upStation, sectionRequest.getDistance()));
     }
 
     @Transactional

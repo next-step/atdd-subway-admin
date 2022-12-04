@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -22,7 +23,7 @@ public class Sections {
 
     public void init(Station upStation, Station downStation, Integer distance) {
         sections.add(new Section(upStation, null, null));
-        sections.add(new Section(downStation, upStation.getId(), distance));
+        sections.add(new Section(downStation, upStation, distance));
     }
 
     public List<Section> getStationsInOrder() {
@@ -38,21 +39,22 @@ public class Sections {
     }
 
     public void add(Section newSection) {
-        validate(newSection.getUpStationId(), newSection.getDownStation().getId());
+        List<Station> stations = allStations();
+        boolean existsUpStation = stations.contains(newSection.getUpStation());
+        boolean existsDownStation = stations.contains(newSection.getDownStation());
+        validateStations(existsUpStation, existsDownStation);
         findByDownStation(newSection.getDownStation().getId())
-            .ifPresent(section -> section.updateFirstNode(newSection.getUpStationId()));
-        findByUpStation(newSection.getUpStationId())
-            .ifPresent(section -> {
-                section.updateUpStationAndDistance(newSection.getDownStation().getId(),
-                    newSection.getDistance());
-            });
+            .ifPresent(
+                section -> section.updateWhenDownStationExists(newSection.getUpStation(), newSection.getDistance()));
+        findByUpStation(newSection.getUpStation().getId())
+            .ifPresent(
+                section -> section.updateWhenUpStationExists(newSection.getDownStation(), newSection.getDistance()));
         sections.add(newSection);
     }
 
     public void deleteSection(Long stationId) {
         validateLastSection();
-        findByDownStation(stationId)
-            .ifPresent(updateUpStation(stationId));
+        findByDownStation(stationId).ifPresent(updateUpStation(stationId));
     }
 
     public void remove() {
@@ -62,10 +64,19 @@ public class Sections {
     private Consumer<Section> updateUpStation(Long stationId) {
         return section -> {
             findByUpStation(stationId).ifPresent(
-                downSection -> downSection.updateUpStationAndMergeDistance(section.getUpStationId(),
+                downSection -> downSection.updateUpStationAndMergeDistance(section.getUpStation(),
                     section.getDistance()));
             this.sections.remove(section);
         };
+    }
+
+    private List<Station> allStations() {
+        List<Station> stations = this.sections.stream()
+            .map(Section::getDownStation)
+            .collect(Collectors.toList());
+        stations
+            .add(findByUpStation(null).orElseThrow(RuntimeException::new).getUpStation());
+        return stations;
     }
 
     private void validateLastSection() {
@@ -74,22 +85,24 @@ public class Sections {
         }
     }
 
-    private void validate(Long upStationId, Long downStationId) {
-        boolean isPresentUpStation = findByDownStation(upStationId).isPresent();
-        boolean isPresentDownStation = findByDownStation(downStationId).isPresent();
-
-        if (isPresentUpStation && isPresentDownStation) {
+    private void validateStations(boolean existsUpStation, boolean existsDownStation) {
+        if (existsUpStation && existsDownStation) {
             throw new AllRegisteredStationsException();
         }
 
-        if (!isPresentDownStation && !isPresentUpStation) {
+        if (!existsUpStation && !existsDownStation) {
             throw new NotAllIncludedStationsException();
         }
     }
 
     private Optional<Section> findByUpStation(Long id) {
         return sections.stream()
-            .filter(section -> section.getUpStationId() == id)
+            .filter(section -> {
+                if (section.getUpStation() != null) {
+                    return section.getUpStation().getId().equals(id);
+                }
+                return id == null;
+            })
             .findFirst();
     }
 
