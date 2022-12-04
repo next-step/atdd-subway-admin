@@ -30,13 +30,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
      */
     @Test
     void 지하철_노선_생성() {
-        // given
-        Station upStation = createStation("강남역");
-        Station downStation = createStation("논현역");
-        Section section = createSection(10, upStation, downStation);
-
-        // when
-        createLine("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+        // given, when
+        지하철_노선_생성("강남역", "논현역", "신분당선");
 
         // then
         List<String> lines = RestAssured.given().log().all()
@@ -54,15 +49,8 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_목록_조회() {
         // given
-        Station upStation = createStation("강남역");
-        Station downStation = createStation("논현역");
-        Section section = createSection(10, upStation, downStation);
-        createLine("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
-
-        upStation = createStation("선정릉");
-        downStation = createStation("선릉");
-        section = createSection(10, upStation, downStation);
-        createLine("분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+        지하철_노선_생성("강남역", "논현역", "신분당선");
+        지하철_노선_생성("선정릉", "선릉", "분당선");
 
         // when
         List<String> lines = RestAssured.given().log().all()
@@ -83,10 +71,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_조회() {
         // given
-        Station upStation = createStation("강남역");
-        Station downStation = createStation("논현역");
-        Section section = createSection(10, upStation, downStation);
-        Long id = createLine("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+        Long id = 지하철_노선_생성("강남역", "논현역", "신분당선");
 
         // when
         String name = RestAssured.given().log().all()
@@ -106,10 +91,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_수정() {
         // given
-        Station upStation = createStation("강남역");
-        Station downStation = createStation("논현역");
-        Section section = createSection(10, upStation, downStation);
-        Long id = createLine("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+        Station upStation = 지하철_역_생성("강남역");
+        Station downStation = 지하철_역_생성("논현역");
+        Section section = 지하철_구간_생성(10, upStation, downStation);
+        Long id = 지하철_노선_생성("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
 
         // when
         String name = "신분당손";
@@ -138,10 +123,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void 지하철_노선_삭제() {
         // given
-        Station upStation = createStation("강남역");
-        Station downStation = createStation("논현역");
-        Section section = createSection(10, upStation, downStation);
-        Long id = createLine("신분당선", "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
+        Long id = 지하철_노선_생성("강남역", "논현역", "신분당선");
 
         // when
         RestAssured.given().log().all()
@@ -156,15 +138,15 @@ public class LineAcceptanceTest extends AcceptanceTest {
         assertThat(names).isEmpty();
     }
 
-    private Section createSection(int distance, Station upStation, Station downStation) {
+    private Section 지하철_구간_생성(int distance, Station upStation, Station downStation) {
         return sectionRepository.save(new Section(distance, upStation, downStation));
     }
 
-    private Station createStation(String name) {
+    private Station 지하철_역_생성(String name) {
         return stationRepository.save(new Station(name));
     }
 
-    private Long createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
+    private Long 지하철_노선_생성(String name, String color, Long upStationId, Long downStationId, int distance) {
         LineRequest lineRequest = new LineRequest(name, color, upStationId, downStationId, distance);
 
         return (long) (int) RestAssured.given().log().all()
@@ -173,5 +155,12 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .when().post("/lines")
                 .then().statusCode(HttpStatus.CREATED.value()).log().all()
                 .extract().path("id");
+    }
+
+    private Long 지하철_노선_생성(String upStationName, String downStationName, String lineName) {
+        Station upStation = 지하철_역_생성(upStationName);
+        Station downStation = 지하철_역_생성(downStationName);
+        Section section = 지하철_구간_생성(10, upStation, downStation);
+        return 지하철_노선_생성(lineName, "bg-red-600", section.getUpStation().getId(), section.getDownStation().getId(), section.getDistance());
     }
 }
