@@ -55,10 +55,6 @@ public class Line extends BaseEntity {
         return lineStations;
     }
 
-    public void setLineStations(LineStations lineStations) {
-        this.lineStations = lineStations;
-    }
-
     public void addLineStation(LineStation lineStation) {
         this.lineStations.addLineStation(lineStation);
     }

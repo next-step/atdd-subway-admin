@@ -15,18 +15,6 @@ public class LineSectionRequest {
         this.distance = distance;
     }
 
-    public void setUpStationId(Long upStationId) {
-        this.upStationId = upStationId;
-    }
-
-    public void setDownStationId(Long downStationId) {
-        this.downStationId = downStationId;
-    }
-
-    public void setDistance(int distance) {
-        this.distance = distance;
-    }
-
     public Long getUpStationId() {
         return upStationId;
     }
