@@ -32,6 +32,7 @@ public class LineAcceptanceTest {
 
     private StationResponse upStation;
     private StationResponse downStation;
+    private StationResponse anotherStation;
 
     @BeforeEach
     public void setUp() {
@@ -45,6 +46,7 @@ public class LineAcceptanceTest {
     private void setUpData() {
         upStation = createStation("지하철역").as(StationResponse.class);
         downStation = createStation("새로운지하철역").as(StationResponse.class);
+        anotherStation = createStation("또다른지하철역").as(StationResponse.class);
     }
 
     /**
@@ -71,7 +73,16 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
+        // given
+        createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
+        createLine("분당선", "bg-green-600", upStation.getId(), anotherStation.getId(), 20);
 
+        // when
+        ExtractableResponse<Response> findAllResponse = findAllLines();
+
+        // then
+        List<String> lineNames = findAllResponse.body().jsonPath().getList("name", String.class);
+        assertThat(lineNames).containsExactlyInAnyOrder("신분당선", "분당선");
     }
 
     /**
