@@ -1,5 +1,6 @@
 package nextstep.subway.application;
 
+import nextstep.subway.constants.ErrorCode;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
@@ -36,5 +37,17 @@ public class StationService {
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
+    }
+
+    public Station findStation(String name) {
+        return stationRepository
+                .findByName(name)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_EXCEPTION.getErrorMessage()));
+    }
+
+    public Station findStation(long id) {
+        return stationRepository
+                .findById(id)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_EXCEPTION.getErrorMessage()));
     }
 }

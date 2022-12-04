@@ -2,8 +2,12 @@ package nextstep.subway.domain;
 
 import nextstep.subway.constants.ErrorCode;
 
-import javax.persistence.*;
-import java.util.ArrayList;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.util.List;
 
 @Entity
@@ -46,7 +50,8 @@ public class Line extends BaseEntity{
         }
     }
 
-    private void addSection(Section section) {
+    public void addSection(Section section) {
+        section.belongLine(this);
         this.sections.add(section);
     }
 
@@ -60,6 +65,10 @@ public class Line extends BaseEntity{
 
     public String getColor() {
         return this.color;
+    }
+
+    public List<Station> getStations() {
+        return sections.getSortedStations();
     }
 
     public void modify(String name, String color) {
