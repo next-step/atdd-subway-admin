@@ -8,7 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,13 +65,13 @@ public class LineService {
     }
 
     private LineResponse getLineResponseWithStations(Line line) {
-        List<StationResponse> stations = new ArrayList<>();
+        Set<StationResponse> stations = new HashSet<>();
 
         for(Section section : line.getSections().getSectionList()) {
             stations.add(StationResponse.of(section.getUpStation()));
             stations.add(StationResponse.of(section.getDownStation()));
         }
 
-        return LineResponse.of(line).setStations(stations);
+        return LineResponse.of(line).setStations(new ArrayList<>(stations));
     }
 }

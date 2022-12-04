@@ -36,7 +36,6 @@ public class SectionAcceptanceTest {
     DatabaseCleanup databaseCleanup;
 
     private static final String BASE_URL = "/sections";
-    private static final String PARAMETER = "?stationId=";
 
     @BeforeEach
     public void setUp() {
@@ -520,7 +519,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .when().delete(location + BASE_URL + PARAMETER + stationId)
+                        .when().delete(location + BASE_URL + "?stationId=" + stationId)
                         .then().log().all()
                         .extract();
 

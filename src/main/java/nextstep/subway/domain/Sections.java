@@ -15,7 +15,7 @@ public class Sections {
     private static final String CANNOT_DELETE_STATION_IN_SINGLE_SECTION_EXCEPTION = "단일 구간의 경우 등록된 역을 삭제할 수 없습니다.";
     private static final String NOT_EXIT_STATION_EXCEPTION = "구간에 등록되지 않은 역은 삭제할 수 없습니다.";
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Section> sections = new ArrayList<>();
 
     public Sections() {
@@ -54,29 +54,27 @@ public class Sections {
             return changeTargetSections.get(0);
         }
 
-        Section section1 = changeTargetSections.stream()
+        Section updateSection = changeTargetSections.stream()
                 .filter(section -> section.hasDownStation(deleteStation))
                 .findAny()
                 .get();
-        Section section2 = changeTargetSections.stream()
+        Section deleteSection = changeTargetSections.stream()
                 .filter(section -> section.hasUpStation(deleteStation))
                 .findAny()
                 .get();
 
-        section1.combineSection(section2);
-        sections.remove(section2);
+        updateSection.combineSection(deleteSection);
+        sections.remove(deleteSection);
 
-        return section2;
+        return deleteSection;
     }
 
     private void validateDeleteRequest(Station deleteStation) {
         if (!hasSectionWithStation(deleteStation)) {
-            System.out.println(NOT_EXIT_STATION_EXCEPTION);
             throw new IllegalArgumentException(NOT_EXIT_STATION_EXCEPTION);
         }
 
         if (sections.size() == 1) {
-            System.out.println(CANNOT_DELETE_STATION_IN_SINGLE_SECTION_EXCEPTION);
             throw new IllegalArgumentException(CANNOT_DELETE_STATION_IN_SINGLE_SECTION_EXCEPTION);
         }
     }

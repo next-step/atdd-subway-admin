@@ -49,7 +49,6 @@ public class SectionService {
         Station deleteStation = findStationById(stationId);
 
         Section deletedSection = line.deleteStation(deleteStation);
-        sectionRepository.delete(deletedSection);
 
         return SectionResponse.of(deletedSection);
     }
