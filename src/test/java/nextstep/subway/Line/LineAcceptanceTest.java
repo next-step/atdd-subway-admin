@@ -29,7 +29,6 @@ public class LineAcceptanceTest {
     @Autowired
     DatabaseCleanup databaseCleanup;
 
-
     private StationResponse upStation;
     private StationResponse downStation;
     private StationResponse anotherStation;
@@ -134,7 +133,16 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 삭제한다.")
     @Test
     void deleteLineTest() {
+        // given
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
 
+        // when
+        Long lineId = createResponse.body().jsonPath().getLong("id");
+        removeLine(lineId);
+
+        // then
+        ExtractableResponse<Response> findAllLine = findAllLines();
+        assertThat(findAllLine.body().jsonPath().getInt("size()")).isEqualTo(0);
     }
 
     public static ExtractableResponse<Response> createLine(String name, String color, Long upStationId, Long downStationId, int distance) {
@@ -177,6 +185,13 @@ public class LineAcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().put("/lines" + "/{id}", id)
                 .then().statusCode(HttpStatus.OK.value()).log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> removeLine(Long id) {
+        return RestAssured.given().log().all()
+                .when().delete("/lines" + "/{id}", id)
+                .then().statusCode(HttpStatus.NO_CONTENT.value()).log().all()
                 .extract();
     }
 }
