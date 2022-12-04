@@ -42,7 +42,7 @@ public class LineAcceptanceTest extends BaseTest {
         return stationRepository.save(new Station(stationName));
     }
 
-    private LineStation 지하철역_구간_생성(Station upStation, Station downStation, int distance) {
+    public LineStation 지하철역_구간_생성(Station upStation, Station downStation, int distance) {
         return lineStationRepository.save( new LineStation(upStation.getId(), downStation.getId(), distance) );
     }
 
@@ -147,16 +147,10 @@ public class LineAcceptanceTest extends BaseTest {
 
         // When
         ExtractableResponse<Response> createLine = reqeust_register_line(lineRequest);
-        String name = RestAssured.given().log().all()
-                .pathParam("id", createLine.jsonPath().get("id"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/{id}")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract().jsonPath().get("name");
+        ExtractableResponse response = LineAcceptanceSupport.지하철_노선_조회(createLine);
 
         // Then
-        assertThat(name).isEqualTo("신분당선");
+        assertThat(지하철역_노선_이름_가져옴(response)).isEqualTo("신분당선");
     }
 
     /**
@@ -173,17 +167,10 @@ public class LineAcceptanceTest extends BaseTest {
 
         // When
         ExtractableResponse<Response> createLine = reqeust_register_line(firstLineRequest);
-        String name = RestAssured.given().log().all()
-                .pathParam("id", createLine.jsonPath().get("id"))
-                .body(updateLineRequest)
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().put("/lines/{id}")
-                .then().log().all()
-                .statusCode(HttpStatus.OK.value())
-                .extract().jsonPath().get("name");
+        ExtractableResponse response = LineAcceptanceSupport.지하철_노선_수정(createLine, updateLineRequest);
 
         // Then
-        assertThat(name).isEqualTo("6호선");
+        assertThat(지하철역_노선_이름_가져옴(response)).isEqualTo("6호선");
     }
 
     /**
@@ -199,12 +186,7 @@ public class LineAcceptanceTest extends BaseTest {
 
         // When
         ExtractableResponse<Response> createLine = reqeust_register_line(firstLineRequest);
-        ExtractableResponse<Response> response = RestAssured.given().log().all()
-                .pathParam("id", createLine.jsonPath().get("id"))
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().delete("/lines/{id}")
-                .then().log().all()
-                .extract();
+        ExtractableResponse<Response> response = LineAcceptanceSupport.지하철_노선_삭제(createLine);
 
         // Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

@@ -8,7 +8,6 @@ import nextstep.subway.domain.line.*;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.request.LineSectionRequest;
-import nextstep.subway.dto.response.LineStationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,7 +21,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @DisplayName("구간 등록 테스트")
 public class SectionAcceptanceTest extends BaseTest {
@@ -30,21 +28,24 @@ public class SectionAcceptanceTest extends BaseTest {
     private StationRepository stationRepository;
 
     @Autowired
-    private LineStationRepository lineStationRepository;
-
-    @Autowired
     private LineRepository lineRepository;
 
     @BeforeEach
     public void setUp() {
-        Station gangNam = stationRepository.save(new Station("강남역"));
-        Station seocho = stationRepository.save(new Station("서초역"));
+        Station 강남역 = 지하철역_생성("강남역");
+        Station 서초역 = 지하철역_생성("서초역");
 
-        List<LineStation> lineStation = Stream.of(new LineStation(gangNam.getId(), seocho.getId(), 7))
+        List<LineStation> lineStation = Stream.of(new LineStation(강남역.getId(), 서초역.getId(), 7))
                                         .collect(Collectors.toList());
-        LineStations lineStations = new LineStations(lineStation);
-        Line line = new Line("신분당선", "red", lineStations);
-        lineRepository.save(line);
+        지하철역_라인_생성("신분당선", "red", new LineStations(lineStation));
+    }
+
+    private Station 지하철역_생성(String stationName) {
+        return stationRepository.save(new Station(stationName));
+    }
+
+    private Line 지하철역_라인_생성(String lineName, String color, LineStations lineStations) {
+        return lineRepository.save(new Line(lineName, color, lineStations));
     }
 
     /**
@@ -57,35 +58,21 @@ public class SectionAcceptanceTest extends BaseTest {
     public void addSectionsTest() {
         // Given
         Station firstStation = stationRepository.getByName("강남역");
-        Station secondStation = stationRepository.save(new Station("마포구청역"));
-        Station thirdStation = stationRepository.getByName("서초역");
+        Station secondStation = 지하철역_생성("마포구청역");
 
-        LineStation existLineStation = lineStationRepository.findByUpStationIdAndDownStationId(firstStation.getId(), thirdStation.getId());
         LineSectionRequest lineSectionRequest= new LineSectionRequest(firstStation.getId(), secondStation.getId(), 5);
 
         // When
         List<HashMap> stations = request_register_line_section(lineSectionRequest).jsonPath().get("stations");
-        LineStationResponse firstLineSection = makeTestLineStationResponse(stations.get(0));
-        LineStationResponse secondLineSection = makeTestLineStationResponse(stations.get(1));
 
         // Then
-        assertAll(
-                () -> assertEquals(firstLineSection.getUpStationId(), secondStation.getId()),
-                () -> assertEquals(firstLineSection.getDownStationId(), thirdStation.getId()),
-                () -> assertEquals(firstLineSection.getDistance(), existLineStation.getDistance() - lineSectionRequest.getDistance()),
-
-                () -> assertEquals(secondLineSection.getUpStationId(), firstStation.getId()),
-                () -> assertEquals(secondLineSection.getDownStationId(), secondStation.getId()),
-                () -> assertEquals(secondLineSection.getDistance(), lineSectionRequest.getDistance())
-        );
+        assertThat(구간_지하철역_추출(stations)).contains(Long.valueOf(firstStation.getId()), Long.valueOf(secondStation.getId()));
     }
 
-    private LineStationResponse makeTestLineStationResponse(HashMap<String, Integer> station) {
-        return new LineStationResponse(
-                                      Long.valueOf(station.get("upStationId"))
-                                     ,Long.valueOf(station.get("downStationId"))
-                                     ,station.get("distance")
-                                    );
+    private List<Long> 구간_지하철역_추출(List<HashMap> stations) {
+        return stations.stream()
+                .map(it -> Long.valueOf((Integer) it.get("upStationId")))
+                .collect(Collectors.toList());
     }
 
     private ExtractableResponse<Response> request_register_line_section(LineSectionRequest lineSectionRequest) {
@@ -108,28 +95,16 @@ public class SectionAcceptanceTest extends BaseTest {
     @DisplayName("새로운역을 상행종점으로 등록한다")
     public void addFirstSectionsTest() {
         // Given
-        Station firstStation = stationRepository.save(new Station("마포구청역"));
+        Station firstStation = 지하철역_생성("마포구청역");
         Station secondStation = stationRepository.getByName("강남역");
-        Station thirdStation = stationRepository.getByName("서초역");
 
-        LineStation existLineStation = lineStationRepository.findByUpStationIdAndDownStationId(secondStation.getId(), thirdStation.getId());
         LineSectionRequest lineSectionRequest= new LineSectionRequest(firstStation.getId(), secondStation.getId(), 5);
 
         // When
         List<HashMap> stations = request_register_line_section(lineSectionRequest).jsonPath().get("stations");
-        LineStationResponse firstLineSection = makeTestLineStationResponse(stations.get(0));
-        LineStationResponse secondLineSection = makeTestLineStationResponse(stations.get(1));
 
         // Then
-        assertAll(
-                () -> assertEquals(firstLineSection.getUpStationId(), secondStation.getId()),
-                () -> assertEquals(firstLineSection.getDownStationId(), thirdStation.getId()),
-                () -> assertEquals(firstLineSection.getDistance(), existLineStation.getDistance()),
-
-                () -> assertEquals(secondLineSection.getUpStationId(), firstStation.getId()),
-                () -> assertEquals(secondLineSection.getDownStationId(), secondStation.getId()),
-                () -> assertEquals(secondLineSection.getDistance(), lineSectionRequest.getDistance())
-        );
+        assertThat(구간_지하철역_추출(stations)).contains(Long.valueOf(firstStation.getId()), Long.valueOf(secondStation.getId()));
     }
 
     /**
@@ -143,26 +118,15 @@ public class SectionAcceptanceTest extends BaseTest {
         // Given
         Station firstStation = stationRepository.getByName("강남역");
         Station secondStation = stationRepository.getByName("서초역");
-        Station thirdStation = stationRepository.save(new Station("마포구청역"));
+        Station thirdStation = 지하철역_생성("마포구청역");
 
-        LineStation existLineStation = lineStationRepository.findByUpStationIdAndDownStationId(firstStation.getId(), secondStation.getId());
         LineSectionRequest lineSectionRequest= new LineSectionRequest(secondStation.getId(), thirdStation.getId(), 5);
 
         // When
         List<HashMap> stations = request_register_line_section(lineSectionRequest).jsonPath().get("stations");
-        LineStationResponse firstLineSection = makeTestLineStationResponse(stations.get(0));
-        LineStationResponse secondLineSection = makeTestLineStationResponse(stations.get(1));
 
         // Then
-        assertAll(
-                () -> assertEquals(firstLineSection.getUpStationId(), firstStation.getId()),
-                () -> assertEquals(firstLineSection.getDownStationId(), secondStation.getId()),
-                () -> assertEquals(firstLineSection.getDistance(), existLineStation.getDistance()),
-
-                () -> assertEquals(secondLineSection.getUpStationId(), secondStation.getId()),
-                () -> assertEquals(secondLineSection.getDownStationId(), thirdStation.getId()),
-                () -> assertEquals(secondLineSection.getDistance(), lineSectionRequest.getDistance())
-        );
+        assertThat(구간_지하철역_추출(stations)).contains(Long.valueOf(firstStation.getId()), Long.valueOf(secondStation.getId()));
     }
 
     /**
