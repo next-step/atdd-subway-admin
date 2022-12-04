@@ -31,7 +31,8 @@ public class Line extends BaseEntity {
     public Line(String name, String color, LineStations lineStations) {
         this.name = name;
         this.color = color;
-        this.lineStations = lineStations;
+        lineStations.getValues().stream()
+                .forEach(lineStation -> this.lineStations.addLineStation(lineStation));
     }
 
     public void updateLine(LineRequest lineRequest) {
