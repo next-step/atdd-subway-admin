@@ -17,7 +17,7 @@ public class Line extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column(unique = true, nullable = false)
     private String name;
     @Column
     private String color;
@@ -61,7 +61,7 @@ public class Line extends BaseEntity {
 
     public void addSection(Section section) {
         sections.addSection(section);
-        section.toLine(this);
+        section.addLine(this);
     }
 
     public Long getId() {

@@ -40,7 +40,7 @@ public class SectionAcceptanceTestUtils {
     }
 
     public static void 지하철노선_저장된_지하철역_목록_검증(ExtractableResponse<Response> response, String... stations) {
-        assertThat(response.jsonPath().getList("stations.name")).containsAll(Arrays.asList(stations));
+        assertThat(response.jsonPath().getList("stations.name")).isEqualTo(Arrays.asList(stations));
     }
 
     public static void 지하철노선_거리_검증(ExtractableResponse<Response> response, int distance) {
