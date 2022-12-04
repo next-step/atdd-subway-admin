@@ -33,10 +33,20 @@ public class LineStations {
             validationCheckDistance(existLineStation, lineStation);
         }
 
+        validationCheckForStation(lineStation);
+    }
+
+    private void validationCheckForStation(LineStation lineStation) {
+        if (lineStations.size() > 0) {
+            checkForIfHasStationToAdd(lineStation);
+        }
+    }
+
+    private void checkForIfHasStationToAdd(LineStation lineStation) {
         lineStations.stream()
                 .filter(it ->
                         it.getUpStationId() == lineStation.getUpStationId() || it.getUpStationId() == lineStation.getDownStationId() ||
-                        it.getDownStationId() == lineStation.getUpStationId() || it.getDownStationId() == lineStation.getDownStationId()
+                                it.getDownStationId() == lineStation.getUpStationId() || it.getDownStationId() == lineStation.getDownStationId()
                 )
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException());
