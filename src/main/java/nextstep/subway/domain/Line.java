@@ -50,4 +50,12 @@ public class Line {
     public Station getDownStation() {
         return this.downStation;
     }
+
+    public void changeName(String name) {
+        this.name = name;
+    }
+
+    public void changeColor(String color) {
+        this.color = color;
+    }
 }

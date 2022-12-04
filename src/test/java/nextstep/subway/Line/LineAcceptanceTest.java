@@ -113,7 +113,17 @@ public class LineAcceptanceTest {
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLineTest() {
+        // given
+        ExtractableResponse<Response> createResponse = createLine("신분당선", "bg-red-600", upStation.getId(), downStation.getId(), 10);
 
+        // when
+        Long lineId = createResponse.body().jsonPath().getLong("id");
+        updateLine(lineId, "다른분당선", "bg-red-600");
+
+        // then
+        ExtractableResponse<Response> findLineResponse = findLine(lineId);
+        String lineName = findLineResponse.body().jsonPath().getString("name");
+        assertThat(lineName).isEqualTo("다른분당선");
     }
 
     /**
@@ -153,6 +163,19 @@ public class LineAcceptanceTest {
     public static ExtractableResponse<Response> findLine(Long id) {
         return RestAssured.given().log().all()
                 .when().get("/lines" + "/{id}", id)
+                .then().statusCode(HttpStatus.OK.value()).log().all()
+                .extract();
+    }
+
+    private static ExtractableResponse<Response> updateLine(Long id, String name, String color) {
+        Map<String, Object> params = new HashMap<>();
+        params.put("name", name);
+        params.put("color", color);
+
+        return RestAssured.given().log().all()
+                .body(params)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().put("/lines" + "/{id}", id)
                 .then().statusCode(HttpStatus.OK.value()).log().all()
                 .extract();
     }

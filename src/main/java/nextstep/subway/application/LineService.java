@@ -44,4 +44,11 @@ public class LineService {
     public LineResponse getLine(Long id) {
         return LineResponse.of(lineRepository.getById(id));
     }
+
+    @Transactional
+    public void updateLine(Long id, LineRequest lineRequest) {
+        Line line = lineRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+        line.changeName(lineRequest.getName());
+        line.changeColor(lineRequest.getColor());
+    }
 }
