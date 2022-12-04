@@ -7,10 +7,7 @@ import nextstep.subway.dto.StationResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -65,7 +62,7 @@ public class LineService {
     }
 
     private LineResponse getLineResponseWithStations(Line line) {
-        Set<StationResponse> stations = new HashSet<>();
+        Set<StationResponse> stations = new LinkedHashSet<>();
 
         for(Section section : line.getSections().getSectionList()) {
             stations.add(StationResponse.of(section.getUpStation()));

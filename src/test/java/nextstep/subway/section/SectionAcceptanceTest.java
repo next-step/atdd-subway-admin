@@ -312,12 +312,11 @@ public class SectionAcceptanceTest {
         List<SectionResponse> sections = getSectionResponses(findResponse);
 
         // then
-        List<String> answers = new ArrayList<>(Arrays.asList(new String[]{"영등포구청역", "당산역", "합정역", "홍대입구역", "신촌역"}));
         List<String> upStations = sections.stream()
                 .map(sectionResponse -> sectionResponse.getUpStation().getName())
                 .collect(Collectors.toList());
 
-        assertThat(upStations).isEqualTo(answers);
+        assertThat(upStations).containsExactly("영등포구청역", "당산역", "합정역", "홍대입구역", "신촌역");
 
     }
 
