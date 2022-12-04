@@ -32,10 +32,18 @@ public class LineAcceptanceTest extends BaseTest {
 
     @BeforeEach
     void setUp() {
-        Station gangNam = stationRepository.save(new Station("강남역"));
-        Station seocho = stationRepository.save(new Station("서초역"));
+        Station 강남역 = 지하철역_생성("강남역");
+        Station 서초역 = 지하철역_생성("서초역");
 
-        lineStationRepository.save( new LineStation(gangNam.getId(), seocho.getId(), 7) );
+        지하철역_구간_생성(강남역, 서초역, 7);
+    }
+
+    private Station 지하철역_생성(String stationName) {
+        return stationRepository.save(new Station(stationName));
+    }
+
+    private LineStation 지하철역_구간_생성(Station upStation, Station downStation, int distance) {
+        return lineStationRepository.save( new LineStation(upStation.getId(), downStation.getId(), distance) );
     }
 
     /**
