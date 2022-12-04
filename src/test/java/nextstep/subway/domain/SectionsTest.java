@@ -94,9 +94,43 @@ class SectionsTest {
             .hasMessage("상행역/하행역 모두 노선에 추가되어있지 않습니다.");
     }
 
-    @DisplayName("하행역이 일치하고 상행역이 추가되는 구간 추가")
+    @DisplayName("기존 구간의 최상위역 추가")
+    @Test
+    void addSection4() {
+        Sections sections = new Sections();
+        sections.init(강남역, 역삼역, 5);
+
+        sections.add(new Section(강남역, 교대역, 3));
+
+        List<Section> findSections = sections.getStationsInOrder();
+        assertThat(findSections).hasSize(3);
+        assertThat(
+            findSections.stream().map(section -> section.getDownStation().getName()).collect(Collectors.toList()))
+            .containsExactly("교대역", "강남역", "역삼역");
+        assertThat(findSections.get(1).getDistance()).isEqualTo(3);
+        assertThat(findSections.get(2).getDistance()).isEqualTo(5);
+    }
+
+    @DisplayName("기존 구간의 최하위역 추가")
     @Test
     void addSection5() {
+        Sections sections = new Sections();
+        sections.init(교대역, 강남역, 5);
+
+        sections.add(new Section(역삼역, 강남역, 3));
+
+        List<Section> findSections = sections.getStationsInOrder();
+        assertThat(findSections).hasSize(3);
+        assertThat(
+            findSections.stream().map(section -> section.getDownStation().getName()).collect(Collectors.toList()))
+            .containsExactly("교대역", "강남역", "역삼역");
+        assertThat(findSections.get(1).getDistance()).isEqualTo(5);
+        assertThat(findSections.get(2).getDistance()).isEqualTo(3);
+    }
+
+    @DisplayName("하행역이 일치하고 상행역이 추가되는 구간 추가")
+    @Test
+    void addSection6() {
         Sections sections = new Sections();
         sections.init(교대역, 역삼역, 5);
 
