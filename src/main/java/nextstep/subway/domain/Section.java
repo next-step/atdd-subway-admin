@@ -58,6 +58,24 @@ public class Section {
         this.line = line;
     }
 
+    public void updateUpStation(Section newSection) {
+        this.distance = this.distance.subtract(newSection.distance);
+        this.upStation = newSection.downStation;
+    }
+
+    public void updateDownStation(Section newSection) {
+        this.distance = this.distance.subtract(newSection.distance);
+        this.downStation = newSection.upStation;
+    }
+
+    public boolean isSameUpStation(Section section) {
+        return upStation.isSameStation(section.getUpStation());
+    }
+
+    public boolean isSameDownStation(Section section) {
+        return downStation.isSameStation(section.getDownStation());
+    }
+
     public List<Station> stations() {
         List<Station> stations = new ArrayList<>();
         stations.add(upStation);

@@ -23,6 +23,10 @@ public class Station extends BaseEntity {
         return new Station(name);
     }
 
+    public boolean isSameStation(Station compareStation) {
+        return Objects.equals(this, compareStation);
+    }
+
     public Long getId() {
         return id;
     }
