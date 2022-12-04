@@ -2,17 +2,14 @@ package nextstep.subway.line;
 
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
-import nextstep.subway.DatabaseCleaner;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.SectionRepository;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -21,26 +18,11 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-    @LocalServerPort
-    private int port;
-
-    @Autowired
-    private DatabaseCleaner databaseCleaner;
-
+public class LineAcceptanceTest extends AcceptanceTest {
     @Autowired
     private StationRepository stationRepository;
     @Autowired
     private SectionRepository sectionRepository;
-
-    @BeforeEach
-    void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-        databaseCleaner.execute();
-    }
 
     /**
      * When 지하철 노선을 생성하면
