@@ -57,12 +57,16 @@ public class LineAcceptanceTest extends BaseTest {
         LineRequest lineRequest = new LineRequest("신분당선", "red", Long.valueOf(1), Long.valueOf(2), 5);
 
         // When
-        String name = reqeust_register_line(lineRequest)
-                .jsonPath()
-                .get("name");
+        ExtractableResponse<Response> response = reqeust_register_line(lineRequest);
+        String stationName = 지하철역_노선_이름_가져옴(response);
 
         // Then
-        assertThat(name).isEqualTo("신분당선");
+        assertThat(stationName).isEqualTo("신분당선");
+    }
+
+    private String 지하철역_노선_이름_가져옴(ExtractableResponse response) {
+        return response.jsonPath()
+                .get("name");
     }
 
     /**
