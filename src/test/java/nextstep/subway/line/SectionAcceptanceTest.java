@@ -1,12 +1,9 @@
 package nextstep.subway.line;
 
+
 import static nextstep.subway.utils.LineAcceptanceTestUtil.지하철노선_생성;
 import static nextstep.subway.utils.LineAcceptanceTestUtil.지하철노선을_조회;
-import static nextstep.subway.utils.SectionAcceptanceTestUtils.BASE_DISTANCE;
-import static nextstep.subway.utils.SectionAcceptanceTestUtils.OVER_DISTANCE;
-import static nextstep.subway.utils.SectionAcceptanceTestUtils.SAFE_DISTANCE;
 import static nextstep.subway.utils.SectionAcceptanceTestUtils.*;
-import static nextstep.subway.utils.SectionAcceptanceTestUtils.지하철노선에_지하철역을_등록한다;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
@@ -20,8 +17,10 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.test.context.SpringBootTest;
 
 @DisplayName("지하철 구간 관련 기능")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class SectionAcceptanceTest extends AcceptanceTest {
     private LineRequest 구호선_생성;
     private Long 구호선ID;
@@ -68,7 +67,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
 
         assertAll(
             () -> 노선_새로운_지하철역_등록_성공_검증(추가된_구호선),
-            () -> 지하철노선_거리_검증(조회된_구호선, 15),
+            () -> 지하철노선_거리_검증(조회된_구호선, 10),
             () -> 지하철노선_저장된_지하철역_목록_검증(조회된_구호선, "동작역", "고속터미널역", "언주역")
         );
     }
@@ -113,6 +112,49 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             () -> 지하철노선_거리_검증(조회된_구호선, 25),
             () -> 지하철노선_저장된_지하철역_목록_검증(조회된_구호선, "동작역", "언주역","봉은사역")
         );
+    }
+
+    /**
+     * When 새로운 역 등록시 기존 역 사이 길이 보다 크거나 같은 역을 등록하면
+     * Then 등록되지 않는다.
+     */
+    @ParameterizedTest
+    @ValueSource(ints = {BASE_DISTANCE, OVER_DISTANCE})
+    @DisplayName("새로운 역 등록시 기존 역 사이 길이보다 크거나 같으면 등록할 수 없다.")
+    void addStationBySameAndGraterThenDistance(int distance) {
+        //when
+        ExtractableResponse<Response> 추가된_구호선 = 지하철노선에_지하철역을_등록한다(구호선ID, 동작역ID, 고속터미널역ID, distance);
+
+        // then
+        노선_새로운_지하철역_등록_실패_검증(추가된_구호선);
+    }
+
+    /**
+     * When 이미 등록된 상행역과 하행역을 등록하면
+     * Then 등록되지 않는다.
+     */
+    @Test
+    @DisplayName("이미 등록된 상행역과 하행역은 등록할 수 없다.")
+    void addStationByAlreadyAddUpAndDownStation() {
+        //when
+        ExtractableResponse<Response> 추가된_구호선 = 지하철노선에_지하철역을_등록한다(구호선ID, 동작역ID, 언주역ID, SAFE_DISTANCE);
+
+        // then
+        노선_새로운_지하철역_등록_실패_검증(추가된_구호선);
+    }
+
+    /**
+     * When 상행역과 하행역이 포함되지 않은 구간을 등록하면
+     * Then 등록되지 않는다.
+     */
+    @Test
+    @DisplayName("상행역과 하행역이 하나라도 포함되어 있지 않으면 구간을 등록할 수 없다.")
+    void addStationByDoesNotContainUpStationAndDownStation() {
+        //when
+        ExtractableResponse<Response> 추가된_구호선 = 지하철노선에_지하철역을_등록한다(구호선ID, 고속터미널역ID, 봉은사역ID, SAFE_DISTANCE);
+
+        // then
+        노선_새로운_지하철역_등록_실패_검증(추가된_구호선);
     }
 
     /**

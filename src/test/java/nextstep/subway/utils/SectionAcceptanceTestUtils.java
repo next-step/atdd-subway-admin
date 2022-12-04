@@ -36,7 +36,7 @@ public class SectionAcceptanceTestUtils {
     }
 
     public static void 노선_새로운_지하철역_등록_실패_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     public static void 지하철노선_저장된_지하철역_목록_검증(ExtractableResponse<Response> response, String... stations) {

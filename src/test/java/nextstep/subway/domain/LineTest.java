@@ -31,7 +31,7 @@ class LineTest {
     void updateLine() {
         Line actual = Line.of("신분당선", "bg-red-600");
 
-        actual.updateLine(Line.of("경춘선", "bg-emerald-600"));
+        actual.updateLine("경춘선", "bg-emerald-600");
 
         assertAll(
             () -> assertThat(actual.getName()).isEqualTo("경춘선"),

@@ -54,9 +54,9 @@ public class Line extends BaseEntity {
         }
     }
 
-    public void updateLine(Line line) {
-        this.name = line.name;
-        this.color = line.color;
+    public void updateLine(String name, String color) {
+        this.name = name;
+        this.color = color;
     }
 
     public void addSection(Section section) {
