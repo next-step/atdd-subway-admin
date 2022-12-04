@@ -4,6 +4,7 @@ import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.line.LineStation;
 import nextstep.subway.domain.line.LineStationRepository;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.request.LineRequest;
 import nextstep.subway.dto.request.LineSectionRequest;
@@ -73,11 +74,21 @@ public class LineService {
 
     @Transactional
     public LineReponse addLineSections(Long id, LineSectionRequest lineSectionRequest) {
+        checkValidationForAddLineStation(lineSectionRequest);
+
         Line line = lineRepository.getById(id);
         LineStation lineStation = lineSectionRequest.toLineStation(lineSectionRequest);
         line.addLineStation(lineStation);
 
-        lineRepository.save(line);
-        return LineReponse.of(line);
+        return LineReponse.of(lineRepository.save(line));
+    }
+
+    private void checkValidationForAddLineStation(LineSectionRequest lineSectionRequest) {
+        Station upStation = stationRepository.getById(lineSectionRequest.getUpStationId());
+        Station downStation = stationRepository.getById(lineSectionRequest.getDownStationId());
+
+        if (upStation.getId() == null || downStation.getId() == null) {
+            throw new RuntimeException();
+        }
     }
 }
