@@ -2,9 +2,13 @@ package nextstep.subway.domain;
 
 import java.util.Objects;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class LineStation extends BaseEntity {
@@ -12,23 +16,49 @@ public class LineStation extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long stationId;
-    private Long preStationId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "station_id", foreignKey = @ForeignKey(name = "fk_line_station_station"))
+    private Station station;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pre_station_id", foreignKey = @ForeignKey(name = "fk_line_station_pre_station"))
+    private Station preStation;
+
     private int distance;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
+    private Line line;
 
     public LineStation() {
     }
 
-    public Long getStationId() {
-        return stationId;
+    public Long getId() {
+        return id;
     }
 
-    public Long getPreStationId() {
-        return preStationId;
+    public Station getStation() {
+        return station;
+    }
+
+    public Station getPreStation() {
+        return preStation;
     }
 
     public int getDistance() {
         return distance;
+    }
+
+    public Line getLine() {
+        return line;
+    }
+
+    public void setLine(Line line) {
+        this.line = line;
+        if (!line.getLineStations().contains(this)) {
+            line.getLineStations().add(this);
+        }
     }
 
     @Override
@@ -40,12 +70,13 @@ public class LineStation extends BaseEntity {
             return false;
         }
         LineStation that = (LineStation) o;
-        return distance == that.distance && Objects.equals(id, that.id) && Objects.equals(stationId,
-                that.stationId) && Objects.equals(preStationId, that.preStationId);
+        return distance == that.distance && Objects.equals(id, that.id) && Objects.equals(station,
+                that.station) && Objects.equals(preStation, that.preStation) && Objects.equals(line,
+                that.line);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, stationId, preStationId, distance);
+        return Objects.hash(id, station, preStation, distance, line);
     }
 }
