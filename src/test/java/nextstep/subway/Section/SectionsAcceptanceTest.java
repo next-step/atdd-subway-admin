@@ -7,8 +7,10 @@ import nextstep.subway.AcceptanceTest;
 import nextstep.subway.constants.ErrorCode;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.StationRequest;
 import nextstep.subway.dto.StationResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -148,6 +150,14 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
 
     private SectionRequest generateSectionRequest(long upStationId, long downStationId, long distance) {
         return new SectionRequest(upStationId, downStationId, distance);
+    }
+
+    private LineRequest generateLineRequest(String name, String color, long upStationId, long downStationId, long distance) {
+        return new LineRequest(name, color, upStationId, downStationId, distance);
+    }
+
+    private StationRequest generateStationRequest(String name) {
+        return new StationRequest(name);
     }
 
 }

@@ -49,13 +49,17 @@ public class Sections {
 
 
     private void updateStationWhenDownStationSame(Section section) {
-        Optional<Section> findSection = sections.stream().filter(eachSection -> eachSection.isSameDownStation(section)).findFirst();
-        findSection.get().updateAndCreateTwiceSectionWhenDownStationSame(section);
+        sections.stream()
+                .filter(section::isSameDownStation)
+                .findFirst()
+                .ifPresent(findSection -> findSection.updateAndCreateTwiceSectionWhenDownStationSame(section));
     }
 
     private void updateStationWhenUpStationSame(Section section) {
-        Optional<Section> findSection = sections.stream().filter(eachSection -> eachSection.isSameUpStation(section)).findFirst();
-        findSection.get().updateAndCreateTwiceSectionWhenUpStationSame(section);
+        sections.stream()
+                .filter(section::isSameUpStation)
+                .findFirst()
+                .ifPresent(findSection -> findSection.updateAndCreateTwiceSectionWhenUpStationSame(section));
     }
 
     private boolean isSameUpStation(Section section) {

@@ -134,4 +134,8 @@ public class StationAcceptanceTest extends AcceptanceTest {
                 .when().delete("/stations" + DELIMITER + deleteTargetStationId)
                 .then().log().all();
     }
+
+    public StationRequest generateStationRequest(String name) {
+        return new StationRequest(name);
+    }
 }
