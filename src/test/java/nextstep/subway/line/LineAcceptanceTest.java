@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import nextstep.subway.TestUtil;
 import nextstep.subway.domain.Line;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +35,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
         ExtractableResponse<Response> response = 지하철_노선_생성("2호선", "green");
 
         //Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        TestUtil.응답확인(response, HttpStatus.CREATED);
 
         //Then
         List<Line> 조회된_노선_목록 = 노선목록(지하철_노선_목록_조회());
@@ -58,7 +59,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
         ExtractableResponse<Response> response = 지하철_노선_목록_조회();
 
         //Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        TestUtil.응답확인(response, HttpStatus.OK);
 
         //Then
         List<Line> 조회된_노선_목록 = 노선목록(response);
@@ -80,7 +81,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
         ExtractableResponse<Response> response = 지하철_노선_조회(생성된_노선.getId());
 
         //Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        TestUtil.응답확인(response, HttpStatus.OK);
 
         //Then
         Line 조회된_노선 = 노선정보(response);
@@ -112,7 +113,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
                         .extract();
 
         //Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        TestUtil.응답확인(response, HttpStatus.OK);
 
         //Then
         Line 조회된_노선 = 노선정보(지하철_노선_조회(lineId));
@@ -142,7 +143,7 @@ public class LineAcceptanceTest extends LineAcceptanceTestFixture {
                         .extract();
 
         //Then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        TestUtil.응답확인(response, HttpStatus.NO_CONTENT);
 
         //Then
         List<Line> 조회된_노선_목록 = 노선목록(지하철_노선_목록_조회());

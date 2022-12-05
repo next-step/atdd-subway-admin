@@ -7,6 +7,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
 import java.util.List;
+import nextstep.subway.TestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +32,7 @@ public class StationAcceptanceTest extends StationAcceptanceTestFixture {
         ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        TestUtil.응답확인(response, HttpStatus.CREATED);
 
         // then
         List<String> stationNames = 지하철역_조회().jsonPath().getList("name", String.class);
@@ -53,7 +54,7 @@ public class StationAcceptanceTest extends StationAcceptanceTestFixture {
         ExtractableResponse<Response> response = 지하철역_생성("강남역");
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        TestUtil.응답확인(response, HttpStatus.BAD_REQUEST);
     }
 
     /**
@@ -73,7 +74,7 @@ public class StationAcceptanceTest extends StationAcceptanceTestFixture {
         ExtractableResponse<Response> response = 지하철역_조회();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+        TestUtil.응답확인(response, HttpStatus.OK);
 
         // then
         List<String> stationsNames = response.jsonPath().getList("name", String.class);
@@ -101,7 +102,7 @@ public class StationAcceptanceTest extends StationAcceptanceTestFixture {
                         .extract();
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        TestUtil.응답확인(response, HttpStatus.NO_CONTENT);
 
         // then
         List<String> 지하철_이름_목록 = 지하철역_조회().jsonPath().getList("name", String.class);
