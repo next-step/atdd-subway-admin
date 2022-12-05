@@ -72,8 +72,11 @@ public class SectionAcceptanceTest {
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
 
         // then
-        assertThat(findLine.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("상행종점역","새로운역","하행종점역");
+        노선_역_순서확인(findLine, "상행종점역","새로운역","하행종점역");
+
     }
+
+
 
     /**
      * Given 상행종점역, 하행종점역을 가진 노선을 생성하고 새로운역, 상행종점역 구간을 추가하고
@@ -92,7 +95,7 @@ public class SectionAcceptanceTest {
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
 
         // then
-        assertThat(findLine.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("새로운역","상행종점역","하행종점역");
+        노선_역_순서확인(findLine, "새로운역","상행종점역","하행종점역");
     }
 
     /**
@@ -112,7 +115,7 @@ public class SectionAcceptanceTest {
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
 
         // then
-        assertThat(findLine.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("상행종점역","하행종점역","새로운역");
+        노선_역_순서확인(findLine, "상행종점역","하행종점역","새로운역");
     }
 
     // Happy-case
@@ -133,7 +136,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        노선등록_에러(response);
     }
 
     /**
@@ -151,7 +154,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        노선등록_에러(response);
     }
 
     /**
@@ -171,7 +174,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
 
         // then
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        노선등록_에러(response);
     }
 
     private ExtractableResponse<Response> createLineRest(LineRequest lineRequest) {
@@ -208,5 +211,13 @@ public class SectionAcceptanceTest {
                 .when().post(STATION_URL)
                 .then().log().all()
                 .extract();
+    }
+
+    private void 노선_역_순서확인(LineResponse lineResponse, String 역1, String 역2, String 역3) {
+        assertThat(lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly(역1, 역2, 역3);
+    }
+
+    private void 노선등록_에러(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
