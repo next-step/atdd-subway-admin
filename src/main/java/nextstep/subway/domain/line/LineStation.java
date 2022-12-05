@@ -10,7 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import nextstep.subway.domain.BaseEntity;
-import nextstep.subway.domain.Station;
+import nextstep.subway.domain.station.Station;
 
 @Entity
 public class LineStation extends BaseEntity {

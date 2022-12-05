@@ -1,10 +1,11 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.station;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import nextstep.subway.domain.BaseEntity;
 
 @Entity
 public class Station extends BaseEntity {
