@@ -17,10 +17,13 @@ public class StationRegisterStatus {
         return stationStatusList.isEmpty();
     }
 
-    public void validate(StationPosition stationPosition, int distance) {
+    public void validate(StationPosition stationPosition, int distance, Station interStation) {
         stationStatusList.stream()
                 .filter(s -> s.matchStationPosition(stationPosition))
                 .findFirst()
-                .ifPresent(stationStatus -> stationStatus.distanceValidation(distance));
+                .ifPresent(stationStatus -> {
+                    stationStatus.distanceValidation(distance);
+                    stationStatus.splitLineStation(stationPosition, interStation, distance);
+                });
     }
 }

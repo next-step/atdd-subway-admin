@@ -53,6 +53,20 @@ public class LineStation extends BaseEntity {
         return null;
     }
 
+    public int distanceCompare(int distance) {
+        return Integer.compare(this.distance, distance);
+    }
+
+    public void splitLineStation(StationPosition stationPosition, Station interStation, int subtractDistance) {
+        if (stationPosition == StationPosition.UPSTATION) {
+            preStation = interStation;
+        }
+        if (stationPosition == StationPosition.DOWNSTATION) {
+            station = interStation;
+        }
+        distance -= subtractDistance;
+    }
+
     public Long getId() {
         return id;
     }
@@ -97,11 +111,5 @@ public class LineStation extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, station, preStation, distance, line);
-    }
-
-    public int distanceCompare(int distance) {
-        if (this.distance > distance) return 1;
-        if (this.distance == distance) return 0;
-        return -1;
     }
 }

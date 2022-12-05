@@ -56,8 +56,8 @@ public class SectionService {
             if (!upStationStatus.isEmpty() && !downStationStatus.isEmpty()) {
                 throw new IllegalArgumentException(ErrorMessage.ALREADY_REGISTERED_SECTION);
             }
-            upStationStatus.validate(StationPosition.UPSTATION, sectionRequest.getDistance());
-            downStationStatus.validate(StationPosition.DOWNSTATION, sectionRequest.getDistance());
+            upStationStatus.validate(StationPosition.UPSTATION, sectionRequest.getDistance(), downStation);
+            downStationStatus.validate(StationPosition.DOWNSTATION, sectionRequest.getDistance(), upStation);
 
         }
 

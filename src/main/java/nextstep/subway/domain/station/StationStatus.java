@@ -9,10 +9,6 @@ public class StationStatus {
     private LineStation lineStation;
     private StationPosition stationPosition;
 
-    public StationStatus(Station station) {
-        this.station = station;
-    }
-
     public StationStatus(Station station, LineStation lineStation, StationPosition stationPosition) {
         this.station = station;
         this.lineStation = lineStation;
@@ -27,5 +23,9 @@ public class StationStatus {
         if (lineStation.distanceCompare(distance) <= 0) {
             throw new IllegalArgumentException(ErrorMessage.SECTION_DISTANCE_NOT_VALID);
         }
+    }
+
+    public void splitLineStation(StationPosition stationPosition, Station interStation, int subtractDistance) {
+        lineStation.splitLineStation(stationPosition, interStation, subtractDistance);
     }
 }

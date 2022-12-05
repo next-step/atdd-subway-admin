@@ -70,11 +70,8 @@ class LineStationAcceptanceTestFixture {
     }
 
     protected static boolean 구간포함(List<SectionResponse> sectionResponses,Long upStationId, Long downStationId, int distance) {
-        boolean result = false;
-        for (SectionResponse sectionResponse:sectionResponses) {
-            result = 구간정보_일치(sectionResponse, upStationId, downStationId, distance);
-        }
-        return result;
+        return sectionResponses.stream()
+                .anyMatch(s -> 구간정보_일치(s, upStationId, downStationId, distance));
     }
 
     private static boolean 구간정보_일치(SectionResponse sectionResponse,Long upStationId, Long downStationId, int distance) {
