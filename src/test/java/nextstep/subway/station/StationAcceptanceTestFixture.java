@@ -5,19 +5,10 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.boot.web.server.LocalServerPort;
+import nextstep.subway.utils.AcceptanceTestCommon;
 import org.springframework.http.MediaType;
 
-class StationAcceptanceTestFixture {
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-    }
+class StationAcceptanceTestFixture extends AcceptanceTestCommon {
 
     /**
      * 지하철역 조회

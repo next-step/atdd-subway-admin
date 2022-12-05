@@ -7,19 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import nextstep.subway.domain.line.Line;
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.boot.web.server.LocalServerPort;
+import nextstep.subway.utils.AcceptanceTestCommon;
 import org.springframework.http.MediaType;
 
-class LineAcceptanceTestFixture {
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-    }
+class LineAcceptanceTestFixture extends AcceptanceTestCommon {
 
     /**
      * 지하철 노선 생성

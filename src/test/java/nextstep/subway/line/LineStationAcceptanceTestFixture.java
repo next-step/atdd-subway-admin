@@ -10,22 +10,19 @@ import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
+import nextstep.subway.utils.AcceptanceTestCommon;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 
-class LineStationAcceptanceTestFixture {
-
-    @LocalServerPort
-    int port;
+class LineStationAcceptanceTestFixture extends AcceptanceTestCommon {
 
     Station 서초역;
     Station 강남역;
     Line _2호선;
 
     @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
+    public void setUp2() {
         서초역 = StationAcceptanceTest.지하철역_생성("서초역").as(Station.class);
         강남역 = StationAcceptanceTest.지하철역_생성("강남").as(Station.class);
         _2호선 = LineAcceptanceTest.지하철_노선_생성("2호선", "green").as(Line.class);
