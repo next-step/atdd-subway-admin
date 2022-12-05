@@ -41,36 +41,32 @@ public class Sections {
     }
 
     private boolean hasEndPointIssue(Section newSection) {
-        boolean hasIssue = false;
         Section firstSection = findFirstSection();
         Section lastSection = findLastSection();
-        if (firstSection.isEqualUpStationNewSectionDownStation(newSection)
-                && lastSection.isEqualDownStationNewSectionUpStation(newSection)) {
-            hasIssue = true;
-        }
-        return hasIssue;
+        return firstSection.isEqualUpStationNewSectionDownStation(newSection)
+                && lastSection.isEqualDownStationNewSectionUpStation(newSection);
     }
 
 
     private void updateStationWhenDownStationSame(Section section) {
-        Optional<Section> findSection = sections.stream().filter(eachSection -> eachSection.isSameDownStationId(section)).findFirst();
+        Optional<Section> findSection = sections.stream().filter(eachSection -> eachSection.isSameDownStation(section)).findFirst();
         findSection.get().updateAndCreateTwiceSectionWhenDownStationSame(section);
     }
 
     private void updateStationWhenUpStationSame(Section section) {
-        Optional<Section> findSection = sections.stream().filter(eachSection -> eachSection.isSameUpStationId(section)).findFirst();
+        Optional<Section> findSection = sections.stream().filter(eachSection -> eachSection.isSameUpStation(section)).findFirst();
         findSection.get().updateAndCreateTwiceSectionWhenUpStationSame(section);
     }
 
     private boolean isSameUpStation(Section section) {
         return sections.stream()
-                .filter(eachSection -> eachSection.isSameUpStationId(section))
+                .filter(eachSection -> eachSection.isSameUpStation(section))
                 .findFirst().isPresent();
     }
 
     private boolean isSameDownStation(Section section) {
         return sections.stream()
-                .filter(eachSection -> eachSection.isSameDownStationId(section))
+                .filter(eachSection -> eachSection.isSameDownStation(section))
                 .findFirst().isPresent();
     }
 
@@ -114,8 +110,8 @@ public class Sections {
                 .map(Section::toStations)
                 .flatMap(Collection::stream)
                 .distinct()
-                .noneMatch(station -> newSection.isSameDownStationId(station) ||
-                        newSection.isSameUpStationId(station));
+                .noneMatch(station -> newSection.isSameDownStation(station) ||
+                        newSection.isSameUpStation(station));
     }
 
     public List<Section> asList() {
