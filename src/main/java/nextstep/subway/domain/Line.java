@@ -1,45 +1,67 @@
 package nextstep.subway.domain;
 
-import javax.persistence.*;
+import java.util.List;
+import javax.persistence.Column;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import org.apache.commons.lang3.StringUtils;
 
 @Entity
 public class Line extends BaseEntity {
+    private static final String ERROR_MESSAGE_IS_BLANK_NAME = "노선 이름은 필수입니다.";
+    private static final String ERROR_MESSAGE_IS_BLANK_COLOR = "노선 색상은 필수입니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(unique = true, nullable = false)
     private String name;
-    @Column(unique = true, nullable = false)
+    @Column
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "up_station_id", nullable = false)
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "down_station_id", nullable = false)
-    private Station downStation;
-    @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Sections sections = new Sections();
 
     protected Line() {
     }
 
-    public Line(String name, String color) {
+    private Line(String name, String color) {
+        validNameAndColor(name, color);
+
         this.name = name;
         this.color = color;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
-        this.name = name;
-        this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+    public static Line of(String name, String color) {
+        return new Line(name, color);
     }
 
-    public void updateLine(Line line) {
-        this.name = line.name;
-        this.color = line.color;
+    public static Line of(String name, String color, Section section) {
+        Line line = new Line(name, color);
+        line.addSection(section);
+        return line;
+    }
+
+    private void validNameAndColor(String name, String color) {
+        if (StringUtils.isBlank(name)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_IS_BLANK_NAME);
+        }
+
+        if (StringUtils.isBlank(color)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_IS_BLANK_COLOR);
+        }
+    }
+
+    public void updateLine(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
+
+    public void addSection(Section section) {
+        sections.addSection(section);
+        section.addLine(this);
     }
 
     public Long getId() {
@@ -54,11 +76,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return this.upStation;
+    public List<Station> getStations() {
+        return sections.getSortStation();
     }
 
-    public Station getDownStation() {
-        return this.downStation;
+    public int totalDistance() {
+        return sections.totalDistance();
     }
 }
