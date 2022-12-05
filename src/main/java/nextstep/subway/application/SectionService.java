@@ -38,32 +38,16 @@ public class SectionService {
 
     @Transactional
     public SectionResponse saveSection(Long lineId, SectionRequest sectionRequest) {
-        //노선에 지하철역 등록
         Station downStation = stationRepository.findById(sectionRequest.getDownStationId())
                 .orElseThrow(EntityNotFoundException::new);
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId())
                 .orElseThrow(EntityNotFoundException::new);
         Line line = lineRepository.findById(lineId)
                 .orElseThrow(EntityNotFoundException::new);
-        LineStations lineStations = line.getLineStations();
-        if (!lineStations.isEmpty()) {
-            //유효성 검증
-            StationRegisterStatus upStationStatus = lineStations.getStationRegisterStatus(upStation);
-            StationRegisterStatus downStationStatus = lineStations.getStationRegisterStatus(downStation);
-            if (upStationStatus.isEmpty() && downStationStatus.isEmpty()) {
-                throw new IllegalArgumentException(ErrorMessage.BOTH_STATIONS_NOT_REGISTERED);
-            }
-            if (!upStationStatus.isEmpty() && !downStationStatus.isEmpty()) {
-                throw new IllegalArgumentException(ErrorMessage.ALREADY_REGISTERED_SECTION);
-            }
-            upStationStatus.validate(StationPosition.UPSTATION, sectionRequest.getDistance(), downStation);
-            downStationStatus.validate(StationPosition.DOWNSTATION, sectionRequest.getDistance(), upStation);
-
-        }
 
         LineStation lineStation = new LineStation(downStation, upStation, sectionRequest.getDistance(), line);
-        LineStation persistLineStation = lineStationRepository.save(lineStation);
-        return SectionResponse.of(persistLineStation);
+        line.addLineStation(lineStation);
+        return SectionResponse.of(lineStationRepository.save(lineStation));
     }
 
     public List<SectionResponse> findLineStationsByLineId(Long id) {

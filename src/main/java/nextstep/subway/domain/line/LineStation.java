@@ -10,9 +10,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.constants.ErrorMessage;
 import nextstep.subway.domain.BaseEntity;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationPosition;
+import nextstep.subway.domain.station.StationRegisterStatus;
 import nextstep.subway.domain.station.StationStatus;
 
 @Entity
@@ -65,6 +67,27 @@ public class LineStation extends BaseEntity {
             station = interStation;
         }
         distance -= subtractDistance;
+    }
+
+    public void validate(LineStations lineStations) {
+        StationRegisterStatus upStationStatus = lineStations.getStationRegisterStatus(preStation);
+        StationRegisterStatus downStationStatus = lineStations.getStationRegisterStatus(station);
+        checkRegisteredStationExist(upStationStatus, downStationStatus);
+        checkBothStationRegistered(upStationStatus, downStationStatus);
+        upStationStatus.validate(StationPosition.UPSTATION, distance, station);
+        downStationStatus.validate(StationPosition.DOWNSTATION, distance, preStation);
+    }
+
+    private void checkRegisteredStationExist(StationRegisterStatus upStationStatus, StationRegisterStatus downStationStatus) {
+        if (upStationStatus.isEmpty() && downStationStatus.isEmpty()) {
+            throw new IllegalArgumentException(ErrorMessage.BOTH_STATIONS_NOT_REGISTERED);
+        }
+    }
+
+    private void checkBothStationRegistered(StationRegisterStatus upStationStatus, StationRegisterStatus downStationStatus) {
+        if (!upStationStatus.isEmpty() && !downStationStatus.isEmpty()) {
+            throw new IllegalArgumentException(ErrorMessage.ALREADY_REGISTERED_SECTION);
+        }
     }
 
     public Long getId() {
