@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.LineStation;
-import nextstep.subway.domain.LineStations;
+import nextstep.subway.domain.line.LineStation;
+import nextstep.subway.domain.line.LineStations;
 import nextstep.subway.domain.Station;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.springframework.http.HttpStatus;

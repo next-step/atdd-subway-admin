@@ -1,7 +1,7 @@
 package nextstep.subway.dto;
 
 import java.time.LocalDateTime;
-import nextstep.subway.domain.Line;
+import nextstep.subway.domain.line.Line;
 
 public class LineResponse {
 

@@ -1,4 +1,4 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.line;
 
 import java.util.Objects;
 import javax.persistence.Entity;
@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import nextstep.subway.domain.BaseEntity;
+import nextstep.subway.domain.Station;
 
 @Entity
 public class LineStation extends BaseEntity {

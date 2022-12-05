@@ -5,7 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
-import nextstep.subway.domain.Line;
+import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;

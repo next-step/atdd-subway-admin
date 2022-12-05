@@ -6,7 +6,7 @@ import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import nextstep.subway.domain.Line;
+import nextstep.subway.domain.line.Line;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
