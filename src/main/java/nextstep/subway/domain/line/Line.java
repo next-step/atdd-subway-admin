@@ -42,6 +42,14 @@ public class Line extends BaseEntity {
         lineStation.setLine(this);
     }
 
+    public void addLineStationWithoutSettingLine(LineStation lineStation) {
+        lineStations.add(lineStation);
+    }
+
+    public boolean containLineStation(LineStation lineStation) {
+        return lineStations.contains(lineStation);
+    }
+
     public Long getId() {
         return id;
     }

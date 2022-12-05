@@ -118,8 +118,8 @@ public class LineStation extends BaseEntity {
 
     public void setLine(Line line) {
         this.line = line;
-        if (!line.getLineStations().contains(this)) {
-            line.getLineStations().add(this);
+        if (!line.containLineStation(this)) {
+            line.addLineStationWithoutSettingLine(this);
         }
     }
 
