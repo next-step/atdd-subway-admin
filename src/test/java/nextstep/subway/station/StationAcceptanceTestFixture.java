@@ -5,6 +5,7 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
+import nextstep.subway.domain.Station;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
@@ -38,7 +39,7 @@ class StationAcceptanceTestFixture {
      * @param stationName 생성할 지하철역 이름
      * @return 생성된 지하철역 id
      */
-    protected static ExtractableResponse<Response> 지하철역_생성(String stationName) {
+    public static ExtractableResponse<Response> 지하철역_생성(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
