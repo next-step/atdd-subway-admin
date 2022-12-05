@@ -17,7 +17,6 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
-    private StationService stationService;
 
     public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;

@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import java.util.HashMap;
@@ -71,7 +72,7 @@ public class SectionAcceptanceTest {
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
 
         // then
-         assertThat(findLine.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("상행종점역","새로운역","하행종점역");
+        assertThat(findLine.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("상행종점역","새로운역","하행종점역");
     }
 
     /**
@@ -82,6 +83,16 @@ public class SectionAcceptanceTest {
     @DisplayName("새로운 역을 상행 종점으로 등록한다.")
     @Test
     void addSectionNewUpStation() {
+        // given
+        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
+        SectionRequest newSection = new SectionRequest(새로운역.getId(),상행종점역.getId(),5);
+        addSectionRest(신분당선.getId(), newSection);
+
+        // when
+        LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
+
+        // then
+        assertThat(findLine.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("새로운역","상행종점역","하행종점역");
     }
 
     /**
@@ -92,6 +103,16 @@ public class SectionAcceptanceTest {
     @DisplayName("새로운 역을 하행 종점으로 등록한다.")
     @Test
     void addSectionNewDownStation() {
+        // given
+        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
+        SectionRequest newSection = new SectionRequest(하행종점역.getId(),새로운역.getId(),5);
+        addSectionRest(신분당선.getId(), newSection);
+
+        // when
+        LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
+
+        // then
+        assertThat(findLine.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("상행종점역","하행종점역","새로운역");
     }
 
     // Happy-case
@@ -104,6 +125,15 @@ public class SectionAcceptanceTest {
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없다.")
     @Test
     void error_addSectionLongThanOriginLine() {
+        // given
+        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
+        SectionRequest newSection = new SectionRequest(새로운역.getId(),하행종점역.getId(),10);
+
+        // when
+        ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
@@ -114,16 +144,34 @@ public class SectionAcceptanceTest {
     @DisplayName("상행역과 하행역이 이미 노선에 등록되어 있으면 추가할 수 없다.")
     @Test
     void error_addSectionSameStationsLine() {
+        // given
+        SectionRequest newSection = new SectionRequest(상행종점역.getId(),하행종점역.getId(),5);
+
+        // when
+        ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     /**
      * Given 상행종점역, 하행종점역을 가진 노선을 생성하고
-     * When new상행종점역, new하행종점역을 가진 구간을 등록하면
+     * When 새상행종점역, 새하행종점역을 가진 구간을 등록하면
      * Then 예외가 발생한다.
      */
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않다면 추가할 수 없다.")
     @Test
     void error_addSectionAnotherStationsLine() {
+        // given
+        StationResponse 새상행종점역 = createStationRest("새상행종점역").as(StationResponse.class);
+        StationResponse 새하행종점역 = createStationRest("새하행종점역").as(StationResponse.class);
+        SectionRequest newSection = new SectionRequest(새상행종점역.getId(),새하행종점역.getId(),5);
+
+        // when
+        ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     private ExtractableResponse<Response> createLineRest(LineRequest lineRequest) {

@@ -43,22 +43,6 @@ public class Section implements Comparable<Section>{
         return new Section(upStation, downStation, distance);
     }
 
-    public Station getUpStation() {
-        return upStation;
-    }
-
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public Line getLine() {
-        return line;
-    }
-
     public void setLine(Line line) {
         this.line = line;
     }
@@ -88,11 +72,20 @@ public class Section implements Comparable<Section>{
     }
 
     public void changeStation(Section newSection) {
+        checkDistance(newSection);
+
         if (checkUpStation(newSection)) {
             this.upStation = newSection.downStation;
             return;
         }
         this.downStation = newSection.upStation;
+    }
+
+    private void checkDistance(Section newSection) {
+        if (this.distance <= newSection.distance) {
+            throw new IllegalArgumentException("역 사이에 새로운 역과의 길이가 기존 역 사이 길이보다 크거나 같을 수 없습니다.");
+        }
+        this.distance -= newSection.distance;
     }
 
     @Override
