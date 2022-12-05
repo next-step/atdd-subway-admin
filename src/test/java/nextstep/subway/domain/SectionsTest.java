@@ -1,0 +1,41 @@
+package nextstep.subway.domain;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class SectionsTest {
+    private Station 상행종점역;
+    private Station 하행종점역;
+    private Station 새로운역;
+    private Section initSection;
+
+    @BeforeEach
+    void setUp() {
+        상행종점역 = new Station("상행종점역");
+        하행종점역 = new Station("하행종점역");
+        새로운역 = new Station("새로운역");
+        initSection = Section.of(상행종점역, 하행종점역, 10);
+    }
+
+    @Test
+    @DisplayName("sections의 stations 조회")
+    void findSectionsStations() {
+        Sections sections = new Sections(initSection);
+        List<Station> stations = sections.getStations();
+        assertThat(stations).containsExactly(상행종점역,하행종점역);
+    }
+
+    @Test
+    @DisplayName("sections의 새로운 section 추가")
+    void checkSection() {
+        Sections sections = new Sections(initSection);
+        Section newSection = Section.of(새로운역, 상행종점역, 8);
+        sections.add(newSection);
+        assertThat(sections.getStations()).containsExactly(새로운역,상행종점역,하행종점역);
+    }
+}

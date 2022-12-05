@@ -17,7 +17,7 @@ public class Sections {
     }
 
     public Sections(Section section) {
-        sections = Arrays.asList(section);
+        sections = new ArrayList<>(Arrays.asList(section));
     }
 
     public void add(Section section) {
