@@ -4,9 +4,11 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -57,5 +59,13 @@ class LineStationAcceptanceTestFixture {
                 .when().get("/" + lineId + "/sections" + "/" + stationId)
                 .then().log().all()
                 .extract();
+    }
+
+    protected static SectionResponse 구간정보(ExtractableResponse<Response> response) {
+        return response.jsonPath().getObject("", SectionResponse.class);
+    }
+
+    protected static List<SectionResponse> 구간목록(ExtractableResponse<Response> response) {
+        return response.jsonPath().getList("", SectionResponse.class);
     }
 }

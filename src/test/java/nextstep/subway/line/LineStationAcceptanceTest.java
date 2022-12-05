@@ -5,9 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.domain.line.LineStation;
-import nextstep.subway.domain.line.LineStations;
+import java.util.List;
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.springframework.http.HttpStatus;
 import nextstep.subway.TestUtil;
@@ -35,8 +35,8 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
         TestUtil.응답확인(response, HttpStatus.CREATED);
 
         //Then
-        LineStations 조회된_구간정보_목록 = 구간목록조회(_2호선.getId()).as(LineStations.class);
-        assertThat(조회된_구간정보_목록.getLineStations()).containsAnyOf(response.as(LineStation.class));
+        List<SectionResponse> 조회된_구간정보_목록 = 구간목록(구간목록조회(_2호선.getId()));
+        assertThat(조회된_구간정보_목록).containsAnyOf(구간정보(response));
     }
 
     /**
@@ -48,7 +48,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
     @Test
     void 노선에_등록된_구간정보_목록_조회() {
         //Given
-        LineStation 등록된_구간정보 = 구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10).as(LineStation.class);
+        SectionResponse 등록된_구간정보 = 구간정보(구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10));
 
         //When
         ExtractableResponse<Response> response = 구간목록조회(_2호선.getId());
@@ -57,7 +57,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
         TestUtil.응답확인(response, HttpStatus.OK);
 
         //Then
-        LineStations 조회된_구간정보_목록 = response.as(LineStations.class);
+        List<SectionResponse> 조회된_구간정보_목록 = 구간목록(response);
         assertThat(조회된_구간정보_목록.contains(등록된_구간정보)).isTrue();
     }
 
@@ -70,7 +70,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
     @Test
     void 상행_종점_등록() {
         //Given
-        구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10).as(LineStation.class);
+        구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10);
         Station 방배역 = StationAcceptanceTest.지하철역_생성("방배역").as(Station.class);
 
         //When
@@ -80,8 +80,8 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
         TestUtil.응답확인(response, HttpStatus.CREATED);
 
         //Then
-        LineStations 조회된_구간정보_목록 = 구간목록조회(_2호선.getId()).as(LineStations.class);
-        assertThat(조회된_구간정보_목록.getLineStations()).containsAnyOf(response.as(LineStation.class));
+        List<SectionResponse> 조회된_구간정보_목록 = 구간목록(구간목록조회(_2호선.getId()));
+        assertThat(조회된_구간정보_목록).containsAnyOf(구간정보(response));
     }
 
     /**
@@ -93,7 +93,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
     @Test
     void 하행_종점_등록() {
         //Given
-        구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10).as(LineStation.class);
+        구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10);
         Station 역삼역 = StationAcceptanceTest.지하철역_생성("역삼역").as(Station.class);
 
         //When
@@ -103,8 +103,8 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
         TestUtil.응답확인(response, HttpStatus.CREATED);
 
         //Then
-        LineStations 조회된_구간정보_목록 = 구간목록조회(_2호선.getId()).as(LineStations.class);
-        assertThat(조회된_구간정보_목록.getLineStations()).containsAnyOf(response.as(LineStation.class));
+        List<SectionResponse> 조회된_구간정보_목록 = 구간목록(구간목록조회(_2호선.getId()));
+        assertThat(조회된_구간정보_목록).containsAnyOf(구간정보(response));
     }
 
     /**
@@ -117,8 +117,8 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
     void 노선에_등록된_역_구간정보_조회() {
         //Given
         Station 방배역 = StationAcceptanceTest.지하철역_생성("방배역").as(Station.class);
-        LineStation 등록된_구간정보 = 구간등록(_2호선.getId(), 방배역.getId(), 서초역.getId(), 10).as(LineStation.class);
-        LineStation 등록된_구간정보2 = 구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10).as(LineStation.class);
+        SectionResponse 등록된_구간정보 = 구간정보(구간등록(_2호선.getId(), 방배역.getId(), 서초역.getId(), 10));
+        SectionResponse 등록된_구간정보2 = 구간정보(구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10));
 
         //When
         ExtractableResponse<Response> response = 구간정보조회(_2호선.getId(), 서초역.getId());
@@ -127,7 +127,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
         TestUtil.응답확인(response, HttpStatus.OK);
 
         //Then
-        LineStations 조회된_구간정보_목록 = response.as(LineStations.class);
+        List<SectionResponse> 조회된_구간정보_목록 = 구간목록(response);
         assertAll(
                 () -> assertThat(조회된_구간정보_목록.contains(등록된_구간정보)).isTrue(),
                 () -> assertThat(조회된_구간정보_목록.contains(등록된_구간정보2)).isTrue()
@@ -144,7 +144,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
     @Test
     void 구간_길이_초과_등록() {
         //Given
-        구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10).as(LineStation.class);
+        구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10);
         Station 교대역 = StationAcceptanceTest.지하철역_생성("교대역").as(Station.class);
 
         //When
@@ -168,7 +168,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
     @Test
     void 동일_구간_길이_등록() {
         //Given
-        구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10).as(LineStation.class);
+        구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10);
         Station 교대역 = StationAcceptanceTest.지하철역_생성("교대역").as(Station.class);
 
         //When
@@ -193,8 +193,8 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
     void 등록된_역_중복_등록() {
         //Given
         Station 교대역 = StationAcceptanceTest.지하철역_생성("교대역").as(Station.class);
-        구간등록(_2호선.getId(), 서초역.getId(), 교대역.getId(), 5).as(LineStation.class);
-        구간등록(_2호선.getId(), 교대역.getId(), 강남역.getId(), 5).as(LineStation.class);
+        구간등록(_2호선.getId(), 서초역.getId(), 교대역.getId(), 5);
+        구간등록(_2호선.getId(), 교대역.getId(), 강남역.getId(), 5);
 
         //When
         ExtractableResponse<Response> response = 구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 20);
@@ -217,7 +217,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
     @Test
     void 등록되지_않은_역_등록() {
         //Given
-        구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 5).as(LineStation.class);
+        구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 5);
         Station 방배역 = StationAcceptanceTest.지하철역_생성("방배역").as(Station.class);
         Station 교대역 = StationAcceptanceTest.지하철역_생성("교대역").as(Station.class);
 
