@@ -24,4 +24,20 @@ public class Station extends BaseEntity {
     public String getName() {
         return name;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Station)) {
+            return false;
+        }
+        return ((Station)o).getId() == id && ((Station)o).getName() == name;
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
 }

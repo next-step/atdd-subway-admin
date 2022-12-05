@@ -2,8 +2,6 @@ package nextstep.subway.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Sections;
-import nextstep.subway.domain.Station;
 
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 public class LineRequest {
