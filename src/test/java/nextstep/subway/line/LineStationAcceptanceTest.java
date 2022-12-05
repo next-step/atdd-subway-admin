@@ -197,13 +197,15 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
         구간등록(_2호선.getId(), 교대역.getId(), 강남역.getId(), 5);
 
         //When
-        ExtractableResponse<Response> response = 구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 20);
+        ExtractableResponse<Response> response = 구간등록(_2호선.getId(), 서초역.getId(), 교대역.getId(), 20);
         ExtractableResponse<Response> response2 = 구간등록(_2호선.getId(), 교대역.getId(), 강남역.getId(), 20);
+        ExtractableResponse<Response> response3 = 구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 20);
 
         //Then
         assertAll(
                 () -> TestUtil.응답확인(response, HttpStatus.BAD_REQUEST),
-                () -> TestUtil.응답확인(response2, HttpStatus.BAD_REQUEST)
+                () -> TestUtil.응답확인(response2, HttpStatus.BAD_REQUEST),
+                () -> TestUtil.응답확인(response3, HttpStatus.BAD_REQUEST)
         );
     }
 
