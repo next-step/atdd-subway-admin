@@ -56,18 +56,18 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @PostMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<SectionResponse> createSection(@PathVariable Long id, @RequestBody SectionRequest request) {
         SectionResponse section = lineService.saveSection(id, request);
         return ResponseEntity.created(URI.create("/" + id + "/sections/" + section.getId())).body(section);
     }
 
-    @GetMapping(value = "/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<SectionResponse>> showSections(@PathVariable Long id) {
         return ResponseEntity.ok().body(lineService.findLineStationsByLineId(id));
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }

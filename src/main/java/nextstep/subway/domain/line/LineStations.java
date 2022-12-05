@@ -7,6 +7,8 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.StationRegisterStatus;
 
 @Embeddable
 public class LineStations {
@@ -19,6 +21,10 @@ public class LineStations {
 
     public void add(LineStation lineStation) {
         this.lineStations.add(lineStation);
+    }
+
+    public boolean isEmpty() {
+        return lineStations.isEmpty();
     }
 
     public List<LineStation> getLineStations() {
@@ -48,5 +54,12 @@ public class LineStations {
     @Override
     public int hashCode() {
         return Objects.hash(lineStations);
+    }
+
+    public StationRegisterStatus getStationRegisterStatus(Station station) {
+        StationRegisterStatus stationRegisterStatus = new StationRegisterStatus();
+        this.lineStations
+                .forEach(lineStation -> stationRegisterStatus.add(lineStation.checkStationStatus(station)));
+        return stationRegisterStatus;
     }
 }

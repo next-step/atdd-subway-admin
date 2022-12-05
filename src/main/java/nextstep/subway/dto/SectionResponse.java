@@ -36,6 +36,7 @@ public class SectionResponse {
             int distance,
             Long lineId,
             String lineName) {
+        this.id = id;
         this.upStationId = upStationId;
         this.upStationName = upStationName;
         this.downStationId = downStationId;

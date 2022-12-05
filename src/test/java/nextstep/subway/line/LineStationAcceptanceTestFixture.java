@@ -40,7 +40,7 @@ class LineStationAcceptanceTestFixture {
         return RestAssured.given().log().all()
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().post("/" + lineId + "/sections")
+                .when().post("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract();
     }
@@ -48,7 +48,7 @@ class LineStationAcceptanceTestFixture {
     protected ExtractableResponse<Response> 구간목록조회(Long lineId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/" + lineId + "/sections")
+                .when().get("/lines/" + lineId + "/sections")
                 .then().log().all()
                 .extract();
     }

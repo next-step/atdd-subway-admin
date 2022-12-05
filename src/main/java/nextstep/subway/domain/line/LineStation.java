@@ -1,6 +1,7 @@
 package nextstep.subway.domain.line;
 
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -11,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import nextstep.subway.domain.BaseEntity;
 import nextstep.subway.domain.station.Station;
+import nextstep.subway.domain.station.StationPosition;
+import nextstep.subway.domain.station.StationStatus;
 
 @Entity
 public class LineStation extends BaseEntity {
@@ -27,6 +30,7 @@ public class LineStation extends BaseEntity {
     @JoinColumn(name = "pre_station_id", foreignKey = @ForeignKey(name = "fk_line_station_pre_station"))
     private Station preStation;
 
+    @Column(nullable = false)
     private int distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -41,6 +45,12 @@ public class LineStation extends BaseEntity {
         this.preStation = preStation;
         this.distance = distance;
         this.line = line;
+    }
+
+    public StationStatus checkStationStatus(Station station) {
+        if (station.equals(this.station)) return new StationStatus(station, this, StationPosition.DOWNSTATION);
+        if (station.equals(this.preStation)) return new StationStatus(station, this, StationPosition.UPSTATION);
+        return null;
     }
 
     public Long getId() {
@@ -87,5 +97,11 @@ public class LineStation extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, station, preStation, distance, line);
+    }
+
+    public int distanceCompare(int distance) {
+        if (this.distance > distance) return 1;
+        if (this.distance == distance) return 0;
+        return -1;
     }
 }
