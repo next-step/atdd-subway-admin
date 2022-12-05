@@ -112,7 +112,7 @@ public class StationAcceptanceTest {
         assertThat(findAllResponse.body().jsonPath().getInt("size()")).isEqualTo(0);
     }
 
-    private static ExtractableResponse<Response> createStation(String stationName) {
+    public static ExtractableResponse<Response> createStation(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
@@ -124,7 +124,7 @@ public class StationAcceptanceTest {
                 .extract();
     }
 
-    private static ExtractableResponse<Response> findAllStations() {
+    public static ExtractableResponse<Response> findAllStations() {
         return RestAssured.given().log().all()
                 .when().get("/stations")
                 .then().log().all()

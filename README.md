@@ -59,3 +59,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
   * 지하철역 조회 인수 테스트 작성하기
   * 지하철역 삭제 인수 테스트 작성하기
 * 인수테스트 시 데이터베이스 클린 기능 추가하기
+
+## 🚀 2단계 - 지하철 노선 기능
+* 지하철 노선 생성
+* 지하철 노선 목록 조회
+* 지하철 노선 조회
+* 지하철 노선 수정
+* 지하철 노선 삭제
