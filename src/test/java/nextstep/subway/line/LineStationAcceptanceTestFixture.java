@@ -1,7 +1,5 @@
 package nextstep.subway.line;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
@@ -12,7 +10,6 @@ import nextstep.subway.domain.Station;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 class LineStationAcceptanceTestFixture {
@@ -20,15 +17,15 @@ class LineStationAcceptanceTestFixture {
     @LocalServerPort
     int port;
 
+    Station 서초역;
     Station 강남역;
-    Station 역삼역;
     Line _2호선;
 
     @BeforeEach
     public void setUp() {
         RestAssured.port = port;
-        강남역 = StationAcceptanceTest.지하철역_생성("강남역").as(Station.class);
-        역삼역 = StationAcceptanceTest.지하철역_생성("역삼역").as(Station.class);
+        서초역 = StationAcceptanceTest.지하철역_생성("서초역").as(Station.class);
+        강남역 = StationAcceptanceTest.지하철역_생성("강남").as(Station.class);
         _2호선 = LineAcceptanceTest.지하철_노선_생성("2호선", "green").as(Line.class);
     }
 
@@ -50,6 +47,14 @@ class LineStationAcceptanceTestFixture {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> 구간정보조회(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/" + lineId + "/sections" + "/" + stationId)
                 .then().log().all()
                 .extract();
     }
