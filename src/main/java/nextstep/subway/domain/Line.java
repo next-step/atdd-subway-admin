@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import com.sun.istack.NotNull;
+import nextstep.subway.consts.ErrorMessage;
 
 import javax.persistence.*;
 import java.util.List;
@@ -66,10 +67,10 @@ public class Line {
 
     private void validateSection(Section section) {
         if (section.isExistSections(sections.getStations())) {
-            throw new IllegalArgumentException("상행역과 하행역이 모두 노선에 등록되어 있습니다.");
+            throw new IllegalArgumentException(ErrorMessage.ERROR_STATIONS_ALREADY_EXIST);
         }
         if (!section.isIncludeStation(sections.getStations())) {
-            throw new IllegalArgumentException("상행역과 하행역 둘 중 하나도 포함되어 있지 않습니다.");
+            throw new IllegalArgumentException(ErrorMessage.ERROR_STATIONS_NOT_ALL);
         }
     }
 }

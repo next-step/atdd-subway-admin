@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.consts.ErrorMessage;
+
 import javax.persistence.*;
 import java.util.List;
 import java.util.stream.Stream;
@@ -83,7 +85,7 @@ public class Section implements Comparable<Section>{
 
     private void checkDistance(Section newSection) {
         if (this.distance <= newSection.distance) {
-            throw new IllegalArgumentException("역 사이에 새로운 역과의 길이가 기존 역 사이 길이보다 크거나 같을 수 없습니다.");
+            throw new IllegalArgumentException(ErrorMessage.ERROR_DISTANCE_NOT_LONG);
         }
         this.distance -= newSection.distance;
     }
