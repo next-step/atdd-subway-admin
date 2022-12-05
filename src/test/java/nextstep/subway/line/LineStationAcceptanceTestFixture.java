@@ -53,10 +53,10 @@ class LineStationAcceptanceTestFixture {
                 .extract();
     }
 
-    protected ExtractableResponse<Response> 구간정보조회(Long lineId, Long stationId) {
+    protected ExtractableResponse<Response> 구간정보조회(Long stationId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/" + lineId + "/sections" + "/" + stationId)
+                .when().get("/stations/" + stationId + "/sections")
                 .then().log().all()
                 .extract();
     }

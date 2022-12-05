@@ -121,7 +121,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
         SectionResponse 등록된_구간정보2 = 구간정보(구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10));
 
         //When
-        ExtractableResponse<Response> response = 구간정보조회(_2호선.getId(), 서초역.getId());
+        ExtractableResponse<Response> response = 구간정보조회(서초역.getId());
 
         //Then
         TestUtil.응답확인(response, HttpStatus.OK);
