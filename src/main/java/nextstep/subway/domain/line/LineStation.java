@@ -36,6 +36,13 @@ public class LineStation extends BaseEntity {
     public LineStation() {
     }
 
+    public LineStation(Station station, Station preStation, int distance, Line line) {
+        this.station = station;
+        this.preStation = preStation;
+        this.distance = distance;
+        this.line = line;
+    }
+
     public Long getId() {
         return id;
     }
