@@ -2,6 +2,7 @@ package nextstep.subway.dto;
 
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
+import nextstep.subway.domain.Station;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,6 +38,10 @@ public class LineResponse {
 
     public String getName() {
         return name;
+    }
+
+    public List<StationResponse> getStations() {
+        return stations;
     }
 
     public LineResponse setStations(List<StationResponse> stations) {

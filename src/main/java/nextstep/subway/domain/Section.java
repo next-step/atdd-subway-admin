@@ -75,6 +75,11 @@ public class Section extends BaseEntity {
         }
     }
 
+    public void combineSection(Section deleteSection) {
+        downStation = deleteSection.downStation;
+        distance += deleteSection.distance;
+    }
+
     public Line getLine() {
         return line;
     }

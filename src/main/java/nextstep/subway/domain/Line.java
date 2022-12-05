@@ -43,6 +43,11 @@ public class Line extends BaseEntity {
     public Sections addSection(Section section) {
         return sections.addSection(section);
     }
+
+    public Section deleteStation(Station deleteStation) {
+        return sections.deleteStation(deleteStation);
+    }
+
     public Long getId() {
         return id;
     }
@@ -58,5 +63,4 @@ public class Line extends BaseEntity {
     public Sections getSections() {
         return sections.getSortedSections();
     }
-
 }
