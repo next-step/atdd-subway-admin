@@ -50,8 +50,12 @@ public class LineStation extends BaseEntity {
     }
 
     public StationStatus checkStationStatus(Station station) {
-        if (station.equals(this.station)) return new StationStatus(station, this, StationPosition.DOWNSTATION);
-        if (station.equals(this.preStation)) return new StationStatus(station, this, StationPosition.UPSTATION);
+        if (station.equals(this.station)) {
+            return new StationStatus(station, this, StationPosition.DOWNSTATION);
+        }
+        if (station.equals(this.preStation)) {
+            return new StationStatus(station, this, StationPosition.UPSTATION);
+        }
         return null;
     }
 
@@ -78,13 +82,15 @@ public class LineStation extends BaseEntity {
         downStationStatus.validate(StationPosition.DOWNSTATION, distance, preStation);
     }
 
-    private void checkRegisteredStationExist(StationRegisterStatus upStationStatus, StationRegisterStatus downStationStatus) {
+    private void checkRegisteredStationExist(StationRegisterStatus upStationStatus,
+            StationRegisterStatus downStationStatus) {
         if (upStationStatus.isEmpty() && downStationStatus.isEmpty()) {
             throw new IllegalArgumentException(ErrorMessage.BOTH_STATIONS_NOT_REGISTERED);
         }
     }
 
-    private void checkBothStationRegistered(StationRegisterStatus upStationStatus, StationRegisterStatus downStationStatus) {
+    private void checkBothStationRegistered(StationRegisterStatus upStationStatus,
+            StationRegisterStatus downStationStatus) {
         if (!upStationStatus.isEmpty() && !downStationStatus.isEmpty()) {
             throw new IllegalArgumentException(ErrorMessage.ALREADY_REGISTERED_SECTION);
         }

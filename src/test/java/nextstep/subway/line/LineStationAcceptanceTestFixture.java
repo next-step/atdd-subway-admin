@@ -69,12 +69,14 @@ class LineStationAcceptanceTestFixture {
         return response.jsonPath().getList("", SectionResponse.class);
     }
 
-    protected static boolean 구간포함(List<SectionResponse> sectionResponses,Long upStationId, Long downStationId, int distance) {
+    protected static boolean 구간포함(List<SectionResponse> sectionResponses, Long upStationId, Long downStationId,
+            int distance) {
         return sectionResponses.stream()
                 .anyMatch(s -> 구간정보_일치(s, upStationId, downStationId, distance));
     }
 
-    private static boolean 구간정보_일치(SectionResponse sectionResponse,Long upStationId, Long downStationId, int distance) {
+    private static boolean 구간정보_일치(SectionResponse sectionResponse, Long upStationId, Long downStationId,
+            int distance) {
         if (upStationId.equals(sectionResponse.getUpStationId())
                 && downStationId.equals(sectionResponse.getDownStationId())
                 && sectionResponse.getDistance() == distance) {

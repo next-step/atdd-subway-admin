@@ -7,10 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import nextstep.subway.constants.ErrorMessage;
 import nextstep.subway.domain.BaseEntity;
-import nextstep.subway.domain.station.StationPosition;
-import nextstep.subway.domain.station.StationRegisterStatus;
 import nextstep.subway.dto.UpdateLine;
 
 @Entity

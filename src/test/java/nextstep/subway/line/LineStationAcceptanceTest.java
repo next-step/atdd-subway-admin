@@ -6,14 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import nextstep.subway.TestUtil;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
-import org.springframework.http.HttpStatus;
-import nextstep.subway.TestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.annotation.DirtiesContext;
 
 @DisplayName("지하철 구간 관련 기능")
