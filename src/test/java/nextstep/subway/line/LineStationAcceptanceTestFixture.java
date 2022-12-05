@@ -68,4 +68,21 @@ class LineStationAcceptanceTestFixture {
     protected static List<SectionResponse> 구간목록(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("", SectionResponse.class);
     }
+
+    protected static boolean 구간포함(List<SectionResponse> sectionResponses,Long upStationId, Long downStationId, int distance) {
+        boolean result = false;
+        for (SectionResponse sectionResponse:sectionResponses) {
+            result = 구간정보_일치(sectionResponse, upStationId, downStationId, distance);
+        }
+        return result;
+    }
+
+    private static boolean 구간정보_일치(SectionResponse sectionResponse,Long upStationId, Long downStationId, int distance) {
+        if (upStationId.equals(sectionResponse.getUpStationId())
+                && downStationId.equals(sectionResponse.getDownStationId())
+                && sectionResponse.getDistance() == distance) {
+            return true;
+        }
+        return false;
+    }
 }

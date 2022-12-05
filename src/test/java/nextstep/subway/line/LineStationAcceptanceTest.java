@@ -135,6 +135,50 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
     }
 
     /**
+     * Given 지하철 노선에 구간을 등록하고
+     * When 지하철 노선에 새로운 역을 등록된 두 역 사이에 등록 요청하면
+     * Then 지하철 노선에 지하철 역이 등록된다
+     */
+    @DisplayName("지하철 노선에 등록된 두 역 사이에 지하철 역 등록")
+    @Test
+    void 두_역_사이에_역_등록() {
+        //Given
+        Station 교대역 = StationAcceptanceTest.지하철역_생성("교대역").as(Station.class);
+        Station 역삼역 = StationAcceptanceTest.지하철역_생성("역삼역").as(Station.class);
+        Station 선릉역 = StationAcceptanceTest.지하철역_생성("선릉역").as(Station.class);
+        구간정보(구간등록(_2호선.getId(), 서초역.getId(), 강남역.getId(), 10));
+        구간정보(구간등록(_2호선.getId(), 강남역.getId(), 선릉역.getId(), 10));
+
+        //When
+        ExtractableResponse<Response> response = 구간등록(_2호선.getId(), 서초역.getId(), 교대역.getId(), 4);
+        ExtractableResponse<Response> response2 = 구간등록(_2호선.getId(), 역삼역.getId(), 선릉역.getId(), 6);
+
+        //Then
+        assertAll(
+                () -> TestUtil.응답확인(response, HttpStatus.CREATED),
+                () -> TestUtil.응답확인(response2, HttpStatus.CREATED)
+        );
+
+        //Then
+        List<SectionResponse> 교대역_중심_구간목록 = 구간목록(구간정보조회(교대역.getId()));
+        List<SectionResponse> 역삼역_중심_구간목록 = 구간목록(구간정보조회(역삼역.getId()));
+        assertAll(
+                () -> assertThat(구간포함(교대역_중심_구간목록, 서초역.getId(), 교대역.getId(), 4)).isTrue(),
+                () -> assertThat(구간포함(교대역_중심_구간목록, 교대역.getId(), 강남역.getId(), 6)).isTrue(),
+                () -> assertThat(구간포함(역삼역_중심_구간목록, 강남역.getId(), 역삼역.getId(), 4)).isTrue(),
+                () -> assertThat(구간포함(역삼역_중심_구간목록, 역삼역.getId(), 선릉역.getId(), 6)).isTrue()
+        );
+
+        //Then
+        List<SectionResponse> 조회된_구간정보_목록 = 구간목록(구간목록조회(_2호선.getId()));
+        assertAll(
+                () -> assertThat(구간포함(조회된_구간정보_목록, 서초역.getId(), 강남역.getId(), 10)).isFalse(),
+                () -> assertThat(구간포함(조회된_구간정보_목록, 강남역.getId(), 선릉역.getId(), 10)).isFalse()
+        );
+
+    }
+
+    /**
      * 예외케이스
      * Given 노선에 두 역을 등록하고
      * When 등록된 두 역 사이에 기존 역 사이 길이보다 큰 구간길이의 지하철역을 등록하면
