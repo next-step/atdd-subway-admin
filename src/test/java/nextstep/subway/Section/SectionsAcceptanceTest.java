@@ -119,6 +119,42 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("구간삭제 요청 파라미터에 대한 예외 검증 - LINE이 존재하지 않은 경우")
+    @Test
+    void makeExceptionWhenNoSuchLine() {
+        ExtractableResponse<Response> response = removeLineStation(2, 강남역.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("구간삭제 요청 파라미터에 대한 예외 검증 - LINE이 존재하지 않은 경우")
+    @Test
+    void makeExceptionWhenNoSuchStation() {
+        ExtractableResponse<Response> response = removeLineStation(신분당선.getId(), 99);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("구간삭제 요청 파라미터에 대한 예외 검증 - Line의 Sections의 size가 2 이하인 경우")
+    @Test
+    void makeExceptionWhenHasNotEnoughSectionToRemove() {
+        ExtractableResponse<Response> response = removeLineStation(신분당선.getId(), 강남역.getId());
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    @DisplayName("구간삭제 요청 파라미터에 대한 예외 검증 - 삭제 요청 Station이 요청한 Line에 등록되지 않은 경우")
+    @TestFactory
+    Stream<DynamicTest> makeExceptionAboutRemoveSectionsRequestParameter() {
+        return Stream.of(
+                dynamicTest("LINE에 Section을 추가하여 삭제 가능 사이즈 2를 만들어줌", () -> {
+                    ExtractableResponse<Response> response = addSection(generateSectionRequest(강남역.getId(), 정자역.getId(), 4), 신분당선.getId());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+                dynamicTest("강남-정자-광교 노선에서 광교중앙역 삭제 요청", () -> {
+                    ExtractableResponse<Response> response = removeLineStation(신분당선.getId(), 광교중앙역.getId());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                })
+        );
+    }
+
     private ExtractableResponse<Response> addSection(SectionRequest sectionRequest, long id) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
@@ -144,6 +180,14 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when()
                 .post("/lines")
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> removeLineStation(long lineId, long stationId) {
+        return RestAssured.given().param("stationId", stationId).log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines" + DELIMITER + lineId + DELIMITER + "sections")
                 .then().log().all()
                 .extract();
     }
