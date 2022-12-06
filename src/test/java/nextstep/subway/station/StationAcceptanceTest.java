@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("지하철역 관련 기능")
 @DirtiesContext
@@ -29,6 +28,7 @@ public class StationAcceptanceTest {
     int port;
     @Autowired
     private DatabaseClear databaseClear;
+
     @BeforeEach
     public void setUp() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {

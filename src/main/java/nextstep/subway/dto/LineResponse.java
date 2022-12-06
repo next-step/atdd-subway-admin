@@ -1,9 +1,8 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.Line.Line;
+import nextstep.subway.domain.Line;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LineResponse {
@@ -23,6 +22,8 @@ public class LineResponse {
     }
 
     public static LineResponse of(Line line) {
+        System.out.println(line.getId());
+        System.out.println(line.getStations());
         return new LineResponse(
                 line.getId(),
                 line.getName(),

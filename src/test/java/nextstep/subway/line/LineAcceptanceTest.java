@@ -58,7 +58,6 @@ public class LineAcceptanceTest {
     public void createLine() {
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성(lineRequest);
-
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -141,14 +140,14 @@ public class LineAcceptanceTest {
         assertThat(lines).isEmpty();
     }
 
-    private String 지하철_노선_조회(String id) {
+    public static String 지하철_노선_조회(String id) {
         return RestAssured.given().log().all()
                 .when().get("/lines/{id}", id)
                 .then().log().all()
                 .extract().path("name");
     }
 
-    public ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
 
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
@@ -186,5 +185,6 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
 
 }

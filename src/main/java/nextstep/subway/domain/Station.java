@@ -1,4 +1,4 @@
-package nextstep.subway.domain.station;
+package nextstep.subway.domain;
 
 import nextstep.subway.domain.BaseEntity;
 
