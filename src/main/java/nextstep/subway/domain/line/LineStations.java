@@ -3,6 +3,7 @@ package nextstep.subway.domain.line;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
@@ -23,8 +24,16 @@ public class LineStations {
         this.lineStations.add(lineStation);
     }
 
+    public void addAll(List<LineStation> lineStations) {
+        this.lineStations.addAll(lineStations);
+    }
+
     public boolean isEmpty() {
         return lineStations.isEmpty();
+    }
+
+    public Stream<LineStation> stream() {
+        return lineStations.stream();
     }
 
     public List<LineStation> getLineStations() {

@@ -9,6 +9,7 @@ import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.line.LineStation;
 import nextstep.subway.domain.line.LineStationRepository;
+import nextstep.subway.domain.line.LineStations;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.SectionRequest;
@@ -47,8 +48,9 @@ public class SectionService {
     }
 
     public List<SectionResponse> findLineStationsByLineId(Long id) {
-        Line line = lineRepository.findById(id).get();
-        List<LineStation> findResults = lineStationRepository.findByLine(line);
+        Line line = lineRepository.findById(id).orElseThrow(NoSuchElementException::new);
+        LineStations findResults = new LineStations();
+        findResults.addAll(lineStationRepository.findByLine(line));
         return findResults.stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
@@ -56,7 +58,7 @@ public class SectionService {
 
     public List<SectionResponse> findLineStationByStationId(Long stationId) {
         Station station = stationRepository.findById(stationId).orElseThrow(NoSuchElementException::new);
-        List<LineStation> findResults = new ArrayList<>();
+        LineStations findResults = new LineStations();
         findResults.addAll(lineStationRepository.findByStation(station));
         findResults.addAll(lineStationRepository.findByPreStation(station));
         return findResults.stream()
