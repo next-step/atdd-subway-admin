@@ -1,8 +1,10 @@
 package nextstep.subway.domain;
 
-import nextstep.subway.dto.LineRequest;
+import com.sun.istack.NotNull;
+import nextstep.subway.consts.ErrorMessage;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Line {
@@ -10,27 +12,30 @@ public class Line {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull
     private String name;
+    @NotNull
     private String color;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "upStationId")
-    private Station upStation;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "downStationId")
-    private Station downStation;
-    private int distance;
 
-    public Line() {
-    }
+    @Embedded
+    private Sections sections;
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    protected Line() {}
+
+    private Line( String name, String color, int distance, Station upStation, Station downStation) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this.sections = new Sections(new Section(upStation, downStation, distance, this));
     }
 
+    public static Line of(String name ,String color, int distance, Station upStation, Station downStation) {
+        return new Line(name, color, distance, upStation, downStation);
+    }
+
+    public Line(String name, String color) {
+        this.name = name;
+        this.color = color;
+    }
 
     public Long getId() {
         return id;
@@ -44,20 +49,27 @@ public class Line {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public List<Station> getStations() {
+        return sections.getStations();
     }
 
-    public Station getDownStation() {
-        return downStation;
+    public void update(Line newLine) {
+        this.name = newLine.getName();
+        this.color = newLine.getColor();
     }
 
-    public int getDistance() {
-        return distance;
+    public void addSection(Section section) {
+        validateSection(section);
+        sections.add(section);
+        section.setLine(this);
     }
 
-    public void update(LineRequest lineRequest) {
-        this.name = lineRequest.getName();
-        this.color = lineRequest.getColor();
+    private void validateSection(Section section) {
+        if (section.isExistSections(sections.getStations())) {
+            throw new IllegalArgumentException(ErrorMessage.ERROR_STATIONS_ALREADY_EXIST);
+        }
+        if (!section.isIncludeStation(sections.getStations())) {
+            throw new IllegalArgumentException(ErrorMessage.ERROR_STATIONS_NOT_ALL);
+        }
     }
 }

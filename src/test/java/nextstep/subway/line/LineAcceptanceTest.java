@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.LineResponse;
 import nextstep.subway.utils.DatabaseCleanup;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -97,13 +98,12 @@ public class LineAcceptanceTest {
 
         // when
         Long id = response.jsonPath().getLong("id");
-        ExtractableResponse<Response> lineNameResponse = lineGet(id);
+        LineResponse lineNameResponse = lineGet(id).as(LineResponse.class);
 
         // then
         assertAll(
-                () -> assertThat(lineNameResponse.jsonPath().getString("name")).isEqualTo("신분당선"),
-                () -> assertThat(lineNameResponse.statusCode()).isEqualTo(HttpStatus.OK.value()),
-                () -> assertThat(lineNameResponse.jsonPath().getList("stations").size()).isEqualTo(2)
+                () -> assertThat(lineNameResponse.getName()).isEqualTo("신분당선"),
+                () -> assertThat(lineNameResponse.getStations().size()).isEqualTo(2)
         );
 
     }
