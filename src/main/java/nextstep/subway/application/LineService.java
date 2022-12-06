@@ -35,7 +35,7 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id).get());
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(NoSuchElementException::new));
     }
 
     @Transactional
