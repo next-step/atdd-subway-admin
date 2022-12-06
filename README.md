@@ -259,11 +259,11 @@ host: localhost:52165
   * 하행종점인 경우
     * [X] 삭제 Station을 downStation으로 갖고있는 Section 삭제, Sections에서도 제거
 3. 종점이 아니면 가운데 역을 제거하는 케이스로 처리 
-  * [ ] 삭제 Station을 포함하는 2개의 Section 조회
+  * [X] 삭제 Station을 포함하는 2개의 Section 조회
     * 각 upStation, downStation으로 소유
     * A-Section: downStation으로 소유하는 Section
     * B-Section: upStation으로 소유하는 Section
-  * [ ] A-Section의 확장 및 B-Section 삭제
+  * [X] A-Section의 확장 및 B-Section 삭제
     * A-Section의 downStation은 B-Section의 downStation이 됨
     * (A-Section의 distance) += (B-Section의 distance)  
   * EX) A-B-C-D 에서 C 삭제
