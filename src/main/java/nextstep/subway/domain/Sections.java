@@ -211,6 +211,16 @@ public class Sections {
     }
 
     private long removeIntermediateSection(Station reqDeleteStation) {
-        return 1L;
+        Section hasUpStationSection = this.sections.stream()
+                .filter(eachSection -> eachSection.isSameUpStation(reqDeleteStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_IN_THE_LINE_EXCEPTION.getErrorMessage()));
+        Section hasDownStationSection = this.sections.stream()
+                .filter(eachSection -> eachSection.isSameDownStation(reqDeleteStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_IN_THE_LINE_EXCEPTION.getErrorMessage()));
+        hasDownStationSection.modiyDownStationAndDistance(hasUpStationSection.getDownStation(), hasUpStationSection.getDistance());
+        this.sections.remove(hasUpStationSection);
+        return hasUpStationSection.getId();
     }
 }

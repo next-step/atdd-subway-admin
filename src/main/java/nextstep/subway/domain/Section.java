@@ -167,4 +167,9 @@ public class Section extends BaseEntity{
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, line, distance);
     }
+
+    public void modiyDownStationAndDistance(Station downStation, Long distance) {
+        this.downStation = downStation;
+        this.distance += distance;
+    }
 }
