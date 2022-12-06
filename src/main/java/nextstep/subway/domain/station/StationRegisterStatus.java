@@ -2,6 +2,7 @@ package nextstep.subway.domain.station;
 
 import java.util.ArrayList;
 import java.util.List;
+import nextstep.subway.domain.line.Distance;
 
 public class StationRegisterStatus {
 
@@ -17,7 +18,7 @@ public class StationRegisterStatus {
         return stationStatusList.isEmpty();
     }
 
-    public void validate(StationPosition stationPosition, int distance, Station interStation) {
+    public void validate(StationPosition stationPosition, Distance distance, Station interStation) {
         stationStatusList.stream()
                 .filter(s -> s.matchStationPosition(stationPosition))
                 .findFirst()

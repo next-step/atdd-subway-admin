@@ -1,7 +1,7 @@
 package nextstep.subway.domain.line;
 
 import java.util.Objects;
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
@@ -32,8 +32,8 @@ public class LineStation extends BaseEntity {
     @JoinColumn(name = "pre_station_id", foreignKey = @ForeignKey(name = "fk_line_station_pre_station"))
     private Station preStation;
 
-    @Column(nullable = false)
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_line_station_to_line"))
@@ -42,7 +42,7 @@ public class LineStation extends BaseEntity {
     public LineStation() {
     }
 
-    public LineStation(Station station, Station preStation, int distance, Line line) {
+    public LineStation(Station station, Station preStation, Distance distance, Line line) {
         this.station = station;
         this.preStation = preStation;
         this.distance = distance;
@@ -59,18 +59,18 @@ public class LineStation extends BaseEntity {
         return null;
     }
 
-    public int distanceCompare(int distance) {
-        return Integer.compare(this.distance, distance);
+    public int distanceCompare(Distance distance) {
+        return this.distance.compareTo(distance);
     }
 
-    public void splitLineStation(StationPosition stationPosition, Station interStation, int subtractDistance) {
+    public void splitLineStation(StationPosition stationPosition, Station interStation, Distance distanceToSubtract) {
         if (stationPosition == StationPosition.UPSTATION) {
             preStation = interStation;
         }
         if (stationPosition == StationPosition.DOWNSTATION) {
             station = interStation;
         }
-        distance -= subtractDistance;
+        distance.subtract(distanceToSubtract);
     }
 
     public void validate(LineStations lineStations) {
@@ -133,7 +133,7 @@ public class LineStation extends BaseEntity {
     }
 
     public int getDistance() {
-        return distance;
+        return distance.getDistance();
     }
 
     public Line getLine() {
@@ -164,9 +164,9 @@ public class LineStation extends BaseEntity {
             return false;
         }
         LineStation that = (LineStation) o;
-        return distance == that.distance && Objects.equals(id, that.id) && Objects.equals(station,
-                that.station) && Objects.equals(preStation, that.preStation) && Objects.equals(line,
-                that.line);
+        return Objects.equals(id, that.id) && Objects.equals(station, that.station)
+                && Objects.equals(preStation, that.preStation) && Objects.equals(distance,
+                that.distance) && Objects.equals(line, that.line);
     }
 
     @Override
