@@ -144,13 +144,43 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
     @TestFactory
     Stream<DynamicTest> makeExceptionAboutRemoveSectionsRequestParameter() {
         return Stream.of(
-                dynamicTest("LINE에 Section을 추가하여 삭제 가능 사이즈 2를 만들어줌", () -> {
+                dynamicTest("LINE에 Section을 추가하여 삭제 가능 사이즈를 만들어줌", () -> {
                     ExtractableResponse<Response> response = addSection(generateSectionRequest(강남역.getId(), 정자역.getId(), 4), 신분당선.getId());
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 }),
                 dynamicTest("강남-정자-광교 노선에서 광교중앙역 삭제 요청", () -> {
                     ExtractableResponse<Response> response = removeLineStation(신분당선.getId(), 광교중앙역.getId());
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                })
+        );
+    }
+
+    @DisplayName("종점삭제 - 상행 종점 구간 제거 테스트")
+    @TestFactory
+    Stream<DynamicTest> removeEndUpPointSection() {
+        return Stream.of(
+                dynamicTest("LINE에 Section을 추가하여 삭제 가능 사이즈를 만들어줌 (강남,광교) ->  (강남,광교) + insert(광교,정자)", () -> {
+                    ExtractableResponse<Response> response = addSection(generateSectionRequest(광교역.getId(), 정자역.getId(), 4), 신분당선.getId());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+                dynamicTest("강남-광교-정자 노선에서 강남역 삭제 요청 - section id: 1 삭제", () -> {
+                    ExtractableResponse<Response> response = removeLineStation(신분당선.getId(), 강남역.getId());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                })
+        );
+    }
+
+    @DisplayName("종점삭제 - 하행 종점 구간 제거 테스트")
+    @TestFactory
+    Stream<DynamicTest> removeEndDownPointSection() {
+        return Stream.of(
+                dynamicTest("LINE에 Section을 추가하여 삭제 가능 사이즈를 만들어줌 (강남,광교) ->  insert(강남,정자) + (정자,광교)", () -> {
+                    ExtractableResponse<Response> response = addSection(generateSectionRequest(강남역.getId(), 정자역.getId(), 4), 신분당선.getId());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+                dynamicTest("강남-정자-광교 노선에서 광교역 삭제 요청 - section id: 1 삭제", () -> {
+                    ExtractableResponse<Response> response = removeLineStation(신분당선.getId(), 광교역.getId());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
                 })
         );
     }
