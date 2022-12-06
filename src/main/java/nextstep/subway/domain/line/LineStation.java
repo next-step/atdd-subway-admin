@@ -84,16 +84,24 @@ public class LineStation extends BaseEntity {
 
     private void checkRegisteredStationExist(StationRegisterStatus upStationStatus,
             StationRegisterStatus downStationStatus) {
-        if (upStationStatus.isEmpty() && downStationStatus.isEmpty()) {
+        if (isStationsEmpty(upStationStatus, downStationStatus)) {
             throw new IllegalArgumentException(ErrorMessage.BOTH_STATIONS_NOT_REGISTERED);
         }
     }
 
     private void checkBothStationRegistered(StationRegisterStatus upStationStatus,
             StationRegisterStatus downStationStatus) {
-        if (!upStationStatus.isEmpty() && !downStationStatus.isEmpty()) {
+        if (isStationsExist(upStationStatus, downStationStatus)) {
             throw new IllegalArgumentException(ErrorMessage.ALREADY_REGISTERED_SECTION);
         }
+    }
+
+    private boolean isStationsEmpty(StationRegisterStatus upStationStatus, StationRegisterStatus downStationStatus) {
+        return upStationStatus.isEmpty() && downStationStatus.isEmpty();
+    }
+
+    private boolean isStationsExist(StationRegisterStatus upStationStatus, StationRegisterStatus downStationStatus) {
+        return !upStationStatus.isEmpty() && !downStationStatus.isEmpty();
     }
 
     public Long getId() {
