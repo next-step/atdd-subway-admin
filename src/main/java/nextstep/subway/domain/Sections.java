@@ -195,4 +195,22 @@ public class Sections {
                 .distinct()
                 .noneMatch(eachStation -> eachStation.equals(station));
     }
+
+    public long removeSection(Station reqDeleteStation) {
+        Section firstSection = findFirstSection();
+        Section lastSection = findLastSection();
+        if (firstSection.isSameUpStation(reqDeleteStation)) {
+            this.sections.remove(firstSection);
+            return firstSection.getId();
+        }
+        if (lastSection.isSameDownStation(reqDeleteStation)) {
+            this.sections.remove(lastSection);
+            return lastSection.getId();
+        }
+        return removeIntermediateSection(reqDeleteStation);
+    }
+
+    private long removeIntermediateSection(Station reqDeleteStation) {
+        return 1L;
+    }
 }
