@@ -220,3 +220,59 @@ host: localhost:52165
   * 참고 코드: https://github.com/next-step/atdd-subway-map/blob/boorownie/src/main/java/nextstep/subway/line/domain/LineStations.java
   * JPA @Embedded And @Embeddable 문서 참고: https://www.baeldung.com/jpa-embedded-embeddable
   
+#### Step3 회고
+* 테스트코드도 공통 부분이 있으면 상속받아 처리 가능
+  * 다만 '공통'의 영역을 고민해볼 필요가 있음 
+  * 도메인 2~3 군데에서 사용한다해서 공통으로 적용하면, 공통이 아닌 끼어넣은? 느낌을 받아 refactoring 대상이 될 수 있음
+    * ex) request 생성
+  * '공통'의 영역은 거의 모든 테스트코드에서 사용하는 영역을 공통이라 정의하는 것이 좋아 보임
+    * ex) DatabaseCleaner
+* Hibernate equals 구현 및 proxy 이슈
+  * 지연로딩 설정한 연관관계에서 proxy 객체로 존재하는 경우가 있음
+  * 프록시는 해당 Entity 기반의 인스턴스는 맞으나, 해당 Entity의 클래스가 아님(오역 발생 여부 있음)
+  * 따라서 ob.getClass() 비교 및 obj instanceof Entity클래스 를 모두 해야 함
+  * hibernate는 equals()와 hashcode() 구현을 추천하지 않는다고 하는데, 이 내용만 보고 판단하는 것이 아니라 좀 더 찾아볼 필요성이 있음(JPA 스터디 진행)
+  * 참조: https://stackoverflow.com/questions/11013138/hibernate-equals-and-proxy
+* 다대다 연관관계가 아닌 매핑 Entity 를 활용 관련 이슈
+  * 기능 구현 이슈 중 가장 시간을 오래잡아 먹은 건
+  * 객체 그래프: Line <- Sections, Section -> Station
+  * Sections는 일급콜렉션이고, 실제 저장되는 Entity는 Section 인데, Section 연관관계 값 설정을 안해줌
+    * 계속 Proxy 형태로 존재하다, 최종적으로 저장도 안되어 구현 기능 시 이슈 발생
+  ~~~java
+  public void addSection(Section section) {
+        section.belongLine(this); // 이 라인을 빼먹고,
+        this.sections.add(section); // 일급콜렉션에 add만 해놓고 왜 안되지 헤맸다...
+  }
+  ~~~
+  
+  
+### Step4 구간 제거 기능
+#### 요구사항 기능목록
+- 각 시나리오별 예외 케이스 검증을 포함해야 하며, 삭제 프로세스는 아래와 같음.
+1. 요청 파라미터에 대한 검증
+  * [ ] Line 존재여부 확인
+  * [ ] Line의 Sections의 size가 2 이상인지 확인
+  * [ ] Line에 등록된 Section의 Station인지 확인
+2. 삭제요청 Station이 종점인지 확인
+  * 상행종점인 경우
+    * [ ] 삭제 Station을 upStation으로 갖고있는 Section 삭제, Sections에서도 제거 
+  * 하행종점인 경우
+    * [ ] 삭제 Station을 downStation으로 갖고있는 Section 삭제, Sections에서도 제거
+3. 종점이 아니면 가운데 역을 제거하는 케이스로 처리 
+  * [ ] 삭제 Station을 포함하는 2개의 Section 조회
+    * 각 upStation, downStation으로 소유
+    * A-Section: downStation으로 소유하는 Section
+    * B-Section: upStation으로 소유하는 Section
+  * [ ] A-Section의 확장 및 B-Section 삭제
+    * A-Section의 downStation은 B-Section의 downStation이 됨
+    * (A-Section의 distance) += (B-Section의 distance)  
+  * EX) A-B-C-D 에서 C 삭제
+    * ASIS Section: (A,B), (B,C), (C,D)
+    * TOBE Section: (A,B), (B.D) 
+#### 구간삭제 API 명세
+HTTP request
+<pre>
+DELETE /lines/{lineId}/sections?stationId={stationId} HTTP/1.1
+accept: */*
+host: localhost:52165
+</pre>
