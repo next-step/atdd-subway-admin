@@ -185,6 +185,21 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
         );
     }
 
+    @DisplayName("종점이 아닌 중간 구간 삭제 테스트")
+    @TestFactory
+    Stream<DynamicTest> removeIntermediateSection() {
+        return Stream.of(
+                dynamicTest("LINE에 Section을 추가하여 삭제 가능 사이즈를 만들어줌 (강남,광교) ->  insert(강남,정자) + (정자,광교)", () -> {
+                    ExtractableResponse<Response> response = addSection(generateSectionRequest(강남역.getId(), 정자역.getId(), 4), 신분당선.getId());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+                dynamicTest("강남(1)-정자(3)-광교(2) 노선에서 정자역 삭제 요청 - section id: 1 삭제", () -> {
+                    ExtractableResponse<Response> response = removeLineStation(신분당선.getId(), 정자역.getId());
+                    assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                })
+        );
+    }
+
     private ExtractableResponse<Response> addSection(SectionRequest sectionRequest, long id) {
         return RestAssured.given().log().all()
                 .body(sectionRequest)
