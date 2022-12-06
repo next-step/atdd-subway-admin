@@ -250,14 +250,14 @@ host: localhost:52165
 #### 요구사항 기능목록
 - 각 시나리오별 예외 케이스 검증을 포함해야 하며, 삭제 프로세스는 아래와 같음.
 1. 요청 파라미터에 대한 검증
-  * [ ] Line 존재여부 확인
-  * [ ] Line의 Sections의 size가 2 이상인지 확인
-  * [ ] Line에 등록된 Section의 Station인지 확인
+  * [X] Line 및 Station 존재 여부 확인
+  * [X] Line의 Sections의 size가 2 이상인지 확인
+  * [X] Line에 등록된 Section의 Station인지 확인
 2. 삭제요청 Station이 종점인지 확인
   * 상행종점인 경우
-    * [ ] 삭제 Station을 upStation으로 갖고있는 Section 삭제, Sections에서도 제거 
+    * [X] 삭제 Station을 upStation으로 갖고있는 Section 삭제, Sections에서도 제거 
   * 하행종점인 경우
-    * [ ] 삭제 Station을 downStation으로 갖고있는 Section 삭제, Sections에서도 제거
+    * [X] 삭제 Station을 downStation으로 갖고있는 Section 삭제, Sections에서도 제거
 3. 종점이 아니면 가운데 역을 제거하는 케이스로 처리 
   * [ ] 삭제 Station을 포함하는 2개의 Section 조회
     * 각 upStation, downStation으로 소유
