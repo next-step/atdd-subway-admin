@@ -104,8 +104,24 @@ public class LineStation extends BaseEntity {
         return station;
     }
 
+    public Long getStationId() {
+        return station.getId();
+    }
+
+    public String getStationName() {
+        return station.getName();
+    }
+
     public Station getPreStation() {
         return preStation;
+    }
+
+    public Long getPreStationId() {
+        return preStation.getId();
+    }
+
+    public String getPreStationName() {
+        return preStation.getName();
     }
 
     public int getDistance() {
@@ -116,7 +132,15 @@ public class LineStation extends BaseEntity {
         return line;
     }
 
-    public void setLine(Line line) {
+    public Long getLineId() {
+        return line.getId();
+    }
+
+    public String getLineName() {
+        return line.getName();
+    }
+
+    public void addLine(Line line) {
         this.line = line;
         if (!line.containLineStation(this)) {
             line.addLineStationWithoutSettingLine(this);

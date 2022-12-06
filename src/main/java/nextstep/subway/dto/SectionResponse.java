@@ -19,13 +19,13 @@ public class SectionResponse {
 
     public static SectionResponse of(LineStation lineStation) {
         return new SectionResponse(lineStation.getId(),
-                lineStation.getPreStation().getId(),
-                lineStation.getPreStation().getName(),
-                lineStation.getStation().getId(),
-                lineStation.getStation().getName(),
+                lineStation.getPreStationId(),
+                lineStation.getPreStationName(),
+                lineStation.getStationId(),
+                lineStation.getStationName(),
                 lineStation.getDistance(),
-                lineStation.getLine().getId(),
-                lineStation.getLine().getName());
+                lineStation.getLineId(),
+                lineStation.getLineName());
     }
 
     private SectionResponse(Long id,

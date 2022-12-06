@@ -39,7 +39,7 @@ public class Line extends BaseEntity {
             lineStation.validate(lineStations);
         }
         this.lineStations.add(lineStation);
-        lineStation.setLine(this);
+        lineStation.addLine(this);
     }
 
     public void addLineStationWithoutSettingLine(LineStation lineStation) {
