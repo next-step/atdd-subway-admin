@@ -4,7 +4,6 @@ import nextstep.subway.constants.ErrorCode;
 import nextstep.subway.domain.*;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.SectionRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,8 +22,8 @@ public class LineService {
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = findStation(lineRequest.getUpStationId());
-        Station downStation = findStation(lineRequest.getDownStationId());
+        Station upStation = findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
         return LineResponse.from(lineRepository.save(lineRequest.toLine(upStation, downStation)));
     }
 
@@ -53,9 +52,17 @@ public class LineService {
         lineRepository.delete(line);
     }
 
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Station reqDeleteStation = findStationById(stationId);
+        Line line = findLine(lineId);
+        line.deleteStation(reqDeleteStation);
+    }
 
-    private Station findStation(long stationId) {
-        return stationRepository.getById(stationId);
+    private Station findStationById(long stationId) {
+        return stationRepository
+                .findById(stationId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_EXCEPTION.getErrorMessage()));
     }
 
     public Line findLine(Long id) {
