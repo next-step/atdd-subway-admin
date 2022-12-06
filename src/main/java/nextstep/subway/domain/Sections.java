@@ -16,6 +16,7 @@ import java.util.Optional;
 public class Sections {
 
     private final static int ZERO = 0;
+    private final static int SIZE_OF_DELETE_ABLE_MIN_SECTIONS = 2;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     @ReadOnlyProperty
@@ -177,5 +178,21 @@ public class Sections {
 
     private boolean isSectionsSizeZero() {
         return this.sections.size() == ZERO;
+    }
+
+    public boolean isDeleteUnable() {
+        return this.sections.size() < SIZE_OF_DELETE_ABLE_MIN_SECTIONS;
+    }
+
+    public int size() {
+        return this.sections.size();
+    }
+
+    public boolean hasNotStation(Station station) {
+        return this.sections.stream()
+                .map(Section::toStations)
+                .flatMap(Collection::stream)
+                .distinct()
+                .noneMatch(eachStation -> eachStation.equals(station));
     }
 }
