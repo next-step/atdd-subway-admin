@@ -3,8 +3,8 @@ package nextstep.subway.application;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.line.Line;
+import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.UpdateLine;
@@ -35,7 +35,7 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        return LineResponse.of(lineRepository.findById(id).get());
+        return LineResponse.of(lineRepository.findById(id).orElseThrow(NoSuchElementException::new));
     }
 
     @Transactional

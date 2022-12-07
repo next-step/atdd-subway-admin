@@ -2,9 +2,13 @@ package nextstep.subway.ui;
 
 import java.net.URI;
 import java.util.List;
+import java.util.NoSuchElementException;
 import nextstep.subway.application.LineService;
+import nextstep.subway.application.SectionService;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
+import nextstep.subway.dto.SectionRequest;
+import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.dto.UpdateLine;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.MediaType;
@@ -22,9 +26,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class LineController {
 
     private LineService lineService;
+    private SectionService sectionService;
 
-    public LineController(LineService lineService) {
+    public LineController(LineService lineService, SectionService sectionService) {
         this.lineService = lineService;
+        this.sectionService = sectionService;
     }
 
     @PostMapping("/lines")
@@ -54,7 +60,18 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @PostMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<SectionResponse> createSection(@PathVariable Long id, @RequestBody SectionRequest request) {
+        SectionResponse section = sectionService.saveSection(id, request);
+        return ResponseEntity.created(URI.create("/sections/" + section.getId())).body(section);
+    }
+
+    @GetMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<List<SectionResponse>> showSectionsByLine(@PathVariable Long id) {
+        return ResponseEntity.ok().body(sectionService.findLineStationsByLineId(id));
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class, NoSuchElementException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }

@@ -1,15 +1,13 @@
-package nextstep.subway.domain;
+package nextstep.subway.domain.line;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import nextstep.subway.domain.BaseEntity;
 import nextstep.subway.dto.UpdateLine;
 
 @Entity
@@ -25,8 +23,8 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @OneToMany(mappedBy = "line", fetch = FetchType.LAZY)
-    private List<Station> stations = new ArrayList<>();
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     public Line() {
     }
@@ -36,9 +34,20 @@ public class Line extends BaseEntity {
         this.color = color;
     }
 
-    public void addStation(Station station) {
-        this.stations.add(station);
-        station.setLine(this);
+    public void addLineStation(LineStation lineStation) {
+        if (!lineStations.isEmpty()) {
+            lineStation.validate(lineStations);
+        }
+        this.lineStations.add(lineStation);
+        lineStation.addLine(this);
+    }
+
+    public void addLineStationWithoutSettingLine(LineStation lineStation) {
+        lineStations.add(lineStation);
+    }
+
+    public boolean containLineStation(LineStation lineStation) {
+        return lineStations.contains(lineStation);
     }
 
     public Long getId() {
@@ -53,8 +62,8 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public List<Station> getStations() {
-        return stations;
+    public LineStations getLineStations() {
+        return lineStations;
     }
 
     public void update(UpdateLine request) {
@@ -72,11 +81,11 @@ public class Line extends BaseEntity {
         }
         Line line = (Line) o;
         return Objects.equals(id, line.id) && Objects.equals(name, line.name)
-                && Objects.equals(color, line.color) && Objects.equals(stations, line.stations);
+                && Objects.equals(color, line.color) && Objects.equals(lineStations, line.lineStations);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, color, stations);
+        return Objects.hash(id, name, color, lineStations);
     }
 }

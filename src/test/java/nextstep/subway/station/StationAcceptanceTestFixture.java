@@ -5,19 +5,10 @@ import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.HashMap;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeEach;
-import org.springframework.boot.web.server.LocalServerPort;
+import nextstep.subway.utils.AcceptanceTestCommon;
 import org.springframework.http.MediaType;
 
-class StationAcceptanceTestFixture {
-
-    @LocalServerPort
-    int port;
-
-    @BeforeEach
-    public void setUp() {
-        RestAssured.port = port;
-    }
+class StationAcceptanceTestFixture extends AcceptanceTestCommon {
 
     /**
      * 지하철역 조회
@@ -38,7 +29,7 @@ class StationAcceptanceTestFixture {
      * @param stationName 생성할 지하철역 이름
      * @return 생성된 지하철역 id
      */
-    protected static ExtractableResponse<Response> 지하철역_생성(String stationName) {
+    public static ExtractableResponse<Response> 지하철역_생성(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
 
