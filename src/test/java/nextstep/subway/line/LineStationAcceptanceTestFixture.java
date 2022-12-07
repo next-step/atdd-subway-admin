@@ -46,7 +46,7 @@ class LineStationAcceptanceTestFixture extends AcceptanceTestCommon {
     protected ExtractableResponse<Response> 구간제거(Long lineId, Long stationId) {
         return RestAssured.given().log().all()
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .when().get("/lines/" + lineId + "/sections?stationId=" + stationId)
+                .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
     }
