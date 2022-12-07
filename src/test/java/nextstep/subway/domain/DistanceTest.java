@@ -25,4 +25,18 @@ class DistanceTest {
             () -> assertThrows(IllegalArgumentException.class, () -> Distance.from(-1))
         );
     }
+
+    @Test
+    @DisplayName("거리를 뺀다")
+    void subtractDistance() {
+        // given
+        Distance distance = Distance.from(10);
+        Distance distance2 = Distance.from(5);
+
+        // when
+        Distance actual = distance.subtract(distance2);
+
+        // then
+        assertThat(actual).isEqualTo(new Distance(5));
+    }
 }

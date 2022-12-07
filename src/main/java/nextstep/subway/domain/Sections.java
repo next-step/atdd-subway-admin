@@ -58,11 +58,31 @@ public class Sections {
     }
 
     private Optional<Section> findUpSection(Section addSection) {
-        return sections.stream().filter(addSection::isSameUpStation).findFirst();
+        return sections.stream().filter(addSection::isSameUpStationBySection).findFirst();
     }
 
     private Optional<Section> findDownSection(Section addSection) {
-        return sections.stream().filter(addSection::isSameDownStation).findFirst();
+        return sections.stream().filter(addSection::isSameDownStationBySection).findFirst();
+    }
+
+    public void removeStation(Station station) {
+        Optional<Section> sectionContainUpStation = findSectionContainUpStation(station);
+        Optional<Section> sectionContainDownStation = findSectionContainDownStation(station);
+
+        sectionContainUpStation.ifPresent(section -> sections.remove(section));
+        sectionContainDownStation.ifPresent(section -> sections.remove(section));
+    }
+
+    private Optional<Section> findSectionContainUpStation(Station station) {
+        return sections.stream()
+            .filter(section -> section.isSameUpStationByStation(station))
+            .findFirst();
+    }
+
+    private Optional<Section> findSectionContainDownStation(Station station) {
+        return sections.stream()
+            .filter(section -> section.isSameDownStationByStation(station))
+            .findFirst();
     }
 
     public List<Station> getStations() {

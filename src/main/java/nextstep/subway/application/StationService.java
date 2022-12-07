@@ -1,6 +1,6 @@
 package nextstep.subway.application;
 
-import javax.persistence.NoResultException;
+import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Station;
 import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.StationRequest;
@@ -14,9 +14,12 @@ import java.util.stream.Collectors;
 @Service
 public class StationService {
     private final StationRepository stationRepository;
+    private final LineService lineService;
 
-    public StationService(StationRepository stationRepository) {
+    public StationService(StationRepository stationRepository,
+        LineService lineService) {
         this.stationRepository = stationRepository;
+        this.lineService = lineService;
     }
 
     @Transactional
@@ -42,4 +45,5 @@ public class StationService {
     public Station findById(Long stationId) {
         return stationRepository.findById(stationId).orElseThrow(IllegalArgumentException::new);
     }
+
 }

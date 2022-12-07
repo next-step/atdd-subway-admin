@@ -23,7 +23,8 @@ public class LineService {
     private final LineRepository lineRepository;
     private final StationService stationService;
 
-    public LineService(LineRepository lineRepository, StationService stationService) {
+    public LineService(LineRepository lineRepository, StationService stationService,
+        LineService lineService) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
     }
@@ -73,5 +74,12 @@ public class LineService {
         Line line = lineRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         line.addSection(Section.of(upStation, downStation, Distance.from(sectionRequest.getDistance())));
         return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        Station station = stationService.findById(stationId);
+        line.removeSection(station);
     }
 }
