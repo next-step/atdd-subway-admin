@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 @Embeddable
 public class Sections {
     private static final String ERROR_MESSAGE_EXIST_STATION = "기존과 동일한 상행/하행선 등록 불가 합니다.";
+    private static final String ERROR_MESSAGE_NOT_CONTAIN_STATION = "기존 등록된 상행/하행선이 하나도 포함되어 있지 않습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
     private final List<Section> sections = new ArrayList<>();
@@ -29,8 +30,21 @@ public class Sections {
 
     public void addSection(Section section) {
         isValidExistSection(section);
+        isValidNotContainSection(section);
         sections.add(section);
     }
+
+    private void isValidNotContainSection(Section section) {
+        if (!sections.isEmpty() && isNotContainSection(section)) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_NOT_CONTAIN_STATION);
+        }
+    }
+
+    private boolean isNotContainSection(Section section) {
+        return getStations().stream()
+                .noneMatch(station -> section.stations().contains(station));
+    }
+
 
     private void isValidExistSection(Section section) {
         if (isContainsAllStation(section)) {
