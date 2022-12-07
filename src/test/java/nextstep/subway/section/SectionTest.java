@@ -1,5 +1,6 @@
 package nextstep.subway.section;
 
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Sections;
 import nextstep.subway.domain.Station;
@@ -28,7 +29,7 @@ public class SectionTest {
         종합운동장역 = new Station("종합운동장역");
 
         distance = 10;
-        initSection = new Section(강남역, 역삼역, distance);
+        initSection = new Section(강남역, 역삼역, new Distance(distance));
 
         sections = new Sections();
         sections.addSection(initSection);
@@ -50,7 +51,7 @@ public class SectionTest {
     @Test
     void isValidExistStation() {
         //given
-        Section newSection = new Section(강남역, 역삼역, distance);
+        Section newSection = new Section(강남역, 역삼역, new Distance(distance));
 
         //when && then
         assertThatThrownBy(() -> sections.addSection(newSection))
@@ -62,7 +63,7 @@ public class SectionTest {
     @Test
     void isValidNotExistStation() {
         //given
-        Section newSection = new Section(삼성역, 종합운동장역, distance);
+        Section newSection = new Section(삼성역, 종합운동장역, new Distance(distance));
 
         //when && then
         assertThatThrownBy(() -> sections.addSection(newSection))
