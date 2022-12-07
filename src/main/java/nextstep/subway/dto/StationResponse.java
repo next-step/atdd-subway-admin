@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 public class StationResponse {
     private Long id;
     private String name;
+
     private LocalDateTime createdDate;
     private LocalDateTime modifiedDate;
 
