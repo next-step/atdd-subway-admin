@@ -11,26 +11,29 @@ public class LineResponse {
     private String color;
     private List<StationResponse> stations;
 
-    public LineResponse(){
+    private int distance;
+
+    public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color, List<StationResponse> stations, int distance) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
+        this.distance = distance;
     }
 
     public static LineResponse of(Line line) {
-        System.out.println(line.getId());
-        System.out.println(line.getStations());
         return new LineResponse(
                 line.getId(),
                 line.getName(),
                 line.getColor(),
                 line.getStations().stream()
                         .map(StationResponse::of)
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()
+                        ),
+                line.toDistance()
         );
     }
 

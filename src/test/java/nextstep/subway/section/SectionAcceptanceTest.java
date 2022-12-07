@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @DisplayName("구간 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -31,7 +32,6 @@ public class SectionAcceptanceTest {
     private Long 강남역ID;
     private Long 선릉역ID;
     LineRequest lineRequest;
-
     ExtractableResponse<Response> lineResponse;
 
     @BeforeEach
@@ -60,8 +60,17 @@ public class SectionAcceptanceTest {
 
     }
 
-    public ExtractableResponse<Response> 지하철_구간_생성(SectionRequest sectionRequest, Long id) {
+    @DisplayName("기존구간의 상행/하행역이 모두 같으면 구간 생성 불가능")
+    @Test
+    public void isValidExistSection() {
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(강남역ID, 선릉역ID, 4), lineResponse.jsonPath().getLong("id"));
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 
+    }
+
+    public ExtractableResponse<Response> 지하철_구간_생성(SectionRequest sectionRequest, Long id) {
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
                         .pathParam("id", id)

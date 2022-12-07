@@ -63,4 +63,7 @@ public class Line extends BaseEntity {
         return sections.getStations();
     }
 
+    public int toDistance() {
+        return sections.totalDistance();
+    }
 }

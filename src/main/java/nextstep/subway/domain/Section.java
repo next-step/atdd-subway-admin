@@ -71,4 +71,12 @@ public class Section extends BaseEntity {
         stations.add(this.downStation);
         return stations;
     }
+
+    private boolean isValidExistDownStation(Section newSection) {
+        return this.downStation.equals(newSection.getDownStation());
+    }
+
+    private boolean isValidExistUpStation(Section newSection) {
+        return this.upStation.equals(newSection.getUpStation());
+    }
 }
