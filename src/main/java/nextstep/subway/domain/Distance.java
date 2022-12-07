@@ -40,6 +40,10 @@ public class Distance {
         }
     }
 
+    public Distance add(Distance distance) {
+        return Distance.from(this.distance + distance.distance);
+    }
+
     public static Distance from(Integer distance) {
         return new Distance(distance);
     }

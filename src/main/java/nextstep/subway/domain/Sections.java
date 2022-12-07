@@ -65,12 +65,27 @@ public class Sections {
         return sections.stream().filter(addSection::isSameDownStationBySection).findFirst();
     }
 
-    public void removeStation(Station station) {
+    public void removeStation(Line line, Station station) {
         Optional<Section> sectionContainUpStation = findSectionContainUpStation(station);
         Optional<Section> sectionContainDownStation = findSectionContainDownStation(station);
 
+        if (isStationIntermediateSections(sectionContainUpStation.isPresent(), sectionContainDownStation.isPresent())) {
+            joinSections(line, sectionContainDownStation.get(), sectionContainUpStation.get());
+        }
+
         sectionContainUpStation.ifPresent(section -> sections.remove(section));
         sectionContainDownStation.ifPresent(section -> sections.remove(section));
+    }
+
+    private void joinSections(Line line, Section upSection, Section downSection) {
+        Section section = Section.of(upSection.getUpStation(), downSection.getDownStation(),
+            upSection.addDistance(downSection));
+        section.addLine(line);
+        sections.add(section);
+    }
+
+    private boolean isStationIntermediateSections(boolean upStation, boolean downStation) {
+        return upStation && downStation;
     }
 
     private Optional<Section> findSectionContainUpStation(Station station) {

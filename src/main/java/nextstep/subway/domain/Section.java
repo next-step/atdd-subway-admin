@@ -71,6 +71,10 @@ public class Section {
         this.downStation = newSection.upStation;
     }
 
+    public Distance addDistance(Section section) {
+        return distance.add(section.distance);
+    }
+
     public boolean isSameUpStationBySection(Section section) {
         return upStation.isSameStation(section.getUpStation());
     }
