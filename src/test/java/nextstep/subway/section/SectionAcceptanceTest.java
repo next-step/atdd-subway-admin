@@ -72,15 +72,26 @@ public class SectionAcceptanceTest {
         //when
         ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(교대역ID, 강남역ID, 4), lineResponse.jsonPath().getLong("id"));
         //then
-
         assertAll(
                 () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
                 () -> assertThat(response.body().jsonPath().getList("stations")).hasSize(3),
                 () -> assertThat(response.body().jsonPath().getList("stations.name")).contains("강남역", "교대역", "선릉역"),
                 () -> assertThat(assertThat(response.jsonPath().getInt("distance")).isEqualTo(11))
         );
+    }
 
-
+    @DisplayName("새로운 역을 하행 종점으로 구간 등록")
+    @Test
+    void addSectionDownStation() {
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(선릉역ID, 삼성역ID, 4), lineResponse.jsonPath().getLong("id"));
+        //then
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.body().jsonPath().getList("stations")).hasSize(3),
+                () -> assertThat(response.body().jsonPath().getList("stations.name")).contains("강남역", "선릉역", "삼성역"),
+                () -> assertThat(assertThat(response.jsonPath().getInt("distance")).isEqualTo(11))
+        );
     }
 
     @DisplayName("기존구간의 상행/하행역이 모두 같으면 구간 생성 불가능")
@@ -90,7 +101,6 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(강남역ID, 선릉역ID, 4), lineResponse.jsonPath().getLong("id"));
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 구간 생성 불가능")

@@ -62,6 +62,16 @@ public class SectionTest {
         assertThat(sections.getStations()).contains(서초역, 강남역, 선릉역);
     }
 
+    @DisplayName("새로운 역을 하행 종점으로 구간 등록")
+    @Test
+    void addSectionDownStation() {
+        //given
+        Section newSection = new Section(선릉역, 삼성역, new Distance(4));
+        //when
+        sections.addSection(newSection);
+        //then
+        assertThat(sections.getStations()).contains(강남역, 선릉역, 삼성역);
+    }
 
     @DisplayName("기존구간의 상행/하행역이 모두 같으면 구간 생성 불가능")
     @Test
