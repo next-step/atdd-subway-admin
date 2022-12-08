@@ -99,7 +99,6 @@ public class Section implements Comparable<Section>{
         return station.equals(this.upStation);
     }
 
-
     public boolean equalDownStation(Station station) {
         return station.equals(this.downStation);
     }

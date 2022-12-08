@@ -136,7 +136,50 @@ public class SectionAcceptanceTest {
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
 
         // then
-        assertThat(findLine.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("상행종점역","하행종점역");
+        노선_역_확인(findLine, "상행종점역","하행종점역");
+    }
+
+
+    /**
+     * Given 상행종점역, 새로운역, 하행종점역을 가진 노선을 생성하고 상행종점역을 제거하고
+     * When 노선을 조회하면
+     * Then 새로운역, 하행종점역이 조회된다.
+     */
+    @DisplayName("노선의 상행종점 역을 삭제한다")
+    @Test
+    void removeUpStation() {
+        // given
+        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
+        SectionRequest newSection = new SectionRequest(새로운역.getId(),하행종점역.getId(),5);
+        addSectionRest(신분당선.getId(), newSection);
+        removeStationRest(신분당선.getId(), 상행종점역.getId());
+
+        // when
+        LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
+
+        // then
+        노선_역_확인(findLine, "새로운역","하행종점역");
+    }
+
+    /**
+     * Given 상행종점역, 새로운역, 하행종점역을 가진 노선을 생성하고 하행종점역을 제거하고
+     * When 노선을 조회하면
+     * Then 상행종점역, 새로운역이 조회된다.
+     */
+    @DisplayName("노선의 하행종점 역을 삭제한다")
+    @Test
+    void removeDownStation() {
+        // given
+        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
+        SectionRequest newSection = new SectionRequest(새로운역.getId(),하행종점역.getId(),5);
+        addSectionRest(신분당선.getId(), newSection);
+        removeStationRest(신분당선.getId(), 하행종점역.getId());
+
+        // when
+        LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
+
+        // then
+        노선_역_확인(findLine, "상행종점역","새로운역");
     }
 
     // Happy-case
@@ -157,7 +200,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
 
         // then
-        노선등록_에러(response);
+        노선_요청_에러(response);
     }
 
     /**
@@ -175,7 +218,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
 
         // then
-        노선등록_에러(response);
+        노선_요청_에러(response);
     }
 
     /**
@@ -195,9 +238,41 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
 
         // then
-        노선등록_에러(response);
+        노선_요청_에러(response);
     }
 
+    /**
+     * Given 상행종점역, 하행종점역을 가진 노선을 생성하고
+     * When 새로운역을 삭제하면
+     * Then 에러가 발생한다.
+     */
+    @DisplayName("노선에 없는 역을 삭제하면 에러가 발생한다.")
+    @Test
+    void error_removeOtherStation() {
+        // given
+        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
+
+        // when
+        ExtractableResponse<Response> response = removeStationRest(신분당선.getId(), 새로운역.getId());
+
+        // then
+        노선_요청_에러(response);
+    }
+
+    /**
+     * When 상행종점역을 삭제하면
+     * Then 에러가 발생한다.
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 삭제하면 에러가 발생한다.")
+    @Test
+    void error_removeOneSection() {
+
+        // when
+        ExtractableResponse<Response> response = removeStationRest(신분당선.getId(), 상행종점역.getId());
+
+        // then
+        노선_요청_에러(response);
+    }
 
 
 
@@ -249,7 +324,11 @@ public class SectionAcceptanceTest {
         assertThat(lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly(역1, 역2, 역3);
     }
 
-    private void 노선등록_에러(ExtractableResponse<Response> response) {
+    private void 노선_역_확인(LineResponse lineResponse, String 역1, String 역2) {
+        assertThat(lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly(역1, 역2);
+    }
+
+    private void 노선_요청_에러(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }
