@@ -19,6 +19,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("구간 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -28,6 +29,7 @@ public class SectionAcceptanceTest {
     @Autowired
     private DatabaseClear databaseClear;
 
+    private Long 교대역ID;
     private Long 강남역ID;
     private Long 선릉역ID;
     private Long 삼성역ID;
@@ -42,6 +44,7 @@ public class SectionAcceptanceTest {
         }
         databaseClear.execute();
 
+        교대역ID = StationAcceptanceTest.지하철역_생성("교대역").as(StationResponse.class).getId();
         강남역ID = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId();
         선릉역ID = StationAcceptanceTest.지하철역_생성("선릉역").as(StationResponse.class).getId();
         삼성역ID = StationAcceptanceTest.지하철역_생성("삼성역").as(StationResponse.class).getId();
@@ -60,6 +63,23 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(강남역ID, 역삼역ID, 4), lineResponse.jsonPath().getLong("id"));
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+    }
+
+    @DisplayName("새로운 역을 상행 종점으로 구간 등록")
+    @Test
+    void addSectionUpStation() {
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(교대역ID, 강남역ID, 4), lineResponse.jsonPath().getLong("id"));
+        //then
+
+        assertAll(
+                () -> assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value()),
+                () -> assertThat(response.body().jsonPath().getList("stations")).hasSize(3),
+                () -> assertThat(response.body().jsonPath().getList("stations.name")).contains("강남역", "교대역", "선릉역"),
+                () -> assertThat(assertThat(response.jsonPath().getInt("distance")).isEqualTo(11))
+        );
+
 
     }
 
@@ -94,5 +114,12 @@ public class SectionAcceptanceTest {
                         .extract();
 
         return response;
+    }
+
+    public static ExtractableResponse<Response> 지하철_노선_조회(String id) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/{id}", id)
+                .then().log().all()
+                .extract();
     }
 }
