@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
-import java.util.stream.Stream;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
@@ -369,8 +368,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
     @Test
     void 등록되지_않은_역_노선에서_제거() {
         //Given
-        구간등록(_2호선.getId(), 서초역.getId(), 교대역.getId(), 5);
-        Stream<SectionResponse> 제거요청_전_조회된_구간정보_목록 = 구간목록(구간목록조회(_2호선.getId())).stream().sorted();
+        SectionResponse 등록된_구간 = 구간정보(구간등록(_2호선.getId(), 서초역.getId(), 교대역.getId(), 5));
 
         //When
         ExtractableResponse<Response> response = 구간제거(_2호선.getId(), 강남역.getId());
@@ -379,7 +377,7 @@ public class LineStationAcceptanceTest extends LineStationAcceptanceTestFixture 
         TestUtil.응답확인(response, HttpStatus.BAD_REQUEST);
 
         //Then
-        Stream<SectionResponse> 제거요청_후_조회된_구간정보_목록 = 구간목록(구간목록조회(_2호선.getId())).stream().sorted();
-        assertThat(제거요청_전_조회된_구간정보_목록).isEqualTo(제거요청_후_조회된_구간정보_목록);
+        List<SectionResponse> 조회된_구간정보_목록 = 구간목록(구간목록조회(_2호선.getId()));
+        assertThat(조회된_구간정보_목록).containsAnyOf(등록된_구간);
     }
 }
