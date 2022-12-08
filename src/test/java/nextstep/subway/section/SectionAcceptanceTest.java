@@ -94,6 +94,15 @@ public class SectionAcceptanceTest {
         );
     }
 
+    @DisplayName("역 사이에 새로운 역 등록 시 기존 역 사이 길이보다 크거나 같으면 등록 불가")
+    @Test
+    void isValidAddStationDistance() {
+        //when
+        ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(강남역ID, 삼성역ID, 10), lineResponse.jsonPath().getLong("id"));
+        //then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     @DisplayName("기존구간의 상행/하행역이 모두 같으면 구간 생성 불가능")
     @Test
     public void isValidExistSection() {
@@ -107,7 +116,7 @@ public class SectionAcceptanceTest {
     @Test
     public void isValidNotContainSection() {
         //when
-        ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(삼성역ID, 종합운동장역ID, 4), lineResponse.jsonPath().getLong("id"));
+        ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(삼성역ID, 삼성역ID, 7), lineResponse.jsonPath().getLong("id"));
         //then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
 

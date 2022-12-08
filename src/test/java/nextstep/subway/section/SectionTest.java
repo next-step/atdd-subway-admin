@@ -48,7 +48,6 @@ public class SectionTest {
                 () -> assertThat(initSection.getDownStation()).isEqualTo(선릉역),
                 () -> assertThat(initSection.getDistance()).isEqualTo(distance)
         );
-
     }
 
     @DisplayName("새로운 역을 상행 종점으로 구간 등록")
@@ -73,6 +72,18 @@ public class SectionTest {
         assertThat(sections.getStations()).contains(강남역, 선릉역, 삼성역);
     }
 
+
+    @DisplayName("역 사이에 새로운 역 등록 시 기존 역 사이 길이보다 크거나 같으면 등록 불가")
+    @Test
+    void isValidAddStationDistance(){
+        //given
+        Section newSection = new Section(강남역, 역삼역, new Distance(distance));
+        //when & then
+        assertThatThrownBy(() -> sections.addSection(newSection))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("기존 노선의 거리보다 작거나 같을 수 없습니다.");
+
+    }
     @DisplayName("기존구간의 상행/하행역이 모두 같으면 구간 생성 불가능")
     @Test
     void isValidExistStation() {
