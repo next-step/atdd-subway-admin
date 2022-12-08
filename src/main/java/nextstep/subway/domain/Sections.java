@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Section> sections = new ArrayList<>();
 
     protected Sections() {
@@ -36,5 +36,32 @@ public class Sections {
                 .flatMap(Section::getStations)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    public void removeStation(Station station) {
+        Section upSection = findSectionbyUpStation(station);
+        Section downSection = findSectionbyDownSataion(station);
+
+        // station 이 양 종점인지, middle 인지 판단 후, 삭제 ㄱㄱ
+        //checkDeleteMiddle(upSection, downSection);
+
+        deleteMiddle(upSection, downSection);
+    }
+
+    private void deleteMiddle(Section upSection, Section downSection) {
+        downSection.refreshWith(upSection);
+        sections.remove(upSection);
+    }
+
+    private Section findSectionbyUpStation(Station station) {
+        return sections.stream()
+                .filter(section -> section.equalUpStation(station))
+                .findFirst().get();
+    }
+
+    private Section findSectionbyDownSataion(Station station) {
+        return sections.stream()
+                .filter(section -> section.equalDownStation(station))
+                .findFirst().get();
     }
 }

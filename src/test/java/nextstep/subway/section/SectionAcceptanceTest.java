@@ -118,6 +118,27 @@ public class SectionAcceptanceTest {
         노선_역_순서확인(findLine, "상행종점역","하행종점역","새로운역");
     }
 
+    /**
+     * Given 상행종점역, 새로운역, 하행종점역을 가진 노선을 생성하고 새로운역을 제거하고
+     * When 노선을 조회하면
+     * Then 상행종점역, 하행종점역이 조회된다.
+     */
+    @DisplayName("노선의 중간 역을 삭제한다")
+    @Test
+    void removeMiddleStation() {
+        // given
+        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
+        SectionRequest newSection = new SectionRequest(새로운역.getId(),하행종점역.getId(),5);
+        addSectionRest(신분당선.getId(), newSection);
+        removeStationRest(신분당선.getId(), 새로운역.getId());
+
+        // when
+        LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
+
+        // then
+        assertThat(findLine.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly("상행종점역","하행종점역");
+    }
+
     // Happy-case
 
     /**
@@ -177,6 +198,9 @@ public class SectionAcceptanceTest {
         노선등록_에러(response);
     }
 
+
+
+
     private ExtractableResponse<Response> createLineRest(LineRequest lineRequest) {
         return RestAssured.given().log().all()
                 .body(lineRequest)
@@ -191,6 +215,14 @@ public class SectionAcceptanceTest {
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(LINE_URL+"/{lineId}/sections",lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> removeStationRest(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(LINE_URL+"/{lineId}/sections?stationId={stationId}",lineId, stationId)
                 .then().log().all()
                 .extract();
     }

@@ -94,4 +94,18 @@ public class Section implements Comparable<Section>{
     public int compareTo(Section o) {
         return this.downStation == o.upStation ? -1 : 1;
     }
+
+    public boolean equalUpStation(Station station) {
+        return station.equals(this.upStation);
+    }
+
+
+    public boolean equalDownStation(Station station) {
+        return station.equals(this.downStation);
+    }
+
+    public void refreshWith(Section upSection) {
+        this.downStation = upSection.downStation;
+        this.distance += upSection.distance;
+    }
 }

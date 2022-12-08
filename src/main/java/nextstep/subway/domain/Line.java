@@ -72,4 +72,8 @@ public class Line {
             throw new IllegalArgumentException(ErrorMessage.ERROR_STATIONS_NOT_ALL);
         }
     }
+
+    public void removeStation(Station station) {
+        sections.removeStation(station);
+    }
 }
