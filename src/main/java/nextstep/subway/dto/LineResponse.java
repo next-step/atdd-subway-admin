@@ -9,9 +9,8 @@ public class LineResponse {
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stations;
-
     private int distance;
+    private List<StationResponse> stations;
 
     public LineResponse() {
     }
@@ -51,5 +50,9 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }
