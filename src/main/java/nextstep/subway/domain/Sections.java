@@ -1,5 +1,7 @@
 package nextstep.subway.domain;
 
+import nextstep.subway.consts.ErrorMessage;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -11,6 +13,7 @@ import java.util.stream.Collectors;
 
 @Embeddable
 public class Sections {
+    private static final int MIN_SECTION_SIZE = 1;
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Section> sections = new ArrayList<>();
 
@@ -45,19 +48,26 @@ public class Sections {
         Optional<Section> upSection = findSectionbyUpStation(station);
         Optional<Section> downSection = findSectionbyDownSataion(station);
 
-        if (sections.size() <= 1) {
-            throw new IllegalArgumentException("노선에 등록된 section이 1개면 삭제할 수 없습니다.");
-        }
-
-        if (!upSection.isPresent() && !downSection.isPresent()) {
-            throw new IllegalArgumentException("노선에 등록되어 있지 않은 역은 제거할 수 없습니다.");
-        }
+        checkSectionSize();
+        checkSectionInLine(upSection, downSection);
 
         if (upSection.isPresent() && downSection.isPresent()) {
             deleteMiddle(upSection.get(), downSection.get());
             return;
         }
         checkDeleteEnd(upSection, downSection);
+    }
+
+    private void checkSectionInLine(Optional<Section> upSection, Optional<Section> downSection) {
+        if (!upSection.isPresent() && !downSection.isPresent()) {
+            throw new IllegalArgumentException(ErrorMessage.ERROR_NO_STATION_LINE);
+        }
+    }
+
+    private void checkSectionSize() {
+        if (sections.size() <= MIN_SECTION_SIZE) {
+            throw new IllegalArgumentException(ErrorMessage.ERROR_NOT_REMOVE_SECTION);
+        }
     }
 
     private void checkDeleteEnd(Optional<Section> upSection, Optional<Section> downSection) {
