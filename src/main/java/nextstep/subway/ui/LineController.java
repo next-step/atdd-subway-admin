@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -69,6 +70,12 @@ public class LineController {
     @GetMapping(value = "/lines/{id}/sections", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<List<SectionResponse>> showSectionsByLine(@PathVariable Long id) {
         return ResponseEntity.ok().body(sectionService.findLineStationsByLineId(id));
+    }
+
+    @DeleteMapping(value = "/lines/{lineId}/sections")
+    public ResponseEntity deleteLineStation(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.deleteLineStation(lineId, stationId);
+        return ResponseEntity.noContent().build();
     }
 
     @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class, NoSuchElementException.class})

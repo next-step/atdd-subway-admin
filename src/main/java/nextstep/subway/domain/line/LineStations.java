@@ -8,8 +8,10 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.constants.ErrorMessage;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRegisterStatus;
+import nextstep.subway.domain.station.StationStatus;
 
 @Embeddable
 public class LineStations {
@@ -18,6 +20,10 @@ public class LineStations {
     private List<LineStation> lineStations = new ArrayList<>();
 
     public LineStations() {
+    }
+
+    public LineStations(List<LineStation> lineStations) {
+        this.lineStations.addAll(lineStations);
     }
 
     public void add(LineStation lineStation) {
@@ -36,12 +42,25 @@ public class LineStations {
         return lineStations.stream();
     }
 
-    public List<LineStation> getLineStations() {
-        return lineStations;
+    public void checkLineStationExist() {
+        if (lineStations.isEmpty()) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_REGISTERED_LINE_STATION);
+        }
     }
 
-    public void setLineStations(List<LineStation> lineStations) {
-        this.lineStations = lineStations;
+    public LineStation reAssignLineStation(Station station, Line line) {
+        StationRegisterStatus leftStationsStatus = new StationRegisterStatus();
+        this.lineStations.stream()
+                .filter(lineStation -> lineStation.isLineOf(line))
+                .filter(lineStation -> lineStation.containStation(station))
+                .map(lineStation -> lineStation.oppositeStationStatusOf(station))
+                .filter(StationStatus::positionIsNotNone)
+                .forEach(leftStationsStatus::add);
+        return leftStationsStatus.createLineStation();
+    }
+
+    public List<LineStation> getLineStations() {
+        return lineStations;
     }
 
     public boolean contains(LineStation lineStation) {
@@ -68,7 +87,7 @@ public class LineStations {
     public StationRegisterStatus getStationRegisterStatus(Station station) {
         StationRegisterStatus stationRegisterStatus = new StationRegisterStatus();
         this.lineStations
-                .forEach(lineStation -> stationRegisterStatus.add(lineStation.checkStationStatus(station)));
+                .forEach(lineStation -> stationRegisterStatus.add(lineStation.checkStationStatusOf(station)));
         return stationRegisterStatus;
     }
 }

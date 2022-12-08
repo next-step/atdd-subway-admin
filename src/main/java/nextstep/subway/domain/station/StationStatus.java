@@ -29,4 +29,20 @@ public class StationStatus {
     public void splitLineStation(StationPosition stationPosition, Station interStation, Distance distanceToSubtract) {
         lineStation.splitLineStation(stationPosition, interStation, distanceToSubtract);
     }
+
+    public boolean positionIsNotNone() {
+        return stationPosition != StationPosition.NONE;
+    }
+
+    public Distance getLineStationDistance() {
+        return lineStation.getDistance();
+    }
+
+    public Station getStation() {
+        return station;
+    }
+
+    public LineStation getLineStation() {
+        return lineStation;
+    }
 }

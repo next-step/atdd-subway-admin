@@ -23,7 +23,7 @@ public class SectionResponse {
                 lineStation.getPreStationName(),
                 lineStation.getStationId(),
                 lineStation.getStationName(),
-                lineStation.getDistance(),
+                lineStation.getDistanceValue(),
                 lineStation.getLineId(),
                 lineStation.getLineName());
     }

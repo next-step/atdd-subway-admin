@@ -49,14 +49,36 @@ public class LineStation extends BaseEntity {
         this.line = line;
     }
 
-    public StationStatus checkStationStatus(Station station) {
-        if (station.equals(this.station)) {
-            return new StationStatus(station, this, StationPosition.DOWNSTATION);
-        }
+    private StationPosition positionOf(Station station) {
         if (station.equals(this.preStation)) {
-            return new StationStatus(station, this, StationPosition.UPSTATION);
+            return StationPosition.UPSTATION;
+        }
+        if (station.equals(this.station)) {
+            return StationPosition.DOWNSTATION;
+        }
+        return StationPosition.NONE;
+    }
+
+    public StationStatus checkStationStatusOf(Station station) {
+        return new StationStatus(station, this, positionOf(station));
+    }
+
+    public StationStatus oppositeStationStatusOf(Station station) {
+        if (station.equals(this.preStation)) {
+            return new StationStatus(this.station, this, positionOf(this.station));
+        }
+        if (station.equals(this.station)) {
+            return new StationStatus(this.preStation, this, positionOf(this.preStation));
         }
         return null;
+    }
+
+    public boolean containStation(Station station) {
+        return positionOf(station) != StationPosition.NONE;
+    }
+
+    public boolean isLineOf(Line line) {
+        return line.equals(this.line);
     }
 
     public int distanceCompare(Distance distance) {
@@ -132,8 +154,12 @@ public class LineStation extends BaseEntity {
         return preStation.getName();
     }
 
-    public int getDistance() {
+    public int getDistanceValue() {
         return distance.getDistance();
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     public Line getLine() {
