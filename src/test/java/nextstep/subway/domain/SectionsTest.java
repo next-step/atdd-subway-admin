@@ -59,12 +59,63 @@ public class SectionsTest {
     }
 
     @Test
+    @DisplayName("기존 section 내 middle station 삭제")
+    void removeSectionMiddleStation() {
+        Sections sections = new Sections(initSection);
+        Section newSection = Section.of(상행종점역, 새로운역, 8);
+        sections.add(newSection);
+        sections.removeStation(새로운역);
+        assertThat(sections.getStations()).containsExactly(상행종점역,하행종점역);
+    }
+
+    @Test
+    @DisplayName("기존 section 내 상행 station 삭제")
+    void removeSectionUpStation() {
+        Sections sections = new Sections(initSection);
+        Section newSection = Section.of(상행종점역, 새로운역, 8);
+        sections.add(newSection);
+        sections.removeStation(상행종점역);
+        assertThat(sections.getStations()).containsExactly(새로운역,하행종점역);
+    }
+
+    @Test
+    @DisplayName("기존 section 내 하행 station 삭제")
+    void removeSectionDownStation() {
+        Sections sections = new Sections(initSection);
+        Section newSection = Section.of(상행종점역, 새로운역, 8);
+        sections.add(newSection);
+        sections.removeStation(하행종점역);
+        assertThat(sections.getStations()).containsExactly(상행종점역,새로운역);
+    }
+
+    @Test
     @DisplayName("기존 section 길이보다 추가 section 길이가 크거나 같으면 error 발생")
     void error_addSectionLongThanOriginSection() {
         Sections sections = new Sections(initSection);
         Section newSection = Section.of(상행종점역, 새로운역, 10);
         assertThrows(IllegalArgumentException.class, () -> {
             sections.add(newSection);
+        });
+    }
+
+    @Test
+    @DisplayName("기존 section에 없는 station 삭제하려면 error 발생")
+    void error_removeSectionNoStationInSection() {
+        Sections sections = new Sections(initSection);
+        Station 더새로운역 = new Station("더새로운역");
+        Section newSection = Section.of(상행종점역, 새로운역, 8);
+        sections.add(newSection);
+        assertThrows(IllegalArgumentException.class, () -> {
+            sections.removeStation(더새로운역);
+        });
+    }
+
+    @Test
+    @DisplayName("기존 section이 하나 있는 section 삭제 시, error 발생")
+    void error_removeOneSection() {
+        Sections sections = new Sections(initSection);
+        assertThrows(IllegalArgumentException.class, () -> {
+            sections.removeStation(상행종점역);
         });
     }
 

@@ -43,4 +43,23 @@ public class SectionTest {
         assertThat(initSection.isCheckStation(newSection)).isFalse();
     }
 
+    @Test
+    @DisplayName("기존 Section 내 upStation 확인")
+    void checkEqualUpstation() {
+        assertThat(initSection.equalUpStation(상행종점역)).isTrue();
+    }
+
+    @Test
+    @DisplayName("기존 Section 내 downStation 확인")
+    void checkEqualDownstation() {
+        assertThat(initSection.equalDownStation(하행종점역)).isTrue();
+    }
+
+    @Test
+    @DisplayName("기존 Section 새로운 Section refresh")
+    void refreshSection() {
+        Section newSection = Section.of(상행종점역, 새로운역, 7);
+        initSection.refreshWith(newSection);
+        assertThat(initSection.getStations()).containsExactly(상행종점역,새로운역);
+    }
 }
