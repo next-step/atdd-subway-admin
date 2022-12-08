@@ -42,6 +42,13 @@ public class LineStations {
         return lineStations.stream();
     }
 
+    public StationRegisterStatus getStationRegisterStatus(Station station) {
+        StationRegisterStatus stationRegisterStatus = new StationRegisterStatus();
+        this.lineStations
+                .forEach(lineStation -> stationRegisterStatus.add(lineStation.checkStationStatusOf(station)));
+        return stationRegisterStatus;
+    }
+
     public void checkLineStationExist() {
         if (lineStations.isEmpty()) {
             throw new IllegalArgumentException(ErrorMessage.NOT_REGISTERED_LINE_STATION);
@@ -84,10 +91,4 @@ public class LineStations {
         return Objects.hash(lineStations);
     }
 
-    public StationRegisterStatus getStationRegisterStatus(Station station) {
-        StationRegisterStatus stationRegisterStatus = new StationRegisterStatus();
-        this.lineStations
-                .forEach(lineStation -> stationRegisterStatus.add(lineStation.checkStationStatusOf(station)));
-        return stationRegisterStatus;
-    }
 }

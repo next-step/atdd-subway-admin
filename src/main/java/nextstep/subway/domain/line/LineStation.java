@@ -49,6 +49,13 @@ public class LineStation extends BaseEntity {
         this.line = line;
     }
 
+    public void addLine(Line line) {
+        this.line = line;
+        if (!line.containLineStation(this)) {
+            line.addLineStationWithoutSettingLine(this);
+        }
+    }
+
     private StationPosition positionOf(Station station) {
         if (station.equals(this.preStation)) {
             return StationPosition.UPSTATION;
@@ -172,13 +179,6 @@ public class LineStation extends BaseEntity {
 
     public String getLineName() {
         return line.getName();
-    }
-
-    public void addLine(Line line) {
-        this.line = line;
-        if (!line.containLineStation(this)) {
-            line.addLineStationWithoutSettingLine(this);
-        }
     }
 
     @Override

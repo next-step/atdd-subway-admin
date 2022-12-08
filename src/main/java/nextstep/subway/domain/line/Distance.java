@@ -17,6 +17,10 @@ public class Distance implements Comparable<Distance> {
         this.distance = distance;
     }
 
+    public void subtract(Distance distanceToSubtract) {
+        distance -= distanceToSubtract.distance;
+    }
+
     public int getDistance() {
         return distance;
     }
@@ -38,13 +42,8 @@ public class Distance implements Comparable<Distance> {
         return Objects.hash(distance);
     }
 
-
     @Override
     public int compareTo(Distance o) {
         return Integer.compare(this.distance, o.distance);
-    }
-
-    public void subtract(Distance distanceToSubtract) {
-        distance -= distanceToSubtract.distance;
     }
 }
