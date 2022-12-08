@@ -54,6 +54,7 @@ public class LineService {
         lineRepository.deleteById(id);
     }
 
+    @Transactional
     public LineResponse saveSection(Long lineId, SectionRequest sectionRequest) {
         Line line = lineRepository.findById(lineId).orElseThrow(IllegalArgumentException::new);
         Station upStation = stationRepository.findById(sectionRequest.getUpStationId()).orElseThrow(IllegalArgumentException::new);

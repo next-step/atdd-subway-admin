@@ -28,10 +28,11 @@ public class Sections {
                 .collect(Collectors.toList());
     }
 
-    public void addSection(Section section) {
-        isValidExistSection(section);
-        isValidNotContainSection(section);
-        sections.add(section);
+    public void addSection(Section newSection) {
+        isValidExistSection(newSection);
+        isValidNotContainSection(newSection);
+        sections.forEach(section -> section.reorganize(newSection));
+        sections.add(newSection);
     }
 
     private void isValidNotContainSection(Section section) {

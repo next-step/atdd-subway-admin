@@ -36,7 +36,6 @@ public class Section extends BaseEntity {
         this.line = line;
     }
 
-
     public Station getUpStation() {
         return upStation;
     }
@@ -70,6 +69,33 @@ public class Section extends BaseEntity {
 
     private boolean isValidExistUpStation(Section newSection) {
         return this.upStation.equals(newSection.getUpStation());
+    }
+
+    public void reorganize(Section section){
+        reorganizeUpStation(section);
+        reorganizeDownStation(section);
+    }
+
+    private void reorganizeDownStation(Section section) {
+        if(isSameDownStation(section)){
+            this.downStation = section.upStation;
+            this.distance = this.distance.subtract(section.distance);
+        }
+    }
+
+    private boolean isSameDownStation(Section section) {
+        return this.downStation.equals(section.downStation);
+    }
+
+    private void reorganizeUpStation(Section section) {
+        if(isSameUpStation(section)){
+            this.upStation = section.downStation;
+            this.distance = this.distance.subtract(section.distance);
+        }
+    }
+
+    private boolean isSameUpStation(Section section) {
+        return this.upStation.equals(section.upStation);
     }
 
     @Override

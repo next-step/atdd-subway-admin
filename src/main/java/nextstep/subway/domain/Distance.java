@@ -18,4 +18,8 @@ public class Distance {
     public int getDistance() {
         return distance;
     }
+
+    public Distance subtract(Distance distance) {
+        return new Distance(this.distance - distance.distance);
+    }
 }
