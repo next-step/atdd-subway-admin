@@ -30,7 +30,7 @@ public class SectionAcceptanceTest {
     public static final String STATION_URL = "/stations";
     public static final String STATION_KEY_NAME = "name";
 
-    private StationResponse 상행종점역, 하행종점역;
+    private StationResponse 상행종점역, 하행종점역, 새로운역;
     private LineResponse 신분당선;
     @LocalServerPort
     int port;
@@ -48,6 +48,7 @@ public class SectionAcceptanceTest {
         // create Station
         상행종점역 = createStationRest("상행종점역").as(StationResponse.class);
         하행종점역 = createStationRest("하행종점역").as(StationResponse.class);
+        새로운역 = createStationRest("새로운역").as(StationResponse.class);
 
 
         //create Line
@@ -64,9 +65,7 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionMiddleStations() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
-        SectionRequest newSection = new SectionRequest(상행종점역.getId(),새로운역.getId(),5);
-        addSectionRest(신분당선.getId(), newSection);
+        노선_구간_등록(상행종점역.getId(),새로운역.getId(),7);
 
         // when
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
@@ -75,8 +74,6 @@ public class SectionAcceptanceTest {
         노선_역_순서확인(findLine, "상행종점역","새로운역","하행종점역");
 
     }
-
-
 
     /**
      * Given 상행종점역, 하행종점역을 가진 노선을 생성하고 새로운역, 상행종점역 구간을 추가하고
@@ -87,9 +84,7 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionNewUpStation() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
-        SectionRequest newSection = new SectionRequest(새로운역.getId(),상행종점역.getId(),5);
-        addSectionRest(신분당선.getId(), newSection);
+        노선_구간_등록(새로운역.getId(),상행종점역.getId(),5);
 
         // when
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
@@ -107,9 +102,7 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionNewDownStation() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
-        SectionRequest newSection = new SectionRequest(하행종점역.getId(),새로운역.getId(),5);
-        addSectionRest(신분당선.getId(), newSection);
+        노선_구간_등록(하행종점역.getId(),새로운역.getId(),5);
 
         // when
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
@@ -127,9 +120,7 @@ public class SectionAcceptanceTest {
     @Test
     void removeMiddleStation() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
-        SectionRequest newSection = new SectionRequest(새로운역.getId(),하행종점역.getId(),5);
-        addSectionRest(신분당선.getId(), newSection);
+        노선_구간_등록(새로운역.getId(),하행종점역.getId(),5);
         removeStationRest(신분당선.getId(), 새로운역.getId());
 
         // when
@@ -149,9 +140,7 @@ public class SectionAcceptanceTest {
     @Test
     void removeUpStation() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
-        SectionRequest newSection = new SectionRequest(새로운역.getId(),하행종점역.getId(),5);
-        addSectionRest(신분당선.getId(), newSection);
+        노선_구간_등록(새로운역.getId(),하행종점역.getId(),5);
         removeStationRest(신분당선.getId(), 상행종점역.getId());
 
         // when
@@ -170,9 +159,7 @@ public class SectionAcceptanceTest {
     @Test
     void removeDownStation() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
-        SectionRequest newSection = new SectionRequest(새로운역.getId(),하행종점역.getId(),5);
-        addSectionRest(신분당선.getId(), newSection);
+        노선_구간_등록(새로운역.getId(),하행종점역.getId(),5);
         removeStationRest(신분당선.getId(), 하행종점역.getId());
 
         // when
@@ -193,7 +180,6 @@ public class SectionAcceptanceTest {
     @Test
     void error_addSectionLongThanOriginLine() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
         SectionRequest newSection = new SectionRequest(새로운역.getId(),하행종점역.getId(),10);
 
         // when
@@ -249,8 +235,6 @@ public class SectionAcceptanceTest {
     @DisplayName("노선에 없는 역을 삭제하면 에러가 발생한다.")
     @Test
     void error_removeOtherStation() {
-        // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
 
         // when
         ExtractableResponse<Response> response = removeStationRest(신분당선.getId(), 새로운역.getId());
@@ -318,6 +302,11 @@ public class SectionAcceptanceTest {
                 .when().post(STATION_URL)
                 .then().log().all()
                 .extract();
+    }
+
+    private void 노선_구간_등록(Long upStationId, Long downStationId, int distance) {
+        SectionRequest newSection = new SectionRequest(upStationId,downStationId,distance);
+        addSectionRest(신분당선.getId(), newSection);
     }
 
     private void 노선_역_순서확인(LineResponse lineResponse, String 역1, String 역2, String 역3) {

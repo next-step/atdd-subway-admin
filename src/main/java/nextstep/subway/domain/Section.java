@@ -103,7 +103,7 @@ public class Section implements Comparable<Section>{
         return station.equals(this.downStation);
     }
 
-    public void refreshWith(Section upSection) {
+    public void changeDownStationDistance(Section upSection) {
         this.downStation = upSection.downStation;
         this.distance += upSection.distance;
     }

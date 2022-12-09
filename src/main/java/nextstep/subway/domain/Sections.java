@@ -49,20 +49,18 @@ public class Sections {
         Optional<Section> downSection = findSectionbyDownSataion(station);
 
         checkSectionSize();
-        checkSectionInLine(upSection, downSection);
+        if (!upSection.isPresent() && !downSection.isPresent()) {
+            throw new IllegalArgumentException(ErrorMessage.ERROR_NO_STATION_LINE);
+        }
 
         if (upSection.isPresent() && downSection.isPresent()) {
             deleteMiddle(upSection.get(), downSection.get());
             return;
         }
-        checkDeleteEnd(upSection, downSection);
+        upSection.ifPresent(this::removeSection);
+        downSection.ifPresent(this::removeSection);
     }
 
-    private void checkSectionInLine(Optional<Section> upSection, Optional<Section> downSection) {
-        if (!upSection.isPresent() && !downSection.isPresent()) {
-            throw new IllegalArgumentException(ErrorMessage.ERROR_NO_STATION_LINE);
-        }
-    }
 
     private void checkSectionSize() {
         if (sections.size() <= MIN_SECTION_SIZE) {
@@ -70,18 +68,14 @@ public class Sections {
         }
     }
 
-    private void checkDeleteEnd(Optional<Section> upSection, Optional<Section> downSection) {
-        upSection.ifPresent(this::removeEndSection);
-        downSection.ifPresent(this::removeEndSection);
-    }
 
-    private void removeEndSection(Section section) {
+    private void removeSection(Section section) {
         sections.remove(section);
     }
 
     private void deleteMiddle(Section upSection, Section downSection) {
-        downSection.refreshWith(upSection);
-        sections.remove(upSection);
+        downSection.changeDownStationDistance(upSection);
+        removeSection(upSection);
     }
 
     private Optional<Section> findSectionbyUpStation(Station station) {

@@ -56,10 +56,10 @@ public class SectionTest {
     }
 
     @Test
-    @DisplayName("기존 Section 새로운 Section refresh")
+    @DisplayName("기존 Section 새로운 Section change")
     void refreshSection() {
         Section newSection = Section.of(상행종점역, 새로운역, 7);
-        initSection.refreshWith(newSection);
+        initSection.changeDownStationDistance(newSection);
         assertThat(initSection.getStations()).containsExactly(상행종점역,새로운역);
     }
 }
