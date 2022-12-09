@@ -46,13 +46,15 @@ public class StationRegisterStatus {
     }
 
     private boolean validateUpDownStationExist() {
-        long upStationCount = stationStatusList.stream()
-                .filter(stationStatus -> stationStatus.matchStationPosition(StationPosition.UPSTATION))
-                .count();
-        long downStationCount = stationStatusList.stream()
-                .filter(stationStatus -> stationStatus.matchStationPosition(StationPosition.DOWNSTATION))
-                .count();
+        long upStationCount = getCountBy(StationPosition.UPSTATION);
+        long downStationCount = getCountBy(StationPosition.DOWNSTATION);
         return upStationCount == 1 && downStationCount == 1;
+    }
+
+    private long getCountBy(StationPosition position) {
+        return stationStatusList.stream()
+                .filter(stationStatus -> stationStatus.matchStationPosition(position))
+                .count();
     }
 
     private boolean allPositionNotNone() {
