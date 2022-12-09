@@ -43,12 +43,4 @@ public class StationResponse {
         return modifiedDate;
     }
 
-    /*public List<StationResponse> of(Sections sections) {
-        List<StationResponse> result = new ArrayList<>();
-        List<Station> stations = sections.getStations();
-        for (Station station : stations) {
-            result.add(new StationResponse(station.getId(), station.getName()));
-        }
-        return result;
-    }*/
 }

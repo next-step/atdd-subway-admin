@@ -30,7 +30,7 @@ public class SectionAcceptanceTest {
     public static final String STATION_URL = "/stations";
     public static final String STATION_KEY_NAME = "name";
 
-    private StationResponse 상행종점역, 하행종점역;
+    private StationResponse 상행종점역, 하행종점역, 새로운역;
     private LineResponse 신분당선;
     @LocalServerPort
     int port;
@@ -48,6 +48,7 @@ public class SectionAcceptanceTest {
         // create Station
         상행종점역 = createStationRest("상행종점역").as(StationResponse.class);
         하행종점역 = createStationRest("하행종점역").as(StationResponse.class);
+        새로운역 = createStationRest("새로운역").as(StationResponse.class);
 
 
         //create Line
@@ -64,9 +65,7 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionMiddleStations() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
-        SectionRequest newSection = new SectionRequest(상행종점역.getId(),새로운역.getId(),5);
-        addSectionRest(신분당선.getId(), newSection);
+        노선_구간_등록(상행종점역.getId(),새로운역.getId(),7);
 
         // when
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
@@ -75,8 +74,6 @@ public class SectionAcceptanceTest {
         노선_역_순서확인(findLine, "상행종점역","새로운역","하행종점역");
 
     }
-
-
 
     /**
      * Given 상행종점역, 하행종점역을 가진 노선을 생성하고 새로운역, 상행종점역 구간을 추가하고
@@ -87,9 +84,7 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionNewUpStation() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
-        SectionRequest newSection = new SectionRequest(새로운역.getId(),상행종점역.getId(),5);
-        addSectionRest(신분당선.getId(), newSection);
+        노선_구간_등록(새로운역.getId(),상행종점역.getId(),5);
 
         // when
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
@@ -107,15 +102,71 @@ public class SectionAcceptanceTest {
     @Test
     void addSectionNewDownStation() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
-        SectionRequest newSection = new SectionRequest(하행종점역.getId(),새로운역.getId(),5);
-        addSectionRest(신분당선.getId(), newSection);
+        노선_구간_등록(하행종점역.getId(),새로운역.getId(),5);
 
         // when
         LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
 
         // then
         노선_역_순서확인(findLine, "상행종점역","하행종점역","새로운역");
+    }
+
+    /**
+     * Given 상행종점역, 새로운역, 하행종점역을 가진 노선을 생성하고 새로운역을 제거하고
+     * When 노선을 조회하면
+     * Then 상행종점역, 하행종점역이 조회된다.
+     */
+    @DisplayName("노선의 중간 역을 삭제한다")
+    @Test
+    void removeMiddleStation() {
+        // given
+        노선_구간_등록(새로운역.getId(),하행종점역.getId(),5);
+        removeStationRest(신분당선.getId(), 새로운역.getId());
+
+        // when
+        LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
+
+        // then
+        노선_역_확인(findLine, "상행종점역","하행종점역");
+    }
+
+
+    /**
+     * Given 상행종점역, 새로운역, 하행종점역을 가진 노선을 생성하고 상행종점역을 제거하고
+     * When 노선을 조회하면
+     * Then 새로운역, 하행종점역이 조회된다.
+     */
+    @DisplayName("노선의 상행종점 역을 삭제한다")
+    @Test
+    void removeUpStation() {
+        // given
+        노선_구간_등록(새로운역.getId(),하행종점역.getId(),5);
+        removeStationRest(신분당선.getId(), 상행종점역.getId());
+
+        // when
+        LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
+
+        // then
+        노선_역_확인(findLine, "새로운역","하행종점역");
+    }
+
+    /**
+     * Given 상행종점역, 새로운역, 하행종점역을 가진 노선을 생성하고 하행종점역을 제거하고
+     * When 노선을 조회하면
+     * Then 상행종점역, 새로운역이 조회된다.
+     */
+    @DisplayName("노선의 하행종점 역을 삭제한다")
+    @Test
+    void removeDownStation() {
+        // given
+        노선_구간_등록(새로운역.getId(),하행종점역.getId(),5);
+        removeStationRest(신분당선.getId(), 하행종점역.getId());
+
+        // when
+        LineResponse findLine = lineGet(신분당선.getId()).as(LineResponse.class);
+
+        // then
+        노선_역_확인(findLine, "상행종점역","새로운역");
     }
 
     // Happy-case
@@ -129,14 +180,13 @@ public class SectionAcceptanceTest {
     @Test
     void error_addSectionLongThanOriginLine() {
         // given
-        StationResponse 새로운역 = createStationRest("새로운역").as(StationResponse.class);
         SectionRequest newSection = new SectionRequest(새로운역.getId(),하행종점역.getId(),10);
 
         // when
         ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
 
         // then
-        노선등록_에러(response);
+        노선_요청_에러(response);
     }
 
     /**
@@ -154,7 +204,7 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
 
         // then
-        노선등록_에러(response);
+        노선_요청_에러(response);
     }
 
     /**
@@ -174,8 +224,41 @@ public class SectionAcceptanceTest {
         ExtractableResponse<Response> response = addSectionRest(신분당선.getId(), newSection);
 
         // then
-        노선등록_에러(response);
+        노선_요청_에러(response);
     }
+
+    /**
+     * Given 상행종점역, 하행종점역을 가진 노선을 생성하고
+     * When 새로운역을 삭제하면
+     * Then 에러가 발생한다.
+     */
+    @DisplayName("노선에 없는 역을 삭제하면 에러가 발생한다.")
+    @Test
+    void error_removeOtherStation() {
+
+        // when
+        ExtractableResponse<Response> response = removeStationRest(신분당선.getId(), 새로운역.getId());
+
+        // then
+        노선_요청_에러(response);
+    }
+
+    /**
+     * When 상행종점역을 삭제하면
+     * Then 에러가 발생한다.
+     */
+    @DisplayName("구간이 하나인 노선에서 마지막 구간을 삭제하면 에러가 발생한다.")
+    @Test
+    void error_removeOneSection() {
+
+        // when
+        ExtractableResponse<Response> response = removeStationRest(신분당선.getId(), 상행종점역.getId());
+
+        // then
+        노선_요청_에러(response);
+    }
+
+
 
     private ExtractableResponse<Response> createLineRest(LineRequest lineRequest) {
         return RestAssured.given().log().all()
@@ -191,6 +274,14 @@ public class SectionAcceptanceTest {
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post(LINE_URL+"/{lineId}/sections",lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> removeStationRest(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete(LINE_URL+"/{lineId}/sections?stationId={stationId}",lineId, stationId)
                 .then().log().all()
                 .extract();
     }
@@ -213,11 +304,20 @@ public class SectionAcceptanceTest {
                 .extract();
     }
 
+    private void 노선_구간_등록(Long upStationId, Long downStationId, int distance) {
+        SectionRequest newSection = new SectionRequest(upStationId,downStationId,distance);
+        addSectionRest(신분당선.getId(), newSection);
+    }
+
     private void 노선_역_순서확인(LineResponse lineResponse, String 역1, String 역2, String 역3) {
         assertThat(lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly(역1, 역2, 역3);
     }
 
-    private void 노선등록_에러(ExtractableResponse<Response> response) {
+    private void 노선_역_확인(LineResponse lineResponse, String 역1, String 역2) {
+        assertThat(lineResponse.getStations().stream().map(StationResponse::getName).collect(Collectors.toList())).containsExactly(역1, 역2);
+    }
+
+    private void 노선_요청_에러(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 }

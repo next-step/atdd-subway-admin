@@ -12,19 +12,19 @@ public class Section implements Comparable<Section>{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "upStation_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "upStation_id", foreignKey = @ForeignKey(name = "fk_up_station_section_to_station"))
     private Station upStation;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "downStation_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "downStation_id", foreignKey = @ForeignKey(name = "fk_down_station_section_to_station"))
     private Station downStation;
 
     private int distance;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "line_id")
-    Line line;
+    @JoinColumn(name = "line_id", foreignKey = @ForeignKey(name = "fk_section_to_line"))
+    private Line line;
 
     protected Section() {}
 
@@ -93,5 +93,18 @@ public class Section implements Comparable<Section>{
     @Override
     public int compareTo(Section o) {
         return this.downStation == o.upStation ? -1 : 1;
+    }
+
+    public boolean equalUpStation(Station station) {
+        return station.equals(this.upStation);
+    }
+
+    public boolean equalDownStation(Station station) {
+        return station.equals(this.downStation);
+    }
+
+    public void changeDownStationDistance(Section upSection) {
+        this.downStation = upSection.downStation;
+        this.distance += upSection.distance;
     }
 }
