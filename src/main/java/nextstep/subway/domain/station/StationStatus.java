@@ -31,7 +31,7 @@ public class StationStatus {
     }
 
     public boolean positionIsNotNone() {
-        return stationPosition != StationPosition.NONE;
+        return stationPosition.isNotNone();
     }
 
     public Distance getLineStationDistance() {

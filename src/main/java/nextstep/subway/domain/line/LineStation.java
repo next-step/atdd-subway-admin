@@ -81,7 +81,7 @@ public class LineStation extends BaseEntity {
     }
 
     public boolean containStation(Station station) {
-        return positionOf(station) != StationPosition.NONE;
+        return positionOf(station).isNotNone();
     }
 
     public boolean isLineOf(Line line) {
@@ -93,10 +93,10 @@ public class LineStation extends BaseEntity {
     }
 
     public void splitLineStation(StationPosition stationPosition, Station interStation, Distance distanceToSubtract) {
-        if (stationPosition == StationPosition.UPSTATION) {
+        if (stationPosition.isUpstation()) {
             preStation = interStation;
         }
-        if (stationPosition == StationPosition.DOWNSTATION) {
+        if (stationPosition.isDownStation()) {
             station = interStation;
         }
         distance.subtract(distanceToSubtract);
