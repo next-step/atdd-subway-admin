@@ -25,7 +25,6 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 @DisplayName("노선 관리 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class LineAcceptanceTest {
-
     @LocalServerPort
     int port;
 
@@ -59,7 +58,6 @@ public class LineAcceptanceTest {
     public void createLine() {
         // when
         ExtractableResponse<Response> response = 지하철_노선_생성(lineRequest);
-
         // then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -81,9 +79,9 @@ public class LineAcceptanceTest {
         // when
         List<String> lines = 지하철_노선_목록_조회();
         // then
-         assertThat(lines)
-                 .hasSize(2)
-                 .containsAnyOf("신분당선", "분당선");
+        assertThat(lines)
+                .hasSize(2)
+                .containsAnyOf("신분당선", "분당선");
     }
 
     /*
@@ -142,14 +140,14 @@ public class LineAcceptanceTest {
         assertThat(lines).isEmpty();
     }
 
-    private String 지하철_노선_조회(String id) {
+    public static String 지하철_노선_조회(String id) {
         return RestAssured.given().log().all()
                 .when().get("/lines/{id}", id)
                 .then().log().all()
                 .extract().path("name");
     }
 
-    public ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
+    public static ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
 
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
@@ -187,5 +185,6 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .extract();
     }
+
 
 }

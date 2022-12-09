@@ -1,25 +1,26 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.Line.Line;
+import nextstep.subway.domain.Line;
 
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public class LineResponse {
     private Long id;
     private String name;
     private String color;
+    private int distance;
     private List<StationResponse> stations;
 
-    public LineResponse(){
+    public LineResponse() {
     }
 
-    public LineResponse(Long id, String name, String color, List<StationResponse> stations) {
+    public LineResponse(Long id, String name, String color, List<StationResponse> stations, int distance) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
+        this.distance = distance;
     }
 
     public static LineResponse of(Line line) {
@@ -29,7 +30,9 @@ public class LineResponse {
                 line.getColor(),
                 line.getStations().stream()
                         .map(StationResponse::of)
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()
+                        ),
+                line.toDistance()
         );
     }
 
@@ -47,5 +50,9 @@ public class LineResponse {
 
     public List<StationResponse> getStations() {
         return stations;
+    }
+
+    public int getDistance() {
+        return distance;
     }
 }
