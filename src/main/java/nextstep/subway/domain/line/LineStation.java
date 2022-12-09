@@ -84,10 +84,6 @@ public class LineStation extends BaseEntity {
         return positionOf(station).isNotNone();
     }
 
-    public boolean isLineOf(Line line) {
-        return line.equals(this.line);
-    }
-
     public int distanceCompare(Distance distance) {
         return this.distance.compareTo(distance);
     }

@@ -3,6 +3,7 @@ package nextstep.subway.domain.line;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -11,7 +12,6 @@ import javax.persistence.OneToMany;
 import nextstep.subway.constants.ErrorMessage;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRegisterStatus;
-import nextstep.subway.domain.station.StationStatus;
 
 @Embeddable
 public class LineStations {
@@ -55,15 +55,27 @@ public class LineStations {
         }
     }
 
-    public LineStation reAssignLineStation(Station station, Line line) {
-        StationRegisterStatus leftStationsStatus = new StationRegisterStatus();
-        this.lineStations.stream()
-                .filter(lineStation -> lineStation.isLineOf(line))
+    public void deleteLineStation(Station station) {
+        LineStations lineStationsToDelete = getLineStationToDelete(station);
+        lineStationsToDelete.stream().forEach(lineStationToDelete -> lineStations.remove(lineStationToDelete));
+        addReAssignedLineStation(lineStationsToDelete, station);
+    }
+
+    private LineStations getLineStationToDelete(Station station) {
+        return new LineStations(lineStations.stream()
                 .filter(lineStation -> lineStation.containStation(station))
+                .collect(Collectors.toList()));
+    }
+
+    private void addReAssignedLineStation(LineStations lineStationsToDelete, Station station) {
+        StationRegisterStatus leftStationsStatus = new StationRegisterStatus();
+        lineStationsToDelete.stream()
                 .map(lineStation -> lineStation.oppositeStationStatusOf(station))
-                .filter(StationStatus::positionIsNotNone)
                 .forEach(leftStationsStatus::add);
-        return leftStationsStatus.createLineStation();
+        LineStation lineStationToAdd = leftStationsStatus.createLineStation();
+        if (lineStationToAdd != null) {
+            lineStations.add(lineStationToAdd);
+        }
     }
 
     public List<LineStation> getLineStations() {

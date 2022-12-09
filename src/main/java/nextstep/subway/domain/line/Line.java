@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import nextstep.subway.domain.BaseEntity;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.UpdateLine;
 
 @Entity
@@ -48,6 +49,10 @@ public class Line extends BaseEntity {
 
     public boolean containLineStation(LineStation lineStation) {
         return lineStations.contains(lineStation);
+    }
+
+    public void deleteLineStation(Station station) {
+        lineStations.deleteLineStation(station);
     }
 
     public Long getId() {

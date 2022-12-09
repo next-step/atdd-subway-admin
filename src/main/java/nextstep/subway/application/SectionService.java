@@ -72,24 +72,12 @@ public class SectionService {
         checkLineStationDeleteAble(line);
 
         Station station = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
-        LineStations findResults = findByStationAndLine(station, line);
-        lineStationRepository.deleteAllInBatch(findResults.getLineStations());
-
-        LineStation reAssignedLineStation = findResults.reAssignLineStation(station, line);
-        if (reAssignedLineStation != null) {
-            lineStationRepository.save(reAssignedLineStation);
-        }
+        line.deleteLineStation(station);
     }
 
     private void checkLineStationDeleteAble(Line line) {
         if (lineStationRepository.countByLine(line) <= MIN_LINE_STATION_COUNT) {
             throw new IllegalArgumentException(ErrorMessage.LAST_LINE_STATION_CANNOT_BE_DELETED);
         }
-    }
-
-    private LineStations findByStationAndLine(Station station, Line line) {
-        LineStations findResults = new LineStations(lineStationRepository.findByStationAndLine(station, line));
-        findResults.checkLineStationExist();
-        return findResults;
     }
 }
