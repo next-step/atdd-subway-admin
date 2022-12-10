@@ -54,12 +54,9 @@ public class Sections {
     }
 
     private boolean isContainsAllStation(Section section) {
-        return sections.stream().map(Section::stations)
-                .flatMap(Collection::stream)
-                .collect(Collectors.toSet())
+        return getStations()
                 .containsAll(section.stations());
     }
-
 
     public int totalDistance() {
         return sections.stream().mapToInt(Section::getDistance).sum();
