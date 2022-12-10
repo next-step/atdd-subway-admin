@@ -22,12 +22,6 @@ public class Line extends BaseEntity {
     protected Line() {
 
     }
-
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
