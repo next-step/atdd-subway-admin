@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -84,10 +85,10 @@ public class LineService {
     }
 
     private void checkValidationForAddLineStation(LineSectionRequest lineSectionRequest) {
-        Station upStation = stationRepository.getById(lineSectionRequest.getUpStationId());
-        Station downStation = stationRepository.getById(lineSectionRequest.getDownStationId());
+        Optional<Station> upStation = stationRepository.findById(lineSectionRequest.getUpStationId());
+        Optional<Station> downStation = stationRepository.findById(lineSectionRequest.getDownStationId());
 
-        if (upStation.getId() == null || downStation.getId() == null) {
+        if (!upStation.isPresent() || !downStation.isPresent()) {
             throw new RuntimeException();
         }
     }
