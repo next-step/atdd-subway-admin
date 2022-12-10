@@ -10,4 +10,6 @@ public interface LineStationRepository extends JpaRepository<LineStation, Long> 
     List<LineStation> findByStation(Station station);
 
     List<LineStation> findByPreStation(Station station);
+
+    Long countByLine(Line line);
 }

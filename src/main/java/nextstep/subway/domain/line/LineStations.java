@@ -3,11 +3,13 @@ package nextstep.subway.domain.line;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import nextstep.subway.constants.ErrorMessage;
 import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRegisterStatus;
 
@@ -18,6 +20,10 @@ public class LineStations {
     private List<LineStation> lineStations = new ArrayList<>();
 
     public LineStations() {
+    }
+
+    public LineStations(List<LineStation> lineStations) {
+        this.lineStations.addAll(lineStations);
     }
 
     public void add(LineStation lineStation) {
@@ -36,12 +42,44 @@ public class LineStations {
         return lineStations.stream();
     }
 
-    public List<LineStation> getLineStations() {
-        return lineStations;
+    public StationRegisterStatus getStationRegisterStatus(Station station) {
+        StationRegisterStatus stationRegisterStatus = new StationRegisterStatus();
+        this.lineStations
+                .forEach(lineStation -> stationRegisterStatus.add(lineStation.checkStationStatusOf(station)));
+        return stationRegisterStatus;
     }
 
-    public void setLineStations(List<LineStation> lineStations) {
-        this.lineStations = lineStations;
+    public void checkLineStationExist() {
+        if (lineStations.isEmpty()) {
+            throw new IllegalArgumentException(ErrorMessage.NOT_REGISTERED_LINE_STATION);
+        }
+    }
+
+    public void deleteLineStation(Station station) {
+        LineStations lineStationsToDelete = getLineStationToDelete(station);
+        lineStationsToDelete.stream().forEach(lineStationToDelete -> lineStations.remove(lineStationToDelete));
+        addReAssignedLineStation(lineStationsToDelete, station);
+    }
+
+    private LineStations getLineStationToDelete(Station station) {
+        return new LineStations(lineStations.stream()
+                .filter(lineStation -> lineStation.containStation(station))
+                .collect(Collectors.toList()));
+    }
+
+    private void addReAssignedLineStation(LineStations lineStationsToDelete, Station station) {
+        StationRegisterStatus leftStationsStatus = new StationRegisterStatus();
+        lineStationsToDelete.stream()
+                .map(lineStation -> lineStation.oppositeStationStatusOf(station))
+                .forEach(leftStationsStatus::add);
+        LineStation lineStationToAdd = leftStationsStatus.createLineStation();
+        if (lineStationToAdd != null) {
+            lineStations.add(lineStationToAdd);
+        }
+    }
+
+    public List<LineStation> getLineStations() {
+        return lineStations;
     }
 
     public boolean contains(LineStation lineStation) {
@@ -65,10 +103,4 @@ public class LineStations {
         return Objects.hash(lineStations);
     }
 
-    public StationRegisterStatus getStationRegisterStatus(Station station) {
-        StationRegisterStatus stationRegisterStatus = new StationRegisterStatus();
-        this.lineStations
-                .forEach(lineStation -> stationRegisterStatus.add(lineStation.checkStationStatus(station)));
-        return stationRegisterStatus;
-    }
 }

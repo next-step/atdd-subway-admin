@@ -12,18 +12,19 @@ import nextstep.subway.dto.SectionResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import nextstep.subway.utils.AcceptanceTestCommon;
 import org.junit.jupiter.api.BeforeEach;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.MediaType;
 
 class LineStationAcceptanceTestFixture extends AcceptanceTestCommon {
 
     Station 서초역;
+    Station 교대역;
     Station 강남역;
     Line _2호선;
 
     @BeforeEach
     public void setUp2() {
         서초역 = StationAcceptanceTest.지하철역_생성("서초역").as(Station.class);
+        교대역 = StationAcceptanceTest.지하철역_생성("교대역").as(Station.class);
         강남역 = StationAcceptanceTest.지하철역_생성("강남").as(Station.class);
         _2호선 = LineAcceptanceTest.지하철_노선_생성("2호선", "green").as(Line.class);
     }
@@ -38,6 +39,14 @@ class LineStationAcceptanceTestFixture extends AcceptanceTestCommon {
                 .body(params)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/" + lineId + "/sections")
+                .then().log().all()
+                .extract();
+    }
+
+    protected ExtractableResponse<Response> 구간제거(Long lineId, Long stationId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().delete("/lines/" + lineId + "/sections?stationId=" + stationId)
                 .then().log().all()
                 .extract();
     }

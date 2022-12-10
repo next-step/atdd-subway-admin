@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import javax.persistence.EntityNotFoundException;
+import nextstep.subway.constants.ErrorMessage;
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
 import nextstep.subway.domain.line.LineStation;
@@ -20,9 +21,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class SectionService {
 
+    private static final int MIN_LINE_STATION_COUNT = 1;
     private LineRepository lineRepository;
     private LineStationRepository lineStationRepository;
-
     private StationRepository stationRepository;
 
     public SectionService(LineRepository lineRepository, LineStationRepository lineStationRepository,
@@ -63,5 +64,20 @@ public class SectionService {
         return findResults.stream()
                 .map(SectionResponse::of)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteLineStation(Long lineId, Long stationId) {
+        Line line = lineRepository.findById(lineId).orElseThrow(NoSuchElementException::new);
+        checkLineStationDeleteAble(line);
+
+        Station station = stationRepository.findById(stationId).orElseThrow(EntityNotFoundException::new);
+        line.deleteLineStation(station);
+    }
+
+    private void checkLineStationDeleteAble(Line line) {
+        if (lineStationRepository.countByLine(line) <= MIN_LINE_STATION_COUNT) {
+            throw new IllegalArgumentException(ErrorMessage.LAST_LINE_STATION_CANNOT_BE_DELETED);
+        }
     }
 }

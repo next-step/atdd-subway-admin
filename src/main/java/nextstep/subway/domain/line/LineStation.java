@@ -49,14 +49,39 @@ public class LineStation extends BaseEntity {
         this.line = line;
     }
 
-    public StationStatus checkStationStatus(Station station) {
-        if (station.equals(this.station)) {
-            return new StationStatus(station, this, StationPosition.DOWNSTATION);
+    public void addLine(Line line) {
+        this.line = line;
+        if (!line.containLineStation(this)) {
+            line.addLineStationWithoutSettingLine(this);
         }
+    }
+
+    private StationPosition positionOf(Station station) {
         if (station.equals(this.preStation)) {
-            return new StationStatus(station, this, StationPosition.UPSTATION);
+            return StationPosition.UPSTATION;
+        }
+        if (station.equals(this.station)) {
+            return StationPosition.DOWNSTATION;
+        }
+        return StationPosition.NONE;
+    }
+
+    public StationStatus checkStationStatusOf(Station station) {
+        return new StationStatus(station, this, positionOf(station));
+    }
+
+    public StationStatus oppositeStationStatusOf(Station station) {
+        if (station.equals(this.preStation)) {
+            return new StationStatus(this.station, this, positionOf(this.station));
+        }
+        if (station.equals(this.station)) {
+            return new StationStatus(this.preStation, this, positionOf(this.preStation));
         }
         return null;
+    }
+
+    public boolean containStation(Station station) {
+        return positionOf(station).isNotNone();
     }
 
     public int distanceCompare(Distance distance) {
@@ -64,10 +89,10 @@ public class LineStation extends BaseEntity {
     }
 
     public void splitLineStation(StationPosition stationPosition, Station interStation, Distance distanceToSubtract) {
-        if (stationPosition == StationPosition.UPSTATION) {
+        if (stationPosition.isUpstation()) {
             preStation = interStation;
         }
-        if (stationPosition == StationPosition.DOWNSTATION) {
+        if (stationPosition.isDownStation()) {
             station = interStation;
         }
         distance.subtract(distanceToSubtract);
@@ -132,8 +157,12 @@ public class LineStation extends BaseEntity {
         return preStation.getName();
     }
 
-    public int getDistance() {
+    public int getDistanceValue() {
         return distance.getDistance();
+    }
+
+    public Distance getDistance() {
+        return distance;
     }
 
     public Line getLine() {
@@ -146,13 +175,6 @@ public class LineStation extends BaseEntity {
 
     public String getLineName() {
         return line.getName();
-    }
-
-    public void addLine(Line line) {
-        this.line = line;
-        if (!line.containLineStation(this)) {
-            line.addLineStationWithoutSettingLine(this);
-        }
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -71,7 +72,14 @@ public class LineController {
         return ResponseEntity.ok().body(sectionService.findLineStationsByLineId(id));
     }
 
-    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class, NoSuchElementException.class})
+    @DeleteMapping(value = "/lines/{lineId}/sections")
+    public ResponseEntity deleteLineStation(@PathVariable Long lineId, @RequestParam Long stationId) {
+        sectionService.deleteLineStation(lineId, stationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @ExceptionHandler({DataIntegrityViolationException.class, IllegalArgumentException.class,
+            NoSuchElementException.class})
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }
