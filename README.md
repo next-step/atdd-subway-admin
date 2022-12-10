@@ -137,10 +137,10 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [x] 테스트에서 한글 변수명 사용해보기
     - [x] 테스트시 재사용이 빈번한 메소드 추출
     - [x] 빈번하게 사용되는 메소드 SectionAcceptanceSupport 클래스로 추출upStation.getId() == null
-- [ ] Step3 3차 리뷰 사항 반영
-    - [ ] getById Exception 처리
-    - [ ] 사용하지 않는 foreach 제거
-    - [ ] 사용하지 않는 주석 제거
+- [x] Step3 3차 리뷰 사항 반영
+    - [x] getById Exception 처리
+    - [x] 사용하지 않는 foreach 제거
+    - [x] 사용하지 않는 주석 제거
 #### 기능 요구사항
  - 요구사항 설명에서 제공되는 요구사항을 기반으로 지하철 구간 추가 기능을 구현하세요.
  - 요구사항을 정의한 인수 조건을 조출하세요.
