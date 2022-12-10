@@ -64,6 +64,12 @@ public class LineStations {
         }
     }
 
+    public void addLineStations(LineStations lineStations) {
+        for (LineStation lineStation : lineStations.getValues()) {
+            this.addLineStation(lineStation);
+        }
+    }
+
     public List<LineStation> getValues() {
         return this.lineStations;
     }
