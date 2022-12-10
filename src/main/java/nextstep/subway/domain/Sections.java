@@ -31,7 +31,10 @@ public class Sections {
     public void addSection(Section newSection) {
         isValidExistSection(newSection);
         isValidNotContainSection(newSection);
-        sections.forEach(section -> section.reorganize(newSection));
+        sections.stream()
+                .filter(section -> section.isConnectable(newSection))
+                .findFirst()
+                .ifPresent(section -> section.reorganize(newSection));
         sections.add(newSection);
     }
 
