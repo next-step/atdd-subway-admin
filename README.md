@@ -128,7 +128,7 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [x] BaseTest BeforeEach 추가
     - [x] getById는 EntityNotFoundException 에러 처리
     - [x] Stream.of 사용하기
-- [ ] Step3 2차 리뷰 사항 반영
+- [x] Step3 2차 리뷰 사항 반영
     - [x] 테스트 전부 통과하도록 처리
     - [x] 라인 구간 추가시 저장되어 있는 지하철역인지 검증 추가
     - [x] 도메인 성격에 맞는 일급컬렉션 이름 변경
@@ -136,7 +136,11 @@ This project is [MIT](https://github.com/next-step/atdd-subway-admin/blob/master
     - [x] 이미 초기화된 List에 대해서는 대체보다는 LIst에 데이터를 추가하는 로직으로 변경
     - [x] 테스트에서 한글 변수명 사용해보기
     - [x] 테스트시 재사용이 빈번한 메소드 추출
-    - [x] 빈번하게 사용되는 메소드 SectionAcceptanceSupport 클래스로 추출
+    - [x] 빈번하게 사용되는 메소드 SectionAcceptanceSupport 클래스로 추출upStation.getId() == null
+- [ ] Step3 3차 리뷰 사항 반영
+    - [ ] getById Exception 처리
+    - [ ] 사용하지 않는 foreach 제거
+    - [ ] 사용하지 않는 주석 제거
 #### 기능 요구사항
  - 요구사항 설명에서 제공되는 요구사항을 기반으로 지하철 구간 추가 기능을 구현하세요.
  - 요구사항을 정의한 인수 조건을 조출하세요.
