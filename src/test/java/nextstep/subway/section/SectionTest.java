@@ -152,5 +152,18 @@ public class SectionTest {
         );
     }
 
+    @DisplayName("기존 구간이 하나만 있는 경우 삭제 불가능.")
+    @Test
+    void isValidDeleteOneSection(){
+        // given
+        Sections sections = new Sections();
+        sections.addSection(new Section(강남역, 선릉역, new Distance(distance)));
+        // when && then
+        assertThatThrownBy(
+                () -> sections.removeSectionByStation(선릉역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선에 등록된 구간이 1이면 삭제 불가능 합니다.");
+    }
+
 
 }

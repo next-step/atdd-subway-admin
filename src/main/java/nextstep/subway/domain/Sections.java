@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 public class Sections {
     private static final String ERROR_MESSAGE_EXIST_STATION = "기존과 동일한 상행/하행선 등록 불가 합니다.";
     private static final String ERROR_MESSAGE_NOT_CONTAIN_STATION = "기존 등록된 상행/하행선이 하나도 포함되어 있지 않습니다.";
+    private static final String ERROR_MESSAGE_ONE_STATION = "노선에 등록된 구간이 1이면 삭제 불가능 합니다.";
+
+    private static final int MIN_SECTION_SIZE = 1;
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
@@ -75,6 +78,7 @@ public class Sections {
     }
 
     public void removeSectionByStation(Station station) {
+        isValidMinSizeSection();
         Optional<Section> deleteUpSection = removeUpSection(station);
         Optional<Section> deleteDownSection = removeDownSection(station);
 
@@ -86,6 +90,12 @@ public class Sections {
         deleteUpSection.ifPresent(section -> this.sections.remove(section));
         deleteDownSection.ifPresent(section -> this.sections.remove(section));
 
+    }
+
+    private void isValidMinSizeSection() {
+        if(sections.size() <= MIN_SECTION_SIZE){
+            throw new IllegalArgumentException(ERROR_MESSAGE_ONE_STATION);
+        }
     }
 
     private void mergeSection(Section upSection, Section downSection) {
