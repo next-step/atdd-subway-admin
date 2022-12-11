@@ -85,8 +85,8 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
     @Test
     public void isValidExistSection() {
         //when
-        ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(강남역ID, 선릉역ID, 4), lineResponse.jsonPath().getLong("id"));
         //then
+        ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(강남역ID, 선릉역ID, 4), lineResponse.jsonPath().getLong("id"));
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
@@ -99,13 +99,44 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    @DisplayName("상행 종점 제거 테스트")
+    @Test
+    public void delete_up_station() {
+        // given
+        ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(강남역ID, 교대역ID, 5), lineResponse.jsonPath().getLong("id"));
+        Long lineId = lineResponse.jsonPath().getLong("id");
+        // when
+        ExtractableResponse<Response> expectResponse = 지하철_구간_삭제(lineId, 강남역ID);
+        // then
+        assertThat(expectResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_조회(lineId);
+        assertAll(
+                () -> assertThat(lineResponse.jsonPath().getList("stations.name")).contains("교대역", "선릉역"),
+                () -> assertThat(lineResponse.jsonPath().getList("stations.name")).doesNotContain("강남역")
+        );
+    }
+
+    private ExtractableResponse<Response> 지하철_구간_삭제(long lineId, long stationId) {
+        ExtractableResponse<Response> response = RestAssured.given().log().all()
+                .param("stationId", stationId)
+                .contentType(MediaType.APPLICATION_JSON_VALUE).when()
+                .delete("lines/{lineId}/sections", lineId).then().log().all().extract();
+
+        return response;
+    }
+
     public ExtractableResponse<Response> 지하철_구간_생성(SectionRequest sectionRequest, Long id) {
         ExtractableResponse<Response> response = RestAssured.given().log().all().pathParam("id", id).body(sectionRequest).contentType(MediaType.APPLICATION_JSON_VALUE).when().post("lines/{id}/sections").then().log().all().extract();
 
         return response;
     }
 
-    public static ExtractableResponse<Response> 지하철_노선_조회(String id) {
-        return RestAssured.given().log().all().when().get("/lines/{id}", id).then().log().all().extract();
+    public static ExtractableResponse<Response> 지하철_노선_조회(long id) {
+        return RestAssured.given().log().all()
+                .when().get("/lines/{id}", id)
+                .then().log().all()
+                .extract();
     }
+
 }

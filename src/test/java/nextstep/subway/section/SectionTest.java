@@ -104,4 +104,37 @@ public class SectionTest {
         assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class).hasMessage("기존 등록된 상행/하행선이 하나도 포함되어 있지 않습니다.");
     }
 
+    @DisplayName("상행 종점 제거")
+    @Test
+    void deleteSectionAndUpStation() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(new Section(강남역, 선릉역, new Distance(distance)));
+        sections.addSection(new Section(강남역, 역삼역, new Distance(5)));
+        // when
+        sections.removeSectionByStation(강남역);
+        // then
+        assertAll(
+                () -> assertThat(sections.getStations()).contains(선릉역, 역삼역),
+                () -> assertThat(sections.getStations()).doesNotContain(강남역)
+        );
+    }
+
+    @DisplayName("하행 종점 제거")
+    @Test
+    void deleteSectionAndDownStation() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(new Section(강남역, 선릉역, new Distance(distance)));
+        sections.addSection(new Section(강남역, 역삼역, new Distance(5)));
+        // when
+        sections.removeSectionByStation(선릉역);
+        // then
+        assertAll(
+                () -> assertThat(sections.getStations()).contains(강남역, 역삼역),
+                () -> assertThat(sections.getStations()).doesNotContain(선릉역)
+        );
+    }
+
+
 }
