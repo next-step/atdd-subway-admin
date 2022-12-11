@@ -1,14 +1,9 @@
 package nextstep.subway.domain.line;
 
 import nextstep.subway.domain.BaseEntity;
-import nextstep.subway.domain.station.Station;
 import nextstep.subway.dto.request.LineRequest;
-import nextstep.subway.dto.response.StationResponse;
 
 import javax.persistence.*;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Entity
 public class Line extends BaseEntity {
@@ -22,31 +17,21 @@ public class Line extends BaseEntity {
     @Column(nullable = false)
     private String color;
 
-    @ManyToOne
-    @JoinColumn(name = "up_station_id")
-    private Station upStation;
-
-    @ManyToOne
-    @JoinColumn(name = "down_station_id")
-    private Station downStation;
-
-    private int distance;
+    @Embedded
+    private LineStations lineStations = new LineStations();
 
     protected Line() {
     }
 
-    public Line(String name, String color, int distance) {
+    public Line(String name, String color) {
         this.name = name;
         this.color = color;
-        this.distance = distance;
     }
 
-    public Line(String name, String color, Station upStation, Station downStation, int distance) {
+    public Line(String name, String color, LineStations lineStations) {
         this.name = name;
         this.color = color;
-        this.upStation = upStation;
-        this.downStation = downStation;
-        this.distance = distance;
+        this.lineStations.addLineStations(lineStations);
     }
 
     public void updateLine(LineRequest lineRequest) {
@@ -66,20 +51,11 @@ public class Line extends BaseEntity {
         return color;
     }
 
-    public Station getUpStation() {
-        return upStation;
+    public LineStations getLineStations() {
+        return lineStations;
     }
 
-    public Station getDownStation() {
-        return downStation;
-    }
-
-    public int getDistance() {
-        return distance;
-    }
-
-    public List<Station> getStations() {
-        return Arrays.asList(upStation, downStation).stream()
-                .collect(Collectors.toList());
+    public void addLineStation(LineStation lineStation) {
+        this.lineStations.addLineStation(lineStation);
     }
 }

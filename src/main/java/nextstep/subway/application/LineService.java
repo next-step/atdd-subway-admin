@@ -2,14 +2,19 @@ package nextstep.subway.application;
 
 import nextstep.subway.domain.line.Line;
 import nextstep.subway.domain.line.LineRepository;
+import nextstep.subway.domain.line.LineStation;
+import nextstep.subway.domain.line.LineStationRepository;
+import nextstep.subway.domain.station.Station;
 import nextstep.subway.domain.station.StationRepository;
 import nextstep.subway.dto.request.LineRequest;
+import nextstep.subway.dto.request.LineSectionRequest;
 import nextstep.subway.dto.response.LineReponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,11 +22,13 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
+    private LineStationRepository lineStationRepository;
 
     @Autowired
-    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository, LineStationRepository lineStationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.lineStationRepository = lineStationRepository;
     }
 
     public LineService(LineRepository lineRepository) {
@@ -59,12 +66,30 @@ public class LineService {
     }
 
     private Line lineRequestToLine(LineRequest lineRequest) {
-        return new Line(
-                lineRequest.getName(),
-                lineRequest.getColor(),
-                stationRepository.getById(lineRequest.getUpStationId()),
-                stationRepository.getById(lineRequest.getDownStationId()),
-                lineRequest.getDistance()
-        );
+        Line line = new Line(lineRequest.getName(), lineRequest.getColor());
+        LineStation lineStation = new LineStation(lineRequest.getUpStationId(), lineRequest.getDownStationId(), lineRequest.getDistance());
+        line.addLineStation(lineStation);
+
+        return line;
+    }
+
+    @Transactional
+    public LineReponse addLineSections(Long id, LineSectionRequest lineSectionRequest) {
+        checkValidationForAddLineStation(lineSectionRequest);
+
+        Line line = lineRepository.getById(id);
+        LineStation lineStation = lineSectionRequest.toLineStation(lineSectionRequest);
+        line.addLineStation(lineStation);
+
+        return LineReponse.of(lineRepository.save(line));
+    }
+
+    private void checkValidationForAddLineStation(LineSectionRequest lineSectionRequest) {
+        Optional<Station> upStation = stationRepository.findById(lineSectionRequest.getUpStationId());
+        Optional<Station> downStation = stationRepository.findById(lineSectionRequest.getDownStationId());
+
+        if (!upStation.isPresent() || !downStation.isPresent()) {
+            throw new RuntimeException();
+        }
     }
 }

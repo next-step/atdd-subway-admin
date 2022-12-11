@@ -9,32 +9,29 @@ public class LineReponse {
     private Long id;
     private String name;
     private String color;
-    private List<StationResponse> stations;
-    private int distance;
+    private List<LineStationResponse> stations;
 
     public static LineReponse of(Line line) {
-        return new LineReponse(line.getId(), line.getName(), line.getColor()
-                                    , line.getStations().stream()
-                                            .map(StationResponse::of)
-                                            .collect(Collectors.toList()), line.getDistance());
+        return new LineReponse(line.getId(), line.getName(), line.getColor(), line.getLineStations().getValues()
+                .stream()
+                .map(LineStationResponse::of)
+                .collect(Collectors.toList()));
     }
 
     protected LineReponse() {
     }
 
-    public LineReponse(Long id, String name, String color, int distance) {
+    public LineReponse(Long id, String name, String color) {
         this.id = id;
         this.name = name;
         this.color = color;
-        this.distance = distance;
     }
 
-    public LineReponse(Long id, String name, String color, List<StationResponse> stations, int distance) {
+    public LineReponse(Long id, String name, String color, List<LineStationResponse> stations) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.stations = stations;
-        this.distance = distance;
     }
 
     public Long getId() {
@@ -49,11 +46,7 @@ public class LineReponse {
         return color;
     }
 
-    public List<StationResponse> getStations() {
+    public List<LineStationResponse> getStations() {
         return stations;
-    }
-
-    public int getDistance() {
-        return distance;
     }
 }

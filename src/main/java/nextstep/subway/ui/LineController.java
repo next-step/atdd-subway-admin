@@ -2,8 +2,8 @@ package nextstep.subway.ui;
 
 import nextstep.subway.application.LineService;
 import nextstep.subway.dto.request.LineRequest;
+import nextstep.subway.dto.request.LineSectionRequest;
 import nextstep.subway.dto.response.LineReponse;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +22,7 @@ public class LineController {
     @PostMapping
     public ResponseEntity<LineReponse> createLine(@RequestBody LineRequest lineRequest) {
         LineReponse line = lineService.createLine(lineRequest);
-        return ResponseEntity.created(URI.create( "/lines/" +  line.getId()) ).body(line);
+        return ResponseEntity.created(URI.create("/lines/" + line.getId())).body(line);
     }
 
     @GetMapping
@@ -38,7 +38,7 @@ public class LineController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody  LineRequest lineRequest) {
+    public ResponseEntity updateLine(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
         lineService.updateLine(id, lineRequest);
         LineReponse line = lineService.getLine(id);
         return ResponseEntity.ok(line);
@@ -50,7 +50,14 @@ public class LineController {
         return ResponseEntity.noContent().build();
     }
 
-    @ExceptionHandler(DataIntegrityViolationException.class)
+    @PostMapping("/{id}/sections")
+    public ResponseEntity<LineReponse> addLineSections(@PathVariable Long id, @RequestBody LineSectionRequest lineSectionRequest) {
+        LineReponse line = lineService.addLineSections(id, lineSectionRequest);
+        return ResponseEntity.ok(line);
+    }
+
+
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity handleIllegalArgsException() {
         return ResponseEntity.badRequest().build();
     }

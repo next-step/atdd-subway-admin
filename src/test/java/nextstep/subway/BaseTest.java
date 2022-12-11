@@ -2,6 +2,7 @@ package nextstep.subway;
 
 import io.restassured.RestAssured;
 import nextstep.subway.utils.DatabaseCleanup;
+import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
@@ -14,6 +15,7 @@ public class BaseTest {
     @Autowired
     private DatabaseCleanup databaseCleanup;
 
+    @BeforeEach
     protected void setUpBaseTestEnvironment() {
         if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
             RestAssured.port = port;
