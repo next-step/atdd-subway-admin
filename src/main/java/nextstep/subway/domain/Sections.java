@@ -76,7 +76,16 @@ public class Sections {
 
     public void removeSectionByStation(Station station) {
         Optional<Section> deleteUpSection = removeUpSection(station);
+        Optional<Section> deleteDownSection = removeDownSection(station);
 
+    }
+
+    private Optional<Section> removeDownSection(Station station) {
+        Optional<Section> downSection = this.sections.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .findAny();
+        downSection.ifPresent(section -> this.sections.remove(section));
+        return downSection;
     }
 
     private Optional<Section> removeUpSection(Station station) {
