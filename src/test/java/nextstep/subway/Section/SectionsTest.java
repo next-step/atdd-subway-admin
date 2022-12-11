@@ -37,8 +37,6 @@ class SectionsTest {
         ReflectionTestUtils.setField(stationD, "id", 4L);
         stationE = new Station("E");
         ReflectionTestUtils.setField(stationE, "id", 5L);
-        stationF = new Station("F");
-        ReflectionTestUtils.setField(stationF, "id", 6L);
         sections = new Sections(new ArrayList<>(Arrays.asList(
                 Section.of(stationC, stationD, 10),
                 Section.of(stationB, stationC, 10),
@@ -86,6 +84,51 @@ class SectionsTest {
             assertThat(actual.get(3)).isEqualTo(stationD);
             assertThat(actual.get(4)).isEqualTo(stationE);
         });
+    }
+
+    @DisplayName("section 삭제 시 해당 구간 삭제 확인")
+    @Test
+    void removeStation() {
+        // when
+        sections.removeSection(stationD);
+        List<Station> actual = sections.getSortedStations();
+
+        // then
+        assertAll(() -> {
+            assertThat(actual).hasSize(1);
+            assertThat(actual.get(0)).isEqualTo(stationA);
+            assertThat(actual.get(1)).isEqualTo(stationB);
+            assertThat(actual.get(2)).isEqualTo(stationC);
+            assertThat(actual.get(3)).isEqualTo(stationE);
+        });
+    }
+
+    @DisplayName("section 삭제 시 예외사항 테스트 - 구간이 하나일 때")
+    @Test
+    void makeExceptionWhenRemoveStation_sectionsSizeIssue() {
+        // given
+        sections.removeSection(stationA);
+        sections.removeSection(stationB);
+        sections.removeSection(stationC);
+
+        // when // then
+        assertAll(() -> {
+            assertThat(sections.asList()).hasSize(1);
+            assertThatThrownBy(() -> sections.removeSection(stationD))
+                    .isInstanceOf(IllegalArgumentException.class);
+        });
+    }
+
+    @DisplayName("section 삭제 시 예외사항 테스트 - 없는 Station 요청할 때")
+    @Test
+    void makeExceptionWhenRemoveStation_noMatchStationIssue() {
+        // given
+        stationF = new Station("F");
+        ReflectionTestUtils.setField(stationF, "id", 6L);
+
+        // when // then
+        assertThatThrownBy(() -> sections.removeSection(stationF))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
 }
