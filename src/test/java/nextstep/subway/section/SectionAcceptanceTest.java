@@ -153,6 +153,17 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         );
     }
 
+    @DisplayName("기존 구간이 하나만 있는 경우 삭제 불가능.")
+    @Test
+    public void isValidDeleteOneSection() {
+        // given
+        Long lineId = lineResponse.jsonPath().getLong("id");
+        // when
+        ExtractableResponse<Response> expectResponse = 지하철_구간_삭제(lineId, 강남역ID);
+        // then
+        assertThat(expectResponse.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
     private ExtractableResponse<Response> 지하철_구간_삭제(long lineId, long stationId) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .param("stationId", stationId)

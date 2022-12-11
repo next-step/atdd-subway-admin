@@ -134,7 +134,6 @@ public class LineAcceptanceTest extends AbstractAcceptanceTest{
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
-
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
                         .body(lineRequest)
