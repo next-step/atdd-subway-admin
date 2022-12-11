@@ -51,4 +51,7 @@ public class Distance {
         }
     }
 
+    public Distance sum(Distance distance) {
+        return new Distance(this.distance + distance.getDistance());
+    }
 }

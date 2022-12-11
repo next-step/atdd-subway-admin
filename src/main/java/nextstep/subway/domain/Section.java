@@ -111,4 +111,8 @@ public class Section extends BaseEntity {
         return isSameUpStation(newSection.upStation) || isSameDownStation(newSection.downStation);
     }
 
+    public void merge(Section upSection) {
+        this.downStation = upSection.downStation;
+        this.distance.sum(upSection.distance);
+    }
 }

@@ -78,13 +78,31 @@ public class Sections {
         Optional<Section> deleteUpSection = removeUpSection(station);
         Optional<Section> deleteDownSection = removeDownSection(station);
 
+        if (deleteUpSection.isPresent() && deleteDownSection.isPresent()) {
+            mergeSection(deleteUpSection.get(), deleteDownSection.get());
+            return;
+        }
+
+        deleteUpSection.ifPresent(section -> this.sections.remove(section));
+        deleteDownSection.ifPresent(section -> this.sections.remove(section));
+
     }
+
+    private void mergeSection(Section upSection, Section downSection) {
+        downSection.merge(upSection);
+        removeSection(upSection);
+    }
+
+    private void removeSection(Section section) {
+        sections.remove(section);
+    }
+
 
     private Optional<Section> removeDownSection(Station station) {
         Optional<Section> downSection = this.sections.stream()
                 .filter(section -> section.isSameDownStation(station))
                 .findAny();
-        downSection.ifPresent(section -> this.sections.remove(section));
+
         return downSection;
     }
 
@@ -92,7 +110,7 @@ public class Sections {
         Optional<Section> upSection = this.sections.stream()
                 .filter(section -> section.isSameUpStation(station))
                 .findAny();
-        upSection.ifPresent(section -> this.sections.remove(section));
+
         return upSection;
     }
 }
