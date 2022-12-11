@@ -23,11 +23,6 @@ public class Line extends BaseEntity {
 
     }
 
-    public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
-    }
-
     public Line(String name, String color, Section section) {
         this.name = name;
         this.color = color;
@@ -65,5 +60,9 @@ public class Line extends BaseEntity {
 
     public int toDistance() {
         return sections.totalDistance();
+    }
+
+    public void removeSection(Station station) {
+        this.sections.removeSectionByStation(station);
     }
 }

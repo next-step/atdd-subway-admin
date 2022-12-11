@@ -6,11 +6,11 @@ import java.util.Objects;
 
 @Embeddable
 public class Distance {
-    private static final String ERROR_MESSAGE_EXCEEDED_DISTANCE = "기존 노선의 거리보다 작거나 같을 수 없습니다." ;
+    private static final String ERROR_MESSAGE_EXCEEDED_DISTANCE = "기존 노선의 거리보다 작거나 같을 수 없습니다.";
 
-    private static final String ERROR_MESSAGE_NEGATIVE_DISTANCE = "거리는 0 이상이어야 합니다." ;
+    private static final String ERROR_MESSAGE_NEGATIVE_DISTANCE = "거리는 0 이상이어야 합니다.";
 
-    private static final String ERROR_MESSAGE_NULL_DISTANCE = "거리는 필수 값 입니다." ;
+    private static final String ERROR_MESSAGE_NULL_DISTANCE = "거리는 필수 값 입니다.";
     @Column(nullable = false)
     private int distance;
 
@@ -25,13 +25,13 @@ public class Distance {
     }
 
     private void isEmpty(int distance) {
-        if(Objects.isNull(distance)){
+        if (Objects.isNull(distance)) {
             throw new IllegalArgumentException(ERROR_MESSAGE_NULL_DISTANCE);
         }
     }
 
     private void isValidNegative(int distance) {
-        if( distance <= 0){
+        if (distance <= 0) {
             throw new IllegalArgumentException(ERROR_MESSAGE_NEGATIVE_DISTANCE);
         }
     }
@@ -41,12 +41,17 @@ public class Distance {
     }
 
     public Distance subtract(Distance distance) {
+        isValidDistance(distance);
+        return new Distance(this.distance - distance.distance);
+    }
 
-        try{
-            return new Distance(this.distance - distance.distance);
-        } catch (IllegalArgumentException e){
-            throw new IllegalArgumentException(ERROR_MESSAGE_EXCEEDED_DISTANCE) ;
+    public void isValidDistance(Distance distance) {
+        if (this.distance <= distance.distance) {
+            throw new IllegalArgumentException(ERROR_MESSAGE_EXCEEDED_DISTANCE);
         }
+    }
 
+    public Distance sum(Distance distance) {
+        return new Distance(this.distance + distance.getDistance());
     }
 }

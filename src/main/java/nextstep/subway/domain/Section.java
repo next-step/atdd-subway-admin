@@ -63,45 +63,41 @@ public class Section extends BaseEntity {
         return stations;
     }
 
-    private boolean isValidExistDownStation(Section newSection) {
-        return this.downStation.equals(newSection.getDownStation());
-    }
-
-    private boolean isValidExistUpStation(Section newSection) {
-        return this.upStation.equals(newSection.getUpStation());
-    }
-
-    public void reorganize(Section section){
+    public void reorganize(Section section) {
         reorganizeUpStation(section);
         reorganizeDownStation(section);
     }
 
     private void reorganizeDownStation(Section section) {
-        if(isSameDownStation(section)){
+        if (isSameDownStation(section.downStation)) {
             this.downStation = section.upStation;
             this.distance = this.distance.subtract(section.distance);
         }
     }
 
-    private boolean isSameDownStation(Section section) {
-        return this.downStation.equals(section.downStation);
+    public boolean isSameDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
     }
 
     private void reorganizeUpStation(Section section) {
-        if(isSameUpStation(section)){
+        if (isSameUpStation(section.upStation)) {
             this.upStation = section.downStation;
             this.distance = this.distance.subtract(section.distance);
         }
     }
 
-    private boolean isSameUpStation(Section section) {
-        return this.upStation.equals(section.upStation);
+    public boolean isSameUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Section section = (Section) o;
         return Objects.equals(id, section.id) && Objects.equals(upStation, section.upStation) && Objects.equals(downStation, section.downStation) && Objects.equals(line, section.line) && Objects.equals(distance, section.distance);
     }
@@ -109,5 +105,14 @@ public class Section extends BaseEntity {
     @Override
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, line, distance);
+    }
+
+    public boolean isConnectable(Section newSection) {
+        return isSameUpStation(newSection.upStation) || isSameDownStation(newSection.downStation);
+    }
+
+    public void merge(Section upSection) {
+        this.downStation = upSection.downStation;
+        this.distance.sum(upSection.distance);
     }
 }

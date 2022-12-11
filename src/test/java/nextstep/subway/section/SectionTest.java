@@ -42,12 +42,13 @@ public class SectionTest {
     @DisplayName("구간 생성")
     @Test
     void saveSection() {
+        //when
+        Section section = new Section(삼성역, 종합운동장역, new Distance(10));
         //then
         assertAll(
-                () -> assertThat(initSection.getUpStation()).isEqualTo(강남역),
-                () -> assertThat(initSection.getDownStation()).isEqualTo(선릉역),
-                () -> assertThat(initSection.getDistance()).isEqualTo(distance)
-        );
+                () -> assertThat(section.getUpStation()).isEqualTo(삼성역),
+                () -> assertThat(section.getDownStation()).isEqualTo(종합운동장역),
+                () -> assertThat(section.getDistance()).isEqualTo(distance));
     }
 
     @DisplayName("새로운 역을 상행 종점으로 구간 등록")
@@ -75,15 +76,14 @@ public class SectionTest {
 
     @DisplayName("역 사이에 새로운 역 등록 시 기존 역 사이 길이보다 크거나 같으면 등록 불가")
     @Test
-    void isValidAddStationDistance(){
+    void isValidAddStationDistance() {
         //given
         Section newSection = new Section(강남역, 역삼역, new Distance(distance));
         //when & then
-        assertThatThrownBy(() -> sections.addSection(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("기존 노선의 거리보다 작거나 같을 수 없습니다.");
+        assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class).hasMessage("기존 노선의 거리보다 작거나 같을 수 없습니다.");
 
     }
+
     @DisplayName("기존구간의 상행/하행역이 모두 같으면 구간 생성 불가능")
     @Test
     void isValidExistStation() {
@@ -91,9 +91,7 @@ public class SectionTest {
         Section newSection = new Section(강남역, 선릉역, new Distance(distance));
 
         //when && then
-        assertThatThrownBy(() -> sections.addSection(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("기존과 동일한 상행/하행선 등록 불가 합니다.");
+        assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class).hasMessage("기존과 동일한 상행/하행선 등록 불가 합니다.");
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 포함되어 있지 않으면 구간 생성 불가능")
@@ -103,9 +101,69 @@ public class SectionTest {
         Section newSection = new Section(삼성역, 종합운동장역, new Distance(distance));
 
         //when && then
-        assertThatThrownBy(() -> sections.addSection(newSection))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("기존 등록된 상행/하행선이 하나도 포함되어 있지 않습니다.");
+        assertThatThrownBy(() -> sections.addSection(newSection)).isInstanceOf(IllegalArgumentException.class).hasMessage("기존 등록된 상행/하행선이 하나도 포함되어 있지 않습니다.");
     }
+
+    @DisplayName("상행 종점 제거")
+    @Test
+    void deleteSectionAndUpStation() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(new Section(강남역, 선릉역, new Distance(distance)));
+        sections.addSection(new Section(강남역, 역삼역, new Distance(5)));
+        // when
+        sections.removeSectionByStation(강남역);
+        // then
+        assertAll(
+                () -> assertThat(sections.getStations()).contains(선릉역, 역삼역),
+                () -> assertThat(sections.getStations()).doesNotContain(강남역)
+        );
+    }
+
+    @DisplayName("하행 종점 제거")
+    @Test
+    void deleteSectionAndDownStation() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(new Section(강남역, 선릉역, new Distance(distance)));
+        sections.addSection(new Section(강남역, 역삼역, new Distance(5)));
+        // when
+        sections.removeSectionByStation(선릉역);
+        // then
+        assertAll(
+                () -> assertThat(sections.getStations()).contains(강남역, 역삼역),
+                () -> assertThat(sections.getStations()).doesNotContain(선릉역)
+        );
+    }
+
+    @DisplayName("중간 역 제거")
+    @Test
+    void deleteSectionAndMiddleStation() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(new Section(강남역, 선릉역, new Distance(distance)));
+        sections.addSection(new Section(강남역, 역삼역, new Distance(5)));
+        // when
+        sections.removeSectionByStation(역삼역);
+        // then
+        assertAll(
+                () -> assertThat(sections.getStations()).contains(강남역, 선릉역),
+                () -> assertThat(sections.getStations()).doesNotContain(역삼역)
+        );
+    }
+
+    @DisplayName("기존 구간이 하나만 있는 경우 삭제 불가능.")
+    @Test
+    void isValidDeleteOneSection(){
+        // given
+        Sections sections = new Sections();
+        sections.addSection(new Section(강남역, 선릉역, new Distance(distance)));
+        // when && then
+        assertThatThrownBy(
+                () -> sections.removeSectionByStation(선릉역))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessage("노선에 등록된 구간이 1이면 삭제 불가능 합니다.");
+    }
+
 
 }

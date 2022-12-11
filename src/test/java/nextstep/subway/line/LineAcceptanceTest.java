@@ -4,16 +4,13 @@ import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.DatabaseClear;
+import nextstep.subway.AbstractAcceptanceTest;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.StationResponse;
 import nextstep.subway.station.StationAcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
@@ -23,14 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
 @DisplayName("노선 관리 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class LineAcceptanceTest {
-    @LocalServerPort
-    int port;
-
-    @Autowired
-    private DatabaseClear databaseClear;
-
+public class LineAcceptanceTest extends AbstractAcceptanceTest{
     private Long upStationId;
     private Long downStationId;
 
@@ -38,11 +28,7 @@ public class LineAcceptanceTest {
 
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
-
-        databaseClear.execute();
+        super.setUp();
 
         upStationId = StationAcceptanceTest.지하철역_생성("강남역").as(StationResponse.class).getId();
         downStationId = StationAcceptanceTest.지하철역_생성("공릉역").as(StationResponse.class).getId();
@@ -148,7 +134,6 @@ public class LineAcceptanceTest {
     }
 
     public static ExtractableResponse<Response> 지하철_노선_생성(LineRequest lineRequest) {
-
         ExtractableResponse<Response> response =
                 RestAssured.given().log().all()
                         .body(lineRequest)
@@ -185,6 +170,5 @@ public class LineAcceptanceTest {
                 .then().log().all()
                 .extract();
     }
-
 
 }
