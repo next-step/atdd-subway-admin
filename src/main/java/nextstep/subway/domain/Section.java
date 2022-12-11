@@ -69,25 +69,25 @@ public class Section extends BaseEntity {
     }
 
     private void reorganizeDownStation(Section section) {
-        if (isSameDownStation(section)) {
+        if (isSameDownStation(section.downStation)) {
             this.downStation = section.upStation;
             this.distance = this.distance.subtract(section.distance);
         }
     }
 
-    private boolean isSameDownStation(Section section) {
-        return this.downStation.equals(section.downStation);
+    public boolean isSameDownStation(Station downStation) {
+        return this.downStation.equals(downStation);
     }
 
     private void reorganizeUpStation(Section section) {
-        if (isSameUpStation(section)) {
+        if (isSameUpStation(section.upStation)) {
             this.upStation = section.downStation;
             this.distance = this.distance.subtract(section.distance);
         }
     }
 
-    private boolean isSameUpStation(Section section) {
-        return this.upStation.equals(section.upStation);
+    public boolean isSameUpStation(Station upStation) {
+        return this.upStation.equals(upStation);
     }
 
     @Override
@@ -108,6 +108,7 @@ public class Section extends BaseEntity {
     }
 
     public boolean isConnectable(Section newSection) {
-        return isSameUpStation(newSection) || isSameDownStation(newSection);
+        return isSameUpStation(newSection.upStation) || isSameDownStation(newSection.downStation);
     }
+
 }

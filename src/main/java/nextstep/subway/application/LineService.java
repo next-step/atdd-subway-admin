@@ -72,4 +72,11 @@ public class LineService {
         return stationRepository.findById(stationId).orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_STATION));
     }
 
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = getLine(lineId);
+        Station station = getStation(stationId);
+
+        line.removeSection(station);
+    }
 }

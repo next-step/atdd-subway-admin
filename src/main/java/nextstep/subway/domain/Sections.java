@@ -6,6 +6,7 @@ import javax.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Embeddable
@@ -13,7 +14,7 @@ public class Sections {
     private static final String ERROR_MESSAGE_EXIST_STATION = "기존과 동일한 상행/하행선 등록 불가 합니다.";
     private static final String ERROR_MESSAGE_NOT_CONTAIN_STATION = "기존 등록된 상행/하행선이 하나도 포함되어 있지 않습니다.";
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
     public Sections() {
@@ -63,5 +64,26 @@ public class Sections {
 
     public int totalDistance() {
         return sections.stream().mapToInt(Section::getDistance).sum();
+    }
+
+    private Optional<Section> deleteDownSection(Station station) {
+        Optional<Section> downSection = this.sections.stream()
+                .filter(section -> section.isSameDownStation(station))
+                .findFirst();
+        downSection.ifPresent(section -> this.sections.remove(section));
+        return downSection;
+    }
+
+    public void removeSectionByStation(Station station) {
+        Optional<Section> deleteUpSection = removeUpSection(station);
+
+    }
+
+    private Optional<Section> removeUpSection(Station station) {
+        Optional<Section> upSection = this.sections.stream()
+                .filter(section -> section.isSameUpStation(station))
+                .findAny();
+        upSection.ifPresent(section -> this.sections.remove(section));
+        return upSection;
     }
 }
