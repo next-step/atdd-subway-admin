@@ -35,7 +35,12 @@ public class LineService {
         Station downStation = stationRepository.findById(lineRequest.getDownStationId())
                 .orElseThrow(() -> new NotFoundStationException(NOT_FOUND_STATION_MESSAGE));
 
-        Line persistLine = lineRepository.save(lineRequest.toLine(upStation, downStation));
+        Line persistLine = lineRepository.save(
+                new Line(lineRequest.getName()
+                        , lineRequest.getColor()
+                        , upStation
+                        , downStation
+                        , lineRequest.getDistance()));
 
         return LineResponse.of(persistLine);
     }

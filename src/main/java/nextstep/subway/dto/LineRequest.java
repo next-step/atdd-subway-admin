@@ -1,12 +1,5 @@
 package nextstep.subway.dto;
 
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
-import nextstep.subway.domain.Sections;
-import nextstep.subway.domain.Station;
-
-import java.util.Collections;
-
 public class LineRequest {
     private String name;
     private String color;
@@ -40,13 +33,5 @@ public class LineRequest {
 
     public int getDistance() {
         return distance;
-    }
-
-    public Line toLine(Station upStation, Station downStation) {
-        Section section = new Section(distance, upStation, downStation);
-        Sections sections = new Sections(Collections.singletonList(section));
-        Line line = new Line(name, color, sections);
-        section.toLine(line);
-        return line;
     }
 }

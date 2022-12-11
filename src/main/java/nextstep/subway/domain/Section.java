@@ -18,14 +18,14 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "line_id")
     private Line line;
 
-    protected Section() {
-    }
-
-    public Section(int distance, Station upStation, Station downStation) {
+    protected Section(int distance, Station upStation, Station downStation, Line line) {
         this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
+        this.line = line;
     }
+
+    protected Section() {}
 
     public Long getId() {
         return id;

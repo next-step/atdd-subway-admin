@@ -18,10 +18,10 @@ public class Line extends BaseEntity {
     protected Line() {
     }
 
-    public Line(String name, String color, Sections sections) {
+    public Line(String name, String color, Station upStation, Station downStation, int distance) {
         this.name = name;
         this.color = color;
-        this.sections = sections;
+        sections.add(new Section(distance, upStation, downStation, this));
     }
 
     public void update(String name, String color) {

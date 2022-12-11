@@ -28,4 +28,8 @@ public class Sections {
         }
         return new ArrayList<>(stations);
     }
+
+    public void add(Section section) {
+        this.sections.add(section);
+    }
 }
