@@ -18,7 +18,7 @@ public class Sections {
     private final static int ZERO = 0;
     private final static int SIZE_OF_DELETE_ABLE_MIN_SECTIONS = 2;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     @ReadOnlyProperty
     private final List<Section> sections;
 
@@ -180,7 +180,7 @@ public class Sections {
         return this.sections.size() == ZERO;
     }
 
-    public boolean isDeleteUnable() {
+    public boolean isUnableToDelete() {
         return this.sections.size() < SIZE_OF_DELETE_ABLE_MIN_SECTIONS;
     }
 
@@ -196,21 +196,31 @@ public class Sections {
                 .noneMatch(eachStation -> eachStation.equals(station));
     }
 
-    public long removeSection(Station reqDeleteStation) {
+    public void removeSection(Station requestDeleteStation) {
+        checkRemoveValidation(requestDeleteStation);
         Section firstSection = findFirstSection();
         Section lastSection = findLastSection();
-        if (firstSection.isSameUpStation(reqDeleteStation)) {
+        if (firstSection.isSameUpStation(requestDeleteStation)) {
             this.sections.remove(firstSection);
-            return firstSection.getId();
+            return;
         }
-        if (lastSection.isSameDownStation(reqDeleteStation)) {
+        if (lastSection.isSameDownStation(requestDeleteStation)) {
             this.sections.remove(lastSection);
-            return lastSection.getId();
+            return;
         }
-        return removeIntermediateSection(reqDeleteStation);
+        removeIntermediateSection(requestDeleteStation);
     }
 
-    private long removeIntermediateSection(Station reqDeleteStation) {
+    private void checkRemoveValidation(Station requestDeleteStation) {
+        if (this.isUnableToDelete()) {
+            throw new IllegalArgumentException(ErrorCode.CAN_NOT_DELETE_STATION_CAUSE_SECTIONS_SIZE_EXCEPTION.getErrorMessage() + sections.size());
+        }
+        if (this.hasNotStation(requestDeleteStation)) {
+            throw new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_IN_THE_LINE_EXCEPTION.getErrorMessage());
+        }
+    }
+
+    private void removeIntermediateSection(Station reqDeleteStation) {
         Section hasUpStationSection = this.sections.stream()
                 .filter(eachSection -> eachSection.isSameUpStation(reqDeleteStation))
                 .findFirst()
@@ -221,6 +231,5 @@ public class Sections {
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_IN_THE_LINE_EXCEPTION.getErrorMessage()));
         hasDownStationSection.modiyDownStationAndDistance(hasUpStationSection.getDownStation(), hasUpStationSection.getDistance());
         this.sections.remove(hasUpStationSection);
-        return hasUpStationSection.getId();
     }
 }

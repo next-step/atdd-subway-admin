@@ -15,12 +15,10 @@ import java.util.stream.Collectors;
 public class LineService {
     private LineRepository lineRepository;
     private StationRepository stationRepository;
-    private SectionRepository sectionRepository;
 
-    public LineService(LineRepository lineRepository, StationRepository stationRepository, SectionRepository sectionRepository) {
+    public LineService(LineRepository lineRepository, StationRepository stationRepository) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
-        this.sectionRepository = sectionRepository;
     }
 
     public LineResponse saveLine(LineRequest lineRequest) {
@@ -56,9 +54,9 @@ public class LineService {
 
     @Transactional
     public void removeSectionByStationId(Long lineId, Long stationId) {
-        Station reqDeleteStation = findStationById(stationId);
+        Station requestDeleteStation = findStationById(stationId);
         Line line = findLine(lineId);
-        sectionRepository.deleteById(line.deleteStation(reqDeleteStation));
+        line.deleteStation(requestDeleteStation);
     }
 
     private Station findStationById(long stationId) {

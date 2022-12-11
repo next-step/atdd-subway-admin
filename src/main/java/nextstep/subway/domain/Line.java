@@ -55,14 +55,8 @@ public class Line extends BaseEntity{
         this.sections.add(section);
     }
 
-    public long deleteStation(Station reqDeleteStation) {
-        if (sections.isDeleteUnable()) {
-            throw new IllegalArgumentException(ErrorCode.CAN_NOT_DELETE_STATION_CAUSE_SECTIONS_SIZE_EXCEPTION.getErrorMessage() + sections.size());
-        }
-        if (sections.hasNotStation(reqDeleteStation)) {
-            throw new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_IN_THE_LINE_EXCEPTION.getErrorMessage());
-        }
-        return this.sections.removeSection(reqDeleteStation);
+    public void deleteStation(Station requestDeleteStation) {
+        this.sections.removeSection(requestDeleteStation);
     }
 
     public Long getId() {
