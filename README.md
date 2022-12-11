@@ -233,6 +233,10 @@ host: localhost:52165
   * 따라서 ob.getClass() 비교 및 obj instanceof Entity클래스 를 모두 해야 함
   * hibernate는 equals()와 hashcode() 구현을 추천하지 않는다고 하는데, 이 내용만 보고 판단하는 것이 아니라 좀 더 찾아볼 필요성이 있음(JPA 스터디 진행)
   * 참조: https://stackoverflow.com/questions/11013138/hibernate-equals-and-proxy
+* Hibernate equals 구현 및 proxy 이슈 추가 확인 사항
+  * 좀 더 찾아보니, 유니크한 ID이면 문제될 것이 없지만, 위에서 우려한 사항은 만약 id가 유니크하지 않는 경우도 있으니 Entity를 식별할 수 있는 유니크한 조합을 권장하는 내용
+    * 영속성 컨텍스트가 엔티티 식별자에  대한 연장선의 이슈로 생각함
+    * 영속성 컨텍스는 equals와 hashCode를 사용하여 동등성을 비교함
 * 다대다 연관관계가 아닌 매핑 Entity 를 활용 관련 이슈
   * 기능 구현 이슈 중 가장 시간을 오래잡아 먹은 건
   * 객체 그래프: Line <- Sections, Section -> Station
