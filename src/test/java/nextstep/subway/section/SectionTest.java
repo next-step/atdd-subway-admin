@@ -136,5 +136,21 @@ public class SectionTest {
         );
     }
 
+    @DisplayName("중간 역 제거")
+    @Test
+    void deleteSectionAndMiddleStation() {
+        // given
+        Sections sections = new Sections();
+        sections.addSection(new Section(강남역, 선릉역, new Distance(distance)));
+        sections.addSection(new Section(강남역, 역삼역, new Distance(5)));
+        // when
+        sections.removeSectionByStation(역삼역);
+        // then
+        assertAll(
+                () -> assertThat(sections.getStations()).contains(강남역, 선릉역),
+                () -> assertThat(sections.getStations()).doesNotContain(역삼역)
+        );
+    }
+
 
 }

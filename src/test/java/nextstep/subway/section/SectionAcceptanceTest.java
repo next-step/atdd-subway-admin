@@ -135,6 +135,24 @@ public class SectionAcceptanceTest extends AbstractAcceptanceTest {
         );
     }
 
+    @DisplayName("중간 역 제거 테스트")
+    @Test
+    public void delete_middle_station() {
+        // given
+        ExtractableResponse<Response> response = 지하철_구간_생성(new SectionRequest(강남역ID, 교대역ID, 5), lineResponse.jsonPath().getLong("id"));
+        Long lineId = lineResponse.jsonPath().getLong("id");
+        // when
+        ExtractableResponse<Response> expectResponse = 지하철_구간_삭제(lineId, 교대역ID);
+        // then
+        assertThat(expectResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+
+        ExtractableResponse<Response> lineResponse = 지하철_노선_조회(lineId);
+        assertAll(
+                () -> assertThat(lineResponse.jsonPath().getList("stations.name")).contains("강남역", "선릉역"),
+                () -> assertThat(lineResponse.jsonPath().getList("stations.name")).doesNotContain("교대역")
+        );
+    }
+
     private ExtractableResponse<Response> 지하철_구간_삭제(long lineId, long stationId) {
         ExtractableResponse<Response> response = RestAssured.given().log().all()
                 .param("stationId", stationId)
