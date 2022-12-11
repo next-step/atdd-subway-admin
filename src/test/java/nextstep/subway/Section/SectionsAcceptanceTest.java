@@ -4,9 +4,6 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.constants.ErrorCode;
-import nextstep.subway.domain.Line;
-import nextstep.subway.domain.Section;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -20,6 +17,9 @@ import org.junit.jupiter.api.TestFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -166,6 +166,10 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
                 dynamicTest("강남-광교-정자 노선에서 강남역 삭제 요청 - section id: 1 삭제", () -> {
                     ExtractableResponse<Response> response = removeLineStation(신분당선.getId(), 강남역.getId());
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+                dynamicTest("LINE 조회 요청, 삭제내역 확인", () -> {
+                    ExtractableResponse<Response> response = retrieveLine(신분당선.getId());
+                    checkTheLineContainStations(response, Arrays.asList(광교역, 정자역));
                 })
         );
     }
@@ -181,6 +185,10 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
                 dynamicTest("강남-정자-광교 노선에서 광교역 삭제 요청 - section id: 1 삭제", () -> {
                     ExtractableResponse<Response> response = removeLineStation(신분당선.getId(), 광교역.getId());
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+                dynamicTest("LINE 조회 요청, 삭제내역 확인", () -> {
+                    ExtractableResponse<Response> response = retrieveLine(신분당선.getId());
+                    checkTheLineContainStations(response, Arrays.asList(강남역, 정자역));
                 })
         );
     }
@@ -196,6 +204,10 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
                 dynamicTest("강남(1)-정자(3)-광교(2) 노선에서 정자역 삭제 요청 - section id: 1 삭제", () -> {
                     ExtractableResponse<Response> response = removeLineStation(신분당선.getId(), 정자역.getId());
                     assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+                }),
+                dynamicTest("LINE 조회 요청, 삭제내역 확인", () -> {
+                    ExtractableResponse<Response> response = retrieveLine(신분당선.getId());
+                    checkTheLineContainStations(response, Arrays.asList(강남역, 광교역));
                 })
         );
     }
@@ -235,6 +247,27 @@ public class SectionsAcceptanceTest extends AcceptanceTest {
                 .when().delete("/lines" + DELIMITER + lineId + DELIMITER + "sections")
                 .then().log().all()
                 .extract();
+    }
+
+    private ExtractableResponse<Response> retrieveLine(long lineId) {
+        return RestAssured.given().log().all()
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .when().get("/lines" + DELIMITER + lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    public static void checkTheLineContainStations(ExtractableResponse<Response> response, List<StationResponse> expectedStations) {
+        LineResponse line = response.as(LineResponse.class);
+        List<Long> stationIds = line.getStations().stream()
+                .map(station -> station.getId())
+                .collect(Collectors.toList());
+
+        List<Long> expectedStationIds = expectedStations.stream()
+                .map(station -> station.getId())
+                .collect(Collectors.toList());
+
+        assertThat(stationIds).containsExactlyElementsOf(expectedStationIds);
     }
 
     private SectionRequest generateSectionRequest(long upStationId, long downStationId, long distance) {
