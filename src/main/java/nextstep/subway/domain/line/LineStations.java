@@ -121,7 +121,7 @@ public class LineStations {
                 .findFirst();
     }
 
-    private List getRemoveSections(Station station) {
+    private List<LineStation> getRemoveSections(Station station) {
         return Arrays.asList(getSectionUpLineStation(station), getSectionDownLineStation(station))
                 .stream()
                 .filter(section -> section.isPresent())
