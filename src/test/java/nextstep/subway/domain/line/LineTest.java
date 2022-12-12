@@ -1,7 +1,6 @@
 package nextstep.subway.domain.line;
 
 import nextstep.subway.domain.station.Station;
-import nextstep.subway.domain.station.TestStation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -40,7 +39,7 @@ class LineTest {
     @DisplayName("지하철역 삭제 테스트 - 종점인 경우")
     void removeStationTest() {
         // given
-        Station stationToDelete = 지하철역_생성됨(4, "강남");
+        Station stationToDelete = 지하철역_생성됨(4L, "강남");
 
         // when
         지하철역_삭제됨(stationToDelete);
@@ -53,7 +52,7 @@ class LineTest {
     @DisplayName("지하철역 삭제 테스트 - 중간역인 경우")
     void removeStationTest2() {
         // given
-        Station stationToDelete = 지하철역_생성됨(3, "판교역");
+        Station stationToDelete = 지하철역_생성됨(3L, "판교역");
 
         // when
         지하철역_삭제됨(stationToDelete);
@@ -66,9 +65,9 @@ class LineTest {
     @DisplayName("지하철역 삭제 테스트 - 하나의 구간만 존재할경우 에러 발생")
     void removeStationTest3() {
         // given
-        Station stationToDelete1 = 지하철역_생성됨(1, "판교역");
-        Station stationToDelete2 = 지하철역_생성됨(2, "광교역");
-        Station stationToDelete3 = 지하철역_생성됨(3, "상암역");
+        Station stationToDelete1 = 지하철역_생성됨(1L, "판교역");
+        Station stationToDelete2 = 지하철역_생성됨(2L, "광교역");
+        Station stationToDelete3 = 지하철역_생성됨(3L, "광교역");
 
         // when
         지하철역_삭제됨(stationToDelete1);
@@ -78,15 +77,15 @@ class LineTest {
                 .isInstanceOf(RuntimeException.class);
     }
 
+    private Station 지하철역_생성됨(Long id, String name) {
+        return new Station(id, name);
+    }
+
     private void 지하철역_삭제_검증됨(int size) {
         assertThat(line.getLineStations().size()).isEqualTo(size);
     }
 
     private void 지하철역_삭제됨(Station stationToDelete) {
         line.removeStation(stationToDelete);
-    }
-
-    private static TestStation 지하철역_생성됨(int id, String name) {
-        return new TestStation(Long.valueOf(id), name);
     }
 }
