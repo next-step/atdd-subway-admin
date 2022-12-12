@@ -204,8 +204,11 @@ public class SectionAcceptanceTest extends BaseTest {
     @Test
     @DisplayName("종점 제거 테스트")
     public void deleteSectionWithEndStation() {
+        // Given
+        int 지하철_id = 3;
+
         // When
-        ExtractableResponse<Response> response = 지하철역_삭제_요청됨(3);
+        ExtractableResponse<Response> response = 지하철역_삭제_요청됨(지하철_id);
 
         // Then
         지하철_구간역_삭제됨(response);
