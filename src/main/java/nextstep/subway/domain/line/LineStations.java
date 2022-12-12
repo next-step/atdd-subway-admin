@@ -1,8 +1,11 @@
 package nextstep.subway.domain.line;
 
+import nextstep.subway.domain.station.Station;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Embeddable
 public class LineStations {
@@ -72,5 +75,17 @@ public class LineStations {
 
     public List<LineStation> getValues() {
         return this.lineStations;
+    }
+
+    public void removeStation(Station stationToDelete) {
+        Optional<LineStation> deletedLineStation = this.lineStations.stream()
+                .filter(section -> section.getDownStationId() == stationToDelete.getId())
+                .findFirst();
+
+        deletedLineStation.ifPresent(lineStation -> this.lineStations.remove(lineStation));
+    }
+
+    public int size() {
+        return this.lineStations.size();
     }
 }

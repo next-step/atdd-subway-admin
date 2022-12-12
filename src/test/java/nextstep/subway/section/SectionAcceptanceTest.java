@@ -34,10 +34,13 @@ public class SectionAcceptanceTest extends BaseTest {
     public void setUp() {
         Station 강남역 = 지하철역_생성("강남역");
         Station 서초역 = 지하철역_생성("서초역");
+        Station 광교역 = 지하철역_생성("광교역");
 
         List<LineStation> lineStation = Stream.of(new LineStation(강남역.getId(), 서초역.getId(), 7))
                                         .collect(Collectors.toList());
-        지하철역_라인_생성("신분당선", "red", new LineStations(lineStation));
+        LineStation lineStation2 = new LineStation(서초역.getId(), 광교역.getId(), 10);
+        Line 신분당선 = 지하철역_라인_생성("신분당선", "red", new LineStations(lineStation));
+        신분당선.addLineStation(lineStation2);
     }
 
     private Station 지하철역_생성(String stationName) {
@@ -190,5 +193,34 @@ public class SectionAcceptanceTest extends BaseTest {
 
         // Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 삭제하려는 역을 받는다.
+     * When 해당 역이 종점이라면 기존 노선에서 종점을 제거하고 종점 이전역이 새로운 역이 된다
+     * Then 이후 새로운 종점역을 전달 받는다.
+     */
+    @Test
+    @DisplayName("종점 제거 테스트")
+    public void deleteSectionWithEndStation() {
+        // When
+        ExtractableResponse<Response> response = 지하철역_삭제_요청됨(3);
+
+        // Then
+        지하철_구간역_삭제됨(response);
+    }
+
+    private void 지하철_구간역_삭제됨(ExtractableResponse response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철역_삭제_요청됨(int stationId) {
+        Line line = lineRepository.getByName("신분당선");
+        return RestAssured.given().log().all()
+                .pathParam("id", line.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("stationId", 3).when().delete("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
     }
 }
