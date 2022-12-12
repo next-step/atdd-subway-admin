@@ -93,6 +93,7 @@ public class LineService {
         }
     }
 
+    @Transactional
     public void deleteLineSections(Long lineId, Long stationId) {
         Station stationToDelete = stationRepository.findById(stationId)
                 .orElseThrow(RuntimeException::new);
