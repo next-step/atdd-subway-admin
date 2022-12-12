@@ -81,14 +81,13 @@ public class LineStations {
 
     public void removeStation(Station stationToDelete, Line line) {
         checkValidationForUniqueSection();
-        // 종점인 경우 & 중간역인 경우
-        Optional<LineStation> upSection = this.lineStations.stream()
-                .filter(section -> section.getDownStationId().equals(stationToDelete.getId()))
-                .findFirst();
+        addIfRemovePositionMiddleSection(stationToDelete);
+        removeStation(getRemoveSections(stationToDelete));
+    }
 
-        Optional<LineStation> downSection = this.lineStations.stream()
-                .filter(section -> section.getUpStationId().equals(stationToDelete.getId()))
-                .findFirst();
+    private void addIfRemovePositionMiddleSection(Station stationToDelete) {
+        Optional<LineStation> upSection = getSectionUpLineStation(stationToDelete);
+        Optional<LineStation> downSection = getSectionDownLineStation(stationToDelete);
 
         if (upSection.isPresent() && downSection.isPresent()) {
             LineStation newUpLineStation = upSection.get();
@@ -96,8 +95,6 @@ public class LineStations {
             int newDistance = newUpLineStation.getDistance() + newDownLineStation.getDistance();
             this.lineStations.add(new LineStation(newUpLineStation.getUpStationId(), newDownLineStation.getDownStationId(), newDistance));
         }
-
-        removeStation(getRemoveSections(stationToDelete));
     }
 
     private void removeStation(List<LineStation> removeSections) {
