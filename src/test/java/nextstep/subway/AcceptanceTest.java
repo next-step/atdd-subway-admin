@@ -31,15 +31,4 @@ public class AcceptanceTest {
         databaseCleaner.execute();
     }
 
-    public StationRequest generateStationRequest(String name) {
-        return new StationRequest(name);
-    }
-
-    public LineRequest generateLineRequest(String name, String color) {
-        return new LineRequest(name, color, 1, 2, 1);
-    }
-
-    public LineRequest generateLineRequest(String name, String color, long upStationId, long downStationId, long distance) {
-        return new LineRequest(name, color, upStationId, downStationId, distance);
-    }
 }

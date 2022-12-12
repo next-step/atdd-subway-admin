@@ -16,8 +16,9 @@ import java.util.Optional;
 public class Sections {
 
     private final static int ZERO = 0;
+    private final static int SIZE_OF_DELETE_ABLE_MIN_SECTIONS = 2;
 
-    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     @ReadOnlyProperty
     private final List<Section> sections;
 
@@ -41,36 +42,36 @@ public class Sections {
     }
 
     private boolean hasEndPointIssue(Section newSection) {
-        boolean hasIssue = false;
         Section firstSection = findFirstSection();
         Section lastSection = findLastSection();
-        if (firstSection.isEqualUpStationNewSectionDownStation(newSection)
-                && lastSection.isEqualDownStationNewSectionUpStation(newSection)) {
-            hasIssue = true;
-        }
-        return hasIssue;
+        return firstSection.isEqualUpStationNewSectionDownStation(newSection)
+                && lastSection.isEqualDownStationNewSectionUpStation(newSection);
     }
 
 
     private void updateStationWhenDownStationSame(Section section) {
-        Optional<Section> findSection = sections.stream().filter(eachSection -> eachSection.isSameDownStationId(section)).findFirst();
-        findSection.get().updateAndCreateTwiceSectionWhenDownStationSame(section);
+        sections.stream()
+                .filter(section::isSameDownStation)
+                .findFirst()
+                .ifPresent(findSection -> findSection.updateAndCreateTwiceSectionWhenDownStationSame(section));
     }
 
     private void updateStationWhenUpStationSame(Section section) {
-        Optional<Section> findSection = sections.stream().filter(eachSection -> eachSection.isSameUpStationId(section)).findFirst();
-        findSection.get().updateAndCreateTwiceSectionWhenUpStationSame(section);
+        sections.stream()
+                .filter(section::isSameUpStation)
+                .findFirst()
+                .ifPresent(findSection -> findSection.updateAndCreateTwiceSectionWhenUpStationSame(section));
     }
 
     private boolean isSameUpStation(Section section) {
         return sections.stream()
-                .filter(eachSection -> eachSection.isSameUpStationId(section))
+                .filter(eachSection -> eachSection.isSameUpStation(section))
                 .findFirst().isPresent();
     }
 
     private boolean isSameDownStation(Section section) {
         return sections.stream()
-                .filter(eachSection -> eachSection.isSameDownStationId(section))
+                .filter(eachSection -> eachSection.isSameDownStation(section))
                 .findFirst().isPresent();
     }
 
@@ -114,8 +115,8 @@ public class Sections {
                 .map(Section::toStations)
                 .flatMap(Collection::stream)
                 .distinct()
-                .noneMatch(station -> newSection.isSameDownStationId(station) ||
-                        newSection.isSameUpStationId(station));
+                .noneMatch(station -> newSection.isSameDownStation(station) ||
+                        newSection.isSameUpStation(station));
     }
 
     public List<Section> asList() {
@@ -177,5 +178,58 @@ public class Sections {
 
     private boolean isSectionsSizeZero() {
         return this.sections.size() == ZERO;
+    }
+
+    public boolean isUnableToDelete() {
+        return this.sections.size() < SIZE_OF_DELETE_ABLE_MIN_SECTIONS;
+    }
+
+    public int size() {
+        return this.sections.size();
+    }
+
+    public boolean hasNotStation(Station station) {
+        return this.sections.stream()
+                .map(Section::toStations)
+                .flatMap(Collection::stream)
+                .distinct()
+                .noneMatch(eachStation -> eachStation.equals(station));
+    }
+
+    public void removeSection(Station requestDeleteStation) {
+        checkRemoveValidation(requestDeleteStation);
+        Section firstSection = findFirstSection();
+        Section lastSection = findLastSection();
+        if (firstSection.isSameUpStation(requestDeleteStation)) {
+            this.sections.remove(firstSection);
+            return;
+        }
+        if (lastSection.isSameDownStation(requestDeleteStation)) {
+            this.sections.remove(lastSection);
+            return;
+        }
+        removeIntermediateSection(requestDeleteStation);
+    }
+
+    private void checkRemoveValidation(Station requestDeleteStation) {
+        if (this.isUnableToDelete()) {
+            throw new IllegalArgumentException(ErrorCode.CAN_NOT_DELETE_STATION_CAUSE_SECTIONS_SIZE_EXCEPTION.getErrorMessage() + sections.size());
+        }
+        if (this.hasNotStation(requestDeleteStation)) {
+            throw new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_IN_THE_LINE_EXCEPTION.getErrorMessage());
+        }
+    }
+
+    private void removeIntermediateSection(Station reqDeleteStation) {
+        Section hasUpStationSection = this.sections.stream()
+                .filter(eachSection -> eachSection.isSameUpStation(reqDeleteStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_IN_THE_LINE_EXCEPTION.getErrorMessage()));
+        Section hasDownStationSection = this.sections.stream()
+                .filter(eachSection -> eachSection.isSameDownStation(reqDeleteStation))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_SUCH_STATION_IN_THE_LINE_EXCEPTION.getErrorMessage()));
+        hasDownStationSection.modiyDownStationAndDistance(hasUpStationSection.getDownStation(), hasUpStationSection.getDistance());
+        this.sections.remove(hasUpStationSection);
     }
 }

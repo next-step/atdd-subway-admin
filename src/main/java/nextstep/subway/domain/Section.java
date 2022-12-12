@@ -62,19 +62,19 @@ public class Section extends BaseEntity{
         return downStation.getName();
     }
 
-    public boolean isSameUpStationId(Section section) {
+    public boolean isSameUpStation(Section section) {
         return upStation.equals(section.getUpStation());
     }
 
-    public boolean isSameDownStationId(Section section) {
+    public boolean isSameDownStation(Section section) {
         return downStation.equals(section.getDownStation());
     }
 
-    public boolean isSameDownStationId(Station station) {
+    public boolean isSameDownStation(Station station) {
         return this.downStation.equals(station);
     }
 
-    public boolean isSameUpStationId(Station station) {
+    public boolean isSameUpStation(Station station) {
         return this.upStation.equals(station);
     }
 
@@ -151,6 +151,10 @@ public class Section extends BaseEntity{
         return downStation.equals(section.getUpStation());
     }
 
+    public Long getId() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -162,5 +166,10 @@ public class Section extends BaseEntity{
     @Override
     public int hashCode() {
         return Objects.hash(id, upStation, downStation, line, distance);
+    }
+
+    public void modiyDownStationAndDistance(Station downStation, Long distance) {
+        this.downStation = downStation;
+        this.distance += distance;
     }
 }

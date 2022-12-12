@@ -9,9 +9,4 @@ import org.springframework.transaction.annotation.Transactional;
 public class StationAcceptanceFixture extends AcceptanceTest {
     @Autowired
     protected StationService stationService;
-
-    @Transactional
-    public long creatStation(String name) {
-        return stationService.saveStation(new StationRequest(name)).getId();
-    }
 }

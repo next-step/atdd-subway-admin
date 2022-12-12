@@ -6,6 +6,7 @@ import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.application.StationService;
 import nextstep.subway.dto.LineRequest;
+import nextstep.subway.dto.StationRequest;
 import nextstep.subway.station.StationAcceptanceFixture;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -31,8 +32,8 @@ class LineAcceptanceTest extends StationAcceptanceFixture {
     @Override
     public void setUp() {
         super.setUp();
-        creatStation("강남역");
-        creatStation("서초역");
+        stationService.saveStation(new StationRequest("강남역"));
+        stationService.saveStation(new StationRequest("서초역"));
     }
 
     /**
@@ -203,5 +204,8 @@ class LineAcceptanceTest extends StationAcceptanceFixture {
                 .when().delete("/lines" + DELIMITER + id)
                 .then().log().all()
                 .extract();
+    }
+    private LineRequest generateLineRequest(String name, String color) {
+        return new LineRequest(name, color, 1, 2, 1);
     }
 }
