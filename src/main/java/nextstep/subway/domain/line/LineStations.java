@@ -78,11 +78,20 @@ public class LineStations {
     }
 
     public void removeStation(Station stationToDelete) {
-        Optional<LineStation> deletedLineStation = this.lineStations.stream()
-                .filter(section -> section.getDownStationId() == stationToDelete.getId())
+        // 종점인 경우 & 중간역인 경우
+        LineStation upSection = this.lineStations.stream()
+                .filter(section -> section.getDownStationId().equals(stationToDelete.getId()))
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+
+        Optional<LineStation> downSection = this.lineStations.stream()
+                .filter(section -> section.getUpStationId().equals(stationToDelete.getId()))
                 .findFirst();
 
-        deletedLineStation.ifPresent(lineStation -> this.lineStations.remove(lineStation));
+        downSection.ifPresent(lineStation -> {
+            lineStation.updatePreStationTo(upSection.getUpStationId(), -upSection.getDistance());
+        });
+        this.lineStations.remove(upSection);
     }
 
     public int size() {

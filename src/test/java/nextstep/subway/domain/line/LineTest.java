@@ -45,7 +45,20 @@ class LineTest {
         지하철역_삭제됨(stationToDelete);
 
         // then
-        지하철역_삭제_검증됨(3);
+        지하철역_삭제_검증됨(2);
+    }
+
+    @Test
+    @DisplayName("지하철역 삭제 테스트 - 중간역인 경우")
+    void removeStationTest2() {
+        // given
+        Station stationToDelete = 지하철역_생성됨(3, "판교역");
+
+        // when
+        지하철역_삭제됨(stationToDelete);
+
+        // then
+        지하철역_삭제_검증됨(2);
     }
 
     private void 지하철역_삭제_검증됨(int size) {

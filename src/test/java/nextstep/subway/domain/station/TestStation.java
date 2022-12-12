@@ -8,4 +8,9 @@ public class TestStation extends Station {
 
         this.id = id;
     }
+
+    @Override
+    public Long getId() {
+        return this.id;
+    }
 }
