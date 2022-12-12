@@ -41,6 +41,7 @@ public class SectionAcceptanceTest extends BaseTest {
         LineStation lineStation2 = new LineStation(서초역.getId(), 광교역.getId(), 10);
         Line 신분당선 = 지하철역_라인_생성("신분당선", "red", new LineStations(lineStation));
         신분당선.addLineStation(lineStation2);
+        lineRepository.save(신분당선);
     }
 
     private Station 지하철역_생성(String stationName) {
@@ -219,7 +220,7 @@ public class SectionAcceptanceTest extends BaseTest {
         return RestAssured.given().log().all()
                 .pathParam("id", line.getId())
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .param("stationId", 3).when().delete("/lines/{id}/sections")
+                .param("stationId", stationId).when().delete("/lines/{id}/sections")
                 .then().log().all()
                 .extract();
     }
