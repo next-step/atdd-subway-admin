@@ -48,6 +48,11 @@ public class LineStation extends BaseEntity {
         this.distance -= distance;
     }
 
+    public void updateDownStationTo(Long upStationId, int distance) {
+        this.downStationId = upStationId;
+        this.distance -= distance;
+    }
+
     public boolean isSame(LineStation lineStation) {
         return this.getUpStationId() == lineStation.getUpStationId() && this.getDownStationId() == lineStation.getDownStationId();
     }

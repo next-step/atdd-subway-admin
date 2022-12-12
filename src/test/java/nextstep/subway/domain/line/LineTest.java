@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 @DisplayName("지하철역 라인 테스트")
@@ -59,6 +60,22 @@ class LineTest {
 
         // then
         지하철역_삭제_검증됨(2);
+    }
+
+    @Test
+    @DisplayName("지하철역 삭제 테스트 - 하나의 구간만 존재할경우 에러 발생")
+    void removeStationTest3() {
+        // given
+        Station stationToDelete1 = 지하철역_생성됨(1, "판교역");
+        Station stationToDelete2 = 지하철역_생성됨(2, "광교역");
+        Station stationToDelete3 = 지하철역_생성됨(3, "상암역");
+
+        // when
+        지하철역_삭제됨(stationToDelete1);
+        지하철역_삭제됨(stationToDelete2);
+
+        assertThatThrownBy(() -> line.removeStation(stationToDelete3))
+                .isInstanceOf(RuntimeException.class);
     }
 
     private void 지하철역_삭제_검증됨(int size) {
