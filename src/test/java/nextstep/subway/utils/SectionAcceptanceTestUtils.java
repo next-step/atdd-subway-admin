@@ -60,11 +60,11 @@ public class SectionAcceptanceTestUtils {
     }
 
     public static void 노선_내_지하철역_삭제_성공_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     public static void 노선_내_지하철역_삭제_실패_검증(ExtractableResponse<Response> response) {
-        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
     public static void 지하철노선_포함되지_않은_지하철역_검증(ExtractableResponse<Response> response, String station) {

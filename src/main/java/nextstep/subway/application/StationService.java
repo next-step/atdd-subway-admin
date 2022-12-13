@@ -14,12 +14,9 @@ import java.util.stream.Collectors;
 @Service
 public class StationService {
     private final StationRepository stationRepository;
-    private final LineService lineService;
 
-    public StationService(StationRepository stationRepository,
-        LineService lineService) {
+    public StationService(StationRepository stationRepository) {
         this.stationRepository = stationRepository;
-        this.lineService = lineService;
     }
 
     @Transactional
