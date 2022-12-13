@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional(readOnly = true)
 public class LineService {
 
     private final String NOT_FOUND_BY_ID = "ID로 찾을 수 없습니다.";
@@ -52,6 +51,7 @@ public class LineService {
         return LineResponse.of(findLineById(id));
     }
 
+    @Transactional(readOnly = true)
     public Line findById(Long id) {
         return lineRepository.findById(id).orElseThrow(() -> new IllegalArgumentException(ERROR_MESSAGE_NOT_FOUND_LINE));
     }
@@ -70,5 +70,21 @@ public class LineService {
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    @Transactional
+    public LineResponse addSection(Long id, SectionRequest sectionRequest) {
+        Station upStation = stationService.findById(sectionRequest.getUpStationId());
+        Station downStation = stationService.findById(sectionRequest.getDownStationId());
+        Line line = findById(id);
+        line.addSection(Section.of(upStation, downStation, Distance.from(sectionRequest.getDistance())));
+        return LineResponse.of(line);
+    }
+
+    @Transactional
+    public void removeSectionByStationId(Long lineId, Long stationId) {
+        Line line = findById(lineId);
+        Station station = stationService.findById(stationId);
+        line.removeSection(station);
     }
 }

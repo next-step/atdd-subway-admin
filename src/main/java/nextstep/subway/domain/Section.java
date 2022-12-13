@@ -57,7 +57,7 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
-    public void addLine(Line line) {
+    public void updateLine(Line line) {
         this.line = line;
     }
 

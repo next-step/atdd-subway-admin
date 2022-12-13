@@ -99,7 +99,7 @@ public class Sections {
     private void joinSections(Line line, Section upSection, Section downSection) {
         Section section = Section.of(upSection.getUpStation(), downSection.getDownStation(),
             upSection.addDistance(downSection));
-        section.addLine(line);
+        section.updateLine(line);
         sections.add(section);
     }
 
