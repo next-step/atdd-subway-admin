@@ -8,9 +8,9 @@ import org.springframework.http.MediaType;
 
 public class LineAcceptanceSupport {
 
-    public static ExtractableResponse 지하철_노선_조회(ExtractableResponse createLine) {
+    public static ExtractableResponse 지하철_노선_조회(String id) {
         return RestAssured.given().log().all()
-                .pathParam("id", createLine.jsonPath().get("id"))
+                .pathParam("id", id)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().get("/lines/{id}")
                 .then().log().all()

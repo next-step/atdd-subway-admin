@@ -147,7 +147,7 @@ public class LineAcceptanceTest extends BaseTest {
 
         // When
         ExtractableResponse<Response> createLine = reqeust_register_line(lineRequest);
-        ExtractableResponse response = LineAcceptanceSupport.지하철_노선_조회(createLine);
+        ExtractableResponse response = LineAcceptanceSupport.지하철_노선_조회(createLine.jsonPath().get("id").toString());
 
         // Then
         assertThat(지하철역_노선_이름_가져옴(response)).isEqualTo("신분당선");

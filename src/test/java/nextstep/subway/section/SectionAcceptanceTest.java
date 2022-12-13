@@ -15,11 +15,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static nextstep.subway.line.LineAcceptanceSupport.지하철_노선_조회;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("구간 등록 테스트")
@@ -30,14 +33,23 @@ public class SectionAcceptanceTest extends BaseTest {
     @Autowired
     private LineRepository lineRepository;
 
+    Station 강남역;
+    Station 서초역;
+    Station 광교역;
+    Line 신분당선;
+
     @BeforeEach
     public void setUp() {
-        Station 강남역 = 지하철역_생성("강남역");
-        Station 서초역 = 지하철역_생성("서초역");
+        강남역 = 지하철역_생성("강남역");
+        서초역 = 지하철역_생성("서초역");
+        광교역 = 지하철역_생성("광교역");
 
         List<LineStation> lineStation = Stream.of(new LineStation(강남역.getId(), 서초역.getId(), 7))
                                         .collect(Collectors.toList());
-        지하철역_라인_생성("신분당선", "red", new LineStations(lineStation));
+        LineStation lineStation2 = new LineStation(서초역.getId(), 광교역.getId(), 10);
+        신분당선 = 지하철역_라인_생성("신분당선", "red", new LineStations(lineStation));
+        신분당선.addLineStation(lineStation2);
+        lineRepository.save(신분당선);
     }
 
     private Station 지하철역_생성(String stationName) {
@@ -69,9 +81,21 @@ public class SectionAcceptanceTest extends BaseTest {
         assertThat(구간_지하철역_추출(stations)).contains(Long.valueOf(firstStation.getId()), Long.valueOf(secondStation.getId()));
     }
 
-    private List<Long> 구간_지하철역_추출(List<HashMap> stations) {
+    public static List<Long> 구간_지하철역_추출(List<HashMap> stations) {
+        List<Long> upStation = getUpStation(stations);
+        upStation.addAll(getDownStation(stations));
+        return upStation;
+    }
+
+    private static List<Long> getUpStation(List<HashMap> stations) {
         return stations.stream()
                 .map(it -> Long.valueOf((Integer) it.get("upStationId")))
+                .collect(Collectors.toList());
+    }
+
+    private static List<Long> getDownStation(List<HashMap> stations) {
+        return stations.stream()
+                .map(it -> Long.valueOf((Integer) it.get("downStationId")))
                 .collect(Collectors.toList());
     }
 
@@ -190,5 +214,39 @@ public class SectionAcceptanceTest extends BaseTest {
 
         // Then
         assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 삭제하려는 역을 받는다.
+     * When 해당 역이 종점이라면 기존 노선에서 종점을 제거하고 종점 이전역이 새로운 역이 된다
+     * Then 이후 새로운 종점역을 전달 받는다.
+     */
+    @Test
+    @DisplayName("종점 제거 테스트")
+    public void deleteSectionWithEndStation() {
+        // Given
+        Long 지하철_id = 광교역.getId();
+
+        // When
+        ExtractableResponse<Response> response = 지하철역_삭제_요청됨(지하철_id);
+
+        // Then
+        지하철_구간역_삭제됨(response);
+        List<HashMap> stations = 지하철_노선_조회(String.valueOf(신분당선.getId())).jsonPath().get("stations");
+        assertThat(구간_지하철역_추출(stations)).containsOnly(Long.valueOf(강남역.getId()), Long.valueOf(서초역.getId()));
+    }
+
+    private void 지하철_구간역_삭제됨(ExtractableResponse response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+    }
+
+    private ExtractableResponse<Response> 지하철역_삭제_요청됨(Long stationId) {
+        Line line = lineRepository.getByName("신분당선");
+        return RestAssured.given().log().all()
+                .pathParam("id", line.getId())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .param("stationId", stationId).when().delete("/lines/{id}/sections")
+                .then().log().all()
+                .extract();
     }
 }

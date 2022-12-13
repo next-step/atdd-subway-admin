@@ -92,4 +92,14 @@ public class LineService {
             throw new RuntimeException();
         }
     }
+
+    @Transactional
+    public void deleteLineSections(Long lineId, Long stationId) {
+        Station stationToDelete = stationRepository.findById(stationId)
+                .orElseThrow(RuntimeException::new);
+        Line line = lineRepository.findById(lineId)
+                .orElseThrow(RuntimeException::new);
+
+        line.removeStation(stationToDelete);
+    }
 }
