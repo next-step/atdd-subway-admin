@@ -7,7 +7,7 @@ public class Station extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(unique = true)
+    @Column
     private String name;
 
     protected Station() {
@@ -23,5 +23,9 @@ public class Station extends BaseEntity {
 
     public String getName() {
         return name;
+    }
+
+    public boolean compareName(Station station) {
+        return name.equals(station.getName());
     }
 }
