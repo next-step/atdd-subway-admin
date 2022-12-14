@@ -178,4 +178,111 @@ public class SectionAcceptanceTest extends AcceptanceTest {
             () -> 지하철노선_저장된_지하철역_목록_순서_검증(조회된_구호선, "노량진역", "동작역", "고속터미널역", "언주역", "봉은사역")
         );
     }
+
+    /**
+     * Given 노선 내 3개 이상의 역을 등록하고
+     * When 노선 내 상행 종점인 역을 제거하면
+     * Then 노선 내에 제거된 역이 존재하지 않고,
+     * Then 노선의 상행 종점역이 바뀐다.
+     */
+    @Test
+    @DisplayName("노선 내 상행 종점인 역을 제거하면 해당 역이 제거되고 상행 종점이 바뀐다.")
+    void deleteStationByUpStation() {
+        // given
+        ExtractableResponse<Response> 추가된_구호선 = 지하철노선에_지하철역을_등록한다(구호선ID, 동작역ID, 고속터미널역ID, SAFE_DISTANCE);
+
+        // when
+        ExtractableResponse<Response> 삭제_응답 = 지하철노선_내_지하철역을_삭제한다(구호선ID, 동작역ID);
+
+        // then
+        ExtractableResponse<Response> 조회된_구호선 = 지하철노선을_조회(추가된_구호선);
+        assertAll(
+            () -> 노선_내_지하철역_삭제_성공_검증(삭제_응답),
+            () -> 지하철노선_저장된_지하철역_목록_순서_검증(조회된_구호선, "고속터미널역", "언주역"),
+            () -> 지하철노선_포함되지_않은_지하철역_검증(조회된_구호선, "동작역"),
+            () -> 지하철노선_거리_검증(조회된_구호선, 5)
+        );
+    }
+
+    /**
+     * Given 노선 내 3개 이상의 역을 등록하고
+     * When 노선 내 하행 종점인 역을 제거하면
+     * Then 노선 내에 제거된 역이 존재하지 않고,
+     * Then 노선의 하행 종점역이 바뀐다.
+     */
+    @Test
+    @DisplayName("노선 내 하행 종점인 역을 제거하면 해당 역이 제거되고 하행 종점이 바뀐다.")
+    void deleteStationByDownStation() {
+        // given
+        ExtractableResponse<Response> 추가된_구호선 = 지하철노선에_지하철역을_등록한다(구호선ID, 동작역ID, 고속터미널역ID, SAFE_DISTANCE);
+
+        // when
+        ExtractableResponse<Response> 삭제_응답 = 지하철노선_내_지하철역을_삭제한다(구호선ID, 언주역ID);
+
+        // then
+        ExtractableResponse<Response> 조회된_구호선 = 지하철노선을_조회(추가된_구호선);
+        assertAll(
+            () -> 노선_내_지하철역_삭제_성공_검증(삭제_응답),
+            () -> 지하철노선_저장된_지하철역_목록_순서_검증(조회된_구호선, "동작역", "고속터미널역"),
+            () -> 지하철노선_포함되지_않은_지하철역_검증(조회된_구호선, "언주역"),
+            () -> 지하철노선_거리_검증(조회된_구호선, 5)
+        );
+    }
+
+    /**
+     * Given 노선 내 3개 이상의 역을 등록하고
+     * When 노선 내 상행/하행 종점이 아닌 역을 제거하면
+     * Then 노선 내에 제거된 역이 존재하지 않는다.
+     */
+    @Test
+    @DisplayName("노선 내 상행/하행 종점이 아닌 역을 제거하면 노선에서 해당역이 제거된다.")
+    void deleteStationInSectionByIntermediate() {
+        // given
+        ExtractableResponse<Response> 추가된_구호선 = 지하철노선에_지하철역을_등록한다(구호선ID, 동작역ID, 고속터미널역ID, SAFE_DISTANCE);
+
+        // when
+        ExtractableResponse<Response> 삭제_응답 = 지하철노선_내_지하철역을_삭제한다(구호선ID, 고속터미널역ID);
+
+        // then
+        ExtractableResponse<Response> 조회된_구호선 = 지하철노선을_조회(추가된_구호선);
+        assertAll(
+            () -> 노선_내_지하철역_삭제_성공_검증(삭제_응답),
+            () -> 지하철노선_저장된_지하철역_목록_순서_검증(조회된_구호선, "동작역", "언주역"),
+            () -> 지하철노선_포함되지_않은_지하철역_검증(조회된_구호선, "고속터미널역"),
+            () -> 지하철노선_거리_검증(조회된_구호선, 10)
+        );
+    }
+
+    /**
+     * Given 노선 내 단 한 구간만 등록하고
+     * When 노선의 역을 제거하면
+     * Then 역이 제거되지 않는다.
+     */
+    @Test
+    @DisplayName("노선 내 구간이 하나만 존재할 경우 역을 제거할 수 없다.")
+    void deleteStationInOneSection() {
+        // when
+        ExtractableResponse<Response> 삭제_응답 = 지하철노선_내_지하철역을_삭제한다(구호선ID, 동작역ID);
+
+        // then
+        노선_내_지하철역_삭제_실패_검증(삭제_응답);
+    }
+
+    /**
+     * Given 노선 내 역을 2개 이상 등록하고
+     * When 노선 내 존재하지 않는 역을 제거하면
+     * Then 역이 제거되지 않는다.
+     */
+    @Test
+    @DisplayName("노선 내 존재하지 않는 역은 제거할 수 없다.")
+    void deleteStationNotInSection() {
+        // given
+        지하철노선에_지하철역을_등록한다(구호선ID, 동작역ID, 고속터미널역ID, SAFE_DISTANCE);
+
+        // when
+        ExtractableResponse<Response> 삭제_응답 = 지하철노선_내_지하철역을_삭제한다(구호선ID, 봉은사역ID);
+
+        // then
+        노선_내_지하철역_삭제_실패_검증(삭제_응답);
+    }
 }

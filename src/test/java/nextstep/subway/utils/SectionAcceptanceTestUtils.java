@@ -31,6 +31,15 @@ public class SectionAcceptanceTestUtils {
             .extract();
     }
 
+    public static ExtractableResponse<Response> 지하철노선_내_지하철역을_삭제한다(Long lineId, Long stationId) {
+        return given().log().all()
+            .param("stationId", stationId)
+            .pathParam("id", lineId)
+            .when().delete("/lines/{id}/sections")
+            .then().log().all()
+            .extract();
+    }
+
     public static void 노선_새로운_지하철역_등록_성공_검증(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
     }
@@ -48,5 +57,17 @@ public class SectionAcceptanceTestUtils {
     }
     public static void 지하철노선_저장된_지하철역_목록_순서_검증(ExtractableResponse<Response> response, String... stations) {
         assertThat(response.jsonPath().getList("stations.name")).containsExactly(stations);
+    }
+
+    public static void 노선_내_지하철역_삭제_성공_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    public static void 노선_내_지하철역_삭제_실패_검증(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    public static void 지하철노선_포함되지_않은_지하철역_검증(ExtractableResponse<Response> response, String station) {
+        assertThat(response.jsonPath().getList("stations.name")).doesNotContain(station);
     }
 }

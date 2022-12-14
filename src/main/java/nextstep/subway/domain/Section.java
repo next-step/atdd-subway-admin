@@ -57,7 +57,7 @@ public class Section {
         return new Section(upStation, downStation, distance);
     }
 
-    public void addLine(Line line) {
+    public void updateLine(Line line) {
         this.line = line;
     }
 
@@ -71,12 +71,24 @@ public class Section {
         this.downStation = newSection.upStation;
     }
 
-    public boolean isSameUpStation(Section section) {
+    public Distance addDistance(Section section) {
+        return distance.add(section.distance);
+    }
+
+    public boolean isSameUpStationBySection(Section section) {
         return upStation.isSameStation(section.getUpStation());
     }
 
-    public boolean isSameDownStation(Section section) {
+    public boolean isSameDownStationBySection(Section section) {
         return downStation.isSameStation(section.getDownStation());
+    }
+
+    public boolean isSameUpStationByStation(Station station) {
+        return upStation.isSameStation(station);
+    }
+
+    public boolean isSameDownStationByStation(Station station) {
+        return downStation.isSameStation(station);
     }
 
     public List<Station> stations() {
