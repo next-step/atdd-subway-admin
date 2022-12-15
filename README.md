@@ -178,14 +178,14 @@ Table Truncate
 
   > 지하철 노선을 생성하고 When 생성한 지하철 노선을 삭제하면 Then 해당 지하철 노선 정보는 삭제된다
 
-[ ] 2. 기능 구현
-- [ ] Create Section Domain Model
-- [ ] Create Line Domain Model
-- [ ] Create Line Service
-- [ ] Create Line DTO - Request
-- [ ] Create Line DTO - Response
-- [ ] Create Line Controller
+[x] 2. 기능 구현
+- [x] Create Section Domain Model
+- [x] Create Line Domain Model
+- [x] Create Line Service
+- [x] Create Line DTO - Request
+- [x] Create Line DTO - Response
+- [x] Create Line Controller
 
-[ ] 3. 인수 테스트를 서로 격리 
+[x] 3. 인수 테스트를 서로 격리 
 
-[ ] 4. 인수 테스트를 리팩터링 
+[x] 4. 인수 테스트를 리팩터링 
