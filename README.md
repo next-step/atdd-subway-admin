@@ -157,24 +157,24 @@ Table Truncate
 
 ### TODO
 
-[ ] Apply previous feedback
+[x] Apply previous feedback
 > 다음 스텝에서 StationAcceptanceTestHelper.createStation 메서드가 ExtractableResponse자체를 반환하도록하여서, HttpStatusCode체크는 테스트메서드안에서 검증하는 걸로 바꾸도록 하겠습니다.
 
-[ ] 1. 인수 테스트 작성(LineAcceptanceTest)
+[x] 1. 인수 테스트 작성(LineAcceptanceTest)
 
-- [ ] 지하철 노선 생성 Create
+- [x] 지하철 노선 생성 Create
 
   > When 지하철 노선을 생성하면 Then 지하철 노선 목록 조회 시 생성한 노선을 찾을 수 있다
 
-- [ ] 지하철 노선 목록 조회 GetAll
+- [x] 지하철 노선 목록 조회 GetAll
 
   > Given 2개의 지하철 노선을 생성하고 When 지하철 노선 목록을 조회하면 Then 지하철 노선 목록 조회 시 2개의 노선을 조회할 수 있다
 
-- [ ] 지하철 노선 수정 Update
+- [x] 지하철 노선 수정 Update
 
   > Given 지하철 노선을 생성하고 When 생성한 지하철 노선을 수정하면 Then 해당 지하철 노선 정보는 수정된다
 
-- [ ] 지하철 노선 삭제 Delete
+- [x] 지하철 노선 삭제 Delete
 
   > 지하철 노선을 생성하고 When 생성한 지하철 노선을 삭제하면 Then 해당 지하철 노선 정보는 삭제된다
 
