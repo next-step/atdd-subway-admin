@@ -11,15 +11,7 @@ import org.springframework.http.MediaType;
 
 public final class StationAcceptanceTestHelper {
 
-    static Map<String, JsonPath> createStations(String... names) {
-        final Map<String, JsonPath> result = new HashMap<>(names.length);
-        for (String name : names) {
-            result.put(name, createStation(name));
-        }
-        return result;
-    }
-
-    static JsonPath createStation(final String name) {
+    public static ExtractableResponse<Response> createStation(final String name) {
         Map<String, String> params = new HashMap<>();
         params.put("name", name);
         return RestAssured.given().log().all()
@@ -27,11 +19,10 @@ public final class StationAcceptanceTestHelper {
             .contentType(MediaType.APPLICATION_JSON_VALUE)
             .when().post("/stations")
             .then().log().all()
-            .statusCode(HttpStatus.CREATED.value())
-            .extract().jsonPath();
+            .extract();
     }
 
-    static JsonPath getStations() {
+    public static JsonPath getStations() {
         return RestAssured.given().log().all()
             .when().get("/stations")
             .then().log().all()
