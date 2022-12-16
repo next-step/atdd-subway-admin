@@ -56,7 +56,7 @@ public class LineService {
 
     @Transactional
     public LineResponse updateLine(Long id, LineRequest request) {
-        Line line = findById(id);
+        Line line = findLineById(id);
 
         line.update(request.getName(), request.getColor());
 
@@ -65,7 +65,7 @@ public class LineService {
 
     @Transactional
     public void deleteLine(Long id) {
-        Line line = findById(id);
+        Line line = findLineById(id);
         lineRepository.delete(line);
     }
 
@@ -76,7 +76,7 @@ public class LineService {
 
     @Transactional
     public LineResponse addSection(Long id, SectionRequest request) {
-        Line line = findById(id);
+        Line line = findLineById(id);
         Station upStation = findStation(request.getUpStationId());
         Station downStation = findStation(request.getDownStationId());
         line.addSection(new Section(request.getDistance(), upStation, downStation, line));
@@ -84,7 +84,7 @@ public class LineService {
         return LineResponse.of(line);
     }
 
-    private Line findById(Long id) {
+    private Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundLineException(NOT_FOUND_LINE_MESSAGE));
     }
