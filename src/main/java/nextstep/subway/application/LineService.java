@@ -38,8 +38,7 @@ public class LineService {
 
     @Transactional
     public LineResponse updateLine(Long id, LineRequest lineRequest) {
-        final Line line = lineRepository.findById(id)
-            .orElseThrow(()-> new NotFoundException(id));
+        final Line line = findLineByIdAsDomainEntity(id);
         line.update(lineRequest.getName(), lineRequest.getColor());
         return lineMapper.mapToResponse(line);
     }
@@ -53,9 +52,12 @@ public class LineService {
     }
 
     public LineResponse findLineById(Long id) {
-        final Line line = lineRepository.findById(id)
-            .orElseThrow(()-> new NotFoundException(id));
+        final Line line = findLineByIdAsDomainEntity(id);
         return lineMapper.mapToResponse(line);
+    }
+
+    private Line findLineByIdAsDomainEntity(Long id) {
+        return lineRepository.findById(id).orElseThrow(() -> new NotFoundException(id));
     }
 
     @Transactional

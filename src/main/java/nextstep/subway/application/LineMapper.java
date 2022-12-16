@@ -31,5 +31,4 @@ class LineMapper {
             line.getModifiedDate()
         );
     }
-
 }
