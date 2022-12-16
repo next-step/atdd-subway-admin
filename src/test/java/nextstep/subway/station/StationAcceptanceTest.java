@@ -1,37 +1,20 @@
 package nextstep.subway.station;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import io.restassured.RestAssured;
-import io.restassured.path.json.JsonPath;
-import io.restassured.response.ExtractableResponse;
-import io.restassured.response.Response;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import nextstep.subway.AcceptanceTest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 
-@DisplayName("지하철역 관련 기능")
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class StationAcceptanceTest {
-
-    @LocalServerPort
-    int port;
+@DisplayName("지하철역 관련 기능 인수 테스트")
+public class StationAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     public void setUp() {
-        if (RestAssured.port == RestAssured.UNDEFINED_PORT) {
-            RestAssured.port = port;
-        }
+        super.setUp();
     }
 
     /**
@@ -40,7 +23,8 @@ public class StationAcceptanceTest {
     @DisplayName("존재하지 않는 지하철역을 생성하면, 지하철역 목록 조회시 생성한 역을 찾을 수 있다.")
     @Test
     void createStation() {
-        StationAcceptanceTestHelper.createStation("강남역");
+        assertThat(StationAcceptanceTestHelper.createStation("강남역").statusCode())
+            .isEqualTo(HttpStatus.CREATED.value());
         assertThat(StationAcceptanceTestHelper.getStations().getList("name", String.class))
             .containsExactly("강남역");
     }
@@ -51,10 +35,10 @@ public class StationAcceptanceTest {
     @DisplayName("기존에 존재하는 지하철역 이름으로 지하철역 생성은 불가능 하다.")
     @Test
     void createStationWithDuplicateName() {
-        StationAcceptanceTestHelper.createStation("강남역");
-        assertThatExceptionOfType(AssertionError.class)
-            .isThrownBy(() -> StationAcceptanceTestHelper.createStation("강남역"))
-            .withMessageContaining("Expected status code <201> but was <400>");
+        assertThat(StationAcceptanceTestHelper.createStation("강남역").statusCode())
+            .isEqualTo(HttpStatus.CREATED.value());
+        assertThat(StationAcceptanceTestHelper.createStation("강남역").statusCode())
+            .isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
@@ -63,7 +47,10 @@ public class StationAcceptanceTest {
     @DisplayName("지하철역 생성 후 목록을 조회하면, 생성한 지하철역을 응답 받을 수 있다.")
     @Test
     void getStations() {
-        StationAcceptanceTestHelper.createStations("강남역", "판교역");
+        assertThat(StationAcceptanceTestHelper.createStation("강남역").statusCode())
+            .isEqualTo(HttpStatus.CREATED.value());
+        assertThat(StationAcceptanceTestHelper.createStation("판교역").statusCode())
+            .isEqualTo(HttpStatus.CREATED.value());
         assertThat(StationAcceptanceTestHelper.getStations().getList("name", String.class))
             .containsExactlyInAnyOrder("강남역", "판교역");
     }
@@ -75,10 +62,10 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        final Map<String, JsonPath> createResponse = StationAcceptanceTestHelper.createStations("강남역", "판교역");
-        final String targetId = createResponse.get("강남역").getString("id");
-        final String nonTargetId = createResponse.get("판교역").getString("id");
-
+        final String targetId = StationAcceptanceTestHelper.createStation("강남역")
+            .jsonPath().getString("id");
+        final String nonTargetId = StationAcceptanceTestHelper.createStation("판교역")
+            .jsonPath().getString("id");
         assertThat(StationAcceptanceTestHelper.getStations().getList("id", String.class))
             .containsExactlyInAnyOrder(targetId, nonTargetId);
         // when
