@@ -17,6 +17,6 @@ class StationMapper {
             station.getId(),
             station.getName(),
             station.getCreatedDate(),
-            station.getModifiedDate() );
+            station.getModifiedDate());
     }
 }

@@ -35,6 +35,15 @@ public class StationService {
             .collect(Collectors.toList());
     }
 
+    public StationResponse findStationById(Long id) {
+        return stationMapper.mapToResponse(findStationByIdAsDomainEntity(id));
+    }
+
+    Station findStationByIdAsDomainEntity(Long id) {
+        return stationRepository.findById(id)
+            .orElseThrow(()-> new NotFoundException(id));
+    }
+
     @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);

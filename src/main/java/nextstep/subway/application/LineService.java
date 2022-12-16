@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.LineRepository;
 import nextstep.subway.domain.Station;
-import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import org.springframework.stereotype.Service;
@@ -16,25 +15,24 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class LineService {
     private final LineRepository lineRepository;
-    private final StationRepository stationRepository;
+    private final StationService stationService;
     private final LineMapper lineMapper;
 
     public LineService(
         LineRepository lineRepository,
-        StationRepository stationRepository,
-        LineMapper lineMapper
+        StationService stationService,
+        LineMapper lineMapper,
+        StationMapper stationMapper
     ) {
         this.lineRepository = lineRepository;
-        this.stationRepository = stationRepository;
+        this.stationService = stationService;
         this.lineMapper = lineMapper;
     }
 
     @Transactional
     public LineResponse saveLine(LineRequest lineRequest) {
-        Station upStation = stationRepository.findById(lineRequest.getUpStationId())
-            .orElseThrow(()-> new NotFoundException(lineRequest.getUpStationId()));
-        Station downStation = stationRepository.findById(lineRequest.getDownStationId())
-            .orElseThrow(()-> new NotFoundException(lineRequest.getDownStationId()));
+        Station upStation =  findStationById(lineRequest.getUpStationId());
+        Station downStation = findStationById(lineRequest.getDownStationId());
         Line saved = lineRepository.save(lineMapper.mapToDomainEntity(lineRequest, upStation, downStation));
         return lineMapper.mapToResponse(saved);
     }
@@ -64,5 +62,9 @@ public class LineService {
     @Transactional
     public void deleteLineById(Long id) {
         lineRepository.deleteById(id);
+    }
+
+    private Station findStationById(Long id) {
+        return stationService.findStationByIdAsDomainEntity(id);
     }
 }
