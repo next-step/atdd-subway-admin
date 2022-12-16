@@ -21,8 +21,7 @@ public class LineService {
     public LineService(
         LineRepository lineRepository,
         StationService stationService,
-        LineMapper lineMapper,
-        StationMapper stationMapper
+        LineMapper lineMapper
     ) {
         this.lineRepository = lineRepository;
         this.stationService = stationService;
