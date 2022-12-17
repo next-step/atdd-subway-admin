@@ -171,12 +171,17 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때 예외")
     @Test
-    void deleteSectionLastSectionDeleteException() {
+    void deleteLastSectionException() {
         // when
         ExtractableResponse<Response> response = 지하철역_제거_요청(분당선.getId(), 도곡역.getId());
 
         // then
         지하철역_제거_확인_실패(response);
+    }
+
+    @Test
+    void delete() {
+
     }
 
     private void 구간_생성_확인_실패(ExtractableResponse<Response> response1) {
