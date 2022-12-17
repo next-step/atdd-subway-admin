@@ -133,25 +133,37 @@ public class Sections {
                 .orElse(null);
     }
 
-    public void deleteStation(Long stationId) {
+    public void deleteStation(Line line, Long stationId) {
         if (sections.size() <= 1) {
             throw new InvalidSectionNumberException(INVALID_SECTION_NUMBER_EXCEPTION);
         }
 
-        Optional<Section> upStation = findUpStation(stationId);
-        Optional<Section> downStation = findDownStation(stationId);
+        Optional<Section> upStationSection = findSectionByUpStation(stationId);
+        Optional<Section> downStationSection = findSectionByDownStation(stationId);
 
-        upStation.ifPresent(it -> sections.remove(it));
-        downStation.ifPresent(it -> sections.remove(it));
+        if (upStationSection.isPresent() && downStationSection.isPresent()) {
+            createSection(line, upStationSection.get(), downStationSection.get());
+        }
+
+        upStationSection.ifPresent(it -> sections.remove(it));
+        downStationSection.ifPresent(it -> sections.remove(it));
     }
 
-    private Optional<Section> findDownStation(Long stationId) {
+    private void createSection(Line line, Section upStationSection, Section downStationSection) {
+        sections.add(
+                new Section(line
+                        , downStationSection.getUpStation()
+                        , upStationSection.getDownStation()
+                        , upStationSection.getDistance() + downStationSection.getDistance()));
+    }
+
+    private Optional<Section> findSectionByDownStation(Long stationId) {
         return sections.stream()
                 .filter(it -> it.equalsDownStation(stationId))
                 .findFirst();
     }
 
-    private Optional<Section> findUpStation(Long stationId) {
+    private Optional<Section> findSectionByUpStation(Long stationId) {
         return sections.stream()
                 .filter(it -> it.equalsUpStation(stationId))
                 .findFirst();

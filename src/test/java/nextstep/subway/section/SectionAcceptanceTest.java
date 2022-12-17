@@ -151,7 +151,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      */
     @DisplayName("종점을 제거하는 경우")
     @Test
-    void deleteSectionEndStation() {
+    void deleteEndStation() {
         // given (선릉-한티-도곡)
         StationResponse 한티역 = StationAcceptanceTest.지하철역_생성_요청("한티역").as(StationResponse.class);
         구간_추가_요청(분당선.getId(), new SectionRequest(선릉역.getId(), 한티역.getId(), 3));
@@ -179,9 +179,25 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         지하철역_제거_확인_실패(response);
     }
 
+    /**
+     * Given 3개의 역이 있는 상황에서(두 구간)
+     * When 가운데 역을 제거하는 경우
+     * Then 가운데 역을 제외하고 나머지 두 역이 이어지고 거리는 두 구간의 합
+     */
+    @DisplayName("가운데 역을 제거하는 경우")
     @Test
-    void delete() {
+    void deleteMiddleStation() {
+        // given (선릉-한티-도곡)
+        StationResponse 한티역 = StationAcceptanceTest.지하철역_생성_요청("한티역").as(StationResponse.class);
+        구간_추가_요청(분당선.getId(), new SectionRequest(선릉역.getId(), 한티역.getId(), 3));
 
+        // when
+        ExtractableResponse<Response> response = 지하철역_제거_요청(분당선.getId(), 한티역.getId());
+
+        // then
+        지하철역_제거_확인_정상(response);
+        ExtractableResponse<Response> retrievedResponse = LineAcceptanceTest.지하철_노선_조회_요청(분당선);
+        지하철역_제거_확인_리스트(retrievedResponse, Arrays.asList(선릉역, 도곡역));
     }
 
     private void 구간_생성_확인_실패(ExtractableResponse<Response> response1) {
