@@ -162,14 +162,25 @@ public class LineAcceptanceTest extends AcceptanceTest {
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
+    public ExtractableResponse<Response> 지하철_노선_목록_조회_요청() {
         return RestAssured.given().log().all()
                 .when().get("/lines")
                 .then().log().all()
                 .extract();
     }
 
-    private ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> response) {
+    public static ExtractableResponse<Response> 지하철_노선_조회_요청(LineResponse response) {
+        return RestAssured.given().log().all().
+                accept(MediaType.APPLICATION_JSON_VALUE).
+                when().
+                get("/lines/{lineId}", response.getId()).
+                then().
+                log().all().
+                extract();
+    }
+
+
+    public ExtractableResponse<Response> 지하철_노선_조회_요청(ExtractableResponse<Response> response) {
         String uri = response.header(HttpHeaders.LOCATION);
 
         return RestAssured

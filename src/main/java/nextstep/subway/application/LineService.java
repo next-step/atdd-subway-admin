@@ -1,6 +1,9 @@
 package nextstep.subway.application;
 
-import nextstep.subway.domain.*;
+import nextstep.subway.domain.Line;
+import nextstep.subway.domain.LineRepository;
+import nextstep.subway.domain.Station;
+import nextstep.subway.domain.StationRepository;
 import nextstep.subway.dto.LineRequest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.SectionRequest;
@@ -79,7 +82,7 @@ public class LineService {
         Line line = findLineById(id);
         Station upStation = findStation(request.getUpStationId());
         Station downStation = findStation(request.getDownStationId());
-        line.addSection(new Section(request.getDistance(), upStation, downStation, line));
+        line.addSection(upStation, downStation, request.getDistance());
 
         return LineResponse.of(line);
     }
@@ -87,5 +90,11 @@ public class LineService {
     private Line findLineById(Long id) {
         return lineRepository.findById(id)
                 .orElseThrow(() -> new NotFoundLineException(NOT_FOUND_LINE_MESSAGE));
+    }
+
+    @Transactional
+    public void deleteLineStation(Long lineId, Long stationId) {
+        Line line = findLineById(lineId);
+        line.deleteStation(stationId);
     }
 }

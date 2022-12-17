@@ -4,23 +4,25 @@ import javax.persistence.*;
 
 @Entity
 public class Section extends BaseEntity {
+    private static final String INVALID_SECTION_SIZE_MESSAGE = "역과 역 사이의 거리보다 좁은 거리를 입력해주세요.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private int distance;
+    @ManyToOne
+    @JoinColumn(name = "line_id")
+    private Line line;
     @OneToOne
     @JoinColumn(name = "up_station_id")
     private Station upStation;
     @OneToOne
     @JoinColumn(name = "down_station_id")
     private Station downStation;
-    @ManyToOne
-    @JoinColumn(name = "line_id")
-    private Line line;
+    private int distance;
 
     protected Section() {}
 
-    public Section(int distance, Station upStation, Station downStation, Line line) {
+    public Section(Line line, Station upStation, Station downStation, int distance) {
         this.distance = distance;
         this.upStation = upStation;
         this.downStation = downStation;
@@ -54,5 +56,31 @@ public class Section extends BaseEntity {
     public boolean hasSameNameStation(Station station) {
         return upStation.compareName(station)
                 || downStation.compareName(station);
+    }
+
+    public void updateUpStation(Station downStation, int newDistance) {
+        validateValidSize(newDistance);
+        this.upStation = downStation;
+        this.distance -= newDistance;
+    }
+
+    public void downStationUpdate(Station upStation, int newDistance) {
+        validateValidSize(newDistance);
+        this.downStation = upStation;
+        this.distance -= newDistance;
+    }
+
+    private void validateValidSize(int newDistance) {
+        if (this.distance < newDistance) {
+            throw new IllegalArgumentException(INVALID_SECTION_SIZE_MESSAGE);
+        }
+    }
+
+    public boolean equalsUpStation(Long stationId) {
+        return upStation.getId().equals(stationId);
+    }
+
+    public boolean equalsDownStation(Long stationId) {
+        return downStation.getId().equals(stationId);
     }
 }
