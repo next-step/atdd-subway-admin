@@ -169,7 +169,7 @@ public class SectionAcceptanceTest extends AcceptanceTest {
      * When 구간이 하나인 노선에서 마지막 구간을 제거할 때
      * Then 제거할 수 없다는 예외 발생
      */
-    @DisplayName("구간이 하나인 노선에서 마지막 구간을 제거할 때 예외")
+    @DisplayName("구간이 하나인 노선에서 역을 제거하는 경우")
     @Test
     void deleteLastSectionException() {
         // when
