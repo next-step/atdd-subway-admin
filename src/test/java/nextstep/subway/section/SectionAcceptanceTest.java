@@ -16,8 +16,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -141,6 +144,62 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         구간_생성_확인_실패(response);
     }
 
+    /**
+     * Given 3개의 역이 있는 상황에서(두 구간)
+     * When 종점을 제거하면
+     * Then 그 구간은 없어진다.
+     */
+    @DisplayName("종점을 제거하는 경우")
+    @Test
+    void deleteEndStation() {
+        // given (선릉-한티-도곡)
+        StationResponse 한티역 = StationAcceptanceTest.지하철역_생성_요청("한티역").as(StationResponse.class);
+        구간_추가_요청(분당선.getId(), new SectionRequest(선릉역.getId(), 한티역.getId(), 3));
+
+        // when (도곡역 제거)
+        ExtractableResponse<Response> response = 지하철역_제거_요청(분당선.getId(), 도곡역.getId());
+
+        // then
+        지하철역_제거_확인_정상(response);
+        ExtractableResponse<Response> retrievedResponse = LineAcceptanceTest.지하철_노선_조회_요청(분당선);
+        지하철역_제거_확인_리스트(retrievedResponse, Arrays.asList(선릉역, 한티역));
+    }
+
+    /**
+     * When 구간이 하나인 노선에서 마지막 구간을 제거할 때
+     * Then 제거할 수 없다는 예외 발생
+     */
+    @DisplayName("구간이 하나인 노선에서 역을 제거하는 경우")
+    @Test
+    void deleteLastSectionException() {
+        // when
+        ExtractableResponse<Response> response = 지하철역_제거_요청(분당선.getId(), 도곡역.getId());
+
+        // then
+        지하철역_제거_확인_실패(response);
+    }
+
+    /**
+     * Given 3개의 역이 있는 상황에서(두 구간)
+     * When 가운데 역을 제거하는 경우
+     * Then 가운데 역을 제외하고 나머지 두 역이 이어지고 거리는 두 구간의 합
+     */
+    @DisplayName("가운데 역을 제거하는 경우")
+    @Test
+    void deleteMiddleStation() {
+        // given (선릉-한티-도곡)
+        StationResponse 한티역 = StationAcceptanceTest.지하철역_생성_요청("한티역").as(StationResponse.class);
+        구간_추가_요청(분당선.getId(), new SectionRequest(선릉역.getId(), 한티역.getId(), 3));
+
+        // when
+        ExtractableResponse<Response> response = 지하철역_제거_요청(분당선.getId(), 한티역.getId());
+
+        // then
+        지하철역_제거_확인_정상(response);
+        ExtractableResponse<Response> retrievedResponse = LineAcceptanceTest.지하철_노선_조회_요청(분당선);
+        지하철역_제거_확인_리스트(retrievedResponse, Arrays.asList(선릉역, 도곡역));
+    }
+
     private void 구간_생성_확인_실패(ExtractableResponse<Response> response1) {
         assertThat(response1.statusCode()).isNotEqualTo(HttpStatus.OK.value());
     }
@@ -150,12 +209,42 @@ public class SectionAcceptanceTest extends AcceptanceTest {
         assertThat(response.header(HttpHeaders.LOCATION)).isNotBlank();
     }
 
+    private void 지하철역_제거_확인_정상(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철역_제거_확인_실패(ExtractableResponse<Response> response) {
+        assertThat(response.statusCode()).isNotEqualTo(HttpStatus.OK.value());
+    }
+
+    private void 지하철역_제거_확인_리스트(ExtractableResponse<Response> retrievedResponse, List<StationResponse> expectedStations) {
+        LineResponse line = retrievedResponse.as(LineResponse.class);
+        List<Long> stationIds = line.getStations().stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        List<Long> expectedStationIds = expectedStations.stream()
+                .map(it -> it.getId())
+                .collect(Collectors.toList());
+
+        assertThat(stationIds).containsAll(expectedStationIds);
+    }
+
     private ExtractableResponse<Response> 구간_추가_요청(Long lineId, SectionRequest sectionRequest) {
         return RestAssured
                 .given().log().all()
                 .body(sectionRequest)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .when().post("/lines/{id}/sections", lineId)
+                .then().log().all()
+                .extract();
+    }
+
+    private ExtractableResponse<Response> 지하철역_제거_요청(Long lineId, Long stationId) {
+        return RestAssured
+                .given().log().all()
+                .param("stationId", stationId)
+                .when().delete("/lines/{lineId}/sections", lineId)
                 .then().log().all()
                 .extract();
     }

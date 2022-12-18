@@ -1,6 +1,7 @@
 package nextstep.subway.domain;
 
 import nextstep.subway.exception.DuplicateSectionException;
+import nextstep.subway.exception.InvalidSectionNumberException;
 import nextstep.subway.exception.InvalidSizeSectionException;
 import nextstep.subway.exception.NoConnectedSectionException;
 
@@ -14,6 +15,7 @@ public class Sections {
     private static final String NO_CONNECTED_SECTION_MESSAGE = "연결되는 구간이 아닙니다.";
     private static final String DUPLICATE_SECTION_EXCEPTION = "이미 노선에 등록되어 있는 구간입니다.";
     private static final String INVALID_SIZE_SECTION_EXCEPTION = "기존 구간에 등록할 수 없는 길이입니다.";
+    private static final String INVALID_SECTION_NUMBER_EXCEPTION = "구간이 하나일 때는 삭제할 수 없습니다.";
 
     @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Section> sections = new ArrayList<>();
@@ -30,23 +32,59 @@ public class Sections {
         return new ArrayList<>(stations);
     }
 
-    public void add(Section section) {
+    public void add(Line line, Station upStation, Station downStation, int distance) {
         if (!sections.isEmpty()) {
-            validate(section);
+            validate(upStation, downStation, distance);
+            arrangeStations(upStation, downStation, distance);
         }
-        this.sections.add(section);
+        this.sections.add(new Section(line, upStation, downStation, distance));
     }
 
-    private void validate(Section section) {
-        validateConnectedSection(section);
-        validateDistinctSection(section);
-        validateSectionSize(section);
+    private void arrangeStations(Station upStation, Station downStation, int distance) {
+        boolean isUpStationExisted = isUpStationExisted(upStation);
+        boolean isDownStationExisted = isDownStationExisted(upStation);
+
+        if (isUpStationExisted) {
+            updateUpStation(upStation, downStation, distance);
+        }
+        if (isDownStationExisted) {
+            updateDownStation(upStation, downStation, distance);
+        }
     }
 
-    private void validateSectionSize(Section section) {
-        int targetDistance = section.getDistance();
-        Section sectionByUpStation = findSectionByStation(section.getUpStation());
-        Section sectionByDownStation = findSectionByStation(section.getDownStation());
+    private boolean isUpStationExisted(Station upStation) {
+        return sections.stream()
+                .anyMatch(it -> it.getUpStation() == upStation);
+    }
+
+    private boolean isDownStationExisted(Station downStation) {
+        return sections.stream()
+                .anyMatch(it -> it.getDownStation() == downStation);
+    }
+
+    private void updateUpStation(Station upStation, Station downStation, int distance) {
+        sections.stream()
+                .filter(it -> it.getUpStation() == upStation)
+                .findFirst()
+                .ifPresent(it -> it.updateUpStation(downStation, distance));
+    }
+
+    private void updateDownStation(Station upStation, Station downStation, int distance) {
+        sections.stream()
+                .filter(it -> it.getUpStation() == downStation)
+                .findFirst()
+                .ifPresent(it -> it.downStationUpdate(upStation, distance));
+    }
+
+    private void validate(Station upStation, Station downStation, int distance) {
+        validateConnectedSection(upStation, downStation);
+        validateDistinctSection(upStation, downStation);
+        validateSectionSize(upStation, downStation, distance);
+    }
+
+    private void validateSectionSize(Station upStation, Station downStation, int targetDistance) {
+        Section sectionByUpStation = findSectionByStation(upStation);
+        Section sectionByDownStation = findSectionByStation(downStation);
 
         boolean upStationResult = isValidSize(targetDistance, sectionByUpStation);
         boolean downStationResult = isValidSize(targetDistance, sectionByDownStation);
@@ -70,18 +108,18 @@ public class Sections {
         return actual > target;
     }
 
-    private void validateDistinctSection(Section section) {
-        Section sectionByUpStation = findSectionByStation(section.getUpStation());
-        Section sectionByDownStation = findSectionByStation(section.getDownStation());
+    private void validateDistinctSection(Station upStation, Station downStation) {
+        Section sectionByUpStation = findSectionByStation(upStation);
+        Section sectionByDownStation = findSectionByStation(downStation);
 
         if (sectionByUpStation != null && sectionByDownStation != null) {
             throw new DuplicateSectionException(DUPLICATE_SECTION_EXCEPTION);
         }
     }
 
-    private void validateConnectedSection(Section section) {
-        Section sectionByUpStation = findSectionByStation(section.getUpStation());
-        Section sectionByDownStation = findSectionByStation(section.getDownStation());
+    private void validateConnectedSection(Station upStation, Station downStation) {
+        Section sectionByUpStation = findSectionByStation(upStation);
+        Section sectionByDownStation = findSectionByStation(downStation);
 
         if (sectionByUpStation == null && sectionByDownStation == null) {
             throw new NoConnectedSectionException(NO_CONNECTED_SECTION_MESSAGE);
@@ -93,6 +131,42 @@ public class Sections {
                 .filter(it -> it.hasSameNameStation(station))
                 .findFirst()
                 .orElse(null);
+    }
+
+    public void deleteStation(Line line, Long stationId) {
+        if (sections.size() <= 1) {
+            throw new InvalidSectionNumberException(INVALID_SECTION_NUMBER_EXCEPTION);
+        }
+
+        Optional<Section> upStationSection = findSectionByUpStation(stationId);
+        Optional<Section> downStationSection = findSectionByDownStation(stationId);
+
+        if (upStationSection.isPresent() && downStationSection.isPresent()) {
+            createSection(line, upStationSection.get(), downStationSection.get());
+        }
+
+        upStationSection.ifPresent(it -> sections.remove(it));
+        downStationSection.ifPresent(it -> sections.remove(it));
+    }
+
+    private void createSection(Line line, Section upStationSection, Section downStationSection) {
+        sections.add(
+                new Section(line
+                        , downStationSection.getUpStation()
+                        , upStationSection.getDownStation()
+                        , upStationSection.getDistance() + downStationSection.getDistance()));
+    }
+
+    private Optional<Section> findSectionByDownStation(Long stationId) {
+        return sections.stream()
+                .filter(it -> it.equalsDownStation(stationId))
+                .findFirst();
+    }
+
+    private Optional<Section> findSectionByUpStation(Long stationId) {
+        return sections.stream()
+                .filter(it -> it.equalsUpStation(stationId))
+                .findFirst();
     }
 
     @Override
