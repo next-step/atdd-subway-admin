@@ -1,6 +1,8 @@
 package nextstep.subway.domain;
 
+import java.util.Objects;
 import javax.persistence.CascadeType;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,7 +11,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 @Entity
-public class Section extends BaseEntity {
+public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,12 +28,18 @@ public class Section extends BaseEntity {
     @JoinColumn(name = "down_station_id")
     private Station downStation;
 
-    private int distance;
+    @Embedded
+    private Distance distance;
 
     protected Section() {
     }
 
-    public Section(Station upStation, Station downStation, int distance) {
+    public Section(Line line, Station upStation, Station downStation, Distance distance) {
+        this(upStation, downStation, distance);
+        toLine(line);
+    }
+
+    public Section(Station upStation, Station downStation, Distance distance) {
         this.upStation = upStation;
         this.downStation = downStation;
         this.distance = distance;
@@ -39,6 +47,14 @@ public class Section extends BaseEntity {
 
     public void toLine(Line line) {
         this.line = line;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public Line getLine() {
+        return line;
     }
 
     public Station getUpStation() {
@@ -49,17 +65,42 @@ public class Section extends BaseEntity {
         return downStation;
     }
 
-    public boolean equalUpStation(Station station) {
-        if (upStation == null) {
-            return false;
+    public Distance getDistance() {
+        return distance;
+    }
+
+    public void updateUpStation(Station station, Distance newDistance) {
+        validateDistance(newDistance);
+        upStation = station;
+        distance = distance.minus(newDistance);
+    }
+
+    public void updateDownStation(Station station, Distance newDistance) {
+        validateDistance(newDistance);
+        downStation = station;
+        distance = distance.minus(newDistance);
+    }
+
+    private void validateDistance(Distance newDistance) {
+        if (distance.isLessThanOrEqual(newDistance)) {
+            throw new InvalidSectionDistanceException();
         }
-        return upStation.equals(station);
+    }
+
+    public boolean equalUpStation(Station station) {
+        return Objects.equals(upStation, station);
+    }
+
+    public boolean equalUpStation(Section section) {
+        return Objects.equals(upStation, section.getUpStation());
     }
 
     public boolean equalDownStation(Station station) {
-        if (downStation == null) {
-            return false;
-        }
-        return downStation.equals(station);
+        return Objects.equals(downStation, station);
     }
+
+    public boolean equalDownStation(Section section) {
+        return Objects.equals(downStation, section.getDownStation());
+    }
+
 }

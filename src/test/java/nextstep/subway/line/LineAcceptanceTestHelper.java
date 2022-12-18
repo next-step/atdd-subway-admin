@@ -5,10 +5,11 @@ import io.restassured.path.json.JsonPath;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Map;
+import nextstep.subway.dto.LineResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
-public final class LineAcceptanceTestHelper {
+class LineAcceptanceTestHelper {
 
     static ExtractableResponse<Response> createLine(Map<String, String> params) {
         return RestAssured.given().log().all()
@@ -31,21 +32,33 @@ public final class LineAcceptanceTestHelper {
     }
 
     static JsonPath getLines() {
+        return getLinesResponse().jsonPath();
+    }
+
+    static ExtractableResponse<Response> getLinesResponse() {
         return RestAssured.given().log().all()
             .when().get("/lines")
             .then().log().all()
             .statusCode(HttpStatus.OK.value())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .extract().jsonPath();
+            .extract();
     }
 
     static JsonPath getLine(String id) {
+        return getLineResponse(id).jsonPath();
+    }
+
+    static ExtractableResponse<Response> getLineResponse(String id) {
         return RestAssured.given().log().all()
             .when().get("/lines/{id}", id)
             .then().log().all()
             .statusCode(HttpStatus.OK.value())
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .extract().jsonPath();
+            .extract();
+    }
+
+    static ExtractableResponse<Response> getLineResponse(LineResponse lineResponse) {
+        return getLineResponse(lineResponse.getId().toString());
     }
 
     static void deleteLine(String id) {

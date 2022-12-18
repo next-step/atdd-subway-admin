@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional(readOnly = true)
+@Transactional
 public class StationService {
     private final StationRepository stationRepository;
     private final StationMapper stationMapper;
@@ -23,28 +23,24 @@ public class StationService {
         this.stationMapper = stationMapper;
     }
 
-    @Transactional
     public StationResponse saveStation(StationRequest stationRequest) {
         Station persistStation = stationRepository.save(stationMapper.mapToDomainEntity(stationRequest));
         return stationMapper.mapToResponse(persistStation);
     }
 
+    @Transactional(readOnly = true)
     public List<StationResponse> findAllStations() {
         return stationRepository.findAll().stream()
             .map(stationMapper::mapToResponse)
             .collect(Collectors.toList());
     }
 
-    public StationResponse findStationById(Long id) {
-        return stationMapper.mapToResponse(findStationByIdAsDomainEntity(id));
-    }
-
+    @Transactional(readOnly = true)
     Station findStationByIdAsDomainEntity(Long id) {
         return stationRepository.findById(id)
             .orElseThrow(()-> new NotFoundException(id));
     }
 
-    @Transactional
     public void deleteStationById(Long id) {
         stationRepository.deleteById(id);
     }
