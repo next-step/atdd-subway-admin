@@ -15,9 +15,9 @@ import org.springframework.http.HttpStatus;
 @DisplayName("지하철노선 관련 기능 인수 테스트")
 public class LineAcceptanceTest extends AcceptanceTest {
 
-    StationResponse upStation;
-    StationResponse downStation;
-    LineRequestBuilder noNameLine;
+    private StationResponse upStation;
+    private StationResponse downStation;
+    private LineRequestParamsBuilder noNameLine;
 
     @BeforeEach
     public void setUp() {
@@ -26,7 +26,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
         upStation = StationAcceptanceTestHelper.createStation("강남역").as(StationResponse.class);
         downStation = StationAcceptanceTestHelper.createStation("분당역").as(StationResponse.class);
 
-        noNameLine = new LineRequestBuilder()
+        noNameLine = new LineRequestParamsBuilder()
             .withColor("red")
             .withUpStation(upStation.getId())
             .withDownStation(downStation.getId())
