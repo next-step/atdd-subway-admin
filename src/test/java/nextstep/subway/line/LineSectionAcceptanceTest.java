@@ -3,11 +3,12 @@ package nextstep.subway.line;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertInternalServerErrorStatus;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertLineStationOrder;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertOkStatus;
-import static nextstep.subway.line.LineSectionAcceptanceTestHelper.createLineSection;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import nextstep.subway.AcceptanceTest;
 import nextstep.subway.dto.LineResponse;
 import nextstep.subway.dto.StationResponse;
@@ -95,4 +96,17 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertLineStationOrder(response, Arrays.asList(정자역, 강남역, 양재역, 광교역));
     }
 
+    private static ExtractableResponse<Response> createLineSection(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
+        return LineSectionAcceptanceTestHelper.createLineSection(
+            line.getId(),
+            createSectionRequestParams(upStation, downStation, distance));
+    }
+
+    private static Map<String, String> createSectionRequestParams(StationResponse upStation, StationResponse downStation, int distance) {
+        Map<String, String> sectionRequestParams = new HashMap<>();
+        sectionRequestParams.put("upStationId", upStation.getId().toString());
+        sectionRequestParams.put("downStationId", downStation.getId().toString());
+        sectionRequestParams.put("distance", Integer.toString(distance));
+        return sectionRequestParams;
+    }
 }

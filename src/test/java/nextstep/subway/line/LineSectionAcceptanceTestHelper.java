@@ -6,30 +6,21 @@ import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import nextstep.subway.dto.LineResponse;
-import nextstep.subway.dto.SectionRequest;
 import nextstep.subway.dto.StationResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 
 class LineSectionAcceptanceTestHelper {
 
-    static ExtractableResponse<Response> createLineSection(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
-        SectionRequest sectionRequest = new SectionRequest(upStation.getId(), downStation.getId(), distance);
+    static ExtractableResponse<Response> createLineSection(Long lineId, Map<String, String> sectionRequestParams) {
         return RestAssured
             .given().log().all()
             .contentType(MediaType.APPLICATION_JSON_VALUE)
-            .body(sectionRequest)
-            .when().post("/lines/{lineId}/sections", line.getId())
-            .then().log().all()
-            .extract();
-    }
-
-    static ExtractableResponse<Response> removeLineStation(LineResponse line, StationResponse station) {
-        return RestAssured
-            .given().log().all()
-            .when().delete("/lines/{lineId}/sections?stationId={stationId}", line.getId(), station.getId())
+            .body(sectionRequestParams)
+            .when().post("/lines/{lineId}/sections", lineId)
             .then().log().all()
             .extract();
     }
