@@ -1,6 +1,7 @@
 package nextstep.subway.application;
 
 import java.util.stream.Collectors;
+import nextstep.subway.domain.Distance;
 import nextstep.subway.domain.Line;
 import nextstep.subway.domain.Section;
 import nextstep.subway.domain.Station;
@@ -17,7 +18,7 @@ class LineMapper {
     }
 
     Line mapToDomainEntity(LineRequest request, Station upStation, Station downStation) {
-        Section section = new Section(upStation, downStation, request.getDistance());
+        Section section = new Section(upStation, downStation, Distance.from(request.getDistance()));
         return new Line(request.getName(), request.getColor(), section);
     }
 
