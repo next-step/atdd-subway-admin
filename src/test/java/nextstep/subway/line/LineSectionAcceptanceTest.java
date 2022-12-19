@@ -1,6 +1,9 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertConnectedStationNotPresentMessage;
+import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertDuplicatedSectionMessage;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertInternalServerErrorStatus;
+import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertInvalidDistanceMessage;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertLineStationOrder;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertOkStatus;
 
@@ -49,6 +52,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     void addSection_duplicatedSection() {
         ExtractableResponse<Response> response = createLineSection(신분당선, 강남역, 광교역, 3);
         assertInternalServerErrorStatus(response);
+        assertDuplicatedSectionMessage(response);
     }
 
     @DisplayName("상행역과 하행역 둘 중 하나도 기존 노선에 포함되어있지 않으면 추가할 수 없다")
@@ -56,33 +60,37 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     void addSection_notFoundConnectedStation() {
         ExtractableResponse<Response> response = createLineSection(신분당선, 정자역, 양재역, 3);
         assertInternalServerErrorStatus(response);
+        assertConnectedStationNotPresentMessage(response);
     }
 
     @DisplayName("역 사이에 새로운 역을 등록할 경우 기존 역 사이 길이보다 크거나 같으면 등록 할 수 없다")
     @Test
     void addSection_longerThanCurrentDistance() {
-        ExtractableResponse<Response> response = createLineSection(신분당선, 정자역, 양재역, 10);
+        ExtractableResponse<Response> response = createLineSection(신분당선, 강남역, 양재역, 10);
         assertInternalServerErrorStatus(response);
+        assertInvalidDistanceMessage(response);
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 수 있다")
     @Test
     void addSection_nextToHeadStation() {
-        createLineSection(신분당선, 정자역, 강남역, 5);
+        StationResponse 새종점 = StationAcceptanceTestHelper.createStation("새종점").as(StationResponse.class);
+        createLineSection(신분당선, 새종점, 강남역, 5);
 
         ExtractableResponse<Response> response = LineAcceptanceTestHelper.getLineResponse(신분당선);
         assertOkStatus(response);
-        assertLineStationOrder(response, Arrays.asList(정자역, 강남역, 광교역));
+        assertLineStationOrder(response, Arrays.asList(새종점, 강남역, 광교역));
     }
 
     @DisplayName("새로운 역을 하행 종점으로 등록할 수 있다")
     @Test
     void addSection_beforeTailStation() {
-        createLineSection(신분당선, 광교역, 정자역, 5);
+        StationResponse 새종점 = StationAcceptanceTestHelper.createStation("새종점").as(StationResponse.class);
+        createLineSection(신분당선, 광교역, 새종점, 5);
 
         ExtractableResponse<Response> response = LineAcceptanceTestHelper.getLineResponse(신분당선);
         assertOkStatus(response);
-        assertLineStationOrder(response, Arrays.asList(강남역, 광교역, 정자역));
+        assertLineStationOrder(response, Arrays.asList(강남역, 광교역, 새종점));
     }
 
     @DisplayName("이미 존재 하는 구간 사이에 새로운 구간을 등록할 수 있다")

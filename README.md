@@ -285,13 +285,13 @@ Table Truncate
 
 ### TODO
 
-[] Apply previous feedback
+[x] Apply previous feedback
 
-- [] add newline at end of file
+- [x] add newline at end of file
 
-- [] verify response message also
+- [x] verify response message also
 
-- [] 실제 노선과 테스트 노선의 순서를 동일하게 유지도록 테스트 수정
+- [x] 실제 노선과 테스트 노선의 순서를 동일하게 유지도록 테스트 수정
 
 [] 1. 인수 테스트 작성
 

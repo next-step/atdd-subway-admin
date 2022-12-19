@@ -3,9 +3,11 @@ package nextstep.subway.domain;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
@@ -45,23 +47,21 @@ public class Sections {
     }
 
     private boolean containsAllStationsOf(Section section) {
-        return hasSameUpStationOf(section)
-            && hasSameDownStationOf(section);
+        return containsUpStationOf(section)
+            && containsDownStationOf(section);
     }
 
     private boolean containsAnyStationsOf(Section section) {
-        return hasSameUpStationOf(section)
-            || hasSameDownStationOf(section);
+        return containsUpStationOf(section)
+            || containsDownStationOf(section);
     }
 
-    private boolean hasSameUpStationOf(Section section) {
-        return getStations().stream()
-            .anyMatch(section::equalUpStation);
+    private boolean containsUpStationOf(Section section) {
+        return containsStation(section.getUpStation());
     }
 
-    private boolean hasSameDownStationOf(Section section) {
-        return getStations().stream()
-            .anyMatch(section::equalDownStation);
+    private boolean containsDownStationOf(Section section) {
+        return containsStation(section.getDownStation());
     }
 
     private Optional<Section> findNextSection(Section section) {
@@ -74,6 +74,22 @@ public class Sections {
         return values.stream()
             .filter(section::equalDownStation)
             .findFirst();
+    }
+
+    private boolean containsStation(Station station) {
+        return getUnorderedStations().contains(station);
+    }
+
+    private Set<Station> getUnorderedStations() {
+        if (values.isEmpty()) {
+            return Collections.emptySet();
+        }
+        final Set<Station> result = new HashSet<>();
+        for (Section section : values) {
+            result.add(section.getUpStation());
+            result.add(section.getDownStation());
+        }
+        return result;
     }
 
     public List<Station> getStations() {
