@@ -1,9 +1,10 @@
 package nextstep.subway.line;
 
+import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertCannotRemoveSectionMessage;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertConnectedStationNotPresentMessage;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertDuplicatedSectionMessage;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertInternalServerErrorStatus;
-import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertInvalidDistanceMessage;
+import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertInvalidSectionDistanceMessage;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertLineStationOrder;
 import static nextstep.subway.line.LineSectionAcceptanceTestHelper.assertOkStatus;
 
@@ -68,7 +69,7 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
     void addSection_longerThanCurrentDistance() {
         ExtractableResponse<Response> response = createLineSection(신분당선, 강남역, 양재역, 10);
         assertInternalServerErrorStatus(response);
-        assertInvalidDistanceMessage(response);
+        assertInvalidSectionDistanceMessage(response);
     }
 
     @DisplayName("새로운 역을 상행 종점으로 등록할 수 있다")
@@ -104,10 +105,67 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         assertLineStationOrder(response, Arrays.asList(정자역, 강남역, 양재역, 광교역));
     }
 
+    @DisplayName("오직 하나의 구간만 존재 할 경우, 해당 구간은 제거 할 수 없다")
+    @Test
+    void removeLineStation_onlyOneSectionRemaining() {
+        ExtractableResponse<Response> response = removeLineSection(신분당선, 강남역);
+        assertInternalServerErrorStatus(response);
+        assertCannotRemoveSectionMessage(response);
+    }
+
+    @DisplayName("노선에 등록 되어있지 않은 역은 제거할 수 없다")
+    @Test
+    void removeLineStation_notExistsLine() {
+        // given
+        createLineSection(신분당선, 강남역, 양재역, 2);
+        // when
+        ExtractableResponse<Response> response = removeLineSection(신분당선, 정자역);
+        // then
+        assertInternalServerErrorStatus(response);
+        assertCannotRemoveSectionMessage(response);
+    }
+
+    @DisplayName("노선 중 첫 역 구간을 제거할경우, 해당 구간만 성공적으로 제거 할 수 있어야 한다")
+    @Test
+    void removeLineStation_head() {
+        // given
+        createLineSection(신분당선, 강남역, 양재역, 2);
+        // when
+        removeLineSection(신분당선, 강남역);
+        // then
+        ExtractableResponse<Response> response = LineAcceptanceTestHelper.getLineResponse(신분당선);
+        assertOkStatus(response);
+        assertLineStationOrder(response, Arrays.asList(양재역, 광교역));
+    }
+
+    @DisplayName("노선 중 중간 역 구간을 제거할경우, 해당 구간만 성공적으로 제거 할 수 있어야 한다")
+    @Test
+    void removeLineStation_middle() {
+        // given
+        createLineSection(신분당선, 강남역, 양재역, 2);
+        // when
+        removeLineSection(신분당선, 양재역);
+        // then
+        ExtractableResponse<Response> response = LineAcceptanceTestHelper.getLineResponse(신분당선);
+        assertOkStatus(response);
+        assertLineStationOrder(response, Arrays.asList(강남역, 광교역));
+    }
+
+    @DisplayName("노선 중 마지막 역 구간을 제거할경우, 해당 구간만 성공적으로 제거 할 수 있어야 한다")
+    @Test
+    void removeLineStation_tail() {
+        // given
+        createLineSection(신분당선, 강남역, 양재역, 2);
+        // when
+        removeLineSection(신분당선, 광교역);
+        // then
+        ExtractableResponse<Response> response = LineAcceptanceTestHelper.getLineResponse(신분당선);
+        assertOkStatus(response);
+        assertLineStationOrder(response, Arrays.asList(강남역, 양재역));
+    }
+
     private static ExtractableResponse<Response> createLineSection(LineResponse line, StationResponse upStation, StationResponse downStation, int distance) {
-        return LineSectionAcceptanceTestHelper.createLineSection(
-            line.getId(),
-            createSectionRequestParams(upStation, downStation, distance));
+        return LineSectionAcceptanceTestHelper.createLineSection(line.getId(), createSectionRequestParams(upStation, downStation, distance));
     }
 
     private static Map<String, String> createSectionRequestParams(StationResponse upStation, StationResponse downStation, int distance) {
@@ -116,5 +174,9 @@ public class LineSectionAcceptanceTest extends AcceptanceTest {
         sectionRequestParams.put("downStationId", downStation.getId().toString());
         sectionRequestParams.put("distance", Integer.toString(distance));
         return sectionRequestParams;
+    }
+
+    private ExtractableResponse<Response> removeLineSection(LineResponse line, StationResponse station) {
+        return LineSectionAcceptanceTestHelper.deleteLineSection(line.getId(), station.getId());
     }
 }

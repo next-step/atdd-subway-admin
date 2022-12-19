@@ -14,6 +14,8 @@ import javax.persistence.OneToMany;
 
 @Embeddable
 public class Sections {
+    private static final int MIN_SIZE = 1;
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private List<Section> values = new ArrayList<>();
 
@@ -141,6 +143,39 @@ public class Sections {
         return values.stream()
             .filter(section -> section.equalUpStation(station))
             .findFirst();
+    }
+
+    public void removeLineStation(Line line, Station station) {
+        validateRemainingSectionsSize();
+        validateStationIsPresent(station);
+
+        final Optional<Section> optionalPrevSection = findPrevSection(station);
+        final Optional<Section> optionalNextSection = findNextSection(station);
+
+        optionalPrevSection.map(prevSection -> optionalNextSection.map(nextSection ->
+            values.add(createSection(line, prevSection, nextSection))));
+        optionalPrevSection.map(values::remove);
+        optionalNextSection.map(values::remove);
+    }
+
+    private void validateRemainingSectionsSize() {
+        if (values.size() <= MIN_SIZE) {
+            throw new CannotRemoveSectionException();
+        }
+    }
+
+    private void validateStationIsPresent(Station station) {
+        if (!containsStation(station)) {
+            throw new CannotRemoveSectionException();
+        }
+    }
+
+    private Section createSection(Line line, Section prevSection, Section nextSection) {
+        return new Section(
+            line,
+            prevSection.getUpStation(),
+            nextSection.getDownStation(),
+            prevSection.addDistance(nextSection));
     }
 
 }
