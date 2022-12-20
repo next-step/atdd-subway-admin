@@ -49,11 +49,6 @@ public class Section {
         this.line = line;
     }
 
-    public Distance addDistance(Section section) {
-        distance = distance.plus(section.distance);
-        return distance;
-    }
-
     public Long getId() {
         return id;
     }

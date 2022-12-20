@@ -1,6 +1,5 @@
 package nextstep.subway.domain;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -152,10 +151,11 @@ public class Sections {
         final Optional<Section> optionalPrevSection = findPrevSection(station);
         final Optional<Section> optionalNextSection = findNextSection(station);
 
-        optionalPrevSection.map(prevSection -> optionalNextSection.map(nextSection ->
-            values.add(createSection(line, prevSection, nextSection))));
-        optionalPrevSection.map(values::remove);
-        optionalNextSection.map(values::remove);
+        if (optionalPrevSection.isPresent() && optionalNextSection.isPresent()) {
+            values.add(createSection(line, optionalPrevSection.get(), optionalNextSection.get()));
+        }
+        optionalPrevSection.ifPresent(values::remove);
+        optionalNextSection.ifPresent(values::remove);
     }
 
     private void validateRemainingSectionsSize() {
@@ -175,7 +175,7 @@ public class Sections {
             line,
             prevSection.getUpStation(),
             nextSection.getDownStation(),
-            prevSection.addDistance(nextSection));
+            prevSection.getDistance().plus(nextSection.getDistance()));
     }
 
 }
