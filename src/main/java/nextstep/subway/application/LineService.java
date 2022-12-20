@@ -74,4 +74,9 @@ public class LineService {
         line.addSection(new Section(line, upStation, downStation, Distance.from(sectionRequest.getDistance())));
     }
 
+    public void removeLineStation(Long lineId, Long stationId) {
+        final Line line = findLineByIdAsDomainEntity(lineId);
+        final Station station = stationService.findStationByIdAsDomainEntity(stationId);
+        line.removeLineStation(station);
+    }
 }

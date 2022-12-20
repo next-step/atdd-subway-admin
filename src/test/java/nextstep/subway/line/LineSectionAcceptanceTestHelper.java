@@ -25,12 +25,42 @@ class LineSectionAcceptanceTestHelper {
             .extract();
     }
 
+    static ExtractableResponse<Response> deleteLineSection(Long lineId, Long stationId) {
+        return RestAssured
+            .given().log().all()
+            .contentType(MediaType.APPLICATION_JSON_VALUE)
+            .param("stationId", stationId)
+            .when().delete("/lines/{lineId}/sections", lineId)
+            .then().log().all()
+            .extract();
+    }
+
     static void assertOkStatus(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
     }
 
     static void assertInternalServerErrorStatus(ExtractableResponse<Response> response) {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    static void assertInvalidSectionDistanceMessage(ExtractableResponse<Response> response) {
+        assertThat(getMessageFrom(response)).contains("역과 역 사이의 거리보다 좁은 거리를 입력해주세요");
+    }
+
+    static void assertConnectedStationNotPresentMessage(ExtractableResponse<Response> response) {
+        assertThat(getMessageFrom(response)).contains("연결 할 수 없는 구간 입니다");
+    }
+
+    static void assertDuplicatedSectionMessage(ExtractableResponse<Response> response) {
+        assertThat(getMessageFrom(response)).contains("이미 등록된 구간 입니다");
+    }
+
+    static void assertCannotRemoveSectionMessage(ExtractableResponse<Response> response) {
+        assertThat(getMessageFrom(response)).contains("지울 수 없는 구간 입니다");
+    }
+
+    private static String getMessageFrom(ExtractableResponse<Response> response) {
+        return response.jsonPath().getString("message");
     }
 
     static void assertLineStationOrder(ExtractableResponse<Response> response, List<StationResponse> expectedStations) {
